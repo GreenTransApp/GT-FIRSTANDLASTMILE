@@ -1,0 +1,11 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    non_constant_identifier_names: false
+    file_names: false 
+    lines_longer_than_80_chars: false
+
+dart:
+  formatter:
+    line-length: 1000

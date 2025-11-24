@@ -1,0 +1,4 @@
+enum AuthenticationFlow {
+  loginWithOtp,
+  forgotPassword
+}

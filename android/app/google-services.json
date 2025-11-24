@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "778115499799",
+    "firebase_url": "https://gtlmd-71281-default-rtdb.firebaseio.com",
+    "project_id": "gtlmd-71281",
+    "storage_bucket": "gtlmd-71281.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778115499799:android:23b7dd0c4166973f52d952",
+        "android_client_info": {
+          "package_name": "com.greensoft.gtlmd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALTdovsT0KQPd1Z2pDrre6xZNUkFSG8dI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
