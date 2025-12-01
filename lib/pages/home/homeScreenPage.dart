@@ -9,6 +9,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+import 'package:gtlmd/common/bottomSheet/drsSelection/drsSelectionBottomSheet.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
@@ -19,15 +20,19 @@ import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
+import 'package:gtlmd/pages/profile/profilePage.dart';
 import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
-import 'package:gtlmd/pages/widget/allotedRouteWidget.dart';
+import 'package:gtlmd/pages/tripSummary/tripSummary.dart';
+import 'package:gtlmd/pages/routesList/allotedRouteWidget.dart';
 import 'package:gtlmd/pages/widget/assignTripWidget.dart';
 import 'package:gtlmd/routes/Routes.dart';
 import 'package:gtlmd/routes/RoutesName.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
+import 'package:gtlmd/tiles/dashboardTripTile.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 enum DashboardTabs { ALLOTEDROUTES, CURRENTDELIVERY }
 
@@ -66,6 +71,8 @@ class _HomeScreen extends State<HomeScreen>
   final locationService = LocationService();
   // final authService = AuthenticationService();
   bool showLocationWarning = false;
+  int _selectedIndex = 0;
+  final PageController _pageController = PageController();
   @override
   void initState() {
     super.initState();
@@ -427,7 +434,8 @@ class _HomeScreen extends State<HomeScreen>
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
-      "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
+      // "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
+      "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : '2025-10-01',
       "prmtodt": toDt,
       "prmsessionid": savedUser.sessionid.toString(),
     };
@@ -484,6 +492,106 @@ class _HomeScreen extends State<HomeScreen>
     // You can also update the state of this screen if needed
   }
 
+  Widget attendanceInfo() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: CommonColors.colorPrimary,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Current Date',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                formattedDate,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          Visibility(
+            visible: employeeid != null,
+            child: InkWell(
+              onTap: () {
+                Get.to(() => const AttendanceScreen())?.then((_) {
+                  getDashboardDetails();
+                });
+              },
+              child: Row(
+                children: [
+                  // Punch status indicator with color based on status
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: CommonColors.colorPrimary,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Row(
+                      children: [
+                        // Status indicator dot
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            color: attendanceModel.attendancestatus == "Absent"
+                                ? CommonColors.dangerColor
+                                : CommonColors.successColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Text(
+                          attendanceModel.attendancestatus == 'Present'
+                              ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                                  .toString()
+                                  .toUpperCase()
+                              : "Absent",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.chevron_right,
+                    size: 20,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext) {
     if (attendanceModel == null) {
@@ -514,383 +622,204 @@ class _HomeScreen extends State<HomeScreen>
           ));
     } else {
       return Scaffold(
-        appBar: AppBar(
-          backgroundColor: CommonColors.colorPrimary,
-          title: const Text(
-            'LMD Dashboard',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          leading: Builder(builder: (context) {
-            return IconButton(
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                icon: Icon(
-                  Icons.menu,
-                  color: CommonColors.white,
-                ));
-          }),
-          actions: [
-            // OutlinedButton.icon(
-            //   onPressed: () {
-            //     showDatePickerBottomSheet(context, _dateChanged);
-            //   },
-            //   icon: const Icon(Icons.calendar_today,
-            //       size: 16, color: Colors.white),
-            //   label:
-            //       const Text('Calendar', style: TextStyle(color: Colors.white)),
-            //   style: OutlinedButton.styleFrom(
-            //     padding: const EdgeInsets.symmetric(horizontal: 12),
-            //     side: const BorderSide(color: Colors.white54),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(8),
-            //     ),
-            //   ),
-            // ),
-
-            Badge(
-              label: Text('${offlinePodCount + offlineUndeliveryCount}'),
-              offset: const Offset(-3, 5),
-              child: IconButton.outlined(
-                style: ButtonStyle(
-                  side: WidgetStatePropertyAll(
-                    BorderSide(
-                        color:
-                            CommonColors.white!), // <-- Outline color and width
-                  ),
-                ),
-                color: CommonColors.white,
-                onPressed: () async {
-                  // Get.to(() => const Offlinedrslist());
-                  await showOfflineDrsBottomSheet(context);
-                  refreshScreen();
-                },
-                icon: Icon(
-                  Icons.sync,
-                  color: CommonColors.white,
-                ),
+          appBar: AppBar(
+            backgroundColor: CommonColors.colorPrimary,
+            title: const Text(
+              'LMD Dashboard',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
-            const SizedBox(width: 12),
-          ],
-        ),
-        drawer: const SideMenu(),
-        body: RefreshIndicator(
-          color: Colors.white,
-          backgroundColor: CommonColors.colorPrimary,
-          onRefresh: refreshScreen,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: CommonColors.colorPrimary,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
+            leading: Builder(builder: (context) {
+              return IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  icon: Icon(
+                    Icons.menu,
+                    color: CommonColors.white,
+                  ));
+            }),
+            actions: [
+              Badge(
+                label: Text('${offlinePodCount + offlineUndeliveryCount}'),
+                offset: const Offset(-3, 5),
+                child: IconButton.outlined(
+                  style: ButtonStyle(
+                    side: WidgetStatePropertyAll(
+                      BorderSide(
+                          color: CommonColors
+                              .white!), // <-- Outline color and width
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Current Date',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Visibility(
-                      visible: employeeid != null,
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(() => const AttendanceScreen())?.then((_) {
-                            getDashboardDetails();
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            // Punch status indicator with color based on status
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: CommonColors.colorPrimary,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: Colors.white30),
-                              ),
-                              child: Row(
-                                children: [
-                                  // Status indicator dot
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    margin: const EdgeInsets.only(right: 6),
-                                    decoration: BoxDecoration(
-                                      color: attendanceModel.attendancestatus ==
-                                              "Absent"
-                                          ? CommonColors.dangerColor
-                                          : CommonColors.successColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  Text(
-                                    attendanceModel.attendancestatus ==
-                                            'Present'
-                                        ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                            .toString()
-                                            .toUpperCase()
-                                        : "Absent",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // IconButton(
-                            //   icon: const Icon(Icons.chevron_right,
-                            //       size: 20, color: Colors.white),
-                            //   onPressed: () {
-                            //     // Get.to(() => const AttendanceScreen())?.then((_) {
-                            //     //   getDashboardDetails();
-                            //     // });
-                            //   },
-                            // ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.chevron_right,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Visibility(
-                visible: tripsList.isNotEmpty && showLocationWarning,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: CommonColors.White,
-                    // borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.warning_rounded,
-                          color: CommonColors.orangeColor),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          "Location tracking active for open trip."
-                              .toUpperCase(),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ],
+                  color: CommonColors.white,
+                  onPressed: () async {
+                    // Get.to(() => const Offlinedrslist());
+                    await showOfflineDrsBottomSheet(context);
+                    refreshScreen();
+                  },
+                  icon: Icon(
+                    Icons.sync,
+                    color: CommonColors.white,
                   ),
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              showDatePickerBottomSheet(context, _dateChanged);
-                            },
-                            icon: Icon(Icons.calendar_today,
-                                size: 16, color: CommonColors.colorPrimary),
-                            label: Text('$viewFromDt - $viewToDt',
-                                style: TextStyle(
-                                    color: CommonColors.colorPrimary)),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              side:
-                                  BorderSide(color: CommonColors.colorPrimary!),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: ENV.isDebugging,
-                            child: TextButton(
-                                onPressed: () async {
-                                  // Get.to(() => const Pickup());
-                                  // openUpdateTripInfo(
-                                  //     context,
-                                  //     TripModel(
-                                  //         commandstatus: 1,
-                                  //         commandmessage: "Test",
-                                  //         tripid: 1,
-                                  //         totaldrs: 6,
-                                  //         totalconsignment: 1,
-                                  //         deliveredconsignment: 4,
-                                  //         undeliveredconsignment: 4,
-                                  //         totalpickup: 0,
-                                  //         pendingconsignment: 6,
-                                  //         manifestdate: '2025-11-04',
-                                  //         manifestdatetime: "12:24"),
-                                  //     TripStatus.open,
-                                  //     refreshScreen);
-                                },
-                                child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 10),
-                                    color: CommonColors.colorPrimary,
-                                    child: Text(
-                                      "Test",
-                                      style:
-                                          TextStyle(color: CommonColors.white),
-                                    ))),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Tabs with Blue Background for Selected Tab
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                              color: CommonColors.colorPrimary!
-                                  .withAlpha((0.3 * 255).round())),
-                        ),
-                        child: TabBar(
-                          padding: EdgeInsets.zero,
-                          labelPadding: EdgeInsets.zero,
-                          controller: _tabController,
-                          indicator: BoxDecoration(
-                              color: CommonColors.colorPrimary,
-                              borderRadius: BorderRadius.circular(8)),
-                          labelColor: Colors.white,
-                          unselectedLabelColor: CommonColors.colorPrimary,
-                          tabs: const [
-                            Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.local_shipping, size: 16),
-                                  SizedBox(width: 10),
-                                  Text('Allotted Routes'),
-                                ],
-                              ),
-                            ),
-                            Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.inventory, size: 16),
-                                  SizedBox(width: 8),
-                                  // Text('Delivery'),
-                                  Text('Trips'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            // Alloted Routes Tab
-                            // RouteCard(isPunchedIn: widget.isPunchedIn),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              child: AllocatedRouteWidget(
-                                attendanceModel: attendanceModel,
-                                routeList: routeList,
-                                onRefresh: refreshScreen,
-                              ),
-                            ),
-
-                            // Delivery Tab
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              child: AssignTripWidget(
-                                // deliveryList: deliveryList,
-                                deliveryList: tripsList,
-                                attendanceModel: attendanceModel,
-                                onUpdate: _handleDrsUpdateRequest,
-                                onRefresh: refreshScreen,
-                              ),
-                              // child: CurrentDeliveryWidget(
-                              //   deliveryList: deliveryList,
-                              //   attendanceModel: attendanceModel,
-                              //   onUpdate: _handleDrsUpdateRequest,
-                              //   onRefresh: refreshScreen,
-                              // ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+              const SizedBox(width: 12),
             ],
           ),
-        ),
-      );
+          extendBody: true,
+          // bottomNavigationBar: BottomNavigationBar(
+          //   // type: BottomNavigationBarType.fixed,
+          //   backgroundColor: CommonColors.white,
+          //   currentIndex: _selectedIndex,
+          //   selectedItemColor: CommonColors.colorPrimary,
+          //   unselectedItemColor: CommonColors.grey600,
+          //   onTap: (value) {
+          //     setState(() {
+          //       _selectedIndex = value;
+          //       _pageController.jumpToPage(value);
+          //     });
+          //   },
+          //   items: const [
+          //     BottomNavigationBarItem(icon: Icon(Icons.route), label: 'ROUTES'),
+          //     BottomNavigationBarItem(
+          //         icon: Icon(Symbols.package_2), label: 'ORDERS'),
+          //     BottomNavigationBarItem(
+          //         icon: Icon(Symbols.delivery_truck_bolt), label: 'TRIPS'),
+          //     BottomNavigationBarItem(
+          //         icon: Icon(Icons.account_circle_rounded), label: 'PROFILE'),
+          //   ],
+          // ),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (value) {
+              setState(() {
+                _selectedIndex = value;
+                // _pageController.jumpToPage(value);
+              });
+            },
+            indicatorColor: CommonColors.colorPrimary!
+                .withAlpha((0.15 * 255).toInt()), // light background
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.route),
+                selectedIcon: Icon(Icons.route),
+                label: "ROUTES",
+              ),
+              NavigationDestination(
+                icon: Icon(Symbols.package_2),
+                selectedIcon: Icon(Symbols.package_2),
+                label: "ORDERS",
+              ),
+              NavigationDestination(
+                icon: Icon(Symbols.delivery_truck_bolt),
+                selectedIcon: Icon(Symbols.delivery_truck_bolt),
+                label: "TRIPS",
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.account_circle_rounded),
+                selectedIcon: Icon(Icons.account_circle_rounded),
+                label: "PROFILE",
+              ),
+            ],
+          ),
+          drawer: const SideMenu(),
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              Column(
+                children: [
+                  attendanceInfo(),
+                  Expanded(
+                    child: AllocatedRouteWidget(
+                      attendanceModel: attendanceModel,
+                      // routeList: routeList,
+                      // onRefresh: refreshScreen,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  attendanceInfo(),
+                  Expanded(
+                    child: DrsselectionBottomSheet(
+                      tripId: 0,
+                      showTripInfoUpdate: false,
+                      onRefresh: refreshScreen,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  attendanceInfo(),
+                  Expanded(
+                    child: AssignTripWidget(
+                        deliveryList: tripsList,
+                        attendanceModel: attendanceModel,
+                        onRefresh: refreshScreen),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  attendanceInfo(),
+                  Expanded(child: const ProfileScreen()),
+                ],
+              )
+            ],
+          )
+          // PageView(
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   controller: _pageController,
+          //   children: [
+          // Column(
+          //   children: [
+          //     attendanceInfo(),
+          //     Expanded(
+          //       child: AllocatedRouteWidget(
+          //         attendanceModel: attendanceModel,
+          //         // routeList: routeList,
+          //         // onRefresh: refreshScreen,
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          //     Column(
+          //       children: [
+          //         attendanceInfo(),
+          //         Expanded(
+          //           child: DrsselectionBottomSheet(
+          //             tripId: 0,
+          //             showTripInfoUpdate: false,
+          //             onRefresh: refreshScreen,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //     Column(
+          //       children: [
+          //         attendanceInfo(),
+          //         Expanded(
+          //           child: AssignTripWidget(
+          //               deliveryList: tripsList,
+          //               attendanceModel: attendanceModel,
+          //               onRefresh: refreshScreen),
+          //         ),
+          //       ],
+          //     ),
+          //     Column(
+          //       children: [
+          //         attendanceInfo(),
+          //         const Expanded(child: ProfileScreen()),
+          //       ],
+          //     ),
+          //   ],
+          // )
+          );
     }
   }
 }

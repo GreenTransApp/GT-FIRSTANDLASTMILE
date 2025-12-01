@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
-import 'package:gtlmd/common/bottomSheet/drsSelection/drsSelectionBottomSheet.dart';
-import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/dashboardTripTile.dart';
@@ -92,43 +89,6 @@ class _AssignTripWidgetState extends State<AssignTripWidget> {
                   },
                 ),
         ),
-        persistentFooterButtons: [
-          //   Container(
-          //   height: 60,
-          //   child: CommonButton(
-          //       title: "Create New Trip".toUpperCase(),
-          //       color: CommonColors.colorPrimary!,
-          //       onTap: () {
-          //         showDrsSelectionBottomSheet(context);
-          //       }),
-          // ),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                showDrsSelectionBottomSheet(
-                  context,
-                  0,
-                  true,
-                  widget.onRefresh,
-                ).then((value) {
-                  widget.onRefresh();
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: CommonColors.colorPrimary,
-                foregroundColor: CommonColors.White,
-                disabledBackgroundColor: CommonColors.grey300,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ), // Disable if not punched in
-              child: const Text('Create New Trip'),
-            ),
-          ),
-        ],
       ),
     );
   }

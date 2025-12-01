@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gtlmd/common/Utils.dart';
-
-import 'package:gtlmd/common/colors.dart';
-import 'package:gtlmd/common/environment.dart';
-
-import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
-import 'package:gtlmd/pages/home/homeScreenPage.dart';
-import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
+import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/pages/profile/widgets/contactInfoCard.dart';
 import 'package:gtlmd/pages/profile/widgets/profileCard.dart';
-import 'package:gtlmd/service/authenticationService.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -35,7 +29,7 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
       // Get.off(const LoginPage());
       // storageRemove(ENV.userPrefTag);
       // storageRemove(ENV.loginPrefTag);
-     authService.logout(context);
+      authService.logout(context);
     });
   }
 
@@ -44,27 +38,44 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
     Get.back();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CommonColors.white,
-      appBar: AppBar(
-        centerTitle: false,
-        leading: IconButton(
-            onPressed: () {
-              Get.off(HomeScreen());
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              color: CommonColors.white,
-            )),
-        backgroundColor: CommonColors.colorPrimary,
-        title: Text(
-          "Profile",
-          style: TextStyle(color: CommonColors.white),
+  Widget signOut() {
+    return InkWell(
+      onTap: () {
+        logout();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12.0),
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+            color: CommonColors.white,
+            border: Border.all(
+                color: CommonColors.red!.withAlpha((0.2 * 255).round())),
+            borderRadius: const BorderRadius.all(Radius.circular(12))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.logout_rounded,
+              color: CommonColors.red500,
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Text(
+              "Sign Out",
+              style: TextStyle(color: CommonColors.red500, fontSize: 18),
+            ),
+          ],
         ),
       ),
-      body: SingleChildScrollView(
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        // padding: const EdgeInsets.fromLTRB(10, 10, 10, 80), // prevents overlap
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -80,42 +91,11 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
                 height: 50,
               ),
               ContactInfoCard(context),
+              signOut()
             ],
           ),
         ),
       ),
-      persistentFooterButtons: [
-        InkWell(
-          onTap: () {
-            logout();
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12.0),
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-                color: CommonColors.white,
-                border: Border.all(
-                    color: CommonColors.red!.withAlpha((0.2 * 255).round())),
-                borderRadius: const BorderRadius.all(Radius.circular(12))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.logout_rounded,
-                  color: CommonColors.red500,
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Text(
-                  "Sign Out",
-                  style: TextStyle(color: CommonColors.red500, fontSize: 18),
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
     );
   }
 }

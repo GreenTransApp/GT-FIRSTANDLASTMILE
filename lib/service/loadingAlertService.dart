@@ -37,23 +37,28 @@ class LoadingAlertService {
 class _LoadingAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          side: BorderSide(color: CommonColors.colorSecondary!, width: 1.5)),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          CircularProgressIndicator(
-            color: CommonColors.colorSecondary,
-          ),
-          const Text(
-            "Loading... ",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-//
+    // return AlertDialog(
+    //   shape: RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(15.0),
+    //       side: BorderSide(color: CommonColors.colorSecondary!, width: 1.5)),
+    //   title: Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+    //     children: [
+    //       CircularProgressIndicator(
+    //         color: CommonColors.colorSecondary,
+    //       ),
+    //       const Text(
+    //         "Loading... ",
+    //         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+    //       ),
+    //     ],
+    //   ),
+    // );
+
+    return Expanded(
+        child: Container(
+      color: Colors.transparent,
+      child: const CircularProgressIndicator(),
+    ));
   }
 }

@@ -26,15 +26,13 @@ class InfoItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Flexible(
-          child: Text(
-            overflow: TextOverflow.ellipsis,
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: CommonColors.colorPrimary!,
-            ),
+        Text(
+          overflow: TextOverflow.ellipsis,
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: CommonColors.colorPrimary!,
           ),
         ),
       ],

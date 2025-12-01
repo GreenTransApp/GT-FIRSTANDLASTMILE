@@ -133,12 +133,12 @@ class BaseRepository {
   }
 
   Future<void> getDrsList(Map<String, String> params) async {
-    viewDialog.add(true);
+    // viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
-        CommonResponse resp = await apiGet("${lmdUrl}/GetDrsList", params);
+        viewDialog.add(true);
+        CommonResponse resp = await apiGet("${lmdUrl}/GetDrsListV2", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;

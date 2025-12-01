@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
@@ -17,6 +18,7 @@ import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class DrsselectionBottomSheet extends StatefulWidget {
   int tripId = 0;
@@ -49,6 +51,8 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   late String viewFromDt;
   late String viewToDt;
   bool? allSelected = false;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -80,11 +84,18 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       }
     });
 
-    _baseRepo.viewDialog.stream.listen((showLoading) {
+    _baseRepo.viewDialog.stream.listen((showLoading) async {
       if (showLoading) {
-        loadingAlertService.showLoading();
+        setState(() {
+          isLoading = true;
+        });
+        // loadingAlertService.showLoading();
       } else {
-        loadingAlertService.hideLoading();
+        setState(() {
+          isLoading = false;
+        });
+
+        // loadingAlertService.hideLoading();
       }
     });
 
@@ -141,174 +152,231 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: refreshScreen,
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'DRS Selection',
-            style: TextStyle(color: CommonColors.appBarColor),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: CommonColors.appBarColor,
-                  size: 30,
-                )),
-          ],
-        ),
-        body: Container(
-            child: (_deliveryList.isEmpty) == true
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          showDatePickerBottomSheet(context, _dateChanged);
-                        },
-                        icon: Icon(Icons.calendar_today,
-                            size: 16, color: CommonColors.colorPrimary),
-                        label: Text('$viewFromDt - $viewToDt',
-                            style: TextStyle(color: CommonColors.colorPrimary)),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          side: BorderSide(color: CommonColors.colorPrimary!),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Lottie.asset("assets/emptyDelivery.json",
-                                      height: 150),
-                                  const Text(
-                                    "No Assigned DRS",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: CommonColors.appBarColor),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              showDatePickerBottomSheet(context, _dateChanged);
-                            },
-                            icon: Icon(Icons.calendar_today,
-                                size: 16, color: CommonColors.colorPrimary),
-                            label: Text('$viewFromDt - $viewToDt',
+        body: (_deliveryList.isEmpty) == true
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Lottie.asset("assets/emptyDelivery.json",
+                                  height: 150),
+                              const Text(
+                                "No Assigned DRS",
                                 style: TextStyle(
-                                    color: CommonColors.colorPrimary)),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              side:
-                                  BorderSide(color: CommonColors.colorPrimary!),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
+                                    fontSize: 18,
+                                    color: CommonColors.appBarColor),
+                              )
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                const Text("Select All"),
-                                Checkbox(
-                                    activeColor: CommonColors.colorPrimary,
-                                    value: allSelected,
-                                    onChanged: (checked) {
-                                      allSelected = checked;
-                                      if (checked == true) {
-                                        for (CurrentDeliveryModel model
-                                            in _deliveryList) {
-                                          model.tripconfirm = true;
-                                          _selectedDrsList.add(model);
-                                        }
-                                      } else {
-                                        for (CurrentDeliveryModel model
-                                            in _deliveryList) {
-                                          model.tripconfirm = false;
-                                          _selectedDrsList.clear();
-                                        }
-                                      }
-                                      setState(() {});
-                                    }),
-                              ],
-                            ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  Visibility(
+                      visible: isLoading,
+                      child: const CupertinoActivityIndicator(
+                        radius: 12,
+                      )),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Text("Total: ${_deliveryList.length}"),
                           )
                         ],
-                      ),
+                      )),
                       Expanded(
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          // physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: _deliveryList.length,
-                          itemBuilder: (context, index) {
-                            var currentData = _deliveryList[index];
-                            return DashBoardDeliveryTile(
-                              model: currentData,
-                              // attendanceModel: _attendanceModel,
-                              // onUpdate: widget.onUpdate ,
-                              onRefresh: refreshScreen,
-                              showHeader: true,
-                              showInfo: true,
-                              showCheckboxSelection: true,
-                              showStatusIndicators: false,
-                              onCheckChange: onCheckChange,
-                              enableTap: false,
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const Divider(
-                              color: Colors.grey, // Customize divider color
-                              thickness: 1, // Customize divider thickness
-                              height:
-                                  20, // Customize the height of the divider (including spacing)
-                              indent: 16, // Indent from the left
-                              endIndent: 16, // Indent from the right
-                            );
-                          },
-                        ),
-                      ),
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text("Select All"),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Checkbox(
+                              activeColor: CommonColors.colorPrimary,
+                              value: allSelected,
+                              onChanged: (checked) {
+                                allSelected = checked;
+                                _selectedDrsList.clear();
+                                if (checked == true) {
+                                  for (CurrentDeliveryModel model
+                                      in _deliveryList) {
+                                    model.tripconfirm = true;
+                                    _selectedDrsList.add(model);
+                                  }
+                                } else {
+                                  for (CurrentDeliveryModel model
+                                      in _deliveryList) {
+                                    model.tripconfirm = false;
+                                    _selectedDrsList.clear();
+                                  }
+                                }
+                                setState(() {});
+                              }),
+                        ],
+                      ))
                     ],
-                  )),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      // physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: _deliveryList.length,
+                      itemBuilder: (context, index) {
+                        var currentData = _deliveryList[index];
+
+                        return card(_deliveryList[index]);
+                      },
+                    ),
+                  ),
+                ],
+              ),
         persistentFooterButtons: [
-          Container(
-            height: 50,
-            child: CommonButton(
-                title: widget.tripId == 0 ? "Create Trip" : "Add DRS",
-                color: CommonColors.colorPrimary!,
-                onTap: () {
-                  submit();
-                }),
+          Visibility(
+            visible: _selectedDrsList.isNotEmpty,
+            child: SizedBox(
+              height: 50,
+              child: CommonButton(
+                  title: widget.tripId == 0
+                      ? "Create Trip (${_selectedDrsList.length})"
+                      : "Add DRS (${_selectedDrsList.length})",
+                  color: CommonColors.colorPrimary!,
+                  onTap: () {
+                    submit();
+                  }),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget card(CurrentDeliveryModel deliveryModel) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: GestureDetector(
+        onTap: () {
+          onCheckChange(
+              deliveryModel, !_selectedDrsList.contains(deliveryModel));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CommonColors.colorPrimary!
+                          .withAlpha(((0.1) * 255).toInt()),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      deliveryModel.drsno.toString(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: CommonColors.colorPrimary,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedDrsList.contains(deliveryModel)
+                            ? CommonColors.colorPrimary!
+                            : const Color(0xFFCBD5E1),
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      color: _selectedDrsList.contains(deliveryModel)
+                          ? CommonColors.colorPrimary!
+                          : Colors.white,
+                    ),
+                    child: _selectedDrsList.contains(deliveryModel)
+                        ? Icon(
+                            Icons.check,
+                            size: 14,
+                            color: CommonColors.white,
+                          )
+                        : null,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: Color(0xFF94A3B8),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    deliveryModel.manifestdate.toString(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF475569),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.local_shipping,
+                    size: 16,
+                    color: Color(0xFF94A3B8),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF475569),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

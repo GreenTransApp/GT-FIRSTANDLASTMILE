@@ -82,6 +82,7 @@ dependencies:
   rxdart: ^0.28.0
   qr_code_scanner_plus: ^2.0.14
   open_file: ^3.5.10
+  material_symbols_icons: ^4.2874.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

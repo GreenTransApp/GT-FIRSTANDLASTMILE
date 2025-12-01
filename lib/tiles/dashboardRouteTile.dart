@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -27,23 +28,12 @@ class DashBoardRouteTile extends StatefulWidget {
 class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
   @override
   Widget build(BuildContext context) {
-    return
-        //  InkWell(
-        //   onTap: () {
-        //     if (widget.attendanceModel.attendancestatus == "Absent") {
-        //       failToast("Please Mark Your Attendance First");
-        //       return;
-        //     } else {
-        //       Get.to(Routedetail(model: widget.model));
-        //       // Get.toNamed('/routedetail', arguments: widget.model);
-        //     }
-        //   },
-        //   child:
-        Card(
-      elevation: 2,
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.black)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -52,8 +42,9 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
             // Card Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Flexible(
+                Expanded(
                   child: Row(
                     children: [
                       Icon(Icons.location_on,
@@ -61,9 +52,9 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
                           widget.model.routename.toString(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -74,24 +65,23 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                     ],
                   ),
                 ),
-                Flexible(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary!
-                          .withAlpha((0.1 * 255).round()),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      widget.model.planningdt.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: CommonColors.colorPrimary,
-                        fontWeight: FontWeight.w500,
-                      ),
+
+                // Date chip
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: CommonColors.colorPrimary!
+                        .withAlpha((0.1 * 255).round()),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    widget.model.planningdt.toString(),
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: CommonColors.colorPrimary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -131,29 +121,6 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                         : widget.model.totdistance.toString()),
               ],
             ),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     InfoItem(
-            //         label: 'Route ID',
-            //         value: widget.model.planningid!.toString()),
-            //     InfoItem(
-            //         label: 'No. of Consignment',
-            //         value: widget.model.noofconsign!.toString()),
-            //   ],
-            // ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     InfoItem(
-            //         label: 'Total Weight',
-            //         value: widget.model.totweight!.toString()),
-            //     InfoItem(
-            //         label: 'Total Distance',
-            //         value: widget.model.totdistance!.toString()),
-            //   ],
-            // ),
             const SizedBox(height: 16),
 
             // View Details Button
@@ -169,7 +136,6 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                     Get.to(() => Routedetail(model: widget.model))?.then((_) {
                       widget.onRefresh();
                     });
-                    // Get.toNamed('/routedetail', arguments: widget.model);
                   }
                 },
                 style: ElevatedButton.styleFrom(
