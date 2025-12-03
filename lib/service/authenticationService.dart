@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/pages/home/homeScreenPage.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
-import 'package:gtlmd/routes/Routes.dart';
-import 'package:gtlmd/routes/RoutesName.dart';
+import 'package:gtlmd/navigateRoutes/Routes.dart';
+import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -9,7 +9,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
-import 'package:gtlmd/common/bottomSheet/drsSelection/drsSelectionBottomSheet.dart';
+import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
@@ -21,13 +21,13 @@ import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
 import 'package:gtlmd/pages/profile/profilePage.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
-import 'package:gtlmd/pages/tripSummary/tripSummary.dart';
-import 'package:gtlmd/pages/routesList/allotedRouteWidget.dart';
+
+import 'package:gtlmd/pages/routes/routesList/allotedRouteWidget.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/widget/assignTripWidget.dart';
-import 'package:gtlmd/routes/Routes.dart';
-import 'package:gtlmd/routes/RoutesName.dart';
+import 'package:gtlmd/navigateRoutes/Routes.dart';
+import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/dashboardTripTile.dart';
@@ -747,7 +747,7 @@ class _HomeScreen extends State<HomeScreen>
                   Expanded(
                     child: DrsselectionBottomSheet(
                       tripId: 0,
-                      showTripInfoUpdate: false,
+                      showTripInfoUpdate: true,
                       onRefresh: refreshScreen,
                     ),
                   ),

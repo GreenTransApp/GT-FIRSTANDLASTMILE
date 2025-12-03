@@ -10,9 +10,11 @@ import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class HomeRepository extends BaseRepository {

@@ -8,7 +8,7 @@ import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
 
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/tiles/deliveryDetailTile.dart';
 import 'package:lottie/lottie.dart';
 
@@ -241,234 +241,236 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                             ],
                           ),
 
-                          const Divider(height: 32),
+                          // const Divider(height: 32),
 
                           // Stats
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Delivered',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.green.shade700,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.check_circle,
-                                            size: 16,
-                                            color: Colors.green.shade700,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${deliveryModel.deliveredconsign}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green.shade700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Undelivered',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.red.shade700,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.cancel,
-                                            size: 16,
-                                            color: Colors.red.shade700,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${deliveryModel.undeliveredconsign}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.red.shade700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Pending',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.amber.shade700,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.access_time,
-                                            size: 16,
-                                            color: Colors.amber.shade700,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${deliveryModel.pendingconsign}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.amber.shade700,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: Container(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(vertical: 12),
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.green.shade50,
+                          //           borderRadius: BorderRadius.circular(8),
+                          //         ),
+                          //         child: Column(
+                          //           children: [
+                          //             Text(
+                          //               'Delivered',
+                          //               style: TextStyle(
+                          //                 fontSize: 12,
+                          //                 color: Colors.green.shade700,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(height: 4),
+                          //             Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Icon(
+                          //                   Icons.check_circle,
+                          //                   size: 16,
+                          //                   color: Colors.green.shade700,
+                          //                 ),
+                          //                 const SizedBox(width: 4),
+                          //                 Text(
+                          //                   '${deliveryModel.deliveredconsign}',
+                          //                   style: TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold,
+                          //                     color: Colors.green.shade700,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     const SizedBox(width: 8),
+                          //     Expanded(
+                          //       child: Container(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(vertical: 12),
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.red.shade50,
+                          //           borderRadius: BorderRadius.circular(8),
+                          //         ),
+                          //         child: Column(
+                          //           children: [
+                          //             Text(
+                          //               'Undelivered',
+                          //               style: TextStyle(
+                          //                 fontSize: 12,
+                          //                 color: Colors.red.shade700,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(height: 4),
+                          //             Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Icon(
+                          //                   Icons.cancel,
+                          //                   size: 16,
+                          //                   color: Colors.red.shade700,
+                          //                 ),
+                          //                 const SizedBox(width: 4),
+                          //                 Text(
+                          //                   '${deliveryModel.undeliveredconsign}',
+                          //                   style: TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold,
+                          //                     color: Colors.red.shade700,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     const SizedBox(width: 8),
+                          //     Expanded(
+                          //       child: Container(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(vertical: 12),
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.amber.shade50,
+                          //           borderRadius: BorderRadius.circular(8),
+                          //         ),
+                          //         child: Column(
+                          //           children: [
+                          //             Text(
+                          //               'Pending',
+                          //               style: TextStyle(
+                          //                 fontSize: 12,
+                          //                 color: Colors.amber.shade700,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(height: 4),
+                          //             Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Icon(
+                          //                   Icons.access_time,
+                          //                   size: 16,
+                          //                   color: Colors.amber.shade700,
+                          //                 ),
+                          //                 const SizedBox(width: 4),
+                          //                 Text(
+                          //                   '${deliveryModel.pendingconsign}',
+                          //                   style: TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold,
+                          //                     color: Colors.amber.shade700,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
 
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: CommonColors.blue600!
-                                        .withAlpha((0.1 * 255).round()),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Pending R-Pickups',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: CommonColors.blue600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.local_shipping_outlined,
-                                            size: 16,
-                                            color: CommonColors.blue600,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${deliveryModel.totpickup}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: CommonColors.blue600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: CommonColors.colorPrimary!
-                                        .withAlpha((0.1 * 255).round()),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Pending Pickups',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: CommonColors.colorPrimary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.local_shipping_outlined,
-                                            size: 16,
-                                            color: CommonColors.colorPrimary,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${deliveryModel.totpickup}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: CommonColors.colorPrimary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
+                          // const SizedBox(height: 8),
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: Container(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(vertical: 12),
+                          //         decoration: BoxDecoration(
+                          //           color: CommonColors.blue600!
+                          //               .withAlpha((0.1 * 255).round()),
+                          //           borderRadius: BorderRadius.circular(8),
+                          //         ),
+                          //         child: Column(
+                          //           children: [
+                          //             Text(
+                          //               'Pending R-Pickups',
+                          //               style: TextStyle(
+                          //                 fontSize: 12,
+                          //                 color: CommonColors.blue600,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(height: 4),
+                          //             Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Icon(
+                          //                   Icons.local_shipping_outlined,
+                          //                   size: 16,
+                          //                   color: CommonColors.blue600,
+                          //                 ),
+                          //                 const SizedBox(width: 4),
+                          //                 Text(
+                          //                   '${deliveryModel.totpickup}',
+                          //                   style: TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold,
+                          //                     color: CommonColors.blue600,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     const SizedBox(width: 8),
+                          //     Expanded(
+                          //       child: Container(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(vertical: 12),
+                          //         decoration: BoxDecoration(
+                          //           color: CommonColors.colorPrimary!
+                          //               .withAlpha((0.1 * 255).round()),
+                          //           borderRadius: BorderRadius.circular(8),
+                          //         ),
+                          //         child: Column(
+                          //           children: [
+                          //             Text(
+                          //               'Pending Pickups',
+                          //               style: TextStyle(
+                          //                 fontSize: 12,
+                          //                 color: CommonColors.colorPrimary,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(height: 4),
+                          //             Row(
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: [
+                          //                 Icon(
+                          //                   Icons.local_shipping_outlined,
+                          //                   size: 16,
+                          //                   color: CommonColors.colorPrimary,
+                          //                 ),
+                          //                 const SizedBox(width: 4),
+                          //                 Text(
+                          //                   '${deliveryModel.totpickup}',
+                          //                   style: TextStyle(
+                          //                     fontSize: 18,
+                          //                     fontWeight: FontWeight.bold,
+                          //                     color: CommonColors.colorPrimary,
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // )
+                       
+                       
                         ],
                       ),
                     ),

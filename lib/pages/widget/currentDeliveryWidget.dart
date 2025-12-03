@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:lottie/lottie.dart';

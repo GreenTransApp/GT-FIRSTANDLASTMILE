@@ -7,13 +7,13 @@ import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
-import 'package:gtlmd/pages/closeTrip/closeTrip.dart';
+import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
 import 'package:gtlmd/pages/closedDrs/closedDrs.dart';
 import 'package:gtlmd/pages/home/homeScreenPage.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/pages/profile/profilePage.dart';
-import 'package:gtlmd/routes/Routes.dart';
-import 'package:gtlmd/routes/RoutesName.dart';
+import 'package:gtlmd/navigateRoutes/Routes.dart';
+import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 
 class SideMenu extends StatelessWidget {

@@ -5,7 +5,8 @@ import 'dart:io';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class ClosedDrsRepository extends BaseRepository {

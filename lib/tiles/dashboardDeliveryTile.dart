@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/common/bottomSheet/UpdateTripInfo/updateTripInfo.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryDetail.dart';
 
 import 'package:gtlmd/pages/home/homeViewModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+
 
 enum DrsStatus { OPEN, CLOSE }
 

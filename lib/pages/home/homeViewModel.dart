@@ -9,8 +9,9 @@ import 'package:gtlmd/pages/home/Model/menuModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
 import 'package:gtlmd/pages/home/homeRepository.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+
 
 class HomeViewModel extends BaseViewModel {
   final HomeRepository _repo = HomeRepository();

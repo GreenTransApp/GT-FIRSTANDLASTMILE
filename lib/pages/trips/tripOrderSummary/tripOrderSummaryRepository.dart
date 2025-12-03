@@ -1,43 +1,34 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-
-
+import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailUpdateModel.dart';
-
+import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummaryModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-import 'package:gtlmd/api/HttpCalls.dart';
+class TripOrderSummaryRepository extends BaseRepository {
+  StreamController<bool> viewDialog = StreamController();
+  StreamController<String> errorDialog = StreamController();
+  StreamController<List<TripOrderSummaryModel>> ordersList = StreamController();
 
-import '../../base/BaseRepository.dart';
-
-
-class  ReceivedLoadRepository extends  BaseRepository{
-StreamController<RouteUpdateModel> routeAcceptList = StreamController();
-  
-
-   Future<void> updateDetailOnAccept(Map<String, String> params) async {
+  Future<void> getOrdersList(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
-
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
-
         CommonResponse resp =
-            await apiPost("${lmdUrl}AcceptRouteWithConsignmentNo", params);
+            await apiGet("${lmdUrl}GetOrdersForTripSummary", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           List<dynamic> list = table.values.first;
-          List<RouteUpdateModel> resultList = List.generate(
-              list.length, (index) => RouteUpdateModel.fromJson(list[index]));
-          RouteUpdateModel response = resultList[0];
-
-          if (response.commandstatus == 1) {
-            routeAcceptList.add(resultList[0]);
+          List<TripOrderSummaryModel> resultList = List.generate(list.length,
+              (index) => TripOrderSummaryModel.fromJson(list[index]));
+          TripOrderSummaryModel tripOrdersList = resultList[0];
+          if (tripOrdersList.commandstatus == 1) {
+            ordersList.add(resultList);
           }
         } else {
           isErrorLiveData.add(resp.commandMessage!);

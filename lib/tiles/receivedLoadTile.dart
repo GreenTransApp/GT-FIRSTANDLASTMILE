@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
-import 'package:gtlmd/pages/routeDetail/Model/routeDetailModel.dart';
+import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
+
 
 class ReceivedLoadTile extends StatefulWidget {
   final RouteDetailModel model;

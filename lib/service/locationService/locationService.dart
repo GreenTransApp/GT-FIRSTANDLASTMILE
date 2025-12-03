@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/firebase_options.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+
+
 import 'package:gtlmd/service/fireBaseService/fireBase.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
 import 'package:gtlmd/service/locationService/locationRepository.dart';

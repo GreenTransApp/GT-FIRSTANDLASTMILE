@@ -4,43 +4,39 @@ import 'dart:io';
 
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
-import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/common/commonResponse.dart' show CommonResponse;
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
-
 
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-class DeliveryRepository extends BaseRepository {
-  StreamController<String> isErrorLiveData = StreamController();
-  StreamController<bool> viewDialog = StreamController();
-  StreamController<List<DeliveryDetailModel>> deliveryDetailList =
+class TripDetailRepository extends BaseRepository {
+  StreamController<List<CurrentDeliveryModel>> tripSummaryData =
       StreamController();
-  StreamController<CurrentDeliveryModel> deliveryData = StreamController();
+
   Future<void> getDeliveryDetails(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
-        CommonResponse resp =
-            await apiGet("${lmdUrl}/getDeliveryDetail", params);
+        viewDialog.add(true);
+        CommonResponse resp = await apiGet("${lmdUrl}/GetTripSummary", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
           for (final entry in entries) {
             if (entry.key == "Table") {
               List<dynamic> list1 = entry.value;
-              List<DeliveryDetailModel> resultList = List.generate(list1.length,
-                  (index) => DeliveryDetailModel.fromJson(list1[index]));
-              deliveryDetailList.add(resultList);
+              List<CurrentDeliveryModel> resultList = List.generate(
+                  list1.length,
+                  (index) => CurrentDeliveryModel.fromJson(list1[index]));
+              tripSummaryData.add(resultList);
             } else if (entry.key == "Table1") {
               List<dynamic> list2 = entry.value;
               List<CurrentDeliveryModel> resultList = List.generate(
                   list2.length,
                   (index) => CurrentDeliveryModel.fromJson(list2[index]));
-              deliveryData.add(resultList[0]);
+              tripSummaryData.add(resultList);
             }
           }
         } else {

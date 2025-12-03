@@ -7,8 +7,9 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/pages/attendance/models/viewAttendanceModel.dart';
 import 'package:gtlmd/pages/closedDrs/closedDrsViewModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+
 import 'package:gtlmd/service/connectionCheckService.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';

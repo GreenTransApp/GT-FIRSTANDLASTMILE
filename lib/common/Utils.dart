@@ -23,7 +23,7 @@ import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigJsonModel.dart';
-import 'package:gtlmd/pages/routeDetail/Model/routeDetailModel.dart';
+
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
-import 'package:gtlmd/pages/routeDetail/Model/routeDetailModel.dart';
+
+import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class RouteDetailTile extends StatefulWidget {
@@ -159,7 +160,8 @@ checkConsignTypeAndStatus() {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  modelDetail.grno.toString(),
+                  // modelDetail.grno.toString(),
+                  modelDetail.consignmenttype == 'D'?modelDetail.grno.toString():modelDetail.indentid.toString(),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),

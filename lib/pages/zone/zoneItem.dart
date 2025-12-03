@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/colors.dart';
-import 'package:gtlmd/pages/routeDetail/routeDetail.dart';
+
 
 class ConsignmentItem extends StatelessWidget {
   const ConsignmentItem({super.key});

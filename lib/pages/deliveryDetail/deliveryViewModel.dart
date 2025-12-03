@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:gtlmd/base/baseViewModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryRepository.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+
 
 class DeliveryViewModel extends BaseViewModel {
   final DeliveryRepository _repo = DeliveryRepository();

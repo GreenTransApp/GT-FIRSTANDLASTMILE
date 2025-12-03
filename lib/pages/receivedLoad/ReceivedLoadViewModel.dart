@@ -3,7 +3,8 @@ import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
 import 'package:gtlmd/pages/receivedLoad/ReceivedLoadRepository.dart';
-import 'package:gtlmd/pages/routeDetail/Model/routeDetailUpdateModel.dart';
+import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailUpdateModel.dart';
+
 
 class  ReceivedLoadViewModel extends BaseViewModel{
  final  ReceivedLoadRepository _repo = ReceivedLoadRepository();

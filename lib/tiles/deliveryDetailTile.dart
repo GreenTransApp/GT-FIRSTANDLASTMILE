@@ -8,7 +8,8 @@ import 'package:gtlmd/pages/pickup/pickup.dart';
 
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';

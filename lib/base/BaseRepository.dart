@@ -6,7 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigDetailModel.dart';
-import 'package:gtlmd/pages/tripSummary/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class BaseRepository {
@@ -16,8 +18,10 @@ class BaseRepository {
   StreamController<String> compAccPara = StreamController();
   StreamController<MapConfigDetailModel> mapConfigDetail = StreamController();
   StreamController<String> scannedCode = StreamController();
-  StreamController<List<CurrentDeliveryModel>> deliveryLiveData =
+  StreamController<List<DrsListModel>> deliveryLiveData =
       StreamController();
+  // StreamController<List<CurrentDeliveryModel>> deliveryLiveData =
+  //     StreamController();
 
   // StreamController<UpdateDeliveryModel> savePodCommonLiveData =
   //     StreamController();
@@ -138,16 +142,17 @@ class BaseRepository {
     if (hasInternet) {
       try {
         viewDialog.add(true);
-        CommonResponse resp = await apiGet("${lmdUrl}/GetDrsListV2", params);
+        // CommonResponse resp = await apiGet("${lmdUrl}/GetDrsListV2", params);
+        CommonResponse resp = await apiGet("${lmdUrl}/GetDrsList", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
           for (final entry in entries) {
             if (entry.key == "Table") {
               List<dynamic> list2 = entry.value;
-              List<CurrentDeliveryModel> resultList = List.generate(
+              List<DrsListModel> resultList = List.generate(
                   list2.length,
-                  (index) => CurrentDeliveryModel.fromJson(list2[index]));
+                  (index) => DrsListModel.fromJson(list2[index]));
               deliveryLiveData.add(resultList);
             }
           }

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
-import 'package:gtlmd/pages/tripOrderSummary/tripOrderSummary.dart';
-import 'package:gtlmd/pages/tripSummary/Model/tripModel.dart';
-import 'package:gtlmd/pages/tripSummary/tripSummary.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/tripDetail.dart';
+import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
+
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 
 class DashboardTripTile extends StatefulWidget {
@@ -294,7 +295,7 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => TripSummary(model: widget.model));
+        Get.to(() => TripDetail(model: widget.model));
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

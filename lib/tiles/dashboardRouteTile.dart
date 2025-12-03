@@ -6,7 +6,8 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
-import 'package:gtlmd/pages/routeDetail/routeDetail.dart';
+import 'package:gtlmd/pages/routes/routeDetail/routeDetail.dart';
+
 import 'package:gtlmd/tiles/infoItem.dart';
 
 class DashBoardRouteTile extends StatefulWidget {
