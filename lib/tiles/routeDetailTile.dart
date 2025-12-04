@@ -35,7 +35,6 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
   late Color statusIconColor;
   String? status;
 
-
   bool isConsignVisible = false;
   bool isPickUp = false;
   bool isDesitnation = false;
@@ -47,7 +46,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
     listIndex = widget.index;
     isPickUp = modelDetail.grno.toString().contains("Pickup");
     isDesitnation = modelDetail.grno.toString().contains("Final");
-  
+
     setState(() {
       if (modelDetail.grno!.contains("Pickup") ||
           modelDetail.grno!.contains("Final Point")) {
@@ -55,7 +54,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
       } else {
         isConsignVisible = false;
       }
-        checkConsignTypeAndStatus();
+      checkConsignTypeAndStatus();
     });
 
     if (listIndex == 0 && listValue == 1) {
@@ -73,52 +72,42 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
     }
   }
 
-
-
-checkConsignTypeAndStatus() {
-   
-      switch (modelDetail.consignmenttype) {
-        case "R":
-          status = "REVERSE PICKUP";
-          dotColor = CommonColors.orangeColor!;
-          cardBorderColor = CommonColors.orangeColor!;
-          cardBgColor =
-              CommonColors.orangeColor!.withAlpha((0.1 * 255).round());
-          statusIcon = Icons.cancel;
-          statusIconColor = CommonColors.orangeColor!;
-          break;
-        case "P":
-          status = "PICKUP";
-          dotColor = CommonColors.amber700!;
-          cardBorderColor = CommonColors.amber700!;
-          cardBgColor =
-              CommonColors.amber700!.withAlpha((0.1 * 255).round());
-          statusIcon = Icons.check_circle;
-          statusIconColor = CommonColors.amber700!;
-          break;
-        case "D":
-          status = "DELIVERY";
-          dotColor = CommonColors.successColor!;
-          cardBorderColor = CommonColors.successColor!;
-          cardBgColor =
-              CommonColors.successColor!.withAlpha((0.1 * 255).round());
-          statusIcon = Icons.access_time;
-          statusIconColor = CommonColors.successColor!;
-          break;
-         default: 
-          status = "DELIVERY";
-          dotColor = CommonColors.colorPrimary!;
-          cardBorderColor = CommonColors.colorPrimary!;
-          cardBgColor =
-              CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
-          statusIcon = Icons.access_time;
-          statusIconColor = CommonColors.colorPrimary!;
-          break;
-      
-      }
-    
+  checkConsignTypeAndStatus() {
+    switch (modelDetail.consignmenttype) {
+      case "R":
+        status = "REVERSE PICKUP";
+        dotColor = CommonColors.orangeColor!;
+        cardBorderColor = CommonColors.orangeColor!;
+        cardBgColor = CommonColors.orangeColor!.withAlpha((0.1 * 255).round());
+        statusIcon = Icons.cancel;
+        statusIconColor = CommonColors.orangeColor!;
+        break;
+      case "P":
+        status = "PICKUP";
+        dotColor = CommonColors.amber700!;
+        cardBorderColor = CommonColors.amber700!;
+        cardBgColor = CommonColors.amber700!.withAlpha((0.1 * 255).round());
+        statusIcon = Icons.check_circle;
+        statusIconColor = CommonColors.amber700!;
+        break;
+      case "D":
+        status = "DELIVERY";
+        dotColor = CommonColors.successColor!;
+        cardBorderColor = CommonColors.successColor!;
+        cardBgColor = CommonColors.successColor!.withAlpha((0.1 * 255).round());
+        statusIcon = Icons.access_time;
+        statusIconColor = CommonColors.successColor!;
+        break;
+      default:
+        status = "DELIVERY";
+        dotColor = CommonColors.colorPrimary!;
+        cardBorderColor = CommonColors.colorPrimary!;
+        cardBgColor = CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
+        statusIcon = Icons.access_time;
+        statusIconColor = CommonColors.colorPrimary!;
+        break;
+    }
   }
-
 
   @override
   void didUpdateWidget(covariant RouteDetailTile oldWidget) {
@@ -128,9 +117,9 @@ checkConsignTypeAndStatus() {
         modelDetail = widget.model;
       });
     }
-     setState(() {
-     checkConsignTypeAndStatus();
-     });
+    setState(() {
+      checkConsignTypeAndStatus();
+    });
   }
 
   @override
@@ -161,7 +150,7 @@ checkConsignTypeAndStatus() {
               children: [
                 Text(
                   // modelDetail.grno.toString(),
-                  modelDetail.consignmenttype == 'D'?modelDetail.grno.toString():modelDetail.indentid.toString(),
+                  modelDetail.grno.toString(),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -469,7 +458,7 @@ checkConsignTypeAndStatus() {
                               Flexible(
                                 child: Text(
                                   '${modelDetail.consignmenttypeview}',
-                                  style:  TextStyle(
+                                  style: TextStyle(
                                     color: statusIconColor,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 13,
@@ -554,7 +543,7 @@ checkConsignTypeAndStatus() {
         afterLineStyle: LineStyle(color: CommonColors.colorPrimary!),
         beforeLineStyle: LineStyle(color: CommonColors.colorPrimary!),
         endChild: Container(
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
               color: cardBgColor,
               border: Border.symmetric(
                   horizontal:
@@ -864,7 +853,7 @@ checkConsignTypeAndStatus() {
                       '${widget.index}',
                       style: TextStyle(
                         // color: CommonColors.colorPrimary,
-                        color:dotColor,
+                        color: dotColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

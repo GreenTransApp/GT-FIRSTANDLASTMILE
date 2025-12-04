@@ -1,50 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
+import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
-
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/dashboardTripTile.dart';
 import 'package:lottie/lottie.dart';
 
-class AssignTripWidget extends StatefulWidget {
-  final List<TripModel> deliveryList;
+class RunningTrips extends StatefulWidget {
+  // final List<TripModel> deliveryList;
   final AttendanceModel attendanceModel;
-  final Function(dynamic, DrsStatus)? onUpdate; // Callback function
-  final Future<void> Function() onRefresh;
-  AssignTripWidget(
-      {super.key,
-      required this.deliveryList,
-      required this.attendanceModel,
-      this.onUpdate,
-      required this.onRefresh});
+  // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
+  // final Future<void> Function() onRefresh;
+  RunningTrips({
+    super.key,
+    // required this.deliveryList,
+    required this.attendanceModel,
+    // this.onUpdate,
+    // required this.onRefresh
+  });
 
   @override
-  State<AssignTripWidget> createState() => _AssignTripWidgetState();
+  State<RunningTrips> createState() => _RunningTripsState();
 }
 
-class _AssignTripWidgetState extends State<AssignTripWidget> {
+class _RunningTripsState extends State<RunningTrips> {
   List<TripModel> _deliveryList = List.empty(growable: true);
   late AttendanceModel _attendanceModel = AttendanceModel();
-
+  late LoadingAlertService loadingAlertService;
+  RunningTripsViewModel viewModel = RunningTripsViewModel();
   @override
   void initState() {
     super.initState();
-    _deliveryList = widget.deliveryList;
+    // _deliveryList = widget.deliveryList;
     _attendanceModel = widget.attendanceModel;
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
+    setObservers();
+    getTripList();
   }
 
-  @override
-  void didUpdateWidget(covariant AssignTripWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.deliveryList != oldWidget.deliveryList ||
-        widget.attendanceModel != oldWidget.attendanceModel) {
-      setState(() {
-        _deliveryList = widget.deliveryList;
-        _attendanceModel = widget.attendanceModel;
-      });
-    }
+  setObservers() {
+    viewModel.viewDialog.stream.listen((showLoading) async {
+      if (showLoading) {
+        setState(() {
+          // isLoading = true;
+          loadingAlertService.showLoading();
+        });
+      } else {
+        setState(() {
+          // isLoading = false;
+          loadingAlertService.hideLoading();
+        });
+      }
+    });
+
+    viewModel.isErrorLiveData.stream.listen((errMsg) {
+      failToast(errMsg);
+    });
+
+    viewModel.tripsListData.stream.listen((data) {
+      _deliveryList = data;
+      setState(() {});
+    });
+  }
+
+  void getTripList() {
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmfromdt": convert2SmallDateTime(DateTime.now().toString()),
+      "prmtodt": convert2SmallDateTime(DateTime.now().toString()),
+      "prmsessionid": savedUser.sessionid.toString(),
+
+      /// O for open and C for close
+    };
+
+    viewModel.getTripsList(params);
+  }
+
+  Future<void> onRefresh() async {
+    getTripList();
   }
 
   @override
@@ -52,7 +93,7 @@ class _AssignTripWidgetState extends State<AssignTripWidget> {
     return RefreshIndicator(
       color: Colors.white,
       backgroundColor: CommonColors.colorPrimary,
-      onRefresh: widget.onRefresh,
+      onRefresh: onRefresh,
       child: Scaffold(
         body: Container(
           child: (_deliveryList.isEmpty) == true
@@ -85,8 +126,8 @@ class _AssignTripWidgetState extends State<AssignTripWidget> {
                     return DashboardTripTile(
                       model: currentData,
                       attendanceModel: _attendanceModel,
-                      onUpdate: widget.onUpdate,
-                      onRefresh: widget.onRefresh,
+                      // onUpdate: onUpdate,
+                      onRefresh: onRefresh,
                     );
                   },
                 ),

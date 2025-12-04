@@ -2,25 +2,23 @@ import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
-
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
-
-import 'package:gtlmd/pages/home/homeScreenPage.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
-import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
-import 'package:get/get.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
+
 import 'firebase_options.dart';
+
 final locationService = LocationService();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await locationService.init();
-   await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
@@ -52,7 +50,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final LoginViewModel loginViewModel = LoginViewModel();
-    // final authService  = AuthenticationService(); 
+  // final authService  = AuthenticationService();
   _goToLogin() {
     /* Navigator.pushAndRemoveUntil(
       context,

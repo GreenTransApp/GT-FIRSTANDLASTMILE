@@ -5,19 +5,20 @@ import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/tripDetail.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
+import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 
 class DashboardTripTile extends StatefulWidget {
   late TripModel model;
   late AttendanceModel attendanceModel;
-  final Function(dynamic, DrsStatus)? onUpdate; // Callback function
+  // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
   final Future<void> Function() onRefresh;
   DashboardTripTile(
       {super.key,
       required this.model,
       required this.attendanceModel,
-      this.onUpdate,
+      // this.onUpdate,
       required this.onRefresh});
 
   @override
@@ -347,7 +348,12 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.to(() => TripORdersSummary(tripModel: widget.model));
+                    if (widget.model.tripdispatchdatetime != null) {
+                      Get.to(() => TripORdersSummary(tripModel: widget.model));
+                    } else {
+                      openUpdateTripInfo(context, widget.model, TripStatus.open,
+                          widget.onRefresh);
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -362,21 +368,47 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
                         width: 1,
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.description_outlined,
-                          size: 16,
-                          color: Color(0xFF4db8a8),
+                        Visibility(
+                          visible: widget.model.tripdispatchdatetime != null,
+                          child: const Icon(
+                            Icons.description_outlined,
+                            size: 16,
+                            color: Color(0xFF4db8a8),
+                          ),
                         ),
                         const SizedBox(width: 6),
-                        Text(
-                          'Summary',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4db8a8),
+                        Visibility(
+                          visible: widget.model.tripdispatchdatetime != null,
+                          child: const Text(
+                            'Summary',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF4db8a8),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: widget.model.tripdispatchdatetime == null,
+                          child: const Icon(
+                            Icons.schedule_outlined,
+                            size: 16,
+                            color: Color(0xFF4db8a8),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Visibility(
+                          visible: widget.model.tripdispatchdatetime == null,
+                          child: const Text(
+                            'Start Trip',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF4db8a8),
+                            ),
                           ),
                         ),
                       ],
@@ -429,7 +461,7 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total ORS',
+                    'Total DRS',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,

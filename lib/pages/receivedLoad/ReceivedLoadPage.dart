@@ -13,7 +13,6 @@ import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/receivedLoad/ReceivedLoadViewModel.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 
-
 import 'package:gtlmd/tiles/receivedLoadTile.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
@@ -138,7 +137,7 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": modelDetail.planningid.toString(),
       "prmgrnostr": grnoList.join(",") + ",",
       "prmsessionid": savedUser.sessionid.toString(),

@@ -8,11 +8,11 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/bottomSheet/datePicker.dart';
-import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/navigateRoutes/Routes.dart';
+import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
@@ -20,17 +20,14 @@ import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
+import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
 import 'package:gtlmd/pages/profile/profilePage.dart';
-
 import 'package:gtlmd/pages/routes/routesList/allotedRouteWidget.dart';
+import 'package:gtlmd/pages/runningTrips/runningTrips.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
-import 'package:gtlmd/pages/widget/assignTripWidget.dart';
-import 'package:gtlmd/navigateRoutes/Routes.dart';
-import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
-import 'package:gtlmd/tiles/dashboardTripTile.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -757,10 +754,11 @@ class _HomeScreen extends State<HomeScreen>
                 children: [
                   attendanceInfo(),
                   Expanded(
-                    child: AssignTripWidget(
-                        deliveryList: tripsList,
-                        attendanceModel: attendanceModel,
-                        onRefresh: refreshScreen),
+                    child: RunningTrips(
+                      // deliveryList: tripsList,
+                      attendanceModel: attendanceModel,
+                      // onRefresh: refreshScreen
+                    ),
                   ),
                 ],
               ),
