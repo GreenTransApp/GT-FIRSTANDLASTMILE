@@ -12,7 +12,6 @@ import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
-
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDeliveryViewModel.dart';
@@ -426,7 +425,7 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmundeldt":
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
-      "prmtime": formatTimeString(_unDeliveryTimeController.text),
+      "prmtime": convert2SmallDateTime(_unDeliveryTimeController.text),
       "prmdlvtripsheetno": currentDeliveryModel.drsno.toString(),
       "prmgrno": deliveryDetailModel.grno.toString(),
       "prmreasoncode": _selectedReason!.reasoncode.toString(),

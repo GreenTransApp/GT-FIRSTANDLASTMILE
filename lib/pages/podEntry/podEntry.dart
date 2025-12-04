@@ -328,7 +328,8 @@ class _PodEntryState extends State<PodEntry> {
       "prmgrno": _grNoController.text.toString(),
       "prmdlvdt":
           convert2SmallDateTime(_deliveryDateController.text.toString()),
-      "prmdlvtime": _deliveryTimeController.text.toString(),
+      "prmdlvtime":
+          convert2SmallDateTime(_deliveryTimeController.text.toString()),
       "prmname": _receivedByController.text.toString(),
       "prmrelation": _relationController.text.toString(),
       "prmphno": _receiverMobileByController.text.toString(),
