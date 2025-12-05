@@ -31,20 +31,20 @@ class TripOrderSummaryRepository extends BaseRepository {
             ordersList.add(resultList);
           }
         } else {
-          isErrorLiveData.add(resp.commandMessage!);
+          errorDialog.add(resp.commandMessage!);
         }
         viewDialog.add(false);
       } on SocketException catch (_) {
-        isErrorLiveData.add("No Internet");
+        errorDialog.add("No Internet");
         viewDialog.add(false);
       } catch (err) {
-        isErrorLiveData.add(err.toString());
+        errorDialog.add(err.toString());
         viewDialog.add(false);
       }
       viewDialog.add(false);
     } else {
       viewDialog.add(false);
-      isErrorLiveData.add("No Internet available");
+      errorDialog.add("No Internet available");
     }
   }
 }

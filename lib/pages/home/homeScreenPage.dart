@@ -699,25 +699,37 @@ class _HomeScreen extends State<HomeScreen>
             },
             indicatorColor: CommonColors.colorPrimary!
                 .withAlpha((0.15 * 255).toInt()), // light background
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                icon: Icon(Icons.route),
-                selectedIcon: Icon(Icons.route),
+                icon: const Icon(Icons.route),
+                selectedIcon: Icon(
+                  Icons.route,
+                  color: CommonColors.colorPrimary,
+                ),
                 label: "ROUTES",
               ),
               NavigationDestination(
-                icon: Icon(Symbols.package_2),
-                selectedIcon: Icon(Symbols.package_2),
+                icon: const Icon(Symbols.package_2),
+                selectedIcon: Icon(
+                  Symbols.package_2,
+                  color: CommonColors.colorPrimary,
+                ),
                 label: "ORDERS",
               ),
               NavigationDestination(
-                icon: Icon(Symbols.delivery_truck_bolt),
-                selectedIcon: Icon(Symbols.delivery_truck_bolt),
+                icon: const Icon(Symbols.delivery_truck_bolt),
+                selectedIcon: Icon(
+                  Symbols.delivery_truck_bolt,
+                  color: CommonColors.colorPrimary,
+                ),
                 label: "TRIPS",
               ),
               NavigationDestination(
-                icon: Icon(Icons.account_circle_rounded),
-                selectedIcon: Icon(Icons.account_circle_rounded),
+                icon: const Icon(Icons.account_circle_rounded),
+                selectedIcon: Icon(
+                  Icons.account_circle_rounded,
+                  color: CommonColors.colorPrimary,
+                ),
                 label: "PROFILE",
               ),
             ],

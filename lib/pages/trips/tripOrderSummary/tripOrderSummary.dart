@@ -29,7 +29,56 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
-    getOrdersList();
+    // getOrdersList();
+    createDummyData();
+  }
+
+  createDummyData() {
+    ordersList = [
+      TripOrderSummaryModel(
+        grno: "GRN-001",
+        ordertype: "Pickup",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Pending",
+      ),
+      TripOrderSummaryModel(
+        grno: "GRN-002",
+        ordertype: "Delivery",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Delivered",
+      ),
+      TripOrderSummaryModel(
+        grno: "GRN-003",
+        ordertype: "Reverse Pickup",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Picked",
+      ),
+      TripOrderSummaryModel(
+        grno: "GRN-001",
+        ordertype: "Pickup",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Un-Picked",
+      ),
+      TripOrderSummaryModel(
+        grno: "GRN-002",
+        ordertype: "Delivery",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Un-Delivered",
+      ),
+      TripOrderSummaryModel(
+        grno: "GRN-003",
+        ordertype: "Reverse Pickup",
+        dispatchdt: "2023-01-01",
+        dispatchtime: "10:00 AM",
+        orderStatus: "Pending",
+      ),
+    ];
+    setState(() {});
   }
 
   setObservers() {
@@ -62,43 +111,155 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
     viewModel.getOrdersList(params);
   }
 
+  Widget infoItem(String heading, String value, String status,
+      CrossAxisAlignment crossAxisAlignment) {
+    Color textColor = Colors.black;
+    if (status == "Picked") {
+      textColor = CommonColors.colorPrimary!;
+    } else if (status == "Un-Picked") {
+      textColor = CommonColors.colorPrimary!;
+    } else if (status == "Delivered") {
+      textColor = CommonColors.green600!;
+    } else if (status == "Un-Delivered") {
+      textColor = CommonColors.red600!;
+    } else if (status == "Pending") {
+      textColor = CommonColors.amber500!;
+    }
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
+      children: [
+        Text(
+          heading,
+          style: const TextStyle(
+              color: CommonColors.appBarColor, fontWeight: FontWeight.normal),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+              color: CommonColors.appBarColor, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
   Widget orderInfo(TripOrderSummaryModel model, int index) {
+    Color backgroundColor = Colors.black;
+    if (model.orderStatus == "Picked") {
+      backgroundColor =
+          CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
+    } else if (model.orderStatus == "Un-Picked") {
+      backgroundColor =
+          CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
+    } else if (model.orderStatus == "Delivered") {
+      backgroundColor = CommonColors.green200!.withAlpha((0.6 * 255).round());
+    } else if (model.orderStatus == "Un-Delivered") {
+      backgroundColor = CommonColors.red200!.withAlpha((0.6 * 255).round());
+    } else if (model.orderStatus == "Pending") {
+      backgroundColor = CommonColors.amber200!.withAlpha((0.6 * 255).round());
+    }
+    Color dotColor = Colors.black;
+    if (model.orderStatus == "Picked") {
+      dotColor = CommonColors.colorPrimary!;
+    } else if (model.orderStatus == "Un-Picked") {
+      dotColor = CommonColors.colorPrimary!;
+    } else if (model.orderStatus == "Delivered") {
+      dotColor = CommonColors.green600!;
+    } else if (model.orderStatus == "Un-Delivered") {
+      dotColor = CommonColors.red600!;
+    } else if (model.orderStatus == "Pending") {
+      dotColor = CommonColors.amber500!;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TimelineTile(
         isFirst: index == 0,
         isLast: index == ordersList.length - 1,
+        beforeLineStyle: LineStyle(
+          color: dotColor,
+          thickness: 2,
+        ),
+        afterLineStyle: LineStyle(
+          color: dotColor,
+          thickness: 2,
+        ),
+        indicatorStyle: IndicatorStyle(
+          height: 15,
+          width: 15,
+          indicator: Container(
+            // margin: const EdgeInsets.only(top: 20),
+            height: 30,
+            width: 30,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
         endChild: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             decoration: BoxDecoration(
-                border: Border.all(width: 1),
+                color: backgroundColor,
+                border: Border.all(width: 1, color: backgroundColor),
                 borderRadius: BorderRadiusGeometry.circular(12)),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      model.grno.toString(),
-                      style: TextStyle(color: Colors.black),
-                    )
-                  ],
+                Row(children: [
+                  Text(
+                    "${(index + 1).toString()}#",
+                    style: const TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  )
+                ]),
+                const SizedBox(
+                  height: 8,
                 ),
                 Row(
                   children: [
-                    Text(
+                    Expanded(
+                        child: infoItem(
+                      "GR-NO",
+                      model.grno.toString(),
+                      model.orderStatus.toString(),
+                      CrossAxisAlignment.start,
+                    )),
+                    Expanded(
+                        child: infoItem(
+                      "Date",
+                      model.dispatchdt.toString(),
+                      model.orderStatus.toString(),
+                      CrossAxisAlignment.end,
+                    )),
+                  ],
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        child: infoItem(
+                      "Order Type",
                       model.ordertype.toString(),
-                      style: TextStyle(color: Colors.black),
-                    )
+                      model.orderStatus.toString(),
+                      CrossAxisAlignment.start,
+                    )),
+                    Expanded(
+                        child: infoItem(
+                      "Status",
+                      model.orderStatus.toString(),
+                      model.orderStatus.toString(),
+                      CrossAxisAlignment.end,
+                    )),
                   ],
                 )
               ],
             ),
           ),
         ),
-        beforeLineStyle: const LineStyle(color: Colors.black, thickness: 4),
-        afterLineStyle: const LineStyle(color: Colors.black, thickness: 4),
       ),
     );
   }

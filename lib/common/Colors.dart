@@ -40,14 +40,17 @@ class CommonColors {
   static Color? amber700 = Colors.amber[700];
   static Color? green600 = Colors.green[600];
   static Color? green500 = Colors.green.shade500;
+  static Color? green200 = Colors.green.shade200;
   static Color? green50 = Colors.green.shade50;
   static Color? black54 = Colors.black54;
   static Color? black26 = Colors.black26;
   static Color? red600 = Colors.red.shade600;
+  static Color? red200 = Colors.red.shade200;
   static Color? red = Colors.red;
   static Color? red500 = Colors.red.shade500;
   static Color? red50 = Colors.red.shade50;
   static Color? amber500 = Colors.amber.shade500;
+  static Color? amber200 = Colors.amber.shade200;
   static Color? amber50 = Colors.amber.shade50;
   static Color? darkCyanBlue = const Color(0xFF334155);
   static Color? aliceBlue = const Color(0xFFE1E6EF);

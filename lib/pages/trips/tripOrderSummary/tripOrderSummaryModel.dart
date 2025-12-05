@@ -26,6 +26,7 @@ class TripOrderSummaryModel {
   final String? startreadingimage;
   final String? closereadingimage;
   final String? closetriplocation;
+  final String? orderStatus;
 
   TripOrderSummaryModel({
     this.commandstatus,
@@ -55,6 +56,7 @@ class TripOrderSummaryModel {
     this.startreadingimage,
     this.closereadingimage,
     this.closetriplocation,
+    this.orderStatus,
   });
 
   factory TripOrderSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -86,6 +88,7 @@ class TripOrderSummaryModel {
       startreadingimage: json['startreadingimage'],
       closereadingimage: json['closereadingimage'],
       closetriplocation: json['closetriplocation'],
+      orderStatus: json['orderStatus'],
     );
   }
 
@@ -118,6 +121,7 @@ class TripOrderSummaryModel {
       "startreadingimage": startreadingimage,
       "closereadingimage": closereadingimage,
       "closetriplocation": closetriplocation,
+      "orderStatus": orderStatus,
     };
   }
 }
