@@ -425,7 +425,7 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmundeldt":
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
-      "prmtime": convert2SmallDateTime(_unDeliveryTimeController.text),
+      "prmtime": formatTimeString(_unDeliveryTimeController.text),
       "prmdlvtripsheetno": currentDeliveryModel.drsno.toString(),
       "prmgrno": deliveryDetailModel.grno.toString(),
       "prmreasoncode": _selectedReason!.reasoncode.toString(),

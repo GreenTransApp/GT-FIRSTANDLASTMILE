@@ -97,7 +97,7 @@ class _PodEntryState extends State<PodEntry> {
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     _deliverPckgsController.text = modelDetail.pcs.toString();
     _damagedPckgsController.text = "0";
-    _deliveryTimeController.text = DateFormat('hh:mm').format(DateTime.now());
+    _deliveryTimeController.text = DateFormat('h:mm a').format(DateTime.now());
     // _deliverByController.text = savedUser.username.toString();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
@@ -328,8 +328,7 @@ class _PodEntryState extends State<PodEntry> {
       "prmgrno": _grNoController.text.toString(),
       "prmdlvdt":
           convert2SmallDateTime(_deliveryDateController.text.toString()),
-      "prmdlvtime":
-          convert2SmallDateTime(_deliveryTimeController.text.toString()),
+      "prmdlvtime": formatTimeString(_deliveryTimeController.text.toString()),
       "prmname": _receivedByController.text.toString(),
       "prmrelation": _relationController.text.toString(),
       "prmphno": _receiverMobileByController.text.toString(),
