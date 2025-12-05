@@ -396,9 +396,12 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   upsertTrip() {
     // String manifestStr = _selectedDrsList.join("~");
     String manifestStr = "";
+    String manifestTypeStr = "";
     for (DrsListModel data in _selectedDrsList) {
       manifestStr += data.manifestno!;
+      manifestTypeStr += data.manifesttype!;
       manifestStr += "~";
+      manifestTypeStr += "~";
     }
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
@@ -406,6 +409,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
       "prmmanifestnostr": manifestStr,
+      "prmmanifesttypestr": manifestTypeStr,
       "prmtripid": widget.tripId.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };

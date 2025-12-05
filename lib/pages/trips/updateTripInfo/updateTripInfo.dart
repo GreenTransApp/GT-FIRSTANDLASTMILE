@@ -67,7 +67,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 
       _closeDateController.text =
           DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
-      _closeTimeController.text = DateFormat('HH:mm').format(DateTime.now());
+      _closeTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
 
       _startReadingController.text =
           widget.model!.startreadingkm?.toString() ?? "0";
@@ -106,6 +106,30 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           widget.refresh!();
         }
         // Get.back(result: true);
+        Get.back();
+      } else {
+        failToast(model.commandmessage!);
+      }
+    });
+    viewModel.updateStartTripLiveData.stream.listen((model) async {
+      if (model.commandstatus == 1) {
+        successToast(model.commandmessage!);
+        if (widget.refresh != null) {
+          widget.refresh!();
+        }
+        Get.back();
+      } else {
+        failToast(model.commandmessage!);
+      }
+    });
+    viewModel.updateCloseTripLiveData.stream.listen((model) async {
+      if (model.commandstatus == 1) {
+        successToast(model.commandmessage!);
+          await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
+              savedLogin.companyid.toString(), widget.model.tripid.toString());
+        if (widget.refresh != null) {
+          widget.refresh!();
+        }
         Get.back();
       } else {
         failToast(model.commandmessage!);
@@ -211,6 +235,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.endreadingkm = int.tryParse(_closeReadingController.text);
       widget.model.endreadingimg = _closeReadingImagePath;
 
+      updateCloseTrip();
       // Get.back();
       // if (widget.onUpdate != null) {
       //   widget.onUpdate!(widget.model, widget.status);
@@ -240,7 +265,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.tripdispatchdatetime = _dispatchTimeController.text;
       widget.model.startreadingkm = int.tryParse(_startReadingController.text);
       widget.model.startreadingimgpath = _startReadingImagePath;
-
+     
+      updateStartTrip();
+  
       // Get.back();
       // if (widget.onUpdate != null) {
       //   widget.onUpdate!(widget.model, widget.status);
@@ -248,40 +275,80 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       //   //     selectedDate, selectedTime, widget.model.drsno);
       // }
     }
-    updateTripInfo();
+    // updateTripInfo();
   }
 
-  void updateTripInfo() {
+
+
+   void  updateStartTrip(){
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
-      "prmemployeeid": savedUser.employeeid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmtripid": widget.model.tripid.toString(),
       "prmdispatchdt":convert2SmallDateTime(widget.model.tripdispatchdate.toString()),
       "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
-      "prmusercode": savedUser.usercode.toString(),
-      "prmsessionid": savedUser.sessionid.toString(),
-      "prmstartreading": widget.model.startreadingkm.toString(),
-      "prmstartreadimgpath": widget.status == TripStatus.open
+      "prmstartreading":widget.model.startreadingkm.toString(),
+      "prmstartreadimgpath":  widget.status == TripStatus.open
           ? convertFilePathToBase64(widget.model.startreadingimgpath)
           : isNullOrEmpty(widget.model.startreadingimgpath)
               ? ""
               : widget.model.startreadingimgpath!,
+      "prmsessionid": savedUser.sessionid.toString()
+    };
+
+    viewModel.updateStartTrip(params);
+   }
+
+   void  updateCloseTrip(){
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmtripid": widget.model.tripid.toString(),
+      "prmclosetripdt": convert2SmallDateTime(widget.model.endtripdate!),
+      "prmclosetriptime":formatTimeString( _closeTimeController.text.toString()),
+      "prmclosetripreading": widget.model.endreadingkm.toString(),
       "prmendreadimgpath": widget.status == TripStatus.open
           ? ""
           : convertFilePathToBase64(widget.model.endreadingimg),
-      "prmclosetripdt": widget.status == TripStatus.open
-          ? ""
-          : convert2SmallDateTime(widget.model.endtripdate!),
-      "prmclosetriptime":
-          widget.status == TripStatus.open ? "" : _closeTimeController.text,
-      "prmclosetripreading": widget.status == TripStatus.open
-          ? ""
-          : widget.model.endreadingkm.toString(),
-      "prmdrsstatus": widget.status == TripStatus.open ? 'O' : 'C',
-      "prmtripid": widget.model.tripid.toString()
+      "prmsessionid": savedUser.sessionid.toString()
     };
 
-    viewModel.updateTripInfo(params);
-  }
+    viewModel.updateCloseTrip(params);
+   }
+
+  // void updateTripInfo() {
+  //   Map<String, String> params = {
+  //     "prmcompanyid": savedUser.companyid.toString(),
+  //     "prmemployeeid": savedUser.employeeid.toString(),
+  //     "prmdispatchdt":convert2SmallDateTime(widget.model.tripdispatchdate.toString()),
+  //     "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
+  //     "prmusercode": savedUser.usercode.toString(),
+  //     "prmsessionid": savedUser.sessionid.toString(),
+  //     "prmstartreading": widget.model.startreadingkm.toString(),
+  //     "prmstartreadimgpath": widget.status == TripStatus.open
+  //         ? convertFilePathToBase64(widget.model.startreadingimgpath)
+  //         : isNullOrEmpty(widget.model.startreadingimgpath)
+  //             ? ""
+  //             : widget.model.startreadingimgpath!,
+  //     "prmendreadimgpath": widget.status == TripStatus.open
+  //         ? ""
+  //         : convertFilePathToBase64(widget.model.endreadingimg),
+  //     "prmclosetripdt": widget.status == TripStatus.open
+  //         ? ""
+  //         : convert2SmallDateTime(widget.model.endtripdate!),
+  //     "prmclosetriptime":
+  //         widget.status == TripStatus.open ? "" : _closeTimeController.text,
+  //     "prmclosetripreading": widget.status == TripStatus.open
+  //         ? ""
+  //         : widget.model.endreadingkm.toString(),
+  //     "prmdrsstatus": widget.status == TripStatus.open ? 'O' : 'C',
+  //     "prmtripid": widget.model.tripid.toString()
+  //   };
+
+  //   viewModel.updateTripInfo(params);
+  // }
 
   Widget closeTrip() {
     return Column(

@@ -10,14 +10,29 @@ class UpdateTripInfoViewModel extends BaseViewModel {
   UpdateTripInfoRepository _repo = UpdateTripInfoRepository();
   StreamController<UpsertTripResponseModel> updateTripLiveData =
       StreamController();
+ 
+  StreamController<UpsertTripResponseModel> updateStartTripLiveData =
+      StreamController();
+ 
+  StreamController<UpsertTripResponseModel> updateCloseTripLiveData =
+      StreamController();
+ 
   StreamController<bool> viewDialogLiveData = StreamController();
 
   UpdateTripInfoViewModel() {
     updateTripLiveData = _repo.updateTripInfoLiveData;
+    updateStartTripLiveData = _repo.updateStartTripLiveData;
+    updateCloseTripLiveData = _repo.updateCloseTripLiveData;
     viewDialogLiveData = _repo.viewDialog;
   }
 
   void updateTripInfo(Map<String, String> params) {
     _repo.updateTripInfo(params);
+  }
+  void updateStartTrip(Map<String, String> params) {
+    _repo.updateStartTrip(params);
+  }
+  void updateCloseTrip(Map<String, String> params) {
+    _repo.updateCloseTrip(params);
   }
 }
