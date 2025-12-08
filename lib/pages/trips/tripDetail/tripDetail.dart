@@ -88,11 +88,11 @@ class _TripDetailState extends State<TripDetail> {
 
     viewModel.tripSummaryList.stream.listen((tripSummaryList) {
       // debugPrint('Trip Summary List Length: ${tripSummaryList.length}');
-      if (tripSummaryList.elementAt(0).commandstatus == 1) {
-        setState(() {
-          this.tripSummaryList = tripSummaryList;
-        });
-      }
+      // if (tripSummaryList.elementAt(0).commandstatus == 1) {
+      setState(() {
+        this.tripSummaryList = tripSummaryList;
+      });
+      // }
     });
   }
 
@@ -100,11 +100,10 @@ class _TripDetailState extends State<TripDetail> {
     getTripDetail();
   }
 
-Future<void> closeTripOnClick() async {
-FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
-savedLogin.companyid.toString(), widget.model.tripid.toString());
-Get.back();
-                  
+  Future<void> closeTripOnClick() async {
+    FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
+        savedLogin.companyid.toString(), widget.model.tripid.toString());
+    Get.back();
   }
 
   @override
@@ -157,7 +156,7 @@ Get.back();
                           Lottie.asset("assets/emptyDelivery.json",
                               height: 150),
                           const Text(
-                            "No Deliveries",
+                            "No orders",
                             style: TextStyle(
                                 fontSize: 18, color: CommonColors.appBarColor),
                           )
@@ -201,24 +200,24 @@ Get.back();
         ),
       ),
       // persistentFooterButtons: [
-        // Container(
-        //   height: 60,
-        //   child: CommonButton(
-        //       title: "Close Trip",
-        //       color: CommonColors.colorPrimary!,
-        //       onTap: () {
-        //         // Get.back();
-        //         for (var element in tripSummaryList) {
-        //           if (element.pendingconsign! > 0) {
-        //             failToast(
-        //                 "All deliveries must be completed before closing the trip.");
-        //             return;
-        //           }
-        //         }
-        //         openUpdateTripInfo(
-        //             context, widget.model, TripStatus.close, closeTripOnClick);
-        //       }),
-        // ),
+      // Container(
+      //   height: 60,
+      //   child: CommonButton(
+      //       title: "Close Trip",
+      //       color: CommonColors.colorPrimary!,
+      //       onTap: () {
+      //         // Get.back();
+      //         for (var element in tripSummaryList) {
+      //           if (element.pendingconsign! > 0) {
+      //             failToast(
+      //                 "All deliveries must be completed before closing the trip.");
+      //             return;
+      //           }
+      //         }
+      //         openUpdateTripInfo(
+      //             context, widget.model, TripStatus.close, closeTripOnClick);
+      //       }),
+      // ),
       // ],
     );
   }

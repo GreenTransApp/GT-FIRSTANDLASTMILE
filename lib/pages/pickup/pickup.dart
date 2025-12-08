@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
@@ -308,6 +310,7 @@ class _PickupState extends State<Pickup> {
       if (saveResponse.commandStatus == 1) {
         successToast(
             saveResponse.commandMessage ?? "Pickup saved successfully");
+        Get.back();
       } else {
         failToast(saveResponse.commandMessage ?? "Something went wrong");
       }
@@ -1773,7 +1776,7 @@ class _PickupState extends State<Pickup> {
     };
 
     debugPrint(params.toString());
-    // viewModel.savePickup(params);
+    viewModel.savePickup(params);
   }
 
   @override

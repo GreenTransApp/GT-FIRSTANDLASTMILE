@@ -24,6 +24,19 @@ class CurrentDeliveryModel {
   String? closetripdatetime;
   bool? tripconfirm;
 
+  int? tripid;
+  // final String drsno;
+  // final String manifestdate;
+  // final String manifesttime;
+  // final int planningid;
+  int? totalconsign;
+  int? noofrvpickups;
+  int? noofpickups;
+  // final int pendingconsign;
+  int? delivered;
+  int? undelivered;
+  String? ordertype;
+
   CurrentDeliveryModel({
     this.commandstatus,
     this.commandmessage,
@@ -49,6 +62,13 @@ class CurrentDeliveryModel {
     this.closeReadingKm,
     this.closetripdatetime,
     this.tripconfirm = false,
+    this.tripid,
+    this.totalconsign,
+    this.noofrvpickups,
+    this.noofpickups,
+    this.delivered,
+    this.undelivered,
+    this.ordertype,
   });
 
   CurrentDeliveryModel.fromJson(Map<String, dynamic> json) {
@@ -76,6 +96,14 @@ class CurrentDeliveryModel {
     closeReadingKm = json['closereadingkm'];
     closetripdatetime = json['closetripdatetime']?.toString();
     tripconfirm = json['tripconfirm'] ?? false;
+
+    tripid = json['tripid'];
+    totalconsign = json['totalconsign'];
+    noofrvpickups = json['noofrvpickups'];
+    noofpickups = json['noofpickups'];
+    delivered = json['delivered'];
+    undelivered = json['undelivered'];
+    ordertype = json['ordertype'];
   }
 
   Map<String, dynamic> toJson() {
@@ -104,6 +132,14 @@ class CurrentDeliveryModel {
     data['closereadingkm'] = closeReadingKm;
     data['closetripdatetime'] = closetripdatetime;
     data['tripconfirm'] = tripconfirm;
+
+    data['tripid'] = tripid;
+    data['totalconsign'] = totalconsign;
+    data['noofrvpickups'] = noofrvpickups;
+    data['noofpickups'] = noofpickups;
+    data['delivered'] = delivered;
+    data['undelivered'] = undelivered;
+    data['ordertype'] = ordertype;
     return data;
   }
 }

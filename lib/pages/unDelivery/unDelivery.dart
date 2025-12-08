@@ -824,7 +824,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                     items: _reasonList.map((ReasonModel reason) {
                       return DropdownMenuItem<ReasonModel>(
                         value: reason,
-                        child: Text(reason.reasonname.toString() ?? ''),
+                        child: Text(reason.reasonname.toString()),
                       );
                     }).toList(),
                     onChanged: (ReasonModel? newValue) {

@@ -553,7 +553,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(Pickup(details: widget.model));
+                              Get.to(Pickup(details: widget.model))?.then((_) {
+                                widget.onRefresh();
+                              });
                             },
                             icon: const Icon(Icons.check),
                             label: const Text('Pickup'),

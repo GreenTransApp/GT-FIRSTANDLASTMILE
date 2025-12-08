@@ -114,7 +114,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
-          'Delivery Detail',
+          'Manifest Detail',
           style: TextStyle(color: CommonColors.White),
         ),
         leading: IconButton(
@@ -469,8 +469,6 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                           //     ),
                           //   ],
                           // )
-                       
-                       
                         ],
                       ),
                     ),

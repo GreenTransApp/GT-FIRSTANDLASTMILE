@@ -192,7 +192,7 @@ class _ReversePickupState extends State<ReversePickup> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
-      "prmgrno": widget.deliveryDetailModel.grno.toString(),
+      "prmgrno": widget.deliveryDetailModel.transactionid.toString(),
       "prmreasoncode": _selectedReturnReason!.reasoncode.toString(),
       "prmremarks": _remarksController.text.toString(),
       "prmimgmatchstatus": _selectedStatus == "Matched" ? 'Y' : 'N',
@@ -208,7 +208,7 @@ class _ReversePickupState extends State<ReversePickup> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "skucode": _skuController.text.trim(),
-      "prmgrno": widget.deliveryDetailModel.grno.toString(),
+      "prmgrno": widget.deliveryDetailModel.transactionid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
     viewModel.getReversePickup(params);

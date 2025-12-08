@@ -11,7 +11,6 @@ import 'package:gtlmd/pages/deliveryDetail/deliveryDetail.dart';
 
 import 'package:gtlmd/pages/home/homeViewModel.dart';
 
-
 enum DrsStatus { OPEN, CLOSE }
 
 enum TripStatus { open, close }
@@ -116,17 +115,27 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                       // Date row
                       _buildInfoRow(
                         label: 'Date',
-                        value: widget.model.manifestdatetime.toString(),
+                        value: widget.model.manifestdate.toString(),
                         theme: theme,
                       ),
+                      const SizedBox(height: 12),
 
+                      _buildInfoRow(
+                        label: 'Type',
+                        value: widget.model.ordertype == 'P'
+                            ? 'Pickup'
+                            : widget.model.ordertype == 'R'
+                                ? 'Reverse Pickup'
+                                : 'Delivery',
+                        theme: theme,
+                      ),
                       const SizedBox(height: 12),
 
                       // Total indicator
                       if (!widget.showStatusIndicators)
                         _buildInfoRow(
                             label: "Total",
-                            value: widget.model.noofconsign.toString(),
+                            value: widget.model.totalconsign.toString(),
                             theme: theme)
                     ],
                   ),
@@ -223,8 +232,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     Expanded(
                         child: Align(
                             alignment: Alignment.centerRight,
-                            child: Text(
-                                "${widget.model.dispatchdatetime.toString()}")))
+                            child: Text(widget.model.dispatchtime.toString())))
                   ],
                 ),
         ],
@@ -278,7 +286,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(
-            'Delivery Status',
+            'Status',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -286,39 +294,68 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
         ),
 
         // Status grid
-        Row(
-          children: [
-            _buildStatusItem(
-              label: 'Total',
-              value: widget.model.noofconsign.toString(),
-              color: CommonColors.colorPrimary!,
-              theme: theme,
-            ),
-            _buildStatusItem(
-              label: 'Delivered',
-              value: widget.model.deliveredconsign.toString(),
-              color: Colors.green,
-              theme: theme,
-            ),
-            _buildStatusItem(
-              label: 'Undelivered',
-              value: widget.model.undeliveredconsign.toString(),
-              color: Colors.red,
-              theme: theme,
-            ),
-            _buildStatusItem(
-              label: 'Pending',
-              value: widget.model.pendingconsign.toString(),
-              color: Colors.orange,
-              theme: theme,
-            ),
-            _buildStatusItem(
-              label: 'Pickup',
-              value: widget.model.totpickup.toString(),
-              color: CommonColors.colorPrimary!,
-              theme: theme,
-            ),
-          ],
+        Visibility(
+          visible: widget.model.ordertype == 'D',
+          child: Row(
+            children: [
+              _buildStatusItem(
+                label: 'Total',
+                value: widget.model.totalconsign.toString(),
+                color: CommonColors.colorPrimary!,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Delivered',
+                value: widget.model.delivered.toString(),
+                color: Colors.green,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Undelivered',
+                value: widget.model.undelivered.toString(),
+                color: Colors.red,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Pending',
+                value: widget.model.pendingconsign.toString(),
+                color: Colors.orange,
+                theme: theme,
+              ),
+            ],
+          ),
+        ),
+        Visibility(
+          visible:
+              widget.model.ordertype == 'P' || widget.model.ordertype == 'R',
+          child: Row(
+            children: [
+              _buildStatusItem(
+                label: 'Total',
+                value: widget.model.totalconsign.toString(),
+                color: CommonColors.colorPrimary!,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Pickup',
+                value: widget.model.noofpickups.toString(),
+                color: Colors.green,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Reverse Pickup',
+                value: widget.model.noofrvpickups.toString(),
+                color: Colors.red,
+                theme: theme,
+              ),
+              _buildStatusItem(
+                label: 'Pending',
+                value: widget.model.pendingconsign.toString(),
+                color: Colors.orange,
+                theme: theme,
+              ),
+            ],
+          ),
         ),
       ],
     );

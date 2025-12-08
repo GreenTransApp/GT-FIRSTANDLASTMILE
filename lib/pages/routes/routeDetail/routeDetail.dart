@@ -122,7 +122,9 @@ class _RoutedetailState extends State<Routedetail> {
             // debugPrint(
             //     "${route.grno} ${route.address} ${route.deliverylat} ${route.deliverylong} ${route.distance} ${route.sequenceid} ${route.planningdraftcode}");
 
-            if (route.consignmenttype == 'D' &&  route.grno !='Pickup' && route.grno !='Final Point') {
+            if (route.consignmenttype == 'D' &&
+                route.grno != 'Pickup' &&
+                route.grno != 'Final Point') {
               hasDeliveries = true;
               return;
             }
@@ -153,7 +155,7 @@ class _RoutedetailState extends State<Routedetail> {
         setState(() {
           acceptRouteModel = resp;
           successToast("PLANNING ACCEPTED SUCCESSFULLY");
-       
+
           getRouteDetails();
         });
       } else {
@@ -166,7 +168,6 @@ class _RoutedetailState extends State<Routedetail> {
           rejectRouteModel = resp;
           successToast("PLANNING REJECTED SUCCESSFULLY");
           okayCallBackForAlert();
-         
         });
       } else {
         failToast(resp.commandmessage.toString() ?? "Something went wrong");
@@ -211,8 +212,10 @@ class _RoutedetailState extends State<Routedetail> {
       }
     });
 
-    _baseRepo.compAccPara.stream
-        .listen((resp) => routeModifyAllowed = resp == 'Y');
+    _baseRepo.compAccPara.stream.listen((resp) {
+      routeModifyAllowed = resp == 'Y';
+      setState(() {});
+    });
   }
 
   void okayCallBackForAlert() {
@@ -262,7 +265,6 @@ class _RoutedetailState extends State<Routedetail> {
       planningdraftcodeList.add(route.planningdraftcode.toString());
     }
 
-    
     Map<String, dynamic> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
@@ -400,7 +402,6 @@ class _RoutedetailState extends State<Routedetail> {
       } else if (totalDistance <=
           double.parse(modelDetail.totdistance!
               .substring(0, modelDetail.totdistance!.length - 4))) {
-    
         updateSequenceBeforeSubmit(totalDistanceList);
       }
     } catch (err) {

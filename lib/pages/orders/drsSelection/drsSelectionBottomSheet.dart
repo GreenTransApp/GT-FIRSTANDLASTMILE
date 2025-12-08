@@ -7,20 +7,20 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
-import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
-import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+import 'package:gtlmd/common/commonButton.dart';
+import 'package:gtlmd/pages/orders/drsSelection/appToolTip.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionRepository.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionViewModel.dart';
+import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
-import 'package:gtlmd/common/commonButton.dart';
-import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+// ignore: must_be_immutable
 class DrsselectionBottomSheet extends StatefulWidget {
   int tripId = 0;
   bool showTripInfoUpdate;
@@ -41,9 +41,9 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   DrsSelectionRepository repository = DrsSelectionRepository();
 
   List<DrsListModel> _deliveryList = List.empty(growable: true);
-  List<DrsListModel> _selectedDrsList = List.empty(growable: true);
+  final List<DrsListModel> _selectedDrsList = List.empty(growable: true);
   late LoadingAlertService loadingAlertService;
-  BaseRepository _baseRepo = BaseRepository();
+  final BaseRepository _baseRepo = BaseRepository();
   String fromDt = "";
   String toDt = "";
   String formattedDate = '';
@@ -53,7 +53,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   late String viewToDt;
   bool? allSelected = false;
   bool isLoading = false;
-
+  OverlayEntry? _overlayEntry;
   @override
   void initState() {
     super.initState();
@@ -70,8 +70,8 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     toDt = smallDateTime.toString();
     viewFromDt = DateFormat('dd-MM-yyyy').format(todayDateTime);
     viewToDt = DateFormat('dd-MM-yyyy').format(todayDateTime);
-    DateTime fromdt = DateTime.parse(fromDt);
-    DateTime todt = DateTime.parse(toDt);
+    // DateTime fromdt = DateTime.parse(fromDt);
+    // DateTime todt = DateTime.parse(toDt);
     getDeliveryList();
   }
 
@@ -81,7 +81,8 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       if (dashboard.elementAt(0).commandstatus == 1) {
         setState(() {
           _deliveryList = dashboard;
-           _selectedDrsList.clear();
+          _selectedDrsList.clear();
+          allSelected = false;
         });
       }
     });
@@ -101,7 +102,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       }
     });
 
-    _baseRepo.isErrorLiveData.stream.listen((errMsg) {
+    viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     });
 
@@ -127,7 +128,13 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     //   Get.back();
     // });
 
-     Get.to(() => UpdateTripInfo(model: model,status:TripStatus.open ,))?.then((_) { Get.back();});
+    Get.to(() => UpdateTripInfo(
+          model: model,
+          status: TripStatus.open,
+        ))?.then((_) {
+      Get.back();
+      refreshScreen();
+    });
   }
 
   Future<void> refreshScreen() async {
@@ -204,6 +211,16 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                           Padding(
                             padding: const EdgeInsets.only(left: 16.0),
                             child: Text("Total: ${_deliveryList.length}"),
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          AppTooltip(
+                            items: [
+                              TooltipItem(CommonColors.green200!, "Delivery"),
+                              TooltipItem(CommonColors.amber200!, "Pickup"),
+                            ],
+                            child: const Icon(Icons.info_outline),
                           )
                         ],
                       )),
@@ -222,14 +239,12 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                                 allSelected = checked;
                                 _selectedDrsList.clear();
                                 if (checked == true) {
-                                  for (DrsListModel model
-                                      in _deliveryList) {
+                                  for (DrsListModel model in _deliveryList) {
                                     model.tripconfirm = true;
                                     _selectedDrsList.add(model);
                                   }
                                 } else {
-                                  for (DrsListModel model
-                                      in _deliveryList) {
+                                  for (DrsListModel model in _deliveryList) {
                                     model.tripconfirm = false;
                                     _selectedDrsList.clear();
                                   }
@@ -248,7 +263,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                       itemBuilder: (context, index) {
                         var currentData = _deliveryList[index];
 
-                        return drsCard(_deliveryList[index]);
+                        return manifestCard(_deliveryList[index]);
                       },
                     ),
                   ),
@@ -274,7 +289,73 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     );
   }
 
-  Widget drsCard(DrsListModel deliveryModel) {
+  void showTooltip() {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          top: offset.dy + size.height + 8,
+          left: offset.dx,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 6,
+                    offset: Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue, // your dot color
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "This is info tooltip",
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    overlay.insert(_overlayEntry!);
+
+    // auto-dismiss after 3 seconds
+    Future.delayed(const Duration(seconds: 3), hideTooltip);
+  }
+
+  void hideTooltip() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  Widget manifestCard(DrsListModel deliveryModel) {
+    Color backColor = CommonColors.White!;
+    if (deliveryModel.manifesttype == 'D') {
+      backColor = CommonColors.green200!.withAlpha((0.3 * 255).toInt());
+    } else {
+      backColor = CommonColors.amber200!.withAlpha((0.3 * 255).toInt());
+    }
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GestureDetector(
@@ -284,11 +365,11 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
             border: Border.all(
               color: const Color(0xFFE2E8F0),
               width: 1,
             ),
+            color: backColor,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.all(16),
@@ -354,26 +435,54 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                   Text(
                     deliveryModel.createddt.toString(),
                     style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF475569),
-                    ),
+                        fontSize: 14, fontWeight: FontWeight.bold
+                        // color: Color(0xFF475569),
+                        ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(
-                    Icons.local_shipping,
-                    size: 16,
-                    color: Color(0xFF94A3B8),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.local_shipping,
+                          size: 16,
+                          color: Color(0xFF94A3B8),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold
+                              // color: Color(0xFF475569),
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF475569),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Icon(
+                          Symbols.note_stack,
+                          size: 16,
+                          // color: Color(0xFF94A3B8),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          deliveryModel.manifesttype.toString() == 'D'
+                              ? 'Delivery'
+                              : 'Pickup',
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold
+                              // color: Color(0xFF475569),
+                              ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

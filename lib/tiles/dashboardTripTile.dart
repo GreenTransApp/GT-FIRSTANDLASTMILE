@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
@@ -8,6 +10,7 @@ import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class DashboardTripTile extends StatefulWidget {
   late TripModel model;
@@ -86,7 +89,9 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        widget.model.manifestdatetime.toString(),
+                        isNullOrEmpty(widget.model.tripdispatchdatetime)
+                            ? ""
+                            : widget.model.tripdispatchdatetime.toString(),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
@@ -183,15 +188,18 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
               childAspectRatio: 2.2,
               children: [
                 _buildInfoItem(
-                    'Date', widget.model.manifestdatetime.toString()),
+                    'Date', widget.model.tripdispatchdate.toString()),
                 _buildInfoItem(
-                    'Starting KM', widget.model.startreadingkm.toString()),
+                    'Starting KM',
+                    isNullOrEmpty(widget.model.startreadingkm.toString())
+                        ? ""
+                        : "${widget.model.startreadingkm} km"),
                 _buildInfoItem(
                   'Consignments',
                   widget.model.totalconsignment.toString(),
                 ),
-                _buildInfoItem(
-                    'Pending', '${widget.model.pendingconsignment.toString()}'),
+                // _buildInfoItem(
+                //     'Pending', '${widget.model.pendingconsignment.toString()}'),
               ],
             ),
             const SizedBox(height: 16),
@@ -238,13 +246,59 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Visibility(
+              visible: widget.model.pendingconsignment == 0 &&
+                  widget.model.tripdispatchdatetime != null,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0F9FF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: const Color(0xFF4db8a8).withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Close Trip',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        openUpdateTripInfo(context, widget.model,
+                            TripStatus.close, widget.onRefresh);
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4db8a8),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Icon(Symbols.close,
+                              color: CommonColors.appBarColor)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoItem(String label, String value) {
+  Widget _buildInfoItem(String label, String? value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -260,7 +314,7 @@ class _DashboardTripTileState extends State<DashboardTripTile> {
         ),
         const SizedBox(height: 4),
         Text(
-          value,
+          isNullOrEmpty(value) ? "" : value!,
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

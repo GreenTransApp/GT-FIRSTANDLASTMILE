@@ -9,9 +9,11 @@ class DrsSelectionViewModel extends BaseViewModel {
 
   StreamController<UpsertTripResponseModel> upsertTripLiveData =
       StreamController<UpsertTripResponseModel>();
+  StreamController<String> isErrorLiveData = StreamController<String>();
 
   DrsSelectionViewModel() {
     upsertTripLiveData = _repository.upsertTripLiveData;
+    isErrorLiveData = _repository.isErrorLiveData;
   }
 
   void upsertTrip(Map<String, String> params) {
