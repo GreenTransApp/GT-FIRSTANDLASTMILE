@@ -5,6 +5,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripDetailModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
 import 'package:gtlmd/common/commonButton.dart';
@@ -29,6 +30,7 @@ class _TripDetailState extends State<TripDetail> {
 // final TripSummaryViewModel viewModel = TripSummaryViewModel();
   BaseRepository _baseRepo = BaseRepository();
   List<CurrentDeliveryModel> tripSummaryList = List.empty(growable: true);
+  List<TripDetailModel> manifestList = List.empty(growable: true);
   late LoadingAlertService loadingAlertService;
   String fromDt = "";
   String toDt = "";
@@ -93,6 +95,12 @@ class _TripDetailState extends State<TripDetail> {
         this.tripSummaryList = tripSummaryList;
       });
       // }
+    });
+
+    viewModel.manifestListLiveData.stream.listen((list) {
+      setState(() {
+        manifestList = list;
+      });
     });
   }
 
@@ -173,9 +181,11 @@ class _TripDetailState extends State<TripDetail> {
                   itemBuilder: (context, index) {
                     var currentData = tripSummaryList[index];
                     return Padding(
-                        padding: EdgeInsetsGeometry.symmetric(horizontal: 16),
+                        padding:
+                            const EdgeInsetsGeometry.symmetric(horizontal: 16),
                         child: DashBoardDeliveryTile(
                           model: currentData,
+                          tripModel: widget.model,
                           // attendanceModel: _attendanceModel,
                           // onUpdate: widget.onUpdate,
                           onRefresh: refreshScreen,

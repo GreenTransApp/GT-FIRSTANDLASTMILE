@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -11,7 +9,6 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
-
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDeliveryViewModel.dart';
@@ -624,6 +621,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: CommonColors.darkCyanBlue!,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (isRequired)
@@ -632,6 +630,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                       style: TextStyle(
                         color: CommonColors.red!,
                         fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                 ],
@@ -783,29 +782,26 @@ class _UnDeliveryState extends State<UnDelivery> {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Expanded(
-                        child: _buildFormField(
-                          label: 'Delivery Time',
-                          isRequired: true,
-                          icon: Icons.access_time,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 15),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: CommonColors.grey300!),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _unDeliveryTimeController.text.toString(),
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                Icon(Icons.access_time,
-                                    color: CommonColors.grey),
-                              ],
-                            ),
+                      child: _buildFormField(
+                        label: 'UnDelivery Time',
+                        isRequired: true,
+                        icon: Icons.access_time,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 15),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: CommonColors.grey300!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _unDeliveryTimeController.text.toString(),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              Icon(Icons.access_time, color: CommonColors.grey),
+                            ],
                           ),
                         ),
                       ),
@@ -814,59 +810,71 @@ class _UnDeliveryState extends State<UnDelivery> {
                 ),
                 const SizedBox(height: 20),
                 // Reason
+
                 _buildFormField(
                   label: 'Reason',
                   isRequired: true,
                   icon: Icons.lightbulb_outline,
-                  child: DropdownButtonFormField<ReasonModel>(
-                    value: _selectedReason,
-                    decoration: _inputDecoration('Select reason'),
-                    items: _reasonList.map((ReasonModel reason) {
-                      return DropdownMenuItem<ReasonModel>(
-                        value: reason,
-                        child: Text(reason.reasonname.toString()),
-                      );
-                    }).toList(),
-                    onChanged: (ReasonModel? newValue) {
-                      setState(() {
-                        _selectedReason = newValue;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a reason';
-                      }
-                      return null;
-                    },
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: DropdownButtonFormField<ReasonModel>(
+                      isExpanded: true,
+                      value: _selectedReason,
+                      decoration: _inputDecoration('Select reason'),
+                      items: _reasonList.map((ReasonModel reason) {
+                        return DropdownMenuItem<ReasonModel>(
+                          value: reason,
+                          child: Text(
+                            reason.reasonname ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (ReasonModel? newValue) {
+                        setState(() {
+                          _selectedReason = newValue;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select a reason';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
                 // Action
                 _buildFormField(
                   label: 'Action',
                   isRequired: true,
                   icon: Icons.call_to_action,
-                  child: DropdownButtonFormField<ActionModel>(
-                    value: _selectedAction,
-                    decoration: _inputDecoration('Select action'),
-                    items: _actionList.map((ActionModel action) {
-                      return DropdownMenuItem<ActionModel>(
-                        value: action,
-                        child: Text(action.reasonname ?? ''),
-                      );
-                    }).toList(),
-                    onChanged: (ActionModel? newValue) {
-                      setState(() {
-                        _selectedAction = newValue;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a action';
-                      }
-                      return null;
-                    },
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: DropdownButtonFormField<ActionModel>(
+                      isExpanded: true,
+                      value: _selectedAction,
+                      decoration: _inputDecoration('Select action'),
+                      items: _actionList.map((ActionModel action) {
+                        return DropdownMenuItem<ActionModel>(
+                          value: action,
+                          child: Text(action.reasonname ?? ''),
+                        );
+                      }).toList(),
+                      onChanged: (ActionModel? newValue) {
+                        setState(() {
+                          _selectedAction = newValue;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select a action';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),

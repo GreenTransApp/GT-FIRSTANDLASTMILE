@@ -6,11 +6,14 @@ import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart' show CommonResponse;
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripDetailModel.dart';
 
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class TripDetailRepository extends BaseRepository {
   StreamController<List<CurrentDeliveryModel>> tripSummaryData =
+      StreamController();
+  StreamController<List<TripDetailModel>> manifestListLiveData =
       StreamController();
 
   Future<void> getDeliveryDetails(Map<String, String> params) async {
@@ -37,6 +40,10 @@ class TripDetailRepository extends BaseRepository {
                   list2.length,
                   (index) => CurrentDeliveryModel.fromJson(list2[index]));
               tripSummaryData.add(resultList);
+
+              List<TripDetailModel> mfList = List.generate(list2.length,
+                  (index) => TripDetailModel.fromJson(list2[index]));
+              manifestListLiveData.add(mfList);
             }
           }
         } else {

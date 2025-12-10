@@ -1,63 +1,69 @@
 class TripDetailModel {
-  final int tripid;
-  final String drsno;
-  final String manifestdate;
-  final String manifesttime;
-  final int planningid;
-  final int totalconsign;
-  final int noofrvpickups;
-  final int noofpickups;
-  final int pendingconsign;
-  final int delivered;
-  final int undelivered;
-  final String ordertype;
+  String? manifestno;
+  String? manifesttype;
+  String? manifestdate;
+  String? manifesttime;
+  String? dispatchdt;
+  String? dispatchtime;
+  String? dispatchflag;
+  int? planningid;
+  int? noofconsign;
+  int? deliveredconsign;
+  int? undeliveredconsign;
+  int? pendingDeliveries;
+  int? noofrvpickups;
+  int? noofpickups;
 
   TripDetailModel({
-    required this.tripid,
-    required this.drsno,
-    required this.manifestdate,
-    required this.manifesttime,
-    required this.planningid,
-    required this.totalconsign,
-    required this.noofrvpickups,
-    required this.noofpickups,
-    required this.pendingconsign,
-    required this.delivered,
-    required this.undelivered,
-    required this.ordertype,
+    this.manifestno,
+    this.manifesttype,
+    this.manifestdate,
+    this.manifesttime,
+    this.dispatchdt,
+    this.dispatchtime,
+    this.dispatchflag,
+    this.planningid,
+    this.noofconsign,
+    this.deliveredconsign,
+    this.undeliveredconsign,
+    this.pendingDeliveries,
+    this.noofrvpickups,
+    this.noofpickups,
   });
 
-  factory TripDetailModel.fromJson(Map<String, dynamic> json) {
-    return TripDetailModel(
-      tripid: json['tripid'],
-      drsno: json['drsno'],
-      manifestdate: json['manifestdate'],
-      manifesttime: json['manifesttime'],
-      planningid: json['planningid'],
-      totalconsign: json['totalconsign'],
-      noofrvpickups: json['noofrvpickups'],
-      noofpickups: json['noofpickups'],
-      pendingconsign: json['pendingconsign'],
-      delivered: json['delivered'],
-      undelivered: json['undelivered'],
-      ordertype: json['ordertype'],
-    );
+  TripDetailModel.fromJson(Map<String, dynamic> json) {
+    manifestno = json['manifestno'];
+    manifesttype = json['manifesttype'];
+    manifestdate = json['manifestdate'];
+    manifesttime = json['manifesttime'];
+    dispatchdt = json['dispatchdt'];
+    dispatchtime = json['dispatchtime'];
+    dispatchflag = json['dispatchflag'];
+    planningid = json['planningid'];
+    noofconsign = json['noofconsign'];
+    deliveredconsign = json['deliveredconsign'];
+    undeliveredconsign = json['undeliveredconsign'];
+    pendingDeliveries = json['pendingDeliveries'];
+    noofrvpickups = json['noofrvpickups'];
+    noofpickups = json['noofpickups'];
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'tripid': tripid,
-      'drsno': drsno,
+      'manifestno': manifestno,
+      'manifesttype': manifesttype,
       'manifestdate': manifestdate,
       'manifesttime': manifesttime,
+      'dispatchdt': dispatchdt,
+      'dispatchtime': dispatchtime,
+      'dispatchflag': dispatchflag,
       'planningid': planningid,
-      'totalconsign': totalconsign,
+      'noofconsign': noofconsign,
+      'deliveredconsign': deliveredconsign,
+      'undeliveredconsign': undeliveredconsign,
+      'pendingDeliveries': pendingDeliveries,
       'noofrvpickups': noofrvpickups,
       'noofpickups': noofpickups,
-      'pendingconsign': pendingconsign,
-      'delivered': delivered,
-      'undelivered': undelivered,
-      'ordertype': ordertype,
     };
   }
 }

@@ -8,7 +8,7 @@ import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
-import 'package:gtlmd/tiles/dashboardTripTile.dart';
+import 'package:gtlmd/tiles/runningTripTile.dart';
 import 'package:lottie/lottie.dart';
 
 class RunningTrips extends StatefulWidget {
@@ -123,7 +123,7 @@ class _RunningTripsState extends State<RunningTrips> {
                   itemCount: _deliveryList.length,
                   itemBuilder: (context, index) {
                     var currentData = _deliveryList[index];
-                    return DashboardTripTile(
+                    return RunningTripTile(
                       model: currentData,
                       attendanceModel: _attendanceModel,
                       // onUpdate: onUpdate,

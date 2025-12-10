@@ -9,12 +9,15 @@ import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
 
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/tiles/deliveryDetailTile.dart';
 import 'package:lottie/lottie.dart';
 
 class DeliveryDetail extends StatefulWidget {
   final CurrentDeliveryModel model;
-  const DeliveryDetail({super.key, required this.model});
+  final TripModel tripModel;
+  const DeliveryDetail(
+      {super.key, required this.model, required this.tripModel});
 
   @override
   State<DeliveryDetail> createState() => _DeliveryDetailState();
@@ -96,7 +99,9 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.password.toString(),
-      "prmdrsno": deliveryModel.drsno.toString(),
+      "prmdrsno": deliveryModel.manifestno.toString(),
+      "prmtripid": widget.tripModel.tripid.toString(),
+      "prmordertype": deliveryModel.manifesttype.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -183,7 +188,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      deliveryModel.drsno.toString(),
+                                      deliveryModel.manifestno.toString(),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                       ),

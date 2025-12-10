@@ -24,18 +24,13 @@ class CurrentDeliveryModel {
   String? closetripdatetime;
   bool? tripconfirm;
 
-  int? tripid;
-  // final String drsno;
-  // final String manifestdate;
-  // final String manifesttime;
-  // final int planningid;
-  int? totalconsign;
+  String? manifestno;
+  String? manifesttype;
+  int? pendingDeliveries;
+  int? deliverIndent;
+  int? pendingIndent;
   int? noofrvpickups;
   int? noofpickups;
-  // final int pendingconsign;
-  int? delivered;
-  int? undelivered;
-  String? ordertype;
 
   CurrentDeliveryModel({
     this.commandstatus,
@@ -62,13 +57,13 @@ class CurrentDeliveryModel {
     this.closeReadingKm,
     this.closetripdatetime,
     this.tripconfirm = false,
-    this.tripid,
-    this.totalconsign,
+    this.manifestno,
+    this.manifesttype,
+    this.pendingDeliveries,
+    this.deliverIndent,
+    this.pendingIndent,
     this.noofrvpickups,
     this.noofpickups,
-    this.delivered,
-    this.undelivered,
-    this.ordertype,
   });
 
   CurrentDeliveryModel.fromJson(Map<String, dynamic> json) {
@@ -97,13 +92,13 @@ class CurrentDeliveryModel {
     closetripdatetime = json['closetripdatetime']?.toString();
     tripconfirm = json['tripconfirm'] ?? false;
 
-    tripid = json['tripid'];
-    totalconsign = json['totalconsign'];
+    manifestno = json['manifestno'];
+    manifesttype = json['manifesttype'];
+    pendingDeliveries = json['pendingDeliveries'];
+    deliverIndent = json['deliverIndent'];
+    pendingIndent = json['pendingIndent'];
     noofrvpickups = json['noofrvpickups'];
     noofpickups = json['noofpickups'];
-    delivered = json['delivered'];
-    undelivered = json['undelivered'];
-    ordertype = json['ordertype'];
   }
 
   Map<String, dynamic> toJson() {
@@ -133,13 +128,13 @@ class CurrentDeliveryModel {
     data['closetripdatetime'] = closetripdatetime;
     data['tripconfirm'] = tripconfirm;
 
-    data['tripid'] = tripid;
-    data['totalconsign'] = totalconsign;
+    data['manifestno'] = manifestno;
+    data['manifesttype'] = manifesttype;
+    data['pendingDeliveries'] = pendingDeliveries;
+    data['deliverIndent'] = deliverIndent;
+    data['pendingIndent'] = pendingIndent;
     data['noofrvpickups'] = noofrvpickups;
     data['noofpickups'] = noofpickups;
-    data['delivered'] = delivered;
-    data['undelivered'] = undelivered;
-    data['ordertype'] = ordertype;
     return data;
   }
 }
