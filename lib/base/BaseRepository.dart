@@ -150,9 +150,7 @@ class BaseRepository {
           for (final entry in entries) {
             if (entry.key == "Table") {
               List<dynamic> list2 = entry.value;
-              List<DrsListModel> resultList = List.generate(
-                  list2.length,
-                  (index) => DrsListModel.fromJson(list2[index]));
+              List<DrsListModel> resultList = List.generate(list2.length,    (index) => DrsListModel.fromJson(list2[index]));
               deliveryLiveData.add(resultList);
             }
           }

@@ -489,7 +489,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     String manifestTypeStr = "";
     for (DrsListModel data in _selectedDrsList) {
       manifestStr += data.manifestno!;
-      // manifestTypeStr += data.manifesttype!;
+      manifestTypeStr += data.manifesttype!;
       manifestStr += "~";
       manifestTypeStr += "~";
     }

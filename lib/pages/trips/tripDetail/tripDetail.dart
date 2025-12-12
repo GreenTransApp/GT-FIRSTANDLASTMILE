@@ -133,7 +133,7 @@ class _TripDetailState extends State<TripDetail> {
           IconButton(
               onPressed: () {
                 showDrsSelectionBottomSheet(
-                        context, widget.model.tripid!, false, null)
+                        context, widget.model.tripid!, true, null)
                     .then((value) {
                   refreshScreen();
                 });
