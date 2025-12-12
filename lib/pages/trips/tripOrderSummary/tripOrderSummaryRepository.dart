@@ -18,8 +18,7 @@ class TripOrderSummaryRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp =
-            await apiGet("${lmdUrl}GetOrdersForTripSummary", params);
+        CommonResponse resp = await apiGet("${lmdUrl}getOrderSummary", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());

@@ -8,7 +8,6 @@ import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
-
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class DeliveryRepository extends BaseRepository {
@@ -25,7 +24,7 @@ class DeliveryRepository extends BaseRepository {
       try {
         // viewDialog.add(true);
         CommonResponse resp =
-            await apiGet("${lmdUrl}/getDeliveryDetail", params);
+            await apiGet("${lmdUrl}/getDeliveryDetail_V2", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;

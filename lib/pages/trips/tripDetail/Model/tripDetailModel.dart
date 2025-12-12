@@ -13,6 +13,7 @@ class TripDetailModel {
   int? pendingDeliveries;
   int? noofrvpickups;
   int? noofpickups;
+  int? pendingIndent;
 
   TripDetailModel({
     this.manifestno,
@@ -29,6 +30,7 @@ class TripDetailModel {
     this.pendingDeliveries,
     this.noofrvpickups,
     this.noofpickups,
+    this.pendingIndent,
   });
 
   TripDetailModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class TripDetailModel {
     pendingDeliveries = json['pendingDeliveries'];
     noofrvpickups = json['noofrvpickups'];
     noofpickups = json['noofpickups'];
+    pendingIndent = json['pendingIndent'];
   }
 
   Map<String, dynamic> toJson() {
@@ -64,6 +67,7 @@ class TripDetailModel {
       'pendingDeliveries': pendingDeliveries,
       'noofrvpickups': noofrvpickups,
       'noofpickups': noofpickups,
+      'pendingIndent': pendingIndent,
     };
   }
 }

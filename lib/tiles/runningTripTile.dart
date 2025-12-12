@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
@@ -55,7 +56,7 @@ class RunningTripTile extends StatelessWidget {
               const SizedBox(height: 16),
               _buildDetailsRow(), // Replaced GridView with Row
               const SizedBox(height: 16),
-              _buildFooter(),
+              _buildFooter(onRefresh),
             ],
           ),
         ),
@@ -106,9 +107,11 @@ class RunningTripTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFFe8f5f2),
+          color: CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF4db8a8).withOpacity(0.3)),
+          border: Border.all(
+            color: CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -118,15 +121,15 @@ class RunningTripTile extends StatelessWidget {
                   ? Icons.description_outlined
                   : Icons.schedule_outlined,
               size: 16,
-              color: const Color(0xFF4db8a8),
+              color: CommonColors.White,
             ),
             const SizedBox(width: 6),
             Text(
               _isTripStarted ? 'Summary' : 'Start Trip',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF4db8a8),
+                color: CommonColors.White,
               ),
             ),
           ],
@@ -141,7 +144,11 @@ class RunningTripTile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-            child: _buildInfoItem('Date', model.tripdispatchdate.toString())),
+            child: _buildInfoItem(
+                'Date',
+                isNullOrEmpty(model.tripdispatchdate.toString())
+                    ? "Trip not started"
+                    : model.tripdispatchdate.toString())),
         Expanded(
           child: _buildInfoItem(
               'Starting KM',
@@ -156,17 +163,19 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(Function onRefresh) {
     return Row(
       children: [
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF0F9FF),
+              color: CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
               borderRadius: BorderRadius.circular(10),
-              border:
-                  Border.all(color: const Color(0xFF4db8a8).withOpacity(0.2)),
+              border: Border.all(
+                color:
+                    CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,15 +193,24 @@ class RunningTripTile extends StatelessWidget {
             ),
           ),
         ),
-        if (model.pendingconsignment == 0 && _isTripStarted) ...[
+        if (model.tripdispatchdatetime != null &&
+            model.pendingDeliveries == 0 &&
+            model.pendingIndent == 0) ...[
           const SizedBox(width: 12),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Get.to(() =>
+                      UpdateTripInfo(model: model, status: TripStatus.close))!
+                  .then((_) {
+                onRefresh();
+              });
+            },
             borderRadius: BorderRadius.circular(6),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF4db8a8),
+                color:
+                    CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Icon(Icons.close, size: 16, color: Colors.white),
@@ -207,7 +225,7 @@ class RunningTripTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF4db8a8),
+        color: CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

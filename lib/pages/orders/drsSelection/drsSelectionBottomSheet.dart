@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:gtlmd/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
@@ -57,6 +58,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   @override
   void initState() {
     super.initState();
+    debugPrint('DRS Selection Init State');
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
 
@@ -76,15 +78,15 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   }
 
   setObservers() {
-    _baseRepo.deliveryLiveData.stream.listen((dashboard) {
-      debugPrint('dashboard List Length: ${dashboard.length}');
-      if (dashboard.elementAt(0).commandstatus == 1) {
-        setState(() {
-          _deliveryList = dashboard;
-          _selectedDrsList.clear();
-          allSelected = false;
-        });
-      }
+    viewModel.drsListLiveData.stream.listen((list) {
+      debugPrint('dashboard List Length: ${list.length}');
+      // if (list.elementAt(0).commandstatus == 1) {
+      setState(() {
+        _deliveryList = list;
+        _selectedDrsList.clear();
+        allSelected = false;
+      });
+      // }
     });
 
     _baseRepo.viewDialog.stream.listen((showLoading) async {
@@ -153,7 +155,8 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     };
 
     printParams(params);
-    _baseRepo.getDrsList(params);
+    // _baseRepo.getDrsList(params);
+    viewModel.getDrsList(params);
   }
 
   @override
@@ -240,12 +243,12 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                                 _selectedDrsList.clear();
                                 if (checked == true) {
                                   for (DrsListModel model in _deliveryList) {
-                                    model.tripconfirm = true;
+                                    // model.tripconfirm = true;
                                     _selectedDrsList.add(model);
                                   }
                                 } else {
                                   for (DrsListModel model in _deliveryList) {
-                                    model.tripconfirm = false;
+                                    // model.tripconfirm = false;
                                     _selectedDrsList.clear();
                                   }
                                 }
@@ -463,28 +466,6 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Icon(
-                          Symbols.note_stack,
-                          size: 16,
-                          // color: Color(0xFF94A3B8),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          deliveryModel.manifesttype.toString() == 'D'
-                              ? 'Delivery'
-                              : 'Pickup',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold
-                              // color: Color(0xFF475569),
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ],
@@ -508,7 +489,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     String manifestTypeStr = "";
     for (DrsListModel data in _selectedDrsList) {
       manifestStr += data.manifestno!;
-      manifestTypeStr += data.manifesttype!;
+      // manifestTypeStr += data.manifesttype!;
       manifestStr += "~";
       manifestTypeStr += "~";
     }

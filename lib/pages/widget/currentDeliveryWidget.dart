@@ -3,7 +3,6 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
-
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:lottie/lottie.dart';
 
@@ -54,46 +53,50 @@ class _CurrentDeliveryWidgetState extends State<CurrentDeliveryWidget> {
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: widget.onRefresh,
       child: Container(
-        child: (_deliveryList.isEmpty) == true
-            ? ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Lottie.asset("assets/emptyDelivery.json", height: 150),
-                        const Text(
-                          "No Deliveries",
-                          style: TextStyle(
-                              fontSize: 18, color: CommonColors.appBarColor),
-                        )
-                      ],
+          child: (_deliveryList.isEmpty) == true
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Lottie.asset("assets/emptyDelivery.json",
+                              height: 150),
+                          const Text(
+                            "No Deliveries",
+                            style: TextStyle(
+                                fontSize: 18, color: CommonColors.appBarColor),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              )
-            : ListView.builder(
-                shrinkWrap: true,
-                // physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: _deliveryList.length,
-                itemBuilder: (context, index) {
-                  var currentData = _deliveryList[index];
-                  return DashBoardDeliveryTile(
-                    model: currentData,
-                    // attendanceModel: _attendanceModel,
-                    // onUpdate: widget.onUpdate,
-                    onRefresh: widget.onRefresh,
-                    showHeader: true,
-                    showInfo: true,
-                    showCheckboxSelection: false,
-                    showStatusIndicators: true,
-                    enableTap: true,
-                  );
-                },
-              ),
-      ),
+                  ],
+                )
+              : const Center(
+                  child: Text("Test"),
+                )
+          // ListView.builder(
+          //     shrinkWrap: true,
+          //     // physics: const AlwaysScrollableScrollPhysics(),
+          //     itemCount: _deliveryList.length,
+          //     itemBuilder: (context, index) {
+          //       var currentData = _deliveryList[index];
+          //       return DashBoardDeliveryTile(
+          //         model: currentData,
+          //         // attendanceModel: _attendanceModel,
+          //         // onUpdate: widget.onUpdate,
+          //         onRefresh: widget.onRefresh,
+          //         showHeader: true,
+          //         showInfo: true,
+          //         showCheckboxSelection: false,
+          //         showStatusIndicators: true,
+          //         enableTap: true,
+          //       );
+          //     },
+          //   ),
+          ),
     );
   }
 }

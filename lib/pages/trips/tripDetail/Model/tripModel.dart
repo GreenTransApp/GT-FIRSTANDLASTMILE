@@ -22,30 +22,45 @@ class TripModel {
   String? endreadingimg;
   int? endreadingkm;
   // String? closetripdatetime;
+  int? noofconsign;
+  int? deliveredconsign;
+  int? undeliveredconsign;
+  int? pendingDeliveries;
+  int? noofrvpickups;
+  int? noofpickups;
+  int? pendingIndent;
 
-  TripModel(
-      {this.commandstatus,
-      this.commandmessage,
-      this.tripid,
-      this.totaldrs,
-      this.totalconsignment,
-      this.deliveredconsignment,
-      this.undeliveredconsignment,
-      this.totalpickup,
-      this.pendingconsignment,
-      this.manifestdate,
-      this.manifesttime,
-      this.manifestdatetime,
-      this.tripdispatchdatetime,
-      this.tripdispatchdate,
-      this.tripdispatchtime,
-      this.acceptedflag,
-      this.startreadingkm,
-      this.startreadingimgpath,
-      this.endtripdate,
-      this.endtriptime,
-      this.endreadingimg,
-      this.endreadingkm});
+  TripModel({
+    this.commandstatus,
+    this.commandmessage,
+    this.tripid,
+    this.totaldrs,
+    this.totalconsignment,
+    this.deliveredconsignment,
+    this.undeliveredconsignment,
+    this.totalpickup,
+    this.pendingconsignment,
+    this.manifestdate,
+    this.manifesttime,
+    this.manifestdatetime,
+    this.tripdispatchdatetime,
+    this.tripdispatchdate,
+    this.tripdispatchtime,
+    this.acceptedflag,
+    this.startreadingkm,
+    this.startreadingimgpath,
+    this.endtripdate,
+    this.endtriptime,
+    this.endreadingimg,
+    this.endreadingkm,
+    this.noofconsign,
+    this.deliveredconsign,
+    this.undeliveredconsign,
+    this.pendingDeliveries,
+    this.noofrvpickups,
+    this.noofpickups,
+    this.pendingIndent,
+  });
 
   TripModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -70,6 +85,13 @@ class TripModel {
     endtriptime = json['endtriptime'];
     endreadingimg = json['endreadingimg']?.toString();
     endreadingkm = json['endreadingkm'];
+    noofconsign = json['noofconsign'];
+    deliveredconsign = json['deliveredconsign'];
+    undeliveredconsign = json['undeliveredconsign'];
+    pendingDeliveries = json['pendingDeliveries'];
+    noofrvpickups = json['noofrvpickups'];
+    noofpickups = json['noofpickups'];
+    pendingIndent = json['pendingIndent'];
   }
 
   Map<String, String> toJson() {
@@ -96,6 +118,13 @@ class TripModel {
       'endtriptime': endtriptime ?? '',
       'endreadingimg': endreadingimg ?? '',
       'endreadingkm': endreadingkm?.toString() ?? '',
+      'noofconsign': noofconsign?.toString() ?? '',
+      'deliveredconsign': deliveredconsign?.toString() ?? '',
+      'undeliveredconsign': undeliveredconsign?.toString() ?? '',
+      'pendingDeliveries': pendingDeliveries?.toString() ?? '',
+      'noofrvpickups': noofrvpickups?.toString() ?? '',
+      'noofpickups': noofpickups?.toString() ?? '',
+      'pendingIndent': pendingIndent?.toString() ?? '',
     };
   }
 }

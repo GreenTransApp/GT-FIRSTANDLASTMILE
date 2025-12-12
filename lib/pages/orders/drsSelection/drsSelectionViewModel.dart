@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionRepository.dart';
+import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 
 class DrsSelectionViewModel extends BaseViewModel {
@@ -9,11 +10,14 @@ class DrsSelectionViewModel extends BaseViewModel {
 
   StreamController<UpsertTripResponseModel> upsertTripLiveData =
       StreamController<UpsertTripResponseModel>();
+  StreamController<List<DrsListModel>> drsListLiveData =
+      StreamController<List<DrsListModel>>();
   StreamController<String> isErrorLiveData = StreamController<String>();
 
   DrsSelectionViewModel() {
     upsertTripLiveData = _repository.upsertTripLiveData;
     isErrorLiveData = _repository.isErrorLiveData;
+    drsListLiveData = _repository.drsListLiveData;
   }
 
   void upsertTrip(Map<String, String> params) {
@@ -21,6 +25,6 @@ class DrsSelectionViewModel extends BaseViewModel {
   }
 
   void getDrsList(Map<String, String> params) {
-    _repository.getDrsList(params);
+    _repository.getDrsListV2(params);
   }
 }
