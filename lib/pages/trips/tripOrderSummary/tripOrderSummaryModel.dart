@@ -14,6 +14,8 @@ class TripOrderSummaryModel {
   String? consignmenttype;
   String? consignmenttypeview;
   int? transactionid;
+  String? dispatchdt;
+  String? dispatchtime;
 
   TripOrderSummaryModel({
     this.commandstatus,
@@ -31,6 +33,8 @@ class TripOrderSummaryModel {
     this.consignmenttype,
     this.consignmenttypeview,
     this.transactionid,
+    this.dispatchdt,
+    this.dispatchtime,
   });
 
   factory TripOrderSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,8 @@ class TripOrderSummaryModel {
       consignmenttype: json['consignmenttype'],
       consignmenttypeview: json['consignmenttypeview'],
       transactionid: json['transactionid'],
+      dispatchdt: json['dispatchdt'],
+      dispatchtime: json['dispatchtime'],
     );
   }
 
@@ -70,6 +76,8 @@ class TripOrderSummaryModel {
       'consignmenttype': consignmenttype,
       'consignmenttypeview': consignmenttypeview,
       'transactionid': transactionid,
+      'dispatchdt': dispatchdt,
+      'dispatchtime': dispatchtime,
     };
   }
 }

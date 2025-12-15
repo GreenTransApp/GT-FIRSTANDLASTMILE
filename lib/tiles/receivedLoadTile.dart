@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 
-
 class ReceivedLoadTile extends StatefulWidget {
   final RouteDetailModel model;
   final Future<void> Function(bool value, int index) onCheckChange;
@@ -82,25 +81,35 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
               )
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Text(
-                  modelDetail.address.toString(),
-                  // "address",
-                  style: const TextStyle(),
+          const Divider(),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: CommonColors.grey200,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    modelDetail.address.toString(),
+                    // "address",
+                    style: const TextStyle(),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: CommonColors.grey50,
+                    color: CommonColors.grey200,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(

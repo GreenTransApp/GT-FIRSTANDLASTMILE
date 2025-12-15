@@ -395,7 +395,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                     child: Text(
                       deliveryModel.manifestno.toString(),
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: CommonColors.colorPrimary,
                       ),
@@ -421,6 +421,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                             Icons.check,
                             size: 14,
                             color: CommonColors.white,
+                            semanticLabel: "Select",
                           )
                         : null,
                   ),
@@ -429,31 +430,49 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(
-                    Icons.calendar_today,
-                    size: 16,
-                    color: Color(0xFF94A3B8),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    deliveryModel.createddt.toString(),
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold
-                        // color: Color(0xFF475569),
-                        ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
                   Expanded(
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.local_shipping,
-                          size: 16,
-                          color: Color(0xFF94A3B8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary!
+                                .withAlpha((255 * 0.2).toInt()),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: CommonColors.colorPrimary!,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          deliveryModel.createddt.toString(),
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold
+                              // color: Color(0xFF475569),
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary!
+                                .withAlpha((255 * 0.2).toInt()),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Symbols.package_2_rounded,
+                            size: 16,
+                            color: CommonColors.colorPrimary!,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Text(

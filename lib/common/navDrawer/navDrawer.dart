@@ -130,16 +130,6 @@ class SideMenu extends StatelessWidget {
             thickness: 1,
           ),
           SideMenuItem(
-              title: 'User Profile',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/profile.png')),
-              press: () {
-                Get.to(ProfileScreen());
-              }),
-          const Divider(
-            thickness: 1,
-          ),
-          SideMenuItem(
               title: 'Log-Out',
               leadingIcon:
                   const ImageIcon(AssetImage('assets/images/exit.png')),

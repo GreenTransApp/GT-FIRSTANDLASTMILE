@@ -543,9 +543,13 @@ class _RoutedetailState extends State<Routedetail> {
                                   Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      color: CommonColors.White!
+                                      color: CommonColors.colorPrimary!
                                           .withAlpha((0.3 * 255).round()),
-                                      borderRadius: BorderRadius.circular(12),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: CommonColors.colorPrimary!
+                                            .withAlpha((0.3 * 255).round()),
+                                      ),
                                     ),
                                     child: Icon(
                                       Icons.route,
@@ -607,8 +611,11 @@ class _RoutedetailState extends State<Routedetail> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: CommonColors.grey50,
+                                  color: CommonColors.grey200,
                                   borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: CommonColors.grey200!,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -645,20 +652,40 @@ class _RoutedetailState extends State<Routedetail> {
                     ),
                   ),
                   // Route Timeline
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: CommonColors.colorPrimary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: CommonColors.appBarColor
+                              .withAlpha((0.05 * 255).round()),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.timeline,
-                          size: 20,
-                          color: CommonColors.colorPrimary,
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: CommonColors.White!),
+                          ),
+                          child: Image.asset(
+                            'assets/images/multipointlocation.png',
+                            height: 20,
+                            width: 20,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Delivery Route',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: CommonColors.white,
                           ),
                         ),
                       ],
@@ -871,10 +898,20 @@ class _RoutedetailState extends State<Routedetail> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: color,
+          Container(
+            padding: EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: color.withAlpha((0.3 * 255).round()),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: color.withAlpha((0.3 * 255).round()),
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: color,
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(

@@ -107,10 +107,12 @@ class RunningTripTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
+          color: CommonColors.colorPrimary!,
+          // .withAlpha((255 * 0.5).toInt()),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
+            color: CommonColors.colorPrimary!,
+            // .withAlpha((255 * 0.1).toInt()),
           ),
         ),
         child: Row(
@@ -140,27 +142,41 @@ class RunningTripTile extends StatelessWidget {
 
   // Optimized: Removed heavy GridView
   Widget _buildDetailsRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
+    if (model.tripdispatchdatetime == null) {
+      return const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Trip Not Started',
+              style: TextStyle(
+                  color: Colors.red,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600)),
+          Icon(Icons.warning_amber_rounded, color: Colors.red)
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+              child: _buildInfoItem(
+                  'Date',
+                  isNullOrEmpty(model.tripdispatchdate.toString())
+                      ? "Trip not started"
+                      : model.tripdispatchdate.toString())),
+          Expanded(
             child: _buildInfoItem(
-                'Date',
-                isNullOrEmpty(model.tripdispatchdate.toString())
-                    ? "Trip not started"
-                    : model.tripdispatchdate.toString())),
-        Expanded(
-          child: _buildInfoItem(
-              'Starting KM',
-              isNullOrEmpty(model.startreadingkm.toString())
-                  ? ""
-                  : "${model.startreadingkm} km"),
-        ),
-        Expanded(
-            child: _buildInfoItem(
-                'Consignments', model.totalconsignment.toString())),
-      ],
-    );
+                'Starting KM',
+                isNullOrEmpty(model.startreadingkm.toString())
+                    ? ""
+                    : "${model.startreadingkm} km"),
+          ),
+          Expanded(
+              child: _buildInfoItem(
+                  'Consignments', model.totalconsignment.toString())),
+        ],
+      );
+    }
   }
 
   Widget _buildFooter(Function onRefresh) {
@@ -209,11 +225,11 @@ class RunningTripTile extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color:
-                    CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
+                color: CommonColors.dangerColor!.withAlpha((255 * 0.3).toInt()),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(Icons.close, size: 16, color: Colors.white),
+              child: Icon(Icons.cancel,
+                  size: 16, color: CommonColors.dangerColor!),
             ),
           ),
         ]
@@ -225,7 +241,8 @@ class RunningTripTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: CommonColors.colorPrimary!.withAlpha((255 * 0.5).toInt()),
+        color: CommonColors.colorPrimary!,
+        // .withAlpha((255 * 0.5).toInt()),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

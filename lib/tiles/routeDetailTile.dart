@@ -145,48 +145,60 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  // modelDetail.grno.toString(),
-                  modelDetail.grno.toString(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Visibility(
-                  visible: !isConsignVisible,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary!
-                          .withAlpha((0.1 * 255).round()),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      // 'Stop ${modelDetail.sequenceid}',
-                      'Stop ${widget.index}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: CommonColors.colorPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Visibility(
-              visible: !isFirst && !isLast,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color:
+                    CommonColors.colorPrimary!.withAlpha((0.1 * 255).round()),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
                 children: [
-                  Flexible(
-                    child: Text(
-                      modelDetail.address.toString(),
-                      style: const TextStyle(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        // modelDetail.grno.toString(),
+                        modelDetail.grno.toString(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Visibility(
+                        visible: !isConsignVisible,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary!
+                                .withAlpha((0.1 * 255).round()),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            // 'Stop ${modelDetail.sequenceid}',
+                            'Stop ${widget.index}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: CommonColors.colorPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Visibility(
+                    visible: !isFirst && !isLast,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            modelDetail.address.toString(),
+                            style: const TextStyle(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -194,20 +206,20 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
             ),
             Visibility(
               visible: isPickUp,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Starting location',
                     style: TextStyle(
-                      color: CommonColors.black54,
+                      color: CommonColors.appBarColor,
                       fontSize: 12,
                     ),
                   ),
                   Text(
                     '${modelDetail.address}',
-                    style: TextStyle(
-                      color: CommonColors.black54,
+                    style: const TextStyle(
+                      color: CommonColors.appBarColor,
                       fontSize: 12,
                     ),
                   ),
@@ -216,8 +228,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
             ),
             Visibility(
               visible: isDesitnation,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Destination',
@@ -486,16 +498,16 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                             index: widget.index,
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  top: 16, left: 8, right: 8),
+                                  top: 0, left: 0, right: 8),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 16),
+                                    horizontal: 4, vertical: 24),
                                 decoration: BoxDecoration(
                                     color: CommonColors.colorPrimary,
                                     borderRadius: const BorderRadius.all(
-                                        Radius.circular(8)),
+                                        Radius.circular(12)),
                                     border: Border.all(
-                                        color: CommonColors.appBarColor,
+                                        color: CommonColors.colorPrimary!,
                                         width: 1)),
                                 child: RotatedBox(
                                   quarterTurns: 3,
@@ -820,6 +832,9 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
 
     // Color? borderColor = CommonColors.colorPrimary;
     Color? borderColor = dotColor;
+    if (isPickUp) {
+      borderColor = CommonColors.colorPrimary;
+    }
     if (isDesitnation) {
       borderColor = CommonColors.green600;
     }

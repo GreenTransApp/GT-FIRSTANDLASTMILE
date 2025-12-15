@@ -492,8 +492,10 @@ class _HomeScreen extends State<HomeScreen>
   Widget attendanceInfo() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
       decoration: BoxDecoration(
         color: CommonColors.colorPrimary,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -594,6 +596,12 @@ class _HomeScreen extends State<HomeScreen>
     if (attendanceModel == null) {
       return Scaffold(
           appBar: AppBar(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
             backgroundColor: CommonColors.colorPrimary,
             leading: Builder(builder: (context) {
               return IconButton(
@@ -620,6 +628,12 @@ class _HomeScreen extends State<HomeScreen>
     } else {
       return Scaffold(
           appBar: AppBar(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
             backgroundColor: CommonColors.colorPrimary,
             title: const Text(
               'LMD Dashboard',
@@ -641,14 +655,17 @@ class _HomeScreen extends State<HomeScreen>
             }),
             actions: [
               Badge(
+                backgroundColor: CommonColors.orange,
                 label: Text('${offlinePodCount + offlineUndeliveryCount}'),
                 offset: const Offset(-3, 5),
                 child: IconButton.outlined(
                   style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        CommonColors.White!.withAlpha((255 * 0.2).toInt())),
                     side: WidgetStatePropertyAll(
                       BorderSide(
-                          color: CommonColors
-                              .white!), // <-- Outline color and width
+                          color: CommonColors.White!.withAlpha((255 * 0.2)
+                              .toInt())), // <-- Outline color and width
                     ),
                   ),
                   color: CommonColors.white,
@@ -658,7 +675,7 @@ class _HomeScreen extends State<HomeScreen>
                     refreshScreen();
                   },
                   icon: Icon(
-                    Icons.sync,
+                    Symbols.autorenew_rounded,
                     color: CommonColors.white,
                   ),
                 ),
@@ -714,7 +731,7 @@ class _HomeScreen extends State<HomeScreen>
                   Symbols.package_2,
                   color: CommonColors.colorPrimary,
                 ),
-                label: "ORDERS",
+                label: "CREATE TRIP",
               ),
               NavigationDestination(
                 icon: const Icon(Symbols.delivery_truck_bolt),

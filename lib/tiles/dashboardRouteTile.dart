@@ -32,9 +32,10 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.black)),
+      // shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //     side: const BorderSide(color: Colors.black
+      //     )),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -48,8 +49,16 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.location_on,
-                          size: 16, color: CommonColors.colorPrimary),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: CommonColors.colorPrimary!
+                              .withAlpha((255 * 0.1).toInt()),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Icon(Icons.location_on,
+                            size: 16, color: CommonColors.colorPrimary),
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -92,35 +101,50 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
             const SizedBox(height: 16),
 
             // Card Content
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 2.5,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 8,
-              children: [
-                InfoItem(
-                    label: 'Route ID',
-                    value: isNullOrEmpty(widget.model.planningid.toString())
-                        ? "Data not found"
-                        : widget.model.planningid.toString()),
-                InfoItem(
-                    label: 'No. of Consignment',
-                    value: isNullOrEmpty(widget.model.noofconsign.toString())
-                        ? "Data not found"
-                        : widget.model.noofconsign.toString()),
-                InfoItem(
-                    label: 'Total Weight',
-                    value: isNullOrEmpty(widget.model.totweight)
-                        ? "Data not found"
-                        : widget.model.totweight.toString()),
-                InfoItem(
-                    label: 'Total Distance',
-                    value: isNullOrEmpty(widget.model.totdistance.toString())
-                        ? "Data not found"
-                        : widget.model.totdistance.toString()),
-              ],
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color:
+                    CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
+                border: Border.all(
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(1),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      InfoItem(
+                        label: 'Route ID',
+                        value: widget.model.planningid.toString(),
+                      ),
+                      InfoItem(
+                        label: 'No. of Consignment',
+                        value: widget.model.noofconsign.toString(),
+                      ),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      InfoItem(
+                        label: 'Total Weight',
+                        value: widget.model.totweight.toString(),
+                      ),
+                      InfoItem(
+                        label: 'Total Distance',
+                        value: widget.model.totdistance.toString(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -148,10 +172,17 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ), // Disable if not punched in
-                child: Text(employeeid != null &&
+                child: employeeid != null &&
                         widget.attendanceModel.attendancestatus == "Absent"
-                    ? 'Punch-in Required'
-                    : 'View Details'),
+                    ? const Text("Punch-in Required")
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.remove_red_eye),
+                          SizedBox(width: 12),
+                          Text("View Details"),
+                        ],
+                      ),
               ),
             ),
 

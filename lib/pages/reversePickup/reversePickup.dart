@@ -395,43 +395,46 @@ class _ReversePickupState extends State<ReversePickup> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            SizedBox(
-                              width: MediaQuery.sizeOf(context).width * 0.25,
-                              child: Container(
-                                // padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: CommonColors.whiteShade,
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
-                                  ),
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_skuController.text.isEmpty) {
-                                      failToast("Please enter SKU");
-                                      return;
-                                    } else {
-                                      getReversePickupData();
-                                      ();
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        CommonColors.primaryColorShade,
-                                    foregroundColor: CommonColors.White,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                            Visibility(
+                              visible: !skuVerified,
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 0.25,
+                                child: Container(
+                                  // padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: CommonColors.whiteShade,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
                                     ),
-                                    elevation: 0,
                                   ),
-                                  child: const Text(
-                                    'Submit',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (_skuController.text.isEmpty) {
+                                        failToast("Please enter SKU");
+                                        return;
+                                      } else {
+                                        getReversePickupData();
+                                        ();
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          CommonColors.primaryColorShade,
+                                      foregroundColor: CommonColors.White,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: const Text(
+                                      'Submit',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                 ),

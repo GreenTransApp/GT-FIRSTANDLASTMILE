@@ -147,38 +147,17 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
   }
 
   Widget orderInfo(TripOrderSummaryModel model, int index) {
+    // Color backgroundColor = CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
+    // Color dotColor = CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
+
     Color backgroundColor =
         CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
-    // if (model.orderStatus == "Picked") {
-    //   backgroundColor =
-    //       CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
-    // } else if (model.orderStatus == "Un-Picked") {
-    //   backgroundColor =
-    //       CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
-    // } else if (model.orderStatus == "Delivered") {
-    //   backgroundColor = CommonColors.green200!.withAlpha((0.6 * 255).round());
-    // } else if (model.orderStatus == "Un-Delivered") {
-    //   backgroundColor = CommonColors.red200!.withAlpha((0.6 * 255).round());
-    // } else if (model.orderStatus == "Pending") {
-    //   backgroundColor = CommonColors.amber200!.withAlpha((0.6 * 255).round());
-    // }
     Color dotColor = CommonColors.colorPrimary!.withAlpha((0.2 * 255).round());
-    // if (model.orderStatus == "Picked") {
-    //   dotColor = CommonColors.colorPrimary!;
-    // } else if (model.orderStatus == "Un-Picked") {
-    //   dotColor = CommonColors.colorPrimary!;
-    // } else if (model.orderStatus == "Delivered") {
-    //   dotColor = CommonColors.green600!;
-    // } else if (model.orderStatus == "Un-Delivered") {
-    //   dotColor = CommonColors.red600!;
-    // } else if (model.orderStatus == "Pending") {
-    //   dotColor = CommonColors.amber500!;
-    // }
-
+    String status = "";
     if (model.consignmenttype == "R") {
       switch (model.reversepickupstatus) {
         case "U":
-          // status = "Un-Picked";
+          status = "Un-Picked";
           dotColor = CommonColors.colorPrimary!;
           // cardBorderColor = CommonColors.colorPrimary!;
           backgroundColor =
@@ -187,16 +166,17 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
           // statusIconColor = CommonColors.colorPrimary!;
           break;
         case "D":
-          // status = "Picked";
+          status = "Picked";
           dotColor = CommonColors.colorPrimary!;
-          backgroundColor = CommonColors.colorPrimary!;
+          backgroundColor =
+              CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
           // cardBgColor =
           //     CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
           // statusIcon = Icons.check_circle;
           // statusIconColor = CommonColors.colorPrimary!;
           break;
         case "P":
-          // status = "Pending";
+          status = "Pending";
           dotColor = CommonColors.colorPrimary!;
           backgroundColor = CommonColors.colorPrimary!;
           // cardBorderColor = CommonColors.colorPrimary!;
@@ -209,21 +189,21 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
     } else if (model.consignmenttype == 'D' || model.consignmenttype == 'U') {
       switch (model.deliverystatus) {
         case "U":
-          // status = "Undelivered";
+          status = "Undelivered";
           dotColor = CommonColors.red500!;
           backgroundColor = CommonColors.red50!;
           // statusIcon = Icons.cancel;
           // statusIconColor = CommonColors.red500!;
           break;
         case "D":
-          // status = "Delivered";
+          status = "Delivered";
           dotColor = CommonColors.green500!;
           backgroundColor = CommonColors.green50!;
           // statusIcon = Icons.check_circle;
           // statusIconColor = CommonColors.green500!;
           break;
         case "P":
-          // status = "Pending";
+          status = "Pending";
           dotColor = CommonColors.amber500!;
           backgroundColor = CommonColors.amber50!;
           // statusIcon = Icons.access_time;
@@ -233,7 +213,7 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
     } else {
       switch (model.pickupstatus) {
         // case "U":
-        //   status = "Undelivered";
+        // status = "Undelivered";
         //   dotColor = CommonColors.red500!;
         //   cardBorderColor = CommonColors.red500!;
         //   cardBgColor = CommonColors.red50!;
@@ -241,21 +221,21 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
         //   statusIconColor = CommonColors.red500!;
         //   break;
         case "D":
-          // status = "Picked";
+          status = "Picked";
           dotColor = CommonColors.green500!;
           backgroundColor = CommonColors.green50!;
           // statusIcon = Icons.check_circle;
           // statusIconColor = CommonColors.green500!;
           break;
         case "P":
-          // status = "Pending";
+          status = "Pending";
           dotColor = CommonColors.amber500!;
           backgroundColor = CommonColors.amber50!;
           // statusIcon = Icons.access_time;
           // statusIconColor = CommonColors.amber500!;
           break;
         default:
-          // status = "Pending";
+          status = "Pending";
           dotColor = CommonColors.amber500!;
           backgroundColor = CommonColors.amber50!;
           break;
@@ -322,7 +302,7 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
                     Expanded(
                         child: infoItem(
                       "Date",
-                      "Chale?",
+                      model.dispatchdt.toString(),
                       // model.orderStatus.toString(),
                       CrossAxisAlignment.end,
                     )),
@@ -336,22 +316,17 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
                     Expanded(
                         child: infoItem(
                       "Order Type",
-                      model.consignmenttype == "R"
-                          ? "Reverse"
-                          : model.consignmenttype == "D"
-                              ? "Delivery"
-                              : "Pickup",
+                      model.consignmenttypeview.toString(),
                       // model.ordertype.toString(),
                       // model.orderStatus.toString(),
                       CrossAxisAlignment.start,
                     )),
-                    // Expanded(
-                    //     child: infoItem(
-                    //   "Status",
-                    //   model.orderStatus.toString(),
-                    //   model.orderStatus.toString(),
-                    //   CrossAxisAlignment.end,
-                    // )),
+                    Expanded(
+                        child: infoItem(
+                      "Status",
+                      status,
+                      CrossAxisAlignment.end,
+                    )),
                   ],
                 )
               ],

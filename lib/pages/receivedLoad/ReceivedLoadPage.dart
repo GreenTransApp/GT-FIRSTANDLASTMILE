@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -12,7 +11,6 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/receivedLoad/ReceivedLoadViewModel.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
-
 import 'package:gtlmd/tiles/receivedLoadTile.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 

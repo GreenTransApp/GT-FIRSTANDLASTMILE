@@ -8,14 +8,12 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/pages/home/homeScreenPage.dart';
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/companySelectionModel.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
 import 'package:gtlmd/pages/offlineView/offlinePassword.dart';
-import 'package:gtlmd/service/authenticationService.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -58,7 +56,8 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('Login resp live data');
       LoginModel loginCredsModel =
           LoginModel(username: resp.username, password: resp.password);
-      authService.storagePush(ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
+      authService.storagePush(
+          ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
       companyId = savedLogin.companyid.toString();
       validateUserLogin();
     });
@@ -159,13 +158,22 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.all(32),
-              child: Image.asset(
-                "assets/gtinfinit_logo.png",
-                width: MediaQuery.sizeOf(context).width * 0.7,
-                height: 100,
-              ),
+            Stack(
+              // Aligns all non-positioned children to the bottom center by default
+              children: <Widget>[
+                // Bottom image (appears first in the code, at the bottom of the stack)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/gtinfinitilogo.png',
+                      width: MediaQuery.sizeOf(context).width * 0.7,
+                      height: 100,
+                    ),
+                  ],
+                ),
+                // Top image (aligned to bottom center by the Stack's alignment property)
+              ],
             ),
             Expanded(
               child: SingleChildScrollView(

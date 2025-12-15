@@ -143,6 +143,7 @@ class HomeRepository extends BaseRepository {
     }
   }
 
+// NOT USED AS OF NOW IN NEW FIRST MILE LAST MILE
   void updateDrsDateTime(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;

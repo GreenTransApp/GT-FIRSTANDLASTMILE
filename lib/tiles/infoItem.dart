@@ -22,7 +22,7 @@ class InfoItem extends StatelessWidget {
           label,
           style: const TextStyle(
             fontSize: 12,
-            color: Colors.black54,
+            color: CommonColors.appBarColor,
           ),
         ),
         const SizedBox(height: 4),

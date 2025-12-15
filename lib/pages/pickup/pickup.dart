@@ -2392,6 +2392,7 @@ class _PickupState extends State<Pickup> {
                                           icon: Icons.people_outline,
                                           child: DropdownButtonFormField<
                                               BookingTypeModel>(
+                                            isExpanded: true,
                                             value: _selectedBookingType,
                                             decoration: _inputDecoration(
                                                 'Select booking type'),
@@ -2528,6 +2529,7 @@ class _PickupState extends State<Pickup> {
                                           icon: Icons.people_outline,
                                           child: DropdownButtonFormField<
                                               ServiceTypeModel>(
+                                            isExpanded: true,
                                             value: _selectedServiceType,
                                             decoration: _inputDecoration(
                                                 'Select Service Type'),
@@ -2603,6 +2605,7 @@ class _PickupState extends State<Pickup> {
                                           icon: Icons.check_circle_outline,
                                           child: DropdownButtonFormField<
                                               LoadTypeModel>(
+                                            isExpanded: true,
                                             value: _selectedLoadType,
                                             decoration:
                                                 _inputDecoration('Select Load'),
@@ -2675,6 +2678,7 @@ class _PickupState extends State<Pickup> {
                                           icon: Icons.label_outline,
                                           child: DropdownButtonFormField<
                                               DeliveryTypeModel>(
+                                            isExpanded: true,
                                             value: _selectedDeliveryType,
                                             decoration: _inputDecoration(
                                                 'Select Delivery Type'),
@@ -2698,7 +2702,7 @@ class _PickupState extends State<Pickup> {
                                             },
                                             validator: (value) {
                                               if (value == null) {
-                                                return 'Please select a Type';
+                                                return 'Please select a Delivery Type';
                                               }
                                               return null;
                                             },
