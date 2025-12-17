@@ -39,7 +39,8 @@ class Loginrepository {
         CommonResponse response =
             await apiPost("${loginBaseUrl}ValidateLogin", params);
         if (response.commandStatus == 1) {
-          List<dynamic> table = jsonDecode(response.dataSet.toString());
+          List<dynamic> table = await compute<String, dynamic>(
+              jsonDecode, response.dataSet.toString());
           debugPrint('JSON Decode completed:');
           LoginModel loginResponse = LoginModel.fromJson(table[0]);
           debugPrint('Login resp - ${jsonEncode(loginResponse)}');
@@ -86,7 +87,8 @@ class Loginrepository {
           await apiPost("${loginBaseUrl}ValidateUserLogin", params);
       viewDialog.add(false);
       if (resp.commandStatus == 1) {
-        List<dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> table =
+            await compute<String, dynamic>(jsonDecode, resp.dataSet.toString());
         UserModel validateduserResp = UserModel.fromJson(table[0]);
         saveInStorageUser = jsonEncode(table[0]);
         if (validateduserResp.commandstatus == 1) {
@@ -118,7 +120,8 @@ class Loginrepository {
             await apiGet("${lmdUrl}GetLoginOtpForValidate", params);
 
         if (resp.commandStatus == 1) {
-          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Map<String, dynamic> table = await compute<String, dynamic>(
+              jsonDecode, resp.dataSet.toString());
           List<dynamic> list = table.values.first;
           debugPrint("validate login with otp list: ${list}");
           List<ValidateLoginwithOtpModel> resultList = List.generate(
@@ -155,7 +158,8 @@ class Loginrepository {
             await apiPost("${loginBaseUrl}ValidatedUserMobileNoFomD2d", params);
 
         if (resp.commandStatus == 1) {
-          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Map<String, dynamic> table = await compute<String, dynamic>(
+              jsonDecode, resp.dataSet.toString());
           List<dynamic> list = table.values.first;
           List<UserCredsModel> resultList = List.generate(
               list.length, (index) => UserCredsModel.fromJson(list[index]));

@@ -149,285 +149,356 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenDimension.width = MediaQuery.of(context).size.width;
-    ScreenDimension.height = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // Let scaffold adjust when keyboard is visible
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Stack(
-              // Aligns all non-positioned children to the bottom center by default
-              children: <Widget>[
-                // Bottom image (appears first in the code, at the bottom of the stack)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/gtinfinitilogo.png',
-                      width: MediaQuery.sizeOf(context).width * 0.7,
-                      height: 100,
-                    ),
-                  ],
+            // Background decorative circles
+            Positioned(
+              top: -100,
+              left: -100,
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      CommonColors.colorPrimary!,
+                      CommonColors.colorPrimary!.withAlpha((0.8 * 255).toInt()),
+                    ],
+                  ),
                 ),
-                // Top image (aligned to bottom center by the Stack's alignment property)
-              ],
+              ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          const Text(
-                            'Phone No.',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+            Positioned(
+              top: -50,
+              left: 50,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.5 * 255).toInt()),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -120,
+              right: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      CommonColors.colorPrimary!,
+                      CommonColors.colorPrimary!.withAlpha((0.7 * 255).toInt()),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 50,
+              right: 100,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.4 * 255).toInt()),
+                ),
+              ),
+            ),
+            // Main content
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 60),
+                        // Logo
+                        Image.asset(
+                          'assets/images/gtinfinitilogo.png',
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: 80,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Login To Your Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
                           ),
-                          SizedBox(
-                              height: 72,
-                              child: TextField(
-                                  enabled: true,
-                                  decoration: const InputDecoration(
-                                      prefixIcon: Icon(
-                                        Icons.person_3_rounded,
-                                        color: CommonColors.appBarColor,
-                                      ),
-                                      border: OutlineInputBorder(),
-                                      label: Text("Phone Number"),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(32),
-                                        ),
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(32),
-                                        ),
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                      ),
-                                      floatingLabelBehavior:
-                                          FloatingLabelBehavior.never),
-                                  controller: usermobileController,
-                                  cursorColor: Colors.black,
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.next)),
-                          const Text(
-                            'Password',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 40),
+                        // Phone Number Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            height: 72,
-                            child: TextField(
-                              obscureText: isPasswordVisible,
-                              enabled: true,
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          isPasswordVisible =
-                                              !isPasswordVisible;
-                                        });
-                                      },
-                                      icon: isPasswordVisible == true
-                                          ? const Icon(
-                                              Icons.visibility_rounded,
-                                              color: CommonColors.appBarColor,
-                                            )
-                                          : const Icon(
-                                              Icons.visibility_off_rounded,
-                                              color: CommonColors.appBarColor)),
-                                  prefixIcon: const Icon(
-                                    Icons.key_rounded,
-                                    color: CommonColors.appBarColor,
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  label: const Text("Password"),
-                                  enabledBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(32),
-                                    ),
-                                    borderSide: BorderSide(color: Colors.black),
-                                  ),
-                                  focusedBorder: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(32),
-                                    ),
-                                    borderSide: BorderSide(color: Colors.black),
-                                  ),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.never),
-                              controller: passwordController,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.text,
-                              textInputAction: TextInputAction.go,
+                          child: TextField(
+                            controller: usermobileController,
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              hintText: 'Phone Number',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: CommonColors.colorPrimary!,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.phone_android,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
+                        ),
+                        const SizedBox(height: 20),
+                        // Password Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: passwordController,
+                            obscureText: isPasswordVisible,
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.go,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: CommonColors.colorPrimary!,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isPasswordVisible = !isPasswordVisible;
+                                  });
+                                },
+                                icon: Icon(
+                                  isPasswordVisible
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: Colors.grey[600],
+                                  size: 20,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Forgot Password
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
                               if (isNullOrEmpty(
                                   usermobileController.text.toString())) {
-                                failToast("Please Ente Mobile Number.");
+                                failToast("Please Enter Mobile Number.");
                                 return;
                               } else {
-                                authenticaionFlow =
-                                    AuthenticationFlow.forgotPassword;
+                                // authenticaionFlow = AuthenticationFlow.forgotPassword;
                                 _validateUserMobile();
                               }
                             },
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 10, bottom: 10, right: 10),
-                                child: Text(
-                                  'Forgot Password ?',
-                                  style: TextStyle(
-                                      color: CommonColors.disableColor),
-                                ),
+                            child: Text(
+                              'Forgot password?',
+                              style: TextStyle(
+                                color: CommonColors.colorPrimary!,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-                          Container(
-                            width: double.infinity,
-                            height: 69,
-                            padding: const EdgeInsets.all(5),
-                            child: ElevatedButton(
-                                style: ButtonStyle(
-                                  shape: const WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(32)))),
-                                  backgroundColor: WidgetStatePropertyAll(
-                                      CommonColors.colorPrimary),
-                                ),
-                                onPressed: () {
-                                  debugPrint(
-                                      'Mobile No. -> ${usermobileController.value.text}');
-                                  debugPrint(
-                                      'Password -> ${passwordController.value.text}');
-                                  checkUserAndPass();
-                                },
-                                child: Text(
-                                  'Login'.toUpperCase(),
-                                  style: TextStyle(color: CommonColors.white),
-                                )),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.sizeOf(context).width,
-                            height: 50,
-                            child: Center(
-                              child: Text(
-                                "OR",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: CommonColors.disableColor),
+                        ),
+                        const SizedBox(height: 20),
+                        // Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: CommonColors.colorPrimary!,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: () {
+                              debugPrint(
+                                  'Mobile No. -> ${usermobileController.value.text}');
+                              debugPrint(
+                                  'Password -> ${passwordController.value.text}');
+                              checkUserAndPass();
+                            },
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
-                          Container(
-                            width: double.infinity,
-                            height: 69,
-                            padding: const EdgeInsets.all(5),
-                            child: OutlinedButton(
-                                style: ButtonStyle(
-                                  side: WidgetStatePropertyAll(
-                                    BorderSide(
-                                      color: CommonColors
-                                          .colorPrimary!, // or any color you want
-                                      width:
-                                          1.5, // optional: thickness of the border
+                        ),
+                        const SizedBox(height: 30),
+                        // Login with OTP and Offline Mode buttons in a row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 56,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: CommonColors.colorPrimary!,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
+                                    elevation: 0,
                                   ),
-                                  shape: const WidgetStatePropertyAll(
-                                    RoundedRectangleBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(32),
-                                      ),
-                                    ),
+                                  onPressed: () {
+                                    if (isNullOrEmpty(
+                                        usermobileController.text.toString())) {
+                                      failToast('Please Enter Mobile Number');
+                                      return;
+                                    } else {
+                                      // authenticaionFlow = AuthenticationFlow.loginWithOtp;
+                                      _validateUserMobile();
+                                    }
+                                  },
+                                  icon: const Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.white,
+                                    size: 20,
                                   ),
-                                  /* backgroundColor: WidgetStatePropertyAll(
-                                      CommonColors.colorPrimary) */
-                                ),
-                                onPressed: () {
-                                  if (isNullOrEmpty(
-                                      usermobileController.text.toString())) {
-                                    failToast('Please Enter Mobile Number');
-                                    return;
-                                  } else {
-                                    authenticaionFlow =
-                                        AuthenticationFlow.loginWithOtp;
-                                    _validateUserMobile();
-                                  }
-                                },
-                                child: Text(
-                                  'Login with OTP'.toUpperCase(),
-                                  style: TextStyle(
-                                      color: CommonColors.colorPrimary!),
-                                )),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            height: 69,
-                            padding: const EdgeInsets.all(5),
-                            child: OutlinedButton.icon(
-                              style: ButtonStyle(
-                                shape: const WidgetStatePropertyAll(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(32),
+                                  label: const Text(
+                                    'LOGIN WITH OTP',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
-                                side: WidgetStatePropertyAll(
-                                  BorderSide(
-                                    color: CommonColors
-                                        .colorPrimary!, // Correct place for border color
-                                    width: 1.5, // Optional: thickness
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                goOffline();
-                              },
-                              label: Text(
-                                "Offline Mode",
-                                style:
-                                    TextStyle(color: CommonColors.colorPrimary),
-                              ),
-                              icon: Icon(
-                                Icons.cloud_off,
-                                color: CommonColors.colorPrimary,
                               ),
                             ),
-                          )
-                        ],
-                      ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: SizedBox(
+                                height: 56,
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.grey[300]!,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    backgroundColor: Colors.grey[100],
+                                  ),
+                                  onPressed: () {
+                                    goOffline();
+                                  },
+                                  icon: Icon(
+                                    Icons.cloud_off_outlined,
+                                    color: Colors.grey[700],
+                                    size: 20,
+                                  ),
+                                  label: Text(
+                                    'OFFLINE MODE',
+                                    style: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Image.asset(
-                width: 200,
-                height: 50,
-                'assets/poweredby.png',
-              ),
+                // Powered by image at bottom
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Image.asset(
+                    'assets/poweredby.png',
+                    width: 180,
+                    height: 45,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

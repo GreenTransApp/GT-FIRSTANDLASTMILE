@@ -355,9 +355,11 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   Widget manifestCard(DrsListModel deliveryModel) {
     Color backColor = CommonColors.White!;
     if (deliveryModel.manifesttype == 'D') {
-      backColor = CommonColors.green200!.withAlpha((0.3 * 255).toInt());
+      backColor = CommonColors.green200!;
+      // .withAlpha((0.3 * 255).toInt());
     } else {
-      backColor = CommonColors.amber200!.withAlpha((0.3 * 255).toInt());
+      backColor = CommonColors.amber200!;
+      // .withAlpha((0.3 * 255).toInt());
     }
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -369,30 +371,26 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: const Color(0xFFE2E8F0),
+              color: backColor,
               width: 1,
             ),
-            color: backColor,
+            // color: backColor,
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary!
-                          .withAlpha(((0.1) * 255).toInt()),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
+              Container(
+                decoration: BoxDecoration(
+                  color: backColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.only(
+                    left: 16, right: 0, top: 8, bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
                       deliveryModel.manifestno.toString(),
                       style: TextStyle(
                         fontSize: 13,
@@ -400,92 +398,96 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                         color: CommonColors.colorPrimary,
                       ),
                     ),
-                  ),
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      border: Border.all(
+                    Container(
+                      width: 20,
+                      height: 20,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _selectedDrsList.contains(deliveryModel)
+                              ? CommonColors.colorPrimary!
+                              : const Color(0xFFCBD5E1),
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
                         color: _selectedDrsList.contains(deliveryModel)
                             ? CommonColors.colorPrimary!
-                            : const Color(0xFFCBD5E1),
-                        width: 2,
+                            : Colors.white,
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                      color: _selectedDrsList.contains(deliveryModel)
-                          ? CommonColors.colorPrimary!
-                          : Colors.white,
+                      child: _selectedDrsList.contains(deliveryModel)
+                          ? Icon(
+                              Icons.check,
+                              size: 14,
+                              color: CommonColors.white,
+                              semanticLabel: "Select",
+                            )
+                          : null,
                     ),
-                    child: _selectedDrsList.contains(deliveryModel)
-                        ? Icon(
-                            Icons.check,
-                            size: 14,
-                            color: CommonColors.white,
-                            semanticLabel: "Select",
-                          )
-                        : null,
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary!
-                                .withAlpha((255 * 0.2).toInt()),
-                            shape: BoxShape.circle,
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: CommonColors.colorPrimary!
+                                  .withAlpha((255 * 0.2).toInt()),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.calendar_today,
+                              size: 16,
+                              color: CommonColors.colorPrimary!,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: CommonColors.colorPrimary!,
+                          const SizedBox(width: 12),
+                          Text(
+                            deliveryModel.createddt.toString(),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold
+                                // color: Color(0xFF475569),
+                                ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          deliveryModel.createddt.toString(),
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold
-                              // color: Color(0xFF475569),
-                              ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary!
-                                .withAlpha((255 * 0.2).toInt()),
-                            shape: BoxShape.circle,
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: CommonColors.colorPrimary!
+                                  .withAlpha((255 * 0.2).toInt()),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Symbols.package_2_rounded,
+                              size: 16,
+                              color: CommonColors.colorPrimary!,
+                            ),
                           ),
-                          child: Icon(
-                            Symbols.package_2_rounded,
-                            size: 16,
-                            color: CommonColors.colorPrimary!,
+                          const SizedBox(width: 12),
+                          Text(
+                            '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold
+                                // color: Color(0xFF475569),
+                                ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold
-                              // color: Color(0xFF475569),
-                              ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
