@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/common/debug.dart';
@@ -33,60 +34,92 @@ const bikerUrl = "$baseUrl/Biker/";
 const crmUrl = "$baseUrl/CRMPORTALAPI/";
 const lmdUrl = "$baseUrl/LMDAPI/";
 
-Future<CommonResponse> apiGet(
-    String apiName, Map<String, String> params) async {
-  debugPrint('apiGet Called');
-  String apiNameWithParamsAdded = '$apiName?';
-  // apiNameWithParamsAdded += "&$key=$value";
+/// Service class to handle API interactions
+class ApiService {
+  // Singleton instance
+  static final ApiService _instance = ApiService._internal();
 
-  for (final mapEntry in params.entries) {
-    final key = mapEntry.key;
-    final value = mapEntry.value;
-    apiNameWithParamsAdded += '$key=$value&';
+  static ApiService get instance => _instance;
+
+  ApiService._internal();
+
+  // Timeout duration for API calls
+  static const Duration _timeout = Duration(seconds: 30);
+
+  /// Performs a GET request
+  Future<CommonResponse> get(String apiName, Map<String, String> params) async {
+    debugPrint('ApiService.get Called: $apiName');
+
+    try {
+      // Use Uri constructor for safe parameter encoding
+      final uri = Uri.parse(apiName).replace(queryParameters: params);
+
+      final response = await http.get(uri).timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        // Offload JSON decoding to a background isolate
+        final json = await compute(_parseJson, response.body);
+        return CommonResponse.fromJson(json);
+      } else {
+        throw Exception(
+            'Failed to Get Data: StatusCode ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('ApiService.get Error: $e');
+      rethrow;
+    }
   }
-  apiNameWithParamsAdded =
-      apiNameWithParamsAdded.substring(0, apiNameWithParamsAdded.length - 1);
-  final response = await http.get(Uri.parse(apiNameWithParamsAdded));
-  if (response.statusCode == 200) {
-    var json = CommonResponse.fromJson(jsonDecode(response.body));
-    return json;
-  } else {
-    throw Exception('Failed to Get Data');
+
+  /// Performs a POST request
+  Future<CommonResponse> post(
+      String apiName, Map<String, dynamic> params) async {
+    debugPrint('ApiService.post Called: $apiName');
+
+    try {
+      final response = await http
+          .post(
+            Uri.parse(apiName),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            // jsonEncode is relatively fast, but for very large bodies could also be computed.
+            // Keeping it on main thread for now as it's usually smaller than response.
+            body: jsonEncode(params),
+          )
+          .timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        // Offload JSON decoding to a background isolate
+        final json = await compute(_parseJson, response.body);
+        return CommonResponse.fromJson(json);
+      } else {
+        throw Exception(
+            'Failed to Post Data: StatusCode ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('ApiService.post Error: $e');
+      rethrow;
+    }
+  }
+
+  // Static function for compute to call
+  static dynamic _parseJson(String jsonString) {
+    return jsonDecode(jsonString);
   }
 }
-// Future<CommonResponse> apiget(String apiName, Map<String, String> params) async {
-//   String apiNameWithParamsAdded = '$apiName?';
-//   // apiNameWithParamsAdded += "&$key=$value";
-//
-//   for (final mapEntry in params.entries) {
-//     final key = mapEntry.key;
-//     final value = mapEntry.value;
-//     apiNameWithParamsAdded += '$key=$value&';
-//   }
-//   apiNameWithParamsAdded = apiNameWithParamsAdded.substring(0, apiNameWithParamsAdded.length-1);
-//   final response = await http.get(Uri.parse(apiNameWithParamsAdded));
-//   if (response.statusCode == 200) {
-//     var json = CommonResponse.fromJson(jsonDecode(response.body));
-//     return json;
-//   } else {
-//     throw Exception('Failed to Get Data');
-//   }
-// }
+
+// ---------------------------------------------------------------------------
+// Legacy Wrappers (Backward Compatibility)
+// ---------------------------------------------------------------------------
+
+Future<CommonResponse> apiGet(
+    String apiName, Map<String, String> params) async {
+  return ApiService.instance.get(apiName, params);
+}
 
 Future<CommonResponse> apiPost(
     String apiName, Map<String, dynamic> params) async {
-  final response = await http.post(
-    Uri.parse(apiName),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(params),
-  );
-  if (response.statusCode == 200) {
-    return CommonResponse.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Failed to Post Data');
-  }
+  return ApiService.instance.post(apiName, params);
 }
 
 // Example
