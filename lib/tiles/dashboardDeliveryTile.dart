@@ -81,7 +81,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
           // } else {
           if (widget.enableTap) {
             Get.to(DeliveryDetail(
-              model: widget.model,
+              // model: widget.model,
               tripModel: widget.tripModel,
             ))?.then((_) => {widget.onRefresh()});
           }

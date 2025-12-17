@@ -85,7 +85,7 @@ class _RoutedetailState extends State<Routedetail> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": modelDetail.planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
@@ -227,7 +227,7 @@ class _RoutedetailState extends State<Routedetail> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": modelDetail.planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
@@ -322,7 +322,7 @@ class _RoutedetailState extends State<Routedetail> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": modelDetail.planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
@@ -346,7 +346,7 @@ class _RoutedetailState extends State<Routedetail> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": modelDetail.planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };

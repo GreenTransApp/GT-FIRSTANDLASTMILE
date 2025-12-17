@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
+import 'package:gtlmd/pages/deliveryDetail/deliveryDetail.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/tripDetail.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
@@ -27,6 +28,7 @@ class RunningTripTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       // Use Card or Material for better elevation/shadow handling
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -40,7 +42,11 @@ class RunningTripTile extends StatelessWidget {
       child: InkWell(
         onTap: () {
           if (model.tripdispatchdatetime != null) {
-            Get.to(() => TripDetail(model: model))?.then((_) => {onRefresh()});
+            // Get.to(() => TripDetail(model: model))?.then((_) => {onRefresh()});
+            Get.to(DeliveryDetail(
+              // model: widget.model,
+              tripModel: model,
+            ))?.then((_) => {onRefresh()});
           } else {
             failToast("Start trip to continue");
           }
@@ -56,7 +62,8 @@ class RunningTripTile extends StatelessWidget {
               const SizedBox(height: 16),
               _buildDetailsRow(), // Replaced GridView with Row
               const SizedBox(height: 16),
-              _buildFooter(onRefresh),
+              // _buildFooter(onRefresh),
+              _buildStatusIndicators(theme, model)
             ],
           ),
         ),
@@ -171,9 +178,33 @@ class RunningTripTile extends StatelessWidget {
                     ? ""
                     : "${model.startreadingkm} km"),
           ),
-          Expanded(
-              child: _buildInfoItem(
-                  'Consignments', model.totalconsignment.toString())),
+          if (model.tripdispatchdatetime != null &&
+              model.pendingconsign == 0) ...[
+            const SizedBox(width: 12),
+            InkWell(
+              onTap: () {
+                Get.to(() =>
+                        UpdateTripInfo(model: model, status: TripStatus.close))!
+                    .then((_) {
+                  onRefresh();
+                });
+              },
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color:
+                      CommonColors.dangerColor!.withAlpha((255 * 0.3).toInt()),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(Icons.cancel,
+                    size: 16, color: CommonColors.dangerColor!),
+              ),
+            ),
+          ]
+          // Expanded(
+          //     child: _buildInfoItem(
+          //         'Consignments', model.totalconsignment.toString())),
         ],
       );
     }
@@ -197,21 +228,20 @@ class RunningTripTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total DRS',
+                  'Total Consignment',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey[700],
                   ),
                 ),
-                _buildBadge(model.totaldrs.toString()),
+                _buildBadge(model.noofconsign.toString()),
               ],
             ),
           ),
         ),
         if (model.tripdispatchdatetime != null &&
-            model.pendingDeliveries == 0 &&
-            model.pendingIndent == 0) ...[
+            model.pendingconsign == 0) ...[
           const SizedBox(width: 12),
           InkWell(
             onTap: () {
@@ -280,6 +310,124 @@ class RunningTripTile extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+
+  Widget _buildStatusIndicators(ThemeData theme, TripModel model) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title for the status section
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            'Status',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            _buildStatusItem(
+              label: 'Total',
+              value: isNullOrEmpty(model.noofconsign.toString())
+                  ? ""
+                  : model.noofconsign.toString(),
+              color: CommonColors.colorPrimary!,
+              theme: theme,
+            ),
+            _buildStatusItem(
+              label: 'Pending',
+              value: isNullOrEmpty(model.pendingconsign.toString())
+                  ? ""
+                  : model.pendingconsign.toString(),
+              color: Colors.orange,
+              theme: theme,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            _buildStatusItem(
+              label: 'Delivered',
+              value: isNullOrEmpty(model.deliveredconsign.toString())
+                  ? ""
+                  : model.deliveredconsign.toString(),
+              color: Colors.green,
+              theme: theme,
+            ),
+            _buildStatusItem(
+              label: 'Undelivered',
+              value: isNullOrEmpty(model.undeliveredconsign.toString())
+                  ? ""
+                  : model.undeliveredconsign.toString(),
+              color: Colors.red,
+              theme: theme,
+            ),
+            _buildStatusItem(
+              label: 'Pickup',
+              value: isNullOrEmpty(model.noofpickups.toString())
+                  ? ""
+                  : model.noofpickups.toString(),
+              color: Colors.green,
+              theme: theme,
+            ),
+            _buildStatusItem(
+              label: 'Reverse Pickup',
+              value: isNullOrEmpty(model.noofrvpickups.toString())
+                  ? ""
+                  : model.noofrvpickups.toString(),
+              color: Colors.red,
+              theme: theme,
+            ),
+          ],
+        ),
+        // Status grid
+      ],
+    );
+  }
+
+  Widget _buildStatusItem({
+    required String label,
+    required String value,
+    required Color color,
+    required ThemeData theme,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.only(right: 8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                  color: color.withOpacity(0.8),
+                  overflow: TextOverflow.ellipsis),
+              // style: theme.textTheme.bodySmall?.copyWith(
+              //   color: color.withOpacity(0.8),
+
+              // ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

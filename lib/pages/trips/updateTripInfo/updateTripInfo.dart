@@ -71,7 +71,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 
       _startReadingController.text =
           widget.model!.startreadingkm?.toString() ?? "0";
-      _startReadingImagePath = widget.model!.startreadingimgpath;
+      _startReadingImagePath = widget.model!.startreadingimg;
       calculateTotalTime(widget.model!.tripdispatchtime!,
           _closeTimeController.text.toString());
     }
@@ -264,7 +264,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.tripdispatchdate = _dispatchDateController.text;
       widget.model.tripdispatchdatetime = _dispatchTimeController.text;
       widget.model.startreadingkm = int.tryParse(_startReadingController.text);
-      widget.model.startreadingimgpath = _startReadingImagePath;
+      widget.model.startreadingimg = _startReadingImagePath;
      
       updateStartTrip();
   
@@ -290,10 +290,10 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
       "prmstartreading":widget.model.startreadingkm.toString(),
       "prmstartreadimgpath":  widget.status == TripStatus.open
-          ? convertFilePathToBase64(widget.model.startreadingimgpath)
-          : isNullOrEmpty(widget.model.startreadingimgpath)
+          ? convertFilePathToBase64(widget.model.startreadingimg)
+          : isNullOrEmpty(widget.model.startreadingimg)
               ? ""
-              : widget.model.startreadingimgpath!,
+              : widget.model.startreadingimg!,
       "prmsessionid": savedUser.sessionid.toString()
     };
 
@@ -514,9 +514,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                       Border.all(width: 1, color: CommonColors.colorPrimary!),
                 ),
                 alignment: Alignment.center,
-                child: widget.model!.startreadingimgpath != null
+                child: widget.model!.startreadingimg != null
                     ? Image.network(
-                        widget.model!.startreadingimgpath!,
+                        widget.model!.startreadingimg!,
                         fit: BoxFit.fill,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;

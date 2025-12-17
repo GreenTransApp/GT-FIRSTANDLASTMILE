@@ -2,129 +2,118 @@ class TripModel {
   int? commandstatus;
   String? commandmessage;
   int? tripid;
-  int? totaldrs;
-  int? totalconsignment;
-  int? deliveredconsignment;
-  int? undeliveredconsignment;
-  int? totalpickup;
-  int? pendingconsignment;
-  String? manifestdate;
-  String? manifesttime;
-  String? manifestdatetime;
-  String? tripdispatchdatetime;
+  int? planningid;
+
   String? tripdispatchdate;
   String? tripdispatchtime;
-  String? acceptedflag;
+  String? tripdispatchdatetime;
+
   int? startreadingkm;
-  String? startreadingimgpath;
+  int? endreadingkm;
+
+  String? startreadingimg;
+  String? endreadingimg;
+
   String? endtripdate;
   String? endtriptime;
-  String? endreadingimg;
-  int? endreadingkm;
-  // String? closetripdatetime;
+
+  String? drivercode;
+
   int? noofconsign;
   int? deliveredconsign;
   int? undeliveredconsign;
-  int? pendingDeliveries;
   int? noofrvpickups;
   int? noofpickups;
-  int? pendingIndent;
+  int? pendingconsign;
+
+  String? manifestdate;
+  String? manifesttime;
+  String? manifestdatetime;
 
   TripModel({
     this.commandstatus,
     this.commandmessage,
     this.tripid,
-    this.totaldrs,
-    this.totalconsignment,
-    this.deliveredconsignment,
-    this.undeliveredconsignment,
-    this.totalpickup,
-    this.pendingconsignment,
-    this.manifestdate,
-    this.manifesttime,
-    this.manifestdatetime,
-    this.tripdispatchdatetime,
+    this.planningid,
     this.tripdispatchdate,
     this.tripdispatchtime,
-    this.acceptedflag,
+    this.tripdispatchdatetime,
     this.startreadingkm,
-    this.startreadingimgpath,
+    this.endreadingkm,
+    this.startreadingimg,
+    this.endreadingimg,
     this.endtripdate,
     this.endtriptime,
-    this.endreadingimg,
-    this.endreadingkm,
+    this.drivercode,
     this.noofconsign,
     this.deliveredconsign,
     this.undeliveredconsign,
-    this.pendingDeliveries,
     this.noofrvpickups,
     this.noofpickups,
-    this.pendingIndent,
+    this.pendingconsign,
+    this.manifestdate,
+    this.manifesttime,
+    this.manifestdatetime,
   });
 
   TripModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
     commandmessage = json['commandmessage'];
     tripid = json['tripid'];
-    totaldrs = json['totaldrs'];
-    totalconsignment = json['totalconsignment'];
-    deliveredconsignment = json['deliveredconsignment'];
-    undeliveredconsignment = json['undeliveredconsignment'];
-    totalpickup = json['totalpickup'];
-    pendingconsignment = json['pendingconsignment'];
-    manifestdate = json['manifestdate']?.toString();
-    manifesttime = json['manifesttime']?.toString();
-    manifestdatetime = json['manifestdatetime']?.toString();
-    tripdispatchdatetime = json['tripdispatchdatetime']?.toString();
+    planningid = json['planningid'];
+
     tripdispatchdate = json['tripdispatchdate']?.toString();
     tripdispatchtime = json['tripdispatchtime']?.toString();
-    acceptedflag = json['acceptedflag']?.toString();
+    tripdispatchdatetime = json['tripdispatchdatetime']?.toString();
+
     startreadingkm = json['startreadingkm'];
-    startreadingimgpath = json['startreadingimg'];
-    endtripdate = json['endtripdate'];
-    endtriptime = json['endtriptime'];
-    endreadingimg = json['endreadingimg']?.toString();
     endreadingkm = json['endreadingkm'];
+
+    startreadingimg = json['startreadingimg']?.toString();
+    endreadingimg = json['endreadingimg']?.toString();
+
+    endtripdate = json['endtripdate']?.toString();
+    endtriptime = json['endtriptime']?.toString();
+
+    drivercode = json['drivercode']?.toString();
+
     noofconsign = json['noofconsign'];
     deliveredconsign = json['deliveredconsign'];
     undeliveredconsign = json['undeliveredconsign'];
-    pendingDeliveries = json['pendingDeliveries'];
     noofrvpickups = json['noofrvpickups'];
     noofpickups = json['noofpickups'];
-    pendingIndent = json['pendingIndent'];
+    pendingconsign = json['pendingconsign'];
+
+    manifestdate = json['manifestdate']?.toString();
+    manifesttime = json['manifesttime']?.toString();
+    manifestdatetime = json['manifestdatetime']?.toString();
   }
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'commandstatus': commandstatus?.toString() ?? '',
-      'commandmessage': commandmessage ?? '',
-      'tripid': tripid?.toString() ?? '',
-      'totaldrs': totaldrs?.toString() ?? '',
-      'totalconsignment': totalconsignment?.toString() ?? '',
-      'deliveredconsignment': deliveredconsignment?.toString() ?? '',
-      'undeliveredconsignment': undeliveredconsignment?.toString() ?? '',
-      'totalpickup': totalpickup?.toString() ?? '',
-      'pendingconsignment': pendingconsignment?.toString() ?? '',
+      'commandstatus': commandstatus,
+      'commandmessage': commandmessage,
+      'tripid': tripid,
+      'planningid': planningid,
+      'tripdispatchdate': tripdispatchdate,
+      'tripdispatchtime': tripdispatchtime,
+      'tripdispatchdatetime': tripdispatchdatetime,
+      'startreadingkm': startreadingkm,
+      'endreadingkm': endreadingkm,
+      'startreadingimg': startreadingimg,
+      'endreadingimg': endreadingimg,
+      'endtripdate': endtripdate,
+      'endtriptime': endtriptime,
+      'drivercode': drivercode,
+      'noofconsign': noofconsign,
+      'deliveredconsign': deliveredconsign,
+      'undeliveredconsign': undeliveredconsign,
+      'noofrvpickups': noofrvpickups,
+      'noofpickups': noofpickups,
+      'pendingconsign': pendingconsign,
       'manifestdate': manifestdate ?? '',
       'manifesttime': manifesttime ?? '',
       'manifestdatetime': manifestdatetime ?? '',
-      'tripdispatchdatetime': tripdispatchdatetime ?? '',
-      'tripdispatchdate': tripdispatchdate ?? '',
-      'tripdispatchtime': tripdispatchtime ?? '',
-      'acceptedflag': acceptedflag ?? '',
-      'startreadingkm': startreadingkm?.toString() ?? '',
-      'startreadingimg': startreadingimgpath ?? '',
-      'endtripdate': endtripdate ?? '',
-      'endtriptime': endtriptime ?? '',
-      'endreadingimg': endreadingimg ?? '',
-      'endreadingkm': endreadingkm?.toString() ?? '',
-      'noofconsign': noofconsign?.toString() ?? '',
-      'deliveredconsign': deliveredconsign?.toString() ?? '',
-      'undeliveredconsign': undeliveredconsign?.toString() ?? '',
-      'pendingDeliveries': pendingDeliveries?.toString() ?? '',
-      'noofrvpickups': noofrvpickups?.toString() ?? '',
-      'noofpickups': noofpickups?.toString() ?? '',
-      'pendingIndent': pendingIndent?.toString() ?? '',
     };
   }
 }

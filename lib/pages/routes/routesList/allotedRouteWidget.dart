@@ -61,8 +61,9 @@ class _AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
     });
 
     viewModel.routesList.stream.listen((list) {
-      _routeList = list;
-      setState(() {});
+      setState(() {
+        _routeList = list;
+      });
     });
   }
 
@@ -71,9 +72,9 @@ class _AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmfromdt":fromDt,
-      "prmtodt":toDt,
       "prmsessionid": savedUser.sessionid.toString(),
+      "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
+      "prmtodt": convert2SmallDateTime(dashboardToDt.toString())
     };
 
     printParams(params);
