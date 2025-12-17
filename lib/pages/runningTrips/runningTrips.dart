@@ -64,8 +64,9 @@ class _RunningTripsState extends State<RunningTrips> {
     });
 
     viewModel.tripsListData.stream.listen((data) {
-      _deliveryList = data;
-      setState(() {});
+      setState(() {
+        _deliveryList = data;
+      });
     });
   }
 
@@ -74,8 +75,8 @@ class _RunningTripsState extends State<RunningTrips> {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmfromdt": convert2SmallDateTime(DateTime.now().toString()),
-      "prmtodt": convert2SmallDateTime(DateTime.now().toString()),
+      "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
+      "prmtodt": convert2SmallDateTime(dashboardToDt.toString()),
       "prmsessionid": savedUser.sessionid.toString(),
 
       /// O for open and C for close

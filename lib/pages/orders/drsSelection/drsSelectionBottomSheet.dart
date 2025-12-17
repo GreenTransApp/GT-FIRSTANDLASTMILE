@@ -149,8 +149,10 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
-      "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
-      "prmtodt": toDt,
+      "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
+      "prmtodt": convert2SmallDateTime(dashboardToDt.toString()),
+      // "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
+      // "prmtodt": toDt,
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -522,6 +524,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       "prmmanifestnostr": manifestStr,
       "prmmanifesttypestr": manifestTypeStr,
       "prmtripid": widget.tripId.toString(),
+      "prmplanningid": _selectedDrsList[0].planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
 

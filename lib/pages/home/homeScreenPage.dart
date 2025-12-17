@@ -8,6 +8,7 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
@@ -432,7 +433,7 @@ class _HomeScreen extends State<HomeScreen>
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
       // "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
-      "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : '2025-10-01',
+      "prmfromdt": fromDt,
       "prmtodt": toDt,
       "prmsessionid": savedUser.sessionid.toString(),
     };
@@ -447,47 +448,50 @@ class _HomeScreen extends State<HomeScreen>
 
     this.fromDt = fromDt;
     this.toDt = toDt;
+
     DateTime fromdt = DateTime.parse(this.fromDt);
     DateTime todt = DateTime.parse(this.toDt);
+    dashboardFromDt = fromdt;
+    dashboardToDt = todt;
     viewFromDt = DateFormat('dd-MM-yyyy').format(fromdt);
     viewToDt = DateFormat('dd-MM-yyyy').format(todt);
     getDashboardDetails();
   }
 
-  void _handleDrsUpdateRequest(dynamic model, DrsStatus status) {
-    // debugPrint(
-    //     'Update requested with Date: $selectedDate, Time: $selectedTime, DRS No: $drsNo');
+  // void _handleDrsUpdateRequest(dynamic model, DrsStatus status) {
+  //   // debugPrint(
+  //   //     'Update requested with Date: $selectedDate, Time: $selectedTime, DRS No: $drsNo');
 
-    Map<String, String> params = {
-      "prmcompanyid": savedUser.companyid.toString(),
-      "prmemployeeid": savedUser.employeeid.toString(),
-      "prmdrsno": model.drsno.toString(),
-      "prmdispatchdt": convert2SmallDateTime(model.dispatchdt.toString()),
-      "prmdispatchtime": model.dispatchtime.toString(),
-      "prmmanifestdt": convert2SmallDateTime(model.manifestdate.toString()),
-      "prmmanifesttime": model.manifesttime.toString(),
-      "prmusercode": savedUser.usercode.toString(),
-      "prmsessionid": savedUser.sessionid.toString(),
-      "prmstartreading": model.startreadingkm.toString(),
-      "prmstartreadimgpath": status == DrsStatus.CLOSE
-          ? model.startreadingimgpath
-          : convertFilePathToBase64(model.startreadingimgpath.toString()),
-      "prmendreadimgpath":
-          convertFilePathToBase64(model.closeReadingImagePath.toString()),
-      "prmclosetripdt": model.closeTripDate == null
-          ? ""
-          : convert2SmallDateTime(model.closeTripDate),
-      "prmclosetriptime": model.closeTripTime ?? "",
-      "prmclosetripreading": model.closeReadingKm?.toString() ?? "",
-      "prmdrsstatus": status == DrsStatus.OPEN ? 'O' : 'C'
+  //   Map<String, String> params = {
+  //     "prmcompanyid": savedUser.companyid.toString(),
+  //     "prmemployeeid": savedUser.employeeid.toString(),
+  //     "prmdrsno": model.drsno.toString(),
+  //     "prmdispatchdt": convert2SmallDateTime(model.dispatchdt.toString()),
+  //     "prmdispatchtime": model.dispatchtime.toString(),
+  //     "prmmanifestdt": convert2SmallDateTime(model.manifestdate.toString()),
+  //     "prmmanifesttime": model.manifesttime.toString(),
+  //     "prmusercode": savedUser.usercode.toString(),
+  //     "prmsessionid": savedUser.sessionid.toString(),
+  //     "prmstartreading": model.startreadingkm.toString(),
+  //     "prmstartreadimgpath": status == DrsStatus.CLOSE
+  //         ? model.startreadingimgpath
+  //         : convertFilePathToBase64(model.startreadingimgpath.toString()),
+  //     "prmendreadimgpath":
+  //         convertFilePathToBase64(model.closeReadingImagePath.toString()),
+  //     "prmclosetripdt": model.closeTripDate == null
+  //         ? ""
+  //         : convert2SmallDateTime(model.closeTripDate),
+  //     "prmclosetriptime": model.closeTripTime ?? "",
+  //     "prmclosetripreading": model.closeReadingKm?.toString() ?? "",
+  //     "prmdrsstatus": status == DrsStatus.OPEN ? 'O' : 'C'
 
-      /// O for open and C for close
-    };
+  //     /// O for open and C for close
+  //   };
 
-    viewModel.callDrsDateTimeUpdate(params);
-    // Perform your update logic here, e.g., call an API
-    // You can also update the state of this screen if needed
-  }
+  //   viewModel.callDrsDateTimeUpdate(params);
+  //   // Perform your update logic here, e.g., call an API
+  //   // You can also update the state of this screen if needed
+  // }
 
   Widget attendanceInfo() {
     return Container(
@@ -510,22 +514,44 @@ class _HomeScreen extends State<HomeScreen>
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Current Date',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white70,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      showDatePickerBottomSheet(context, _dateChanged);
+                    },
+                    icon: Icon(Icons.calendar_today,
+                        size: 16, color: CommonColors.white),
+                    label: Text('$viewFromDt - $viewToDt',
+                        style: TextStyle(color: CommonColors.white)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      side: BorderSide(color: CommonColors.white!),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                formattedDate,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
-              ),
+              // const Text(
+              //   'Current Date',
+              //   style: TextStyle(
+              //     fontSize: 12,
+              //     color: Colors.white70,
+              //   ),
+              // ),
+              // const SizedBox(height: 4),
+              // Text(
+              //   formattedDate,
+              //   style: const TextStyle(
+              //     fontSize: 14,
+              //     fontWeight: FontWeight.w500,
+              //     color: Colors.white,
+              //   ),
+              // ),
             ],
           ),
           Visibility(

@@ -214,20 +214,20 @@ class _CloseTripState extends State<CloseTrip> {
                         theme: theme,
                       ),
 
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 12),
 
-                      // Date row
-                      _buildInfoRow(
-                        label: 'Total Consignments',
-                        value: model.totalconsignment.toString(),
-                        theme: theme,
-                      ),
+                      // // Date row
+                      // _buildInfoRow(
+                      //   label: 'Total Consignments',
+                      //   value: model.noofconsign.toString(),
+                      //   theme: theme,
+                      // ),
                       const SizedBox(height: 12),
 
                       // Date row
                       _buildInfoRow(
                         label: 'Pending ',
-                        value: model.pendingconsignment.toString(),
+                        value: model.pendingconsign.toString(),
                         theme: theme,
                       ),
                       const SizedBox(height: 16),
@@ -259,8 +259,8 @@ class _CloseTripState extends State<CloseTrip> {
                       const SizedBox(height: 16),
                       Row(children: [
                         _buildStatusItem(
-                          label: 'Total DRS',
-                          value: model.totaldrs.toString(),
+                          label: 'Total Consignment',
+                          value: model.noofconsign.toString(),
                           color: CommonColors.colorPrimary!,
                           theme: theme,
                         ),

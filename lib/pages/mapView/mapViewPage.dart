@@ -128,7 +128,7 @@ class _MapViewPageState extends State<MapViewPage> {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.password.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmplanningid": _routeDetail.planningid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };

@@ -1867,13 +1867,13 @@ class _PickupState extends State<Pickup> {
                                       color: CommonColors.appBarColor),
                                   decoration: autoGr
                                       ? _inputDecoration(autoGrLabel)
-                                      : _inputDecoration("Enter Gr#"),
+                                      : _inputDecoration("Enter Consignment#"),
                                   validator: (value) {
                                     if (autoGr) {
                                       return null;
                                     } else {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter GR#';
+                                        return 'Please enter Consignment#';
                                       }
                                       return null;
                                     }

@@ -53,12 +53,16 @@ UserCredsModel userCredsModel = UserCredsModel();
 AttendanceModel todayAttendance = AttendanceModel();
 int? executiveid = null;
 int? employeeid = null;
+
 // List<CurrentDeliveryModel> activeDrsList = List.empty(growable: true);
 class ScreenDimension {
   static double width = 0.0;
   static double height = 0.0;
 }
+
 final authService = AuthenticationService();
+DateTime dashboardFromDt = DateTime.now();
+DateTime dashboardToDt = DateTime.now();
 
 // String getDateDifferenceFromNow(DateTime date1) {
 //   Duration diff = DateTime.now().difference(date1);
@@ -387,7 +391,8 @@ bool isNullOrEmpty(String? check) {
 
 // Fetch login credentials from shared preferneces
 Future<LoginCredsModel> getLoginCreds() async {
-  String? rawStorageLoginCreds = await AuthenticationService().storageGet(ENV.loginCredsPrefTag);
+  String? rawStorageLoginCreds =
+      await AuthenticationService().storageGet(ENV.loginCredsPrefTag);
   LoginCredsModel loginCredsModel = LoginCredsModel();
 
   if (rawStorageLoginCreds != null) {
@@ -399,7 +404,8 @@ Future<LoginCredsModel> getLoginCreds() async {
 }
 
 Future<LoginModel> getLoginData() async {
-  String? rawStorageUser = await AuthenticationService().storageGet(ENV.loginPrefTag);
+  String? rawStorageUser =
+      await AuthenticationService().storageGet(ENV.loginPrefTag);
   if (rawStorageUser != null) {
     Map<String, dynamic> te = jsonDecode(rawStorageUser);
     LoginModel loginResponse = LoginModel.fromJson(te);
@@ -424,7 +430,8 @@ void callCompanyBottomSheetDialog(BuildContext context,
 }
 
 Future<UserModel> getUserData() async {
-  String? rawStorageUser = await AuthenticationService().storageGet(ENV.userPrefTag);
+  String? rawStorageUser =
+      await AuthenticationService().storageGet(ENV.userPrefTag);
   if (rawStorageUser != null) {
     Map<String, dynamic> te = jsonDecode(rawStorageUser);
     UserModel userModel = UserModel.fromJson(te);
@@ -741,22 +748,18 @@ Future<String> selectTime(BuildContext context) async {
   // }
 }
 
-
 Future<String> selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-  String pickeddt=DateFormat('dd-MM-yyyy').format(pickedDate!);
-   
-    return pickeddt;
-  }
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+  String pickeddt = DateFormat('dd-MM-yyyy').format(pickedDate!);
 
-  
+  return pickeddt;
+}
 
- 
 Future<List<int>> fetchTotalRouteDistance(
     List<dynamic> routeDetail, MapConfigJsonModel mapconfig) async {
   if (GOOGLE_MAPS_API_KEY.isEmpty) {}
@@ -862,15 +865,13 @@ Future<List<int>> fetchTotalRouteDistance(
   } else {
     return [];
   }
-
-   
 }
 
-Future<bool> requestAppPermission(Permission permission, {String? reason}) async {
+Future<bool> requestAppPermission(Permission permission,
+    {String? reason}) async {
   try {
     debugPrint('Checking ${permission.toString()} status...');
 
-    
     PermissionStatus status = await permission.status;
 
     if (status.isGranted) {
@@ -885,7 +886,8 @@ Future<bool> requestAppPermission(Permission permission, {String? reason}) async
         debugPrint(' ${permission.toString()} granted after request');
         return true;
       } else if (newStatus.isPermanentlyDenied) {
-        debugPrint(' ${permission.toString()} permanently denied. Opening settings...');
+        debugPrint(
+            ' ${permission.toString()} permanently denied. Opening settings...');
         await openAppSettings();
         return false;
       } else {
@@ -894,9 +896,9 @@ Future<bool> requestAppPermission(Permission permission, {String? reason}) async
       }
     }
 
-    
     if (status.isPermanentlyDenied) {
-      debugPrint('${permission.toString()} permanently denied. Opening settings...');
+      debugPrint(
+          '${permission.toString()} permanently denied. Opening settings...');
       await openAppSettings();
       return false;
     }
