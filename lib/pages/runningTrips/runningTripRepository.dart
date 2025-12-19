@@ -26,10 +26,17 @@ class RunningTripRepository extends BaseRepository {
           List<dynamic> list = table.values.first;
           List<TripModel> resultList = List.generate(
               list.length, (index) => TripModel.fromJson(list[index]));
-          TripModel validateResponse = resultList[0];
+          // TripModel validateResponse = resultList[0];
           // ValidateDeviceModel.fromJson(resultList[0]);
-          if (validateResponse.commandstatus == 1) {
-            tripsListData.add(resultList);
+          if (resultList.isNotEmpty) {
+            if (resultList[0].commandstatus == 1) {
+              tripsListData.add(resultList);
+            } else {
+              // tripsListData.add([]);
+              isErrorLiveData.add(resultList[0].commandmessage!);
+            }
+          } else {
+            tripsListData.add([]);
           }
         } else {
           isErrorLiveData.add(resp.commandMessage!);

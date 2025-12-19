@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
@@ -83,6 +82,7 @@ class _PickupState extends State<Pickup> {
       TextEditingController();
   final TextEditingController _consigneeMobileController =
       TextEditingController();
+  final TextEditingController _orderNumberController = TextEditingController();
 
   PickupDetailModel? pickupDetail;
   List<ServiceTypeModel> serviceList = [];
@@ -126,7 +126,7 @@ class _PickupState extends State<Pickup> {
   bool returnCodeValid = false;
   late InvoiceModel firstInvoiceModel;
   List<InvoiceModel> invoiceList = List.empty(growable: true);
-  String autoGrLabel = "AutoGR";
+  String autoGrLabel = "Consignment";
   bool _branchesLoaded = false;
   bool _customersLoaded = false;
   bool _cngrLoaded = false;
@@ -229,13 +229,13 @@ class _PickupState extends State<Pickup> {
       // trySetUiData();
       // _selectedLoadType = loadTypeList.first;
     });
-    // viewModel.viewDialog.stream.listen((showLoading) {
-    //   if (showLoading) {
-    //     loadingAlertService.showLoading();
-    //   } else {
-    //     loadingAlertService.hideLoading();
-    //   }
-    // });
+    viewModel.viewDialog.stream.listen((showLoading) {
+      if (showLoading) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    });
 
     viewModel.deliveryTypeList.stream.listen((deliveryData) {
       debugPrint('Delivery type list size: ${deliveryData.length}');
@@ -455,8 +455,8 @@ class _PickupState extends State<Pickup> {
 
     _orgPincodeController.text = pickupDetail!.cngrZipCode.toString();
     _destPincodeController.text = pickupDetail!.cngeZipCode.toString();
-    _orgController.text = pickupDetail!.cngrState.toString();
-    _destController.text = pickupDetail!.cngeState.toString();
+    _orgController.text = pickupDetail!.cngrCity.toString();
+    _destController.text = pickupDetail!.cngeCity.toString();
 
     _custController.text = _selectedCustomer!.custName.toString();
     _deptController.text = isNullOrEmpty(pickupDetail!.custDeptId.toString())
@@ -480,7 +480,7 @@ class _PickupState extends State<Pickup> {
         : pickupDetail!.weight.toString();
 
     _noofpckgsController.text = pickupDetail!.pckgs.toString();
-
+    _orderNumberController.text = pickupDetail!.ordernumber.toString();
     setState(() {});
     // loadingAlertService.hideLoading();
   }
@@ -2382,7 +2382,35 @@ class _PickupState extends State<Pickup> {
                                           ),
                                         ]),
                                       )),
-
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildFormField(
+                                          label: "Order Number",
+                                          labelColor: CommonColors.appBarColor!,
+                                          isRequired: true,
+                                          icon: Icons.calendar_today_outlined,
+                                          child: TextFormField(
+                                            enabled: false,
+                                            controller: _orderNumberController,
+                                            keyboardType: TextInputType.text,
+                                            decoration: _inputDecoration(
+                                                "Order Number"),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter order number';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                   Row(
                                     children: [
                                       Expanded(

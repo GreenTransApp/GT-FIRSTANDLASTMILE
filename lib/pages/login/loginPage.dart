@@ -159,8 +159,8 @@ class _LoginPageState extends State<LoginPage> {
               top: -100,
               left: -100,
               child: Container(
-                width: 250,
-                height: 250,
+                width: 230,
+                height: 230,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -176,8 +176,8 @@ class _LoginPageState extends State<LoginPage> {
               top: -50,
               left: 50,
               child: Container(
-                width: 150,
-                height: 150,
+                width: 130,
+                height: 130,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color:
@@ -189,8 +189,8 @@ class _LoginPageState extends State<LoginPage> {
               bottom: -120,
               right: -100,
               child: Container(
-                width: 300,
-                height: 300,
+                width: 250,
+                height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -204,10 +204,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Positioned(
               bottom: 50,
-              right: 100,
+              right: 50,
               child: Container(
-                width: 200,
-                height: 200,
+                width: 150,
+                height: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color:
@@ -258,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
-                              hintText: 'Phone Number',
+                              hintText: 'Mobile Number',
                               hintStyle: TextStyle(
                                 color: Colors.grey[400],
                                 fontSize: 14,

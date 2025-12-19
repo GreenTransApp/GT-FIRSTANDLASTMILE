@@ -176,7 +176,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                           ),
                           child: Text(
                             // 'Stop ${modelDetail.sequenceid}',
-                            'Stop ${widget.index}',
+                            'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,

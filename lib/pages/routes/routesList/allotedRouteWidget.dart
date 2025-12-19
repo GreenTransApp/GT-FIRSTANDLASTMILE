@@ -21,10 +21,10 @@ class AllocatedRouteWidget extends StatefulWidget {
   });
 
   @override
-  State<AllocatedRouteWidget> createState() => _AllocatedRouteWidgetState();
+  State<AllocatedRouteWidget> createState() => AllocatedRouteWidgetState();
 }
 
-class _AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
+class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
   final RoutesListViewModel viewModel = RoutesListViewModel();
   List<AllotedRouteModel> _routeList = List.empty(growable: true);
   AttendanceModel _attendanceModel = AttendanceModel();
@@ -48,13 +48,13 @@ class _AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
   }
 
   setObservers() {
-    // viewModel.viewDialog.stream.listen((show) {
-    //   if (show) {
-    //     loadingAlertService.showLoading();
-    //   } else {
-    //     loadingAlertService.hideLoading();
-    //   }
-    // });
+    viewModel.viewDialog.stream.listen((show) {
+      if (show) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    });
 
     viewModel.errorDialog.stream.listen((error) {
       failToast(error);

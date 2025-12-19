@@ -34,10 +34,10 @@ class DrsselectionBottomSheet extends StatefulWidget {
 
   @override
   State<DrsselectionBottomSheet> createState() =>
-      _DrsselectionBottomSheetState();
+      DrsselectionBottomSheetState();
 }
 
-class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
+class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   DrsSelectionViewModel viewModel = DrsSelectionViewModel();
   DrsSelectionRepository repository = DrsSelectionRepository();
 
@@ -89,18 +89,18 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       // }
     });
 
-    _baseRepo.viewDialog.stream.listen((showLoading) async {
+    viewModel.viewDialog.stream.listen((showLoading) async {
       if (showLoading) {
-        setState(() {
-          isLoading = true;
-        });
-        // loadingAlertService.showLoading();
+        // setState(() {
+        //   isLoading = true;
+        // });
+        loadingAlertService.showLoading();
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        // setState(() {
+        //   isLoading = false;
+        // });
 
-        // loadingAlertService.hideLoading();
+        loadingAlertService.hideLoading();
       }
     });
 
@@ -152,7 +152,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
       "prmtodt": convert2SmallDateTime(dashboardToDt.toString()),
       // "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
-      // "prmtodt": toDt,
+      // "prmtodt": toDt,2
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -184,7 +184,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                               Lottie.asset("assets/emptyDelivery.json",
                                   height: 150),
                               const Text(
-                                "No Assigned DRS",
+                                "No Assigned DRS/PRS",
                                 style: TextStyle(
                                     fontSize: 18,
                                     color: CommonColors.appBarColor),
@@ -363,6 +363,12 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       backColor = CommonColors.amber200!;
       // .withAlpha((0.3 * 255).toInt());
     }
+    String manifestType = "";
+    if (deliveryModel.manifesttype == 'D') {
+      manifestType = 'DRS';
+    } else {
+      manifestType = 'PRS';
+    }
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GestureDetector(
@@ -393,7 +399,7 @@ class _DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      deliveryModel.manifestno.toString(),
+                      "${deliveryModel.manifestno.toString()}/$manifestType",
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

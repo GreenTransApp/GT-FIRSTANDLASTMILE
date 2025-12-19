@@ -25,10 +25,10 @@ class RunningTrips extends StatefulWidget {
   });
 
   @override
-  State<RunningTrips> createState() => _RunningTripsState();
+  State<RunningTrips> createState() => RunningTripsState();
 }
 
-class _RunningTripsState extends State<RunningTrips> {
+class RunningTripsState extends State<RunningTrips> {
   List<TripModel> _deliveryList = List.empty(growable: true);
   late AttendanceModel _attendanceModel = AttendanceModel();
   late LoadingAlertService loadingAlertService;

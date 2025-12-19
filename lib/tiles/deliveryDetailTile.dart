@@ -271,7 +271,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              'Stop ${modelDetail.sequenceno}',
+                              'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -311,12 +311,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               ),
                             ],
                           ),
-                          Text('${modelDetail.consignmenttypeview}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                                color: CommonColors.colorPrimary,
-                              )),
+                          // Text('${modelDetail.consignmenttypeview}',
+                          //     style: TextStyle(
+                          //       fontSize: 12,
+                          //       fontWeight: FontWeight.w800,
+                          //       color: CommonColors.colorPrimary,
+                          //     )),
                         ],
                       ),
                     ],

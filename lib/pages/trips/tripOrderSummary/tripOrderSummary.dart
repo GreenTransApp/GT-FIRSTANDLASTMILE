@@ -82,13 +82,13 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
   // }
 
   setObservers() {
-    // viewModel.viewDialog.stream.listen((showLoading) {
-    //   if (showLoading) {
-    //     loadingAlertService.showLoading();
-    //   } else {
-    //     loadingAlertService.hideLoading();
-    //   }
-    // });
+    viewModel.viewDialog.stream.listen((showLoading) {
+      if (showLoading) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    });
 
     viewModel.errorDialog.stream.listen((errMsg) {
       failToast(errMsg);

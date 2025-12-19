@@ -48,12 +48,12 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      getDeliveryDetails();
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     getDeliveryDetails();
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -120,7 +120,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
-          'Manifest Detail',
+          'Trip Detail',
           style: TextStyle(color: CommonColors.White),
         ),
         leading: IconButton(

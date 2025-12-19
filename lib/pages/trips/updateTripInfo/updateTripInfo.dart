@@ -1,18 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripViewModel.dart';
-
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
@@ -62,8 +60,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       _startReadingController.text = "0";
     } else {
       // _dispatchTimeController.text = widget.model!.tripdispatchtime!;
-      _dispatchTimeController.text = widget.model!.tripdispatchtime!;
-      _dispatchDateController.text = widget.model!.tripdispatchdate!;
+      _dispatchTimeController.text = widget.model.tripdispatchtime!;
+      _dispatchDateController.text = widget.model.tripdispatchdate!;
 
       _closeDateController.text =
           DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
@@ -125,8 +123,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     viewModel.updateCloseTripLiveData.stream.listen((model) async {
       if (model.commandstatus == 1) {
         successToast(model.commandmessage!);
-          await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
-              savedLogin.companyid.toString(), widget.model.tripid.toString());
+        await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
+            savedLogin.companyid.toString(), widget.model.tripid.toString());
         if (widget.refresh != null) {
           widget.refresh!();
         }
@@ -200,9 +198,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       if (value != "0" && value.isNotEmpty) {
         showCamera = true;
         calculateTotalDistance();
+        _closeReadingImagePath = null;
       } else {
         showCamera = false;
-        _closeReadingImagePath = null;
+      }
+    });
+  }
+
+  void changeStartReading(String value) {
+    setState(() {
+      if (value.isNotEmpty) {
+        _startReadingImagePath = null;
       }
     });
   }
@@ -226,7 +232,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         failToast("Close Reading Value Can't be less than Start Reading Value");
         return;
       } else if (isNullOrEmpty(_closeReadingImagePath)) {
-        failToast("Close Reading meter image path is required");
+        failToast("Close Reading meter image is required");
         return;
       }
 
@@ -265,9 +271,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.tripdispatchdatetime = _dispatchTimeController.text;
       widget.model.startreadingkm = int.tryParse(_startReadingController.text);
       widget.model.startreadingimg = _startReadingImagePath;
-     
+
       updateStartTrip();
-  
+
       // Get.back();
       // if (widget.onUpdate != null) {
       //   widget.onUpdate!(widget.model, widget.status);
@@ -278,18 +284,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     // updateTripInfo();
   }
 
-
-
-   void  updateStartTrip(){
+  void updateStartTrip() {
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
-      "prmdispatchdt":convert2SmallDateTime(widget.model.tripdispatchdate.toString()),
+      "prmdispatchdt":
+          convert2SmallDateTime(widget.model.tripdispatchdate.toString()),
       "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
-      "prmstartreading":widget.model.startreadingkm.toString(),
-      "prmstartreadimgpath":  widget.status == TripStatus.open
+      "prmstartreading": widget.model.startreadingkm.toString(),
+      "prmstartreadimgpath": widget.status == TripStatus.open
           ? convertFilePathToBase64(widget.model.startreadingimg)
           : isNullOrEmpty(widget.model.startreadingimg)
               ? ""
@@ -298,16 +303,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     };
 
     viewModel.updateStartTrip(params);
-   }
+  }
 
-   void  updateCloseTrip(){
+  void updateCloseTrip() {
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
       "prmclosetripdt": convert2SmallDateTime(widget.model.endtripdate!),
-      "prmclosetriptime":formatTimeString( _closeTimeController.text.toString()),
+      "prmclosetriptime":
+          formatTimeString(_closeTimeController.text.toString()),
       "prmclosetripreading": widget.model.endreadingkm.toString(),
       "prmendreadimgpath": widget.status == TripStatus.open
           ? ""
@@ -316,7 +322,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     };
 
     viewModel.updateCloseTrip(params);
-   }
+  }
 
   // void updateTripInfo() {
   //   Map<String, String> params = {
@@ -355,352 +361,503 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       children: [
         Card(
           elevation: 2,
-          surfaceTintColor: const Color(0xFFEBEBE4),
+          color: CommonColors.grey300,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(12)),
+                                border: Border.all(
+                                    color: CommonColors.grey400!, width: 1)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: 18,
+                                      color: Colors.black54,
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "DISPATCH DATE",
+                                      style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 2,
+                                ),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 24,
+                                    ),
+                                    Text(
+                                      _dispatchDateController.text,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: CommonColors.appBarColor,
+                                          fontSize: 20),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(12)),
+                                border: Border.all(
+                                    color: CommonColors.grey400!, width: 1)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: 18,
+                                      color: Colors.black54,
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "DISPATCH TIME",
+                                      style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 2,
+                                ),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 24,
+                                    ),
+                                    Text(
+                                      _dispatchTimeController.text,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: CommonColors.appBarColor,
+                                          fontSize: 20),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "START ODOMETER READING",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    TextField(
+                      enabled: false,
+                      controller: _startReadingController,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: CommonColors.appBarColor),
+                      decoration: const InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 1, color: CommonColors.appBarColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 1, color: CommonColors.appBarColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  height: 150,
+                  width: MediaQuery.sizeOf(context).width,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    border:
+                        Border.all(width: 1, color: CommonColors.colorPrimary!),
+                  ),
+                  alignment: Alignment.center,
+                  child: widget.model!.startreadingimg != null
+                      ? Image.network(
+                          widget.model!.startreadingimg!,
+                          fit: BoxFit.fill,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        (loadingProgress.expectedTotalBytes ??
+                                            1)
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.person, size: 30),
+                            );
+                          },
+                        )
+                      : Column(
+                          children: [
+                            Image.asset(
+                              'assets/images/error.png',
+                              height: 70,
+                              width: 70,
+                            ),
+                            const Text('Error loading image'),
+                          ],
+                        ),
+                )
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Divider(
+          height: 1,
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  border: Border.all(color: CommonColors.grey400!, width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          "CLOSE DATE",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 24,
+                        ),
+                        Text(
+                          _closeDateController.text,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: CommonColors.appBarColor,
+                              fontSize: 20),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  border: Border.all(color: CommonColors.grey400!, width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 18,
+                          color: Colors.black54,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          " CLOSE TIME",
+                          style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 24,
+                        ),
+                        Text(
+                          _closeTimeController.text,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: CommonColors.appBarColor,
+                              fontSize: 20),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(
+                  Icons.speed_rounded,
+                  color: Colors.black54,
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  "CLOSE ODOMETER READING",
+                  style: TextStyle(color: Colors.black54),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: TextField(
+                    controller: _closeReadingController,
+                    onChanged: changeCloseReading,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    cursorColor: CommonColors.colorPrimary,
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        borderSide:
+                            BorderSide(width: 1, color: CommonColors.grey400!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        borderSide:
+                            BorderSide(width: 1, color: CommonColors.grey400!),
+                      ),
+                    ),
+                  ),
+                )),
+                const Text(
+                  "km",
+                  style: TextStyle(color: Colors.black87),
+                )
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              border: Border.all(color: CommonColors.grey400!, width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(12))),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(12)),
-                              border: Border.all(
-                                  color: CommonColors.grey400!, width: 1)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 18,
-                                    color: Colors.black54,
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    "DISPATCH DATE",
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 24,
-                                  ),
-                                  Text(
-                                    _dispatchDateController.text,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: CommonColors.appBarColor,
-                                        fontSize: 20),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                  const Icon(
+                    Icons.camera_alt_outlined,
+                    color: Colors.black54,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(12)),
-                              border: Border.all(
-                                  color: CommonColors.grey400!, width: 1)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 18,
-                                    color: Colors.black54,
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    "DISPATCH TIME",
-                                    style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 24,
-                                  ),
-                                  Text(
-                                    _dispatchTimeController.text,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: CommonColors.appBarColor,
-                                        fontSize: 20),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                  const SizedBox(
+                    width: 16,
                   ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
                   const Text(
-                    "Start Reading",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    "CLOSE READING IMAGE",
+                    style: TextStyle(color: Colors.black87),
                   ),
-                  TextField(
-                    enabled: false,
-                    controller: _startReadingController,
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: const InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
+                  Expanded(
+                      child: Align(
+                    alignment: AlignmentGeometry.centerRight,
+                    child: InkWell(
+                      child: const Icon(
+                        Icons.file_upload_outlined,
+                        color: Colors.black54,
+                        // size: 24,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
+                      onTap: () {
+                        showImagePickerDialog(context, (file) async {
+                          if (file != null) {
+                            debugPrint(' data: ${file.path}');
+                            setState(() {
+                              _closeReadingImagePath = file.path;
+                            });
+                          } else {
+                            failToast("File not selected");
+                          }
+                        });
+                      },
                     ),
-                  ),
+                  ))
                 ],
               ),
-              const SizedBox(height: 10),
-              Container(
-                height: 150,
-                width: MediaQuery.sizeOf(context).width,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  border:
-                      Border.all(width: 1, color: CommonColors.colorPrimary!),
-                ),
-                alignment: Alignment.center,
-                child: widget.model!.startreadingimg != null
-                    ? Image.network(
-                        widget.model!.startreadingimg!,
-                        fit: BoxFit.fill,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SizedBox(
+                  height: 200,
+                  width: MediaQuery.sizeOf(context).width,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: CommonColors.grey300,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12))),
+                    child: isNullOrEmpty(_closeReadingImagePath)
+                        ? InkWell(
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.file_upload_outlined,
+                                  color: Colors.black54,
+                                ),
+                                Text(
+                                  "Upload Image",
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                                Text(
+                                  "Click the upload button above",
+                                  style: TextStyle(color: Colors.black87),
+                                )
+                              ],
                             ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.person, size: 30),
-                          );
-                        },
-                      )
-                    : Column(
-                        children: [
-                          Image.asset(
-                            'assets/images/error.png',
-                            height: 70,
-                            width: 70,
+                            onTap: () {
+                              showImagePickerDialog(context, (file) async {
+                                if (file != null) {
+                                  debugPrint(' data: ${file.path}');
+                                  setState(() {
+                                    _closeReadingImagePath = file.path;
+                                  });
+                                } else {
+                                  failToast("File not selected");
+                                }
+                              });
+                            },
+                          )
+                        : Image.file(
+                            File(_closeReadingImagePath!),
+                            fit: BoxFit.contain,
                           ),
-                          const Text('Error loading image'),
-                        ],
-                      ),
+                  ),
+                ),
               )
             ],
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Closing Date',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  TextField(
-                    enabled: false,
-                    readOnly: true,
-                    controller: _closeDateController,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: CommonColors.disableColor,
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      disabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_month,
-                            color: CommonColors.disableColor),
-                        onPressed: () =>
-                            _selectDate(context, _closeDateController),
-                      ),
-                    ),
-                    onTap: () => _selectDate(context, _closeDateController),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Close Time',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  TextField(
-                    enabled: false,
-                    readOnly: true,
-                    controller: _closeTimeController,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: CommonColors.disableColor,
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      disabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: 1, color: CommonColors.appBarColor),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.access_time,
-                            color: CommonColors.disableColor),
-                        onPressed: () =>
-                            _selectTime(context, _closeTimeController),
-                      ),
-                    ),
-                    onTap: () => _selectTime(context, _closeTimeController),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Close Reading",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            TextField(
-              onChanged: changeCloseReading,
-              controller: _closeReadingController,
-              keyboardType: TextInputType.number,
-              style: const TextStyle(color: CommonColors.appBarColor),
-              decoration: InputDecoration(
-                focusedBorder: const OutlineInputBorder(
-                  borderSide:
-                      BorderSide(width: 1, color: CommonColors.appBarColor),
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide:
-                      BorderSide(width: 1, color: CommonColors.appBarColor),
-                ),
-                suffixIcon: Visibility(
-                  visible: showCamera,
-                  child: IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    onPressed: () {
-                      showImagePickerDialog(context, (file) async {
-                        if (file != null) {
-                          debugPrint(' data: ${file.path}');
-                          setState(() {
-                            _closeReadingImagePath = file.path;
-                          });
-                        } else {
-                          failToast("File not selected");
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Visibility(
-          visible: isNullOrEmpty(_closeReadingImagePath) == true ? false : true,
-          child: Container(
-              height: 150,
-              width: MediaQuery.sizeOf(context).width,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(5)),
-                border: Border.all(width: 1, color: CommonColors.colorPrimary!),
-              ),
-              child: _closeReadingImagePath == null
-                  ? Center(
-                      child: Text(
-                        "",
-                        style: TextStyle(color: CommonColors.colorPrimary),
-                      ),
-                    )
-                  : Image.file(
-                      File(_closeReadingImagePath!),
-                      fit: BoxFit.fill,
-                    )),
-        ),
+        // Visibility(
+        //   visible: isNullOrEmpty(_closeReadingImagePath) == true ? false : true,
+        //   child: Container(
+        //       height: 150,
+        //       width: MediaQuery.sizeOf(context).width,
+        //       padding: const EdgeInsets.symmetric(horizontal: 10),
+        //       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        //       decoration: BoxDecoration(
+        //         borderRadius: const BorderRadius.all(Radius.circular(5)),
+        //         border: Border.all(width: 1, color: CommonColors.colorPrimary!),
+        //       ),
+        //       child: _closeReadingImagePath == null
+        //           ? Center(
+        //               child: Text(
+        //                 "",
+        //                 style: TextStyle(color: CommonColors.colorPrimary),
+        //               ),
+        //             )
+        //           : Image.file(
+        //               File(_closeReadingImagePath!),
+        //               fit: BoxFit.fill,
+        //             )),
+        // ),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -785,7 +942,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         title: Text("Trip ID: ${widget.model.tripid.toString()}",
             style: TextStyle(color: CommonColors.White)),
         centerTitle: true,
-          leading: IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: CommonColors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -814,11 +971,11 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(12)),
-                                      border: Border.all(
-                                          color: CommonColors.grey400!,
-                                          width: 1)),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(12)),
+                                    border: Border.all(
+                                        color: CommonColors.grey400!, width: 1),
+                                  ),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -958,11 +1115,12 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                             Row(
                               children: [
                                 Expanded(
-                                    child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 24, vertical: 8),
-                                  child: TextField(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 8),
+                                    child: TextField(
                                       controller: _startReadingController,
+                                      onChanged: changeStartReading,
                                       cursorColor: CommonColors.colorPrimary,
                                       textInputAction: TextInputAction.done,
                                       keyboardType: TextInputType.number,
@@ -978,13 +1136,16 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: const BorderRadius.all(
-                                              Radius.circular(12)),
+                                            Radius.circular(12),
+                                          ),
                                           borderSide: BorderSide(
                                               width: 1,
                                               color: CommonColors.grey400!),
                                         ),
-                                      )),
-                                )),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 const Text(
                                   "km",
                                   style: TextStyle(color: Colors.black87),
@@ -1019,29 +1180,31 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                   style: TextStyle(color: Colors.black87),
                                 ),
                                 Expanded(
-                                    child: Align(
-                                  alignment: AlignmentGeometry.centerRight,
-                                  child: InkWell(
-                                    child: const Icon(
-                                      Icons.file_upload_outlined,
-                                      color: Colors.black54,
-                                      // size: 24,
+                                  child: Align(
+                                    alignment: AlignmentGeometry.centerRight,
+                                    child: InkWell(
+                                      child: const Icon(
+                                        Icons.file_upload_outlined,
+                                        color: Colors.black54,
+                                        // size: 24,
+                                      ),
+                                      onTap: () {
+                                        showImagePickerDialog(context,
+                                            (file) async {
+                                          if (file != null) {
+                                            debugPrint(' data: ${file.path}');
+                                            setState(() {
+                                              _startReadingImagePath =
+                                                  file.path;
+                                            });
+                                          } else {
+                                            failToast("File not selected");
+                                          }
+                                        });
+                                      },
                                     ),
-                                    onTap: () {
-                                      showImagePickerDialog(context,
-                                          (file) async {
-                                        if (file != null) {
-                                          debugPrint(' data: ${file.path}');
-                                          setState(() {
-                                            _startReadingImagePath = file.path;
-                                          });
-                                        } else {
-                                          failToast("File not selected");
-                                        }
-                                      });
-                                    },
                                   ),
-                                ))
+                                )
                               ],
                             ),
                             Padding(
@@ -1079,19 +1242,22 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             ],
                                           ),
                                           onTap: () {
-                                            showImagePickerDialog(context,
-                                                (file) async {
-                                              if (file != null) {
-                                                debugPrint(
-                                                    ' data: ${file.path}');
-                                                setState(() {
-                                                  _startReadingImagePath =
-                                                      file.path;
-                                                });
-                                              } else {
-                                                failToast("File not selected");
-                                              }
-                                            });
+                                            showImagePickerDialog(
+                                              context,
+                                              (file) async {
+                                                if (file != null) {
+                                                  debugPrint(
+                                                      ' data: ${file.path}');
+                                                  setState(() {
+                                                    _startReadingImagePath =
+                                                        file.path;
+                                                  });
+                                                } else {
+                                                  failToast(
+                                                      "File not selected");
+                                                }
+                                              },
+                                            );
                                           },
                                         )
                                       : Image.file(

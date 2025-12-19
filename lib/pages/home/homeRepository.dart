@@ -4,17 +4,14 @@ import 'dart:io';
 
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
-import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
-
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
-
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class HomeRepository extends BaseRepository {
@@ -40,7 +37,7 @@ class HomeRepository extends BaseRepository {
       try {
         // viewDialog.add(true);
         CommonResponse resp =
-            await apiGet("${lmdUrl}/getDashboardDetails", params);
+            await apiGet("$lmdUrl/getDashboardDetails", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
@@ -50,40 +47,38 @@ class HomeRepository extends BaseRepository {
               List<AttendanceModel> resultList = List.generate(list1.length,
                   (index) => AttendanceModel.fromJson(list1[index]));
               attendanceList.add(resultList[0]);
-            } else if (entry.key == "Table1") {
-              List<dynamic> list2 = entry.value;
-              List<AllotedRouteModel> resultList = List.generate(list2.length,
-                  (index) => AllotedRouteModel.fromJson(list2[index]));
-              if (resultList.isEmpty) {
-                routeDashboardList.add([]);
-              } else {
-                routeDashboardList.add(resultList);
-              }
-            } else if (entry.key == "Table2") {
-              List<dynamic> list2 = entry.value;
-              List<CurrentDeliveryModel> resultList = List.generate(
-                  list2.length,
-                  (index) => CurrentDeliveryModel.fromJson(list2[index]));
+            }
+            // else if (entry.key == "Table1") {
+            //   List<dynamic> list2 = entry.value;
+            //   List<AllotedRouteModel> resultList = List.generate(list2.length,
+            //       (index) => AllotedRouteModel.fromJson(list2[index]));
+            //   if (resultList.isEmpty) {
+            //     routeDashboardList.add([]);
+            //   } else {
+            //     routeDashboardList.add(resultList);
+            //   }
+            // }
+            //  else if (entry.key == "Table2") {
+            //   List<dynamic> list2 = entry.value;
+            //   List<CurrentDeliveryModel> resultList = List.generate(
+            //       list2.length,
+            //       (index) => CurrentDeliveryModel.fromJson(list2[index]));
 
-              if (resultList.isNotEmpty) {
-                deliveryDashboardList.add(resultList);
-              } else {
-                deliveryDashboardList.add([]);
-              }
-            } else if (entry.key == "Table3") {
+            //   if (resultList.isNotEmpty) {
+            //     deliveryDashboardList.add(resultList);
+            //   } else {
+            //     deliveryDashboardList.add([]);
+            //   }
+            // }
+            else if (entry.key == "Table3") {
               List<dynamic> list2 = entry.value;
               List<TripModel> resultList = List.generate(
                   list2.length, (index) => TripModel.fromJson(list2[index]));
-              // tripsLiveData.add(resultList);
-              // if (resultList.isNotEmpty) {
               if (resultList.isNotEmpty) {
                 tripsLiveData.add(resultList);
               } else {
                 tripsLiveData.add([]);
               }
-              // } else {
-              //   tripsLiveData.add([]);
-              // }
             }
           }
         } else {

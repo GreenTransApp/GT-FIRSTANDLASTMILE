@@ -13,11 +13,13 @@ class DrsSelectionViewModel extends BaseViewModel {
   StreamController<List<DrsListModel>> drsListLiveData =
       StreamController<List<DrsListModel>>();
   StreamController<String> isErrorLiveData = StreamController<String>();
+  StreamController<bool> viewDialog = StreamController<bool>();
 
   DrsSelectionViewModel() {
     upsertTripLiveData = _repository.upsertTripLiveData;
     isErrorLiveData = _repository.isErrorLiveData;
     drsListLiveData = _repository.drsListLiveData;
+    viewDialog = _repository.viewDialog;
   }
 
   void upsertTrip(Map<String, String> params) {

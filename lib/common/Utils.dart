@@ -9,12 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_ip_address/get_ip_address.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:gtlmd/common/Colors.dart';
-import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
-
 import 'package:gtlmd/common/Environment.dart';
+import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
-
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
 import 'package:gtlmd/pages/login/models/LoginCredsModel.dart';
 import 'package:gtlmd/pages/login/models/UserCredsModel.dart';
@@ -23,16 +22,12 @@ import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigJsonModel.dart';
-
 import 'package:gtlmd/service/authenticationService.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 
 const METHOD_CHANNEL = MethodChannel('com.map_api_key.flutter');
 //  String GOOGLE_MAPS_API_KEY = "AIzaSyBAVL3a5xqVrQOnkvQbs8cgJ-V2tLnpb3E"; //jeena biker  api key

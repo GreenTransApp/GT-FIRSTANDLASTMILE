@@ -71,6 +71,10 @@ class _HomeScreen extends State<HomeScreen>
   bool showLocationWarning = false;
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
+  GlobalKey<AllocatedRouteWidgetState> allotedRouteKey = GlobalKey();
+  GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
+  GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -137,7 +141,7 @@ class _HomeScreen extends State<HomeScreen>
   setObservers() {
     viewModel.routeDashboardLiveData.stream.listen((dashboard) {
       debugPrint('dashboard List Length: ${dashboard.length}');
-      if (dashboard.elementAt(0).commandstatus == 1) {
+      if (dashboard.isNotEmpty && dashboard.elementAt(0).commandstatus == 1) {
         setState(() {
           routeList = dashboard;
         });
@@ -146,7 +150,7 @@ class _HomeScreen extends State<HomeScreen>
     viewModel.deliveryDashboardLiveData.stream.listen((dashboard) {
       debugPrint('dashboard List Length: ${dashboard.length}');
 
-      if (dashboard.elementAt(0).commandstatus == 1) {
+      if (dashboard.isNotEmpty && dashboard.elementAt(0).commandstatus == 1) {
         setState(() {
           deliveryList = dashboard;
         });
@@ -369,16 +373,16 @@ class _HomeScreen extends State<HomeScreen>
     Routes.goToPage(RoutesName.login, "Login");
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setState(() {
-        // getLoginPref().then((value) => {refreshData()});
-        getLoginData();
-        getDashboardDetails();
-      });
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     setState(() {
+  //       // getLoginPref().then((value) => {refreshData()});
+  //       getLoginData();
+  //       getDashboardDetails();
+  //     });
+  //   }
+  // }
 
   void _updateScreen(BuildContext context) {
     // storageClear();
@@ -443,8 +447,8 @@ class _HomeScreen extends State<HomeScreen>
   }
 
   void _dateChanged(String fromDt, String toDt) {
-    debugPrint("fromDt ${fromDt}");
-    debugPrint("toDt ${toDt}");
+    // debugPrint("fromDt ${fromDt}");
+    // debugPrint("toDt ${toDt}");
 
     this.fromDt = fromDt;
     this.toDt = toDt;
@@ -456,6 +460,9 @@ class _HomeScreen extends State<HomeScreen>
     viewFromDt = DateFormat('dd-MM-yyyy').format(fromdt);
     viewToDt = DateFormat('dd-MM-yyyy').format(todt);
     getDashboardDetails();
+    allotedRouteKey.currentState?.onRefresh();
+    drsSelectionKey.currentState?.refreshScreen();
+    runningTripsKey.currentState?.onRefresh();
   }
 
   // void _handleDrsUpdateRequest(dynamic model, DrsStatus status) {
@@ -511,106 +518,126 @@ class _HomeScreen extends State<HomeScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      showDatePickerBottomSheet(context, _dateChanged);
-                    },
-                    icon: Icon(Icons.calendar_today,
-                        size: 16, color: CommonColors.white),
-                    label: Text('$viewFromDt - $viewToDt',
-                        style: TextStyle(color: CommonColors.white)),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      side: BorderSide(color: CommonColors.white!),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  const Text(
+                    'Current Date',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
-              // const Text(
-              //   'Current Date',
-              //   style: TextStyle(
-              //     fontSize: 12,
-              //     color: Colors.white70,
-              //   ),
-              // ),
-              // const SizedBox(height: 4),
-              // Text(
-              //   formattedDate,
-              //   style: const TextStyle(
-              //     fontSize: 14,
-              //     fontWeight: FontWeight.w500,
-              //     color: Colors.white,
-              //   ),
-              // ),
+              const SizedBox(width: 8),
+              Visibility(
+                visible: employeeid != null,
+                child: InkWell(
+                  onTap: () {
+                    Get.to(() => const AttendanceScreen())?.then((_) {
+                      getDashboardDetails();
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      // Punch status indicator with color based on status
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: CommonColors.colorPrimary,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white30),
+                        ),
+                        child: Row(
+                          children: [
+                            // Status indicator dot
+                            Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    attendanceModel.attendancestatus == "Absent"
+                                        ? CommonColors.dangerColor
+                                        : CommonColors.successColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                              attendanceModel.attendancestatus == 'Present'
+                                  ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                                      .toString()
+                                      .toUpperCase()
+                                  : "Absent",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
-          Visibility(
-            visible: employeeid != null,
-            child: InkWell(
-              onTap: () {
-                Get.to(() => const AttendanceScreen())?.then((_) {
-                  getDashboardDetails();
-                });
-              },
-              child: Row(
-                children: [
-                  // Punch status indicator with color based on status
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // OutlinedButton.icon(
+              //   onPressed: () {
+              //     showDatePickerBottomSheet(context, _dateChanged);
+              //   },
+              //   icon: Icon(Icons.calendar_today,
+              //       size: 16, color: CommonColors.white),
+              //   label: const Text(''),
+              //   style: OutlinedButton.styleFrom(
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              //     side: BorderSide(color: CommonColors.white!),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              // ),
+
+              GestureDetector(
+                onTap: () {
+                  showDatePickerBottomSheet(context, _dateChanged);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
                       color: CommonColors.colorPrimary,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white30),
-                    ),
-                    child: Row(
-                      children: [
-                        // Status indicator dot
-                        Container(
-                          width: 8,
-                          height: 8,
-                          margin: const EdgeInsets.only(right: 6),
-                          decoration: BoxDecoration(
-                            color: attendanceModel.attendancestatus == "Absent"
-                                ? CommonColors.dangerColor
-                                : CommonColors.successColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Text(
-                          attendanceModel.attendancestatus == 'Present'
-                              ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                  .toString()
-                                  .toUpperCase()
-                              : "Absent",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(
-                    Icons.chevron_right,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ),
+                      border: Border.all(color: CommonColors.white!)),
+                  child: Icon(Icons.calendar_today,
+                      size: 16, color: CommonColors.white),
+                ),
+              )
+            ],
           ),
         ],
       ),
@@ -786,6 +813,7 @@ class _HomeScreen extends State<HomeScreen>
                   attendanceInfo(),
                   Expanded(
                     child: AllocatedRouteWidget(
+                      key: allotedRouteKey,
                       attendanceModel: attendanceModel,
                       // routeList: routeList,
                       // onRefresh: refreshScreen,
@@ -798,6 +826,7 @@ class _HomeScreen extends State<HomeScreen>
                   attendanceInfo(),
                   Expanded(
                     child: DrsselectionBottomSheet(
+                      key: drsSelectionKey,
                       tripId: 0,
                       showTripInfoUpdate: true,
                       onRefresh: refreshScreen,
@@ -810,6 +839,7 @@ class _HomeScreen extends State<HomeScreen>
                   attendanceInfo(),
                   Expanded(
                     child: RunningTrips(
+                      key: runningTripsKey,
                       // deliveryList: tripsList,
                       attendanceModel: attendanceModel,
                       // onRefresh: refreshScreen

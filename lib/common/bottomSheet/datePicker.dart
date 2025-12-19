@@ -1,9 +1,9 @@
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/textFormatter/upperCaseTextFormatter.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class DatePicker extends StatefulWidget {
@@ -35,9 +35,12 @@ class _DatePickerState extends State<DatePicker> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    dateTimeFromDt = dashboardFromDt;
+    dateTimeToDt = dashboardToDt;
     String formattedFromDate = DateFormat('dd-MM-yyyy').format(dateTimeFromDt);
+    String formattedToDate = DateFormat('dd-MM-yyyy').format(dateTimeToDt);
     fromDateController.text = formattedFromDate;
-    toDateController.text = formattedFromDate;
+    toDateController.text = formattedToDate;
     fromDt = dateTimeFromDt.toString();
     toDt = dateTimeToDt.toString();
   }
@@ -106,56 +109,78 @@ class _DatePickerState extends State<DatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        backgroundColor: CommonColors.colorPrimary,
-        title: Text(
-          'PERIOD SELECTION',
-          style: TextStyle(color: CommonColors.white),
-        ),
-        systemOverlayStyle: CommonColors.systemUiOverlayStyle,
-      ),
-      persistentFooterButtons: [
+    return
+        // Scaffold(
+        //   persistentFooterButtons: [
+        //     Container(
+        //       height: 60,
+        //       child: CommonButton(
+        //           title: "Submit",
+        //           color: CommonColors.colorPrimary!,
+        //           onTap: () {
+        //             //  successToast(fromDt);
+
+        //             widget.callBack.call(fromDt, toDt);
+        //             // Navigator.pop(context);
+        //             Get.back();
+
+        //             // successToast($dateFunction(fromDt,toDt))   ;
+        //             //  widget.callBack.call(dateFunction(fromDt,toDt));
+        //           }),
+        //     ),
+        //   ],
+        //   body:
         Container(
-          height: 60,
-          child: CommonButton(
-              title: "Submit",
-              color: CommonColors.colorPrimary!,
-              onTap: () {
-                //  successToast(fromDt);
-
-                widget.callBack.call(fromDt, toDt);
-                // Navigator.pop(context);
-                Get.back();
-
-                // successToast($dateFunction(fromDt,toDt))   ;
-                //  widget.callBack.call(dateFunction(fromDt,toDt));
-              }),
+      margin: const EdgeInsets.only(top: 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
         ),
-      ],
-      body: Column(
+      ),
+      child: Column(
         children: [
+          Text(
+            'Select Date Range',
+            style: TextStyle(
+                color: CommonColors.appBarColor.withAlpha((0.6 * 255).toInt()),
+                fontWeight: FontWeight.w600,
+                fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Choose your start and end dates',
+            style: TextStyle(
+                color: CommonColors.appBarColor.withAlpha((0.6 * 255).toInt())),
+            textAlign: TextAlign.center,
+          ),
           Row(
             children: [
               Flexible(
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text.rich(
-                            TextSpan(text: 'From Date', children: <InlineSpan>[
                           TextSpan(
-                            text: '*',
-                            style: TextStyle(color: CommonColors.dangerColor),
-                          )
-                        ])),
+                            text: 'FROM DATE',
+                            style: const TextStyle(
+                                color: CommonColors.appBarColor),
+                            children: <InlineSpan>[
+                              TextSpan(
+                                text: ' *',
+                                style:
+                                    TextStyle(color: CommonColors.dangerColor),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
                       TextField(
                         readOnly: true,
@@ -165,22 +190,25 @@ class _DatePickerState extends State<DatePicker> {
                         cursorColor: Colors.black,
                         obscureText: false,
                         decoration: InputDecoration(
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
-                          disabledBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
                           suffixIcon: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.calendar_month,
-                                color: Colors.green,
+                                color: CommonColors.appBarColor,
                               ),
                               onPressed: () async {
                                 openDatePicker(DatePickerType.fromDt);
@@ -205,11 +233,11 @@ class _DatePickerState extends State<DatePicker> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text.rich(
-                            TextSpan(text: 'To Date', children: <InlineSpan>[
+                            TextSpan(text: 'TO DATE', children: <InlineSpan>[
                           TextSpan(
-                            text: '*',
+                            text: ' *',
                             style: TextStyle(color: CommonColors.dangerColor),
                           )
                         ])),
@@ -222,25 +250,28 @@ class _DatePickerState extends State<DatePicker> {
                         cursorColor: Colors.black,
                         obscureText: false,
                         decoration: InputDecoration(
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
-                          disabledBorder: const OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0.5, color: Colors.grey),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                width: 0.5, color: Colors.grey),
                           ),
                           suffixIcon: IconButton(
                               icon: const Icon(
                                 Icons.calendar_month,
-                                color: Colors.green,
+                                color: CommonColors.appBarColor,
                               ),
                               onPressed: () async {
-                                openDatePicker(DatePickerType.toDt);
+                                openDatePicker(DatePickerType.fromDt);
                               }),
                           filled: true,
                           fillColor: Colors.white,
@@ -256,6 +287,25 @@ class _DatePickerState extends State<DatePicker> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.2),
+            height: 60,
+            child: CommonButton(
+                title: "Submit",
+                color: CommonColors.colorPrimary!,
+                onTap: () {
+                  //  successToast(fromDt);
+
+                  widget.callBack.call(fromDt, toDt);
+                  // Navigator.pop(context);
+                  Get.back();
+
+                  // successToast($dateFunction(fromDt,toDt))   ;
+                  //  widget.callBack.call(dateFunction(fromDt,toDt));
+                }),
+          ),
         ],
       ),
     );
@@ -269,12 +319,13 @@ Future<void> showDatePickerBottomSheet(
       // color is applied to main screen when modal bottom screen is displayed
       // barrierColor: Colors.greenAccent,
       //background color for modal bottom screen
-      backgroundColor: Colors.yellow,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
       //elevates modal bottom screen
       elevation: 10,
       // gives rounded corner to modal bottom screen
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(16.0),
       ),
       builder: (BuildContext context) {
         // UDE : SizedBox instead of Container for whitespaces
