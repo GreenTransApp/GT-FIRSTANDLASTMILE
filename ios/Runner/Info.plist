@@ -49,5 +49,9 @@
 	<key>Allow location permission for tracking purposes.</key>
 	<string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
 	<key>Allow location permission for tracking purposes.</key>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Bluetooth permission for printing purposes</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth permission for printing purposes</string>
 </dict>
 </plist>

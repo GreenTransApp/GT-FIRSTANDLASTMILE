@@ -693,19 +693,23 @@ class _RoutedetailState extends State<Routedetail> {
                   ),
                   const SizedBox(height: 16),
                   routeDetailList.isEmpty
-                      ? Center(
-                          child: Column(
-                            children: [
-                              Lottie.asset(
-                                'assets/map_blue.json',
-                                height: 100,
-                              ),
-                              const Text(
-                                "No Data Found",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w200, fontSize: 18),
-                              )
-                            ],
+                      ? Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.asset(
+                                  'assets/map_blue.json',
+                                  height: 100,
+                                ),
+                                const Text(
+                                  "No Data Found",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w200,
+                                      fontSize: 18),
+                                )
+                              ],
+                            ),
                           ),
                         )
                       : Expanded(

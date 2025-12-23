@@ -122,13 +122,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     });
     viewModel.updateCloseTripLiveData.stream.listen((model) async {
       if (model.commandstatus == 1) {
-        successToast(model.commandmessage!);
-        await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
-            savedLogin.companyid.toString(), widget.model.tripid.toString());
-        if (widget.refresh != null) {
-          widget.refresh!();
+        try {
+          successToast(model.commandmessage!);
+          await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
+              savedLogin.companyid.toString(), widget.model.tripid.toString());
+          if (widget.refresh != null) {
+            widget.refresh!();
+          }
+          Get.back();
+        } catch (err) {
+          debugPrint("Toast Error: ${err.toString()}");
         }
-        Get.back();
       } else {
         failToast(model.commandmessage!);
       }

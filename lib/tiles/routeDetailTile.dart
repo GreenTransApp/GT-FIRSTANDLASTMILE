@@ -166,21 +166,24 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                       ),
                       Visibility(
                         visible: !isConsignVisible,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary!
-                                .withAlpha((0.1 * 255).round()),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            // 'Stop ${modelDetail.sequenceid}',
-                            'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: CommonColors.colorPrimary,
+                        child: Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: CommonColors.colorPrimary!
+                                  .withAlpha((0.1 * 255).round()),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              // 'Stop ${modelDetail.sequenceid}',
+                              'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: CommonColors.colorPrimary,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                         ),

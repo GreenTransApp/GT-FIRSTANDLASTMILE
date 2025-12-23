@@ -10,6 +10,8 @@ class DeliveryDetailModel {
   String? statusColor;
   int? sequenceno;
   int? planningid;
+  String? manifestno;
+  String? manifesttype;
 
   String? consignmenttype;
   String? pickupstatus;
@@ -29,6 +31,8 @@ class DeliveryDetailModel {
     this.statusColor,
     this.sequenceno,
     this.planningid,
+    this.manifestno,
+    this.manifesttype,
     this.consignmenttype,
     this.pickupstatus,
     this.reversepickupstatus,
@@ -49,6 +53,8 @@ class DeliveryDetailModel {
       statusColor: json['statusColor'],
       sequenceno: json['sequenceno'],
       planningid: json['planningid'],
+      manifestno: json['manifestno'],
+      manifesttype: json['manifesttype'],
       consignmenttype: json['consignmenttype'],
       pickupstatus: json['pickupstatus'],
       reversepickupstatus: json['reversepickupstatus'],
@@ -70,6 +76,8 @@ class DeliveryDetailModel {
       'statusColor': statusColor,
       'sequenceno': sequenceno,
       'planningid': planningid,
+      'manifestno': manifestno,
+      'manifesttype': manifesttype,
       'consignmenttype': consignmenttype,
       'pickupstatus': pickupstatus,
       'reversepickupstatus': reversepickupstatus,

@@ -499,31 +499,18 @@ String convertFilePathToBase64(String? sent) {
 }
 
 String formatTimeString(String timeString) {
-  final parts = timeString.split(' ');
-  if (parts.length != 2) {
-    throw FormatException('Invalid time format: $timeString');
+  try {
+    if (timeString.toLowerCase().contains("am") ||
+        timeString.toLowerCase().contains("pm")) {
+      DateTime date = DateFormat("hh:mm a").parse(timeString);
+      return DateFormat("HH:mm").format(date);
+    } else {
+      return timeString;
+    }
+  } catch (e) {
+    debugPrint("formatTimeString Error: $e");
+    return timeString;
   }
-
-  final timeParts = parts[0].split(':');
-  if (timeParts.length != 2) {
-    throw FormatException('Invalid time format: $timeString');
-  }
-
-  int hours = int.parse(timeParts[0]);
-  int minutes = int.parse(timeParts[1]);
-  final ampm = parts[1].toUpperCase();
-
-  if (ampm != 'AM' && ampm != 'PM') {
-    throw FormatException('Invalid AM/PM indicator: $timeString');
-  }
-
-  if (ampm == 'PM' && hours != 12) {
-    hours += 12;
-  } else if (ampm == 'AM' && hours == 12) {
-    hours = 0;
-  }
-
-  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
 }
 
 inputFieldWithHeading(

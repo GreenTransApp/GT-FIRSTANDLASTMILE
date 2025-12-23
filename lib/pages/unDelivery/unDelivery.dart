@@ -423,7 +423,7 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmundeldt":
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
       "prmtime": formatTimeString(_unDeliveryTimeController.text),
-      "prmdlvtripsheetno": currentDeliveryModel.manifestno.toString(),
+      "prmdlvtripsheetno": widget.deliveryDetailModel.manifestno.toString(),
       "prmgrno": deliveryDetailModel.grno.toString(),
       "prmreasoncode": _selectedReason!.reasoncode.toString(),
       "prmactioncode": _selectedAction!.reasoncode.toString(),

@@ -49,6 +49,7 @@ class RunningTripTile extends StatelessWidget {
             ))?.then((_) => {onRefresh()});
           } else {
             failToast("Start trip to continue");
+            // successToast("Start trip to continue");
           }
         },
         child: Padding(
@@ -373,7 +374,7 @@ class RunningTripTile extends StatelessWidget {
               value: isNullOrEmpty(model.noofpickups.toString())
                   ? ""
                   : model.noofpickups.toString(),
-              color: Colors.green,
+              color: CommonColors.orangeColor!.withAlpha((0.5 * 255).toInt()),
               theme: theme,
             ),
             _buildStatusItem(
@@ -381,7 +382,7 @@ class RunningTripTile extends StatelessWidget {
               value: isNullOrEmpty(model.noofrvpickups.toString())
                   ? ""
                   : model.noofrvpickups.toString(),
-              color: Colors.red,
+              color: CommonColors.colorPrimary!.withAlpha((0.5 * 255).toInt()),
               theme: theme,
             ),
           ],

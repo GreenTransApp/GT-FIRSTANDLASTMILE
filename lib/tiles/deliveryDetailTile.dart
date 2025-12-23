@@ -262,20 +262,23 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           ),
                           const SizedBox(width: 12),
                           // Stop badge next to GR No
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: CommonColors.colorPrimary!
-                                  .withAlpha((0.1 * 255).round()),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: CommonColors.colorPrimary,
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: CommonColors.colorPrimary!
+                                    .withAlpha((0.1 * 255).round()),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: CommonColors.colorPrimary,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
                           ),

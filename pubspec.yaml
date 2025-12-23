@@ -83,6 +83,8 @@ dependencies:
   qr_code_scanner_plus: ^2.0.14
   open_file: ^3.5.10
   material_symbols_icons: ^4.2874.0
+  flutter_esc_pos_utils: ^1.0.1
+  flutter_reactive_ble: ^5.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

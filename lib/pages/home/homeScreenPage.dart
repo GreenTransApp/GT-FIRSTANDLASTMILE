@@ -8,6 +8,8 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/bluetooth/bluetooth.dart';
+import 'package:gtlmd/common/bluetooth/bluetoothScreen.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
@@ -104,6 +106,7 @@ class _HomeScreen extends State<HomeScreen>
         refreshScreen();
       }
     });
+    // Bluetooth().scan();
   }
 
   @override
@@ -601,6 +604,22 @@ class _HomeScreen extends State<HomeScreen>
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
+              Visibility(
+                visible: ENV.isDebugging,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.to(const BluetoothScreen());
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: CommonColors.white!),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.bluetooth, color: CommonColors.white),
+                  ),
+                ),
+              )
             ],
           ),
           Row(
@@ -795,9 +814,9 @@ class _HomeScreen extends State<HomeScreen>
                 label: "TRIPS",
               ),
               NavigationDestination(
-                icon: const Icon(Icons.account_circle_rounded),
+                icon: const Icon(Icons.account_circle_outlined),
                 selectedIcon: Icon(
-                  Icons.account_circle_rounded,
+                  Icons.account_circle_outlined,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "PROFILE",
@@ -811,6 +830,45 @@ class _HomeScreen extends State<HomeScreen>
               Column(
                 children: [
                   attendanceInfo(),
+                  const SizedBox(height: 16),
+                  Visibility(
+                    visible: ENV.isDebugging,
+                    child: GestureDetector(
+                      onTap: () async {
+                        final TimeOfDay? selectedTime = await showTimePicker(
+                          initialTime: TimeOfDay.now(),
+                          context: context,
+                        );
+
+                        debugPrint(formatTimeString(selectedTime.toString()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        margin: const EdgeInsets.only(
+                            top: 16, bottom: 4, left: 16, right: 16),
+                        decoration: BoxDecoration(
+                          color: CommonColors.colorPrimary,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'Test',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: AllocatedRouteWidget(
                       key: allotedRouteKey,
@@ -849,7 +907,7 @@ class _HomeScreen extends State<HomeScreen>
               ),
               Column(
                 children: [
-                  attendanceInfo(),
+                  // attendanceInfo(),
                   Expanded(child: const ProfileScreen()),
                 ],
               )

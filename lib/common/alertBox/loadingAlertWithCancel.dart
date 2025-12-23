@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class LoadingAlertService {
   late BuildContext context;
-  bool isShowing = false;
+  static bool isShowing = false;
 
   LoadingAlertService({
     required this.context,
