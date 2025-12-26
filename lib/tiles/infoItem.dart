@@ -13,6 +13,9 @@ class InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -20,8 +23,8 @@ class InfoItem extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           label,
-          style: const TextStyle(
-            fontSize: 12,
+          style: TextStyle(
+            fontSize: isSmallDevice ? 10 : 12,
             color: CommonColors.appBarColor,
           ),
         ),
@@ -30,7 +33,7 @@ class InfoItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: isSmallDevice ? 14 : 18,
             fontWeight: FontWeight.w500,
             color: CommonColors.colorPrimary!,
           ),

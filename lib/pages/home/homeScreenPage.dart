@@ -504,9 +504,17 @@ class _HomeScreen extends State<HomeScreen>
   // }
 
   Widget attendanceInfo() {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      margin: const EdgeInsets.only(top: 16, bottom: 4, left: 16, right: 16),
+      padding: EdgeInsets.symmetric(
+          horizontal: isSmallDevice ? 8 : 16, vertical: isSmallDevice ? 8 : 12),
+      margin: EdgeInsets.only(
+          top: 16,
+          bottom: 4,
+          left: isSmallDevice ? 8 : 16,
+          right: isSmallDevice ? 8 : 16),
       decoration: BoxDecoration(
         color: CommonColors.colorPrimary,
         borderRadius: BorderRadius.circular(12),
@@ -526,18 +534,18 @@ class _HomeScreen extends State<HomeScreen>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Current Date',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: isSmallDevice ? 10 : 12,
                       color: Colors.white70,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     formattedDate,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: TextStyle(
+                      fontSize: isSmallDevice ? 12 : 14,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
@@ -568,8 +576,8 @@ class _HomeScreen extends State<HomeScreen>
                           children: [
                             // Status indicator dot
                             Container(
-                              width: 8,
-                              height: 8,
+                              width: isSmallDevice ? 6 : 8,
+                              height: isSmallDevice ? 6 : 8,
                               margin: const EdgeInsets.only(right: 6),
                               decoration: BoxDecoration(
                                 color:
@@ -585,8 +593,8 @@ class _HomeScreen extends State<HomeScreen>
                                       .toString()
                                       .toUpperCase()
                                   : "Absent",
-                              style: const TextStyle(
-                                fontSize: 12,
+                              style: TextStyle(
+                                fontSize: isSmallDevice ? 10 : 12,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -595,9 +603,9 @@ class _HomeScreen extends State<HomeScreen>
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
-                        size: 20,
+                        size: isSmallDevice ? 16 : 20,
                         color: Colors.white,
                       ),
                     ],
@@ -616,7 +624,9 @@ class _HomeScreen extends State<HomeScreen>
                       border: Border.all(color: CommonColors.white!),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.bluetooth, color: CommonColors.white),
+                    child: Icon(Icons.bluetooth,
+                        size: isSmallDevice ? 16 : 24,
+                        color: CommonColors.white),
                   ),
                 ),
               )
@@ -647,13 +657,13 @@ class _HomeScreen extends State<HomeScreen>
                   showDatePickerBottomSheet(context, _dateChanged);
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: CommonColors.colorPrimary,
                       border: Border.all(color: CommonColors.white!)),
                   child: Icon(Icons.calendar_today,
-                      size: 16, color: CommonColors.white),
+                      size: isSmallDevice ? 14 : 16, color: CommonColors.white),
                 ),
               )
             ],
@@ -664,7 +674,10 @@ class _HomeScreen extends State<HomeScreen>
   }
 
   @override
-  Widget build(BuildContext) {
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     if (attendanceModel == null) {
       return Scaffold(
           appBar: AppBar(
@@ -682,19 +695,23 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Icons.menu,
+                    size: isSmallDevice ? 20 : 24,
                     color: CommonColors.white,
                   ));
             }),
             title: Text(
               'LMD Dashboard',
-              style: TextStyle(color: CommonColors.white),
+              style: TextStyle(
+                  color: CommonColors.white, fontSize: isSmallDevice ? 16 : 20),
             ),
           ),
           drawer: const SideMenu(),
           body: Center(
             child: Text(
               "data not  found ".toUpperCase(),
-              style: TextStyle(color: CommonColors.successColor, fontSize: 20),
+              style: TextStyle(
+                  color: CommonColors.successColor,
+                  fontSize: isSmallDevice ? 16 : 20),
             ),
           ));
     } else {
@@ -707,10 +724,10 @@ class _HomeScreen extends State<HomeScreen>
               ),
             ),
             backgroundColor: CommonColors.colorPrimary,
-            title: const Text(
+            title: Text(
               'LMD Dashboard',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: isSmallDevice ? 16 : 20,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -722,6 +739,7 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Icons.menu,
+                    size: isSmallDevice ? 20 : 24,
                     color: CommonColors.white,
                   ));
             }),
@@ -748,6 +766,7 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Symbols.autorenew_rounded,
+                    size: isSmallDevice ? 16 : 24,
                     color: CommonColors.white,
                   ),
                 ),
@@ -790,33 +809,39 @@ class _HomeScreen extends State<HomeScreen>
                 .withAlpha((0.15 * 255).toInt()), // light background
             destinations: [
               NavigationDestination(
-                icon: const Icon(Icons.route),
+                icon: Icon(Icons.route, size: isSmallDevice ? 16 : 24),
                 selectedIcon: Icon(
                   Icons.route,
+                  size: isSmallDevice ? 16 : 24,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "ROUTES",
               ),
               NavigationDestination(
-                icon: const Icon(Symbols.package_2),
+                icon: Icon(Symbols.package_2, size: isSmallDevice ? 16 : 24),
                 selectedIcon: Icon(
                   Symbols.package_2,
+                  size: isSmallDevice ? 16 : 24,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "CREATE TRIP",
               ),
               NavigationDestination(
-                icon: const Icon(Symbols.delivery_truck_bolt),
+                icon: Icon(Symbols.delivery_truck_bolt,
+                    size: isSmallDevice ? 16 : 24),
                 selectedIcon: Icon(
                   Symbols.delivery_truck_bolt,
+                  size: isSmallDevice ? 16 : 24,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "TRIPS",
               ),
               NavigationDestination(
-                icon: const Icon(Icons.account_circle_outlined),
+                icon: Icon(Icons.account_circle_outlined,
+                    size: isSmallDevice ? 16 : 24),
                 selectedIcon: Icon(
                   Icons.account_circle_outlined,
+                  size: isSmallDevice ? 16 : 24,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "PROFILE",
@@ -843,10 +868,14 @@ class _HomeScreen extends State<HomeScreen>
                         debugPrint(formatTimeString(selectedTime.toString()));
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        margin: const EdgeInsets.only(
-                            top: 16, bottom: 4, left: 16, right: 16),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: isSmallDevice ? 8 : 16,
+                            vertical: isSmallDevice ? 8 : 12),
+                        margin: EdgeInsets.only(
+                            top: 16,
+                            bottom: 4,
+                            left: isSmallDevice ? 8 : 16,
+                            right: isSmallDevice ? 8 : 16),
                         decoration: BoxDecoration(
                           color: CommonColors.colorPrimary,
                           borderRadius: BorderRadius.circular(12),
@@ -858,10 +887,10 @@ class _HomeScreen extends State<HomeScreen>
                             ),
                           ],
                         ),
-                        child: const Text(
+                        child: Text(
                           'Test',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: isSmallDevice ? 12 : 14,
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),

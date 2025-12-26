@@ -472,12 +472,16 @@ class _RoutedetailState extends State<Routedetail> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
           'Route Detail',
-          style: TextStyle(color: CommonColors.White),
+          style: TextStyle(
+              color: CommonColors.White, fontSize: isSmallDevice ? 16 : 20),
         ),
         leading: IconButton(
             onPressed: () {
@@ -486,6 +490,7 @@ class _RoutedetailState extends State<Routedetail> {
             icon: Icon(
               Icons.arrow_back,
               color: CommonColors.White,
+              size: isSmallDevice ? 16 : 20,
             )),
         actions: [
           InkWell(
@@ -499,7 +504,7 @@ class _RoutedetailState extends State<Routedetail> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Image.asset(
                 "assets/images/map.png",
-                height: 35,
+                height: isSmallDevice ? 25 : 35,
               ),
             ),
           ),
@@ -509,7 +514,7 @@ class _RoutedetailState extends State<Routedetail> {
           ? Scaffold(
               body: Center(
               child: Text(
-                "data not  found ".toUpperCase(),
+                "Data not  found ".toUpperCase(),
                 style:
                     TextStyle(color: CommonColors.successColor, fontSize: 20),
               ),
@@ -519,7 +524,7 @@ class _RoutedetailState extends State<Routedetail> {
               child: Column(
                 children: [
                   Container(
-                    margin: const EdgeInsets.all(16),
+                    margin: EdgeInsets.all(isSmallDevice ? 10 : 16),
                     decoration: BoxDecoration(
                       color: CommonColors.White,
                       borderRadius: BorderRadius.circular(16),
@@ -535,13 +540,14 @@ class _RoutedetailState extends State<Routedetail> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(isSmallDevice ? 10 : 16),
                           child: Column(
                             children: [
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(10),
+                                    padding:
+                                        EdgeInsets.all(isSmallDevice ? 8 : 16),
                                     decoration: BoxDecoration(
                                       color: CommonColors.colorPrimary!
                                           .withAlpha((0.3 * 255).round()),
@@ -554,9 +560,10 @@ class _RoutedetailState extends State<Routedetail> {
                                     child: Icon(
                                       Icons.route,
                                       color: CommonColors.colorPrimary,
+                                      size: isSmallDevice ? 20 : 24,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -567,6 +574,7 @@ class _RoutedetailState extends State<Routedetail> {
                                           style: theme.textTheme.titleLarge
                                               ?.copyWith(
                                             fontWeight: FontWeight.bold,
+                                            fontSize: isSmallDevice ? 12 : 18,
                                           ),
                                         ),
                                         Text(
@@ -574,6 +582,7 @@ class _RoutedetailState extends State<Routedetail> {
                                           style: theme.textTheme.bodyMedium
                                               ?.copyWith(
                                             color: CommonColors.grey600,
+                                            fontSize: isSmallDevice ? 12 : 14,
                                           ),
                                         ),
                                       ],
@@ -590,7 +599,7 @@ class _RoutedetailState extends State<Routedetail> {
                                       children: [
                                         Icon(
                                           Icons.inventory_2_outlined,
-                                          size: 16,
+                                          size: isSmallDevice ? 12 : 16,
                                           color: CommonColors.amber800,
                                         ),
                                         const SizedBox(width: 4),
@@ -599,7 +608,7 @@ class _RoutedetailState extends State<Routedetail> {
                                           style: TextStyle(
                                             color: CommonColors.amber800,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+                                            fontSize: isSmallDevice ? 10 : 12,
                                           ),
                                         ),
                                       ],
@@ -609,7 +618,7 @@ class _RoutedetailState extends State<Routedetail> {
                               ),
                               const SizedBox(height: 16),
                               Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
                                 decoration: BoxDecoration(
                                   color: CommonColors.grey200,
                                   borderRadius: BorderRadius.circular(12),
@@ -653,7 +662,7 @@ class _RoutedetailState extends State<Routedetail> {
                   ),
                   // Route Timeline
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isSmallDevice ? 8 : 16),
                     decoration: BoxDecoration(
                       color: CommonColors.colorPrimary,
                       borderRadius: BorderRadius.circular(16),
@@ -669,15 +678,15 @@ class _RoutedetailState extends State<Routedetail> {
                     child: Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(4),
+                          padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(color: CommonColors.White!),
                           ),
                           child: Image.asset(
                             'assets/images/multipointlocation.png',
-                            height: 20,
-                            width: 20,
+                            height: isSmallDevice ? 16 : 20,
+                            width: isSmallDevice ? 16 : 20,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -685,6 +694,7 @@ class _RoutedetailState extends State<Routedetail> {
                           'Delivery Route',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            fontSize: isSmallDevice ? 12 : 16,
                             color: CommonColors.white,
                           ),
                         ),
@@ -702,11 +712,11 @@ class _RoutedetailState extends State<Routedetail> {
                                   'assets/map_blue.json',
                                   height: 100,
                                 ),
-                                const Text(
+                                Text(
                                   "No Data Found",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w200,
-                                      fontSize: 18),
+                                      fontSize: isSmallDevice ? 12 : 16),
                                 )
                               ],
                             ),
@@ -806,8 +816,11 @@ class _RoutedetailState extends State<Routedetail> {
                 onPressed: () {
                   alterForReject();
                 },
-                icon: const Icon(Icons.close),
-                label: const Text("Reject"),
+                icon: Icon(Icons.close, size: isSmallDevice ? 12 : 16),
+                label: Text(
+                  "Reject",
+                  style: TextStyle(fontSize: isSmallDevice ? 12 : 16),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CommonColors.red600,
                   foregroundColor: CommonColors.White,
@@ -857,12 +870,18 @@ class _RoutedetailState extends State<Routedetail> {
                     alterForAccept();
                   }
                 },
-                icon: const Icon(Icons.list),
+                icon: Icon(Icons.list, size: isSmallDevice ? 12 : 16),
                 // label: const Text("Accept"),
                 // label: const Text("Receive Load"),
                 label: hasDeliveries
-                    ? const Text("Receive Load")
-                    : const Text("Accept"),
+                    ? Text(
+                        "Receive Load",
+                        style: TextStyle(fontSize: isSmallDevice ? 12 : 16),
+                      )
+                    : Text(
+                        "Accept",
+                        style: TextStyle(fontSize: isSmallDevice ? 12 : 16),
+                      ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CommonColors.green600,
                   foregroundColor: CommonColors.White,
@@ -895,15 +914,18 @@ class _RoutedetailState extends State<Routedetail> {
     );
   }
 
-// This widget is used to create Date & time and Total distance containters
+  // This widget is used to create Date & time and Total distance containters
   Widget _buildInfoItem(BuildContext context, IconData icon, String label,
       String value, Color color) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth < 360;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: isSmallDevice ? 4 : 8),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(4),
+            padding: EdgeInsets.all(isSmallDevice ? 2 : 4),
             decoration: BoxDecoration(
               color: color.withAlpha((0.3 * 255).round()),
               shape: BoxShape.circle,
@@ -913,27 +935,27 @@ class _RoutedetailState extends State<Routedetail> {
             ),
             child: Icon(
               icon,
-              size: 18,
+              size: isSmallDevice ? 12 : 16,
               color: color,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: isSmallDevice ? 4 : 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style: TextStyle(
+                    fontSize: isSmallDevice ? 9 : 11,
                     color: Colors.black54,
                   ),
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontSize: isSmallDevice ? 10 : 12,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),

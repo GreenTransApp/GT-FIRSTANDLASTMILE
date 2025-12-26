@@ -29,15 +29,20 @@ class DashBoardRouteTile extends StatefulWidget {
 class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      margin: EdgeInsets.symmetric(
+          horizontal: isSmallDevice ? 12 : 24,
+          vertical: isSmallDevice ? 8 : 16),
       // shape: RoundedRectangleBorder(
       //     borderRadius: BorderRadius.circular(12),
       //     side: const BorderSide(color: Colors.black
       //     )),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(isSmallDevice ? 10.0 : 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,14 +55,15 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
                         decoration: BoxDecoration(
                           color: CommonColors.colorPrimary!
                               .withAlpha((255 * 0.1).toInt()),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Icon(Icons.location_on,
-                            size: 16, color: CommonColors.colorPrimary),
+                            size: isSmallDevice ? 12 : 16,
+                            color: CommonColors.colorPrimary),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -66,7 +72,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: isSmallDevice ? 14 : 16,
                             fontWeight: FontWeight.w500,
                             color: CommonColors.colorPrimary,
                           ),
@@ -89,7 +95,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                     widget.model.planningdt.toString(),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: isSmallDevice ? 10 : 12,
                       color: CommonColors.colorPrimary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -102,7 +108,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
 
             // Card Content
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(isSmallDevice ? 10 : 16),
               decoration: BoxDecoration(
                 color:
                     CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
@@ -175,12 +181,18 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                 child: employeeid != null &&
                         widget.attendanceModel.attendancestatus == "Absent"
                     ? const Text("Punch-in Required")
-                    : const Row(
+                    : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.remove_red_eye),
-                          SizedBox(width: 12),
-                          Text("View Details"),
+                          Icon(
+                            Icons.remove_red_eye,
+                            size: isSmallDevice ? 18 : 24,
+                          ),
+                          SizedBox(width: isSmallDevice ? 8 : 12),
+                          Text(
+                            "View Details",
+                            style: TextStyle(fontSize: isSmallDevice ? 12 : 14),
+                          ),
                         ],
                       ),
               ),

@@ -7,7 +7,7 @@ class DrsListModel {
   String? rejectedbyrider;
   String? drivercode;
   String? createddt;
-  int? tripconfirm;
+  bool? tripconfirm;
   int? noofconsign;
 
   DrsListModel({
@@ -33,7 +33,7 @@ class DrsListModel {
       rejectedbyrider: json['rejectedbyrider'],
       drivercode: json['drivercode'],
       createddt: json['createddt'],
-      tripconfirm: json['tripconfirm'],
+      tripconfirm: json['tripconfirm'] == 1 ? true : false,
       noofconsign: json['noofconsign'],
     );
   }
@@ -48,7 +48,7 @@ class DrsListModel {
       'rejectedbyrider': rejectedbyrider,
       'drivercode': drivercode,
       'createddt': createddt,
-      'tripconfirm': tripconfirm,
+      'tripconfirm': tripconfirm ?? true ? 1 : 0,
       'noofconsign': noofconsign,
     };
   }

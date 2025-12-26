@@ -87,6 +87,9 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return RefreshIndicator(
       color: Colors.white,
       backgroundColor: CommonColors.colorPrimary,
@@ -97,11 +100,13 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Lottie.asset("assets/map_blue.json", height: 100),
-                  const Text(
+                  Lottie.asset("assets/map_blue.json",
+                      height: isSmallDevice ? 80 : 100),
+                  Text(
                     "No Routes",
                     style: TextStyle(
-                        fontSize: 18, color: CommonColors.appBarColor),
+                        fontSize: isSmallDevice ? 14 : 18,
+                        color: CommonColors.appBarColor),
                   )
                 ],
               )),

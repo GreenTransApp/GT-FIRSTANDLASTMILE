@@ -43,7 +43,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   int listValue = 0;
   int listIndex = 0;
   late Color dotColor;
-  late Color cardBorderColor;
   late Color cardBgColor;
   late IconData statusIcon;
   late Color statusIconColor;
@@ -103,7 +102,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "U":
           status = "Un-Picked";
           dotColor = CommonColors.colorPrimary!;
-          cardBorderColor = CommonColors.colorPrimary!;
           cardBgColor =
               CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
           statusIcon = Icons.cancel;
@@ -112,7 +110,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "D":
           status = "Picked";
           dotColor = CommonColors.colorPrimary!;
-          cardBorderColor = CommonColors.colorPrimary!;
           cardBgColor =
               CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
           statusIcon = Icons.check_circle;
@@ -121,7 +118,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "P":
           status = "Pending";
           dotColor = CommonColors.colorPrimary!;
-          cardBorderColor = CommonColors.colorPrimary!;
           cardBgColor =
               CommonColors.colorPrimary!.withAlpha((0.1 * 255).round());
           statusIcon = Icons.access_time;
@@ -134,7 +130,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "U":
           status = "Undelivered";
           dotColor = CommonColors.red500!;
-          cardBorderColor = CommonColors.red500!;
           cardBgColor = CommonColors.red50!;
           statusIcon = Icons.cancel;
           statusIconColor = CommonColors.red500!;
@@ -142,7 +137,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "D":
           status = "Delivered";
           dotColor = CommonColors.green500!;
-          cardBorderColor = CommonColors.green500!;
           cardBgColor = CommonColors.green50!;
           statusIcon = Icons.check_circle;
           statusIconColor = CommonColors.green500!;
@@ -150,7 +144,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "P":
           status = "Pending";
           dotColor = CommonColors.amber500!;
-          cardBorderColor = CommonColors.amber500!;
           cardBgColor = CommonColors.amber50!;
           statusIcon = Icons.access_time;
           statusIconColor = CommonColors.amber500!;
@@ -169,7 +162,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "D":
           status = "Picked";
           dotColor = CommonColors.green500!;
-          cardBorderColor = CommonColors.green500!;
           cardBgColor = CommonColors.green50!;
           statusIcon = Icons.check_circle;
           statusIconColor = CommonColors.green500!;
@@ -177,7 +169,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         case "P":
           status = "Pending";
           dotColor = CommonColors.amber500!;
-          cardBorderColor = CommonColors.amber500!;
           cardBgColor = CommonColors.amber50!;
           statusIcon = Icons.access_time;
           statusIconColor = CommonColors.amber500!;
@@ -185,7 +176,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         default:
           status = "Pending";
           dotColor = CommonColors.amber500!;
-          cardBorderColor = CommonColors.amber500!;
           cardBgColor = CommonColors.amber50!;
           statusIcon = Icons.access_time;
           statusIconColor = CommonColors.amber500!;
@@ -374,26 +364,30 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   ),
                                 ),
                                 Visibility(
-                                  visible: status == "Pending",
+                                  visible: status == "Pending" ||
+                                      status == "Un-Picked",
                                   child: const SizedBox(
                                     width: 10,
                                   ),
                                 ),
                                 Visibility(
-                                  visible: status == "Pending",
+                                  visible: status == "Pending" ||
+                                      status == "Un-Picked",
                                   child: SizedBox(
                                     width: 32,
                                     height: 32,
                                     child: IconButton(
                                       iconSize: 16,
                                       style: ButtonStyle(
-                                        backgroundColor: status == "Pending"
+                                        backgroundColor: status == "Pending" ||
+                                                status == "Un-Picked"
                                             ? WidgetStatePropertyAll(
                                                 CommonColors.colorPrimary)
                                             : WidgetStatePropertyAll(
                                                 CommonColors.grey400),
                                       ),
-                                      onPressed: status == "Pending"
+                                      onPressed: status == "Pending" ||
+                                              status == "Un-Picked"
                                           ? () {
                                               if (modelDetail.cngemobile
                                                       .toString()
