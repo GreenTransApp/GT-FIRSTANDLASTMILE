@@ -138,6 +138,9 @@ class _PickupState extends State<Pickup> {
   bool _pickupLoaded = false;
   bool _bookingLoaded = false;
 
+  double screenWidth = 0;
+  bool isSmallDevice = false;
+
   @override
   initState() {
     super.initState();
@@ -578,6 +581,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Invoice No.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -600,8 +604,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: firstInvoiceModel.invoiceNoController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Invoice No"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Invoice No",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter Invoice No.';
@@ -622,6 +629,7 @@ class _PickupState extends State<Pickup> {
                     setState(() {});
                   },
                   child: _buildFormField(
+                    isSmallDevice: isSmallDevice,
                     label: 'Invoice Date.',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -635,8 +643,11 @@ class _PickupState extends State<Pickup> {
                       textInputAction: TextInputAction.done,
                       controller: firstInvoiceModel.dateController,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: CommonColors.appBarColor),
-                      decoration: _inputDecoration("Invoice Date"),
+                      style: TextStyle(
+                          color: CommonColors.appBarColor,
+                          fontSize: isSmallDevice ? 13 : 14),
+                      decoration: _inputDecoration("Invoice Date",
+                          isSmallDevice: isSmallDevice),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter invoice date';
@@ -656,6 +667,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Packages.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -683,8 +695,11 @@ class _PickupState extends State<Pickup> {
                       FilteringTextInputFormatter
                           .digitsOnly, // ✅ allows only 0–9
                     ],
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Invoice No"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Invoice No",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter Invoice No';
@@ -824,12 +839,27 @@ class _PickupState extends State<Pickup> {
               width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: CommonButton(
-                  color: CommonColors.colorPrimary!,
-                  onTap: () {
+                child: ElevatedButton(
+                  onPressed: () {
                     addNewInvoice();
                   },
-                  title: "Add More",
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CommonColors.colorPrimary,
+                    foregroundColor: CommonColors.White,
+                    padding:
+                        EdgeInsets.symmetric(vertical: isSmallDevice ? 12 : 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Add More",
+                    style: TextStyle(
+                      fontSize: isSmallDevice ? 13 : 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -858,6 +888,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Invoice No.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -881,8 +912,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: model.invoiceNoController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Invoice No"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Invoice No",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter invoice no';
@@ -903,6 +937,7 @@ class _PickupState extends State<Pickup> {
                     setState(() {});
                   },
                   child: _buildFormField(
+                    isSmallDevice: isSmallDevice,
                     label: 'Invoice Date.',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -916,8 +951,11 @@ class _PickupState extends State<Pickup> {
                       textInputAction: TextInputAction.done,
                       controller: model.dateController,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: CommonColors.appBarColor),
-                      decoration: _inputDecoration("Invoice Date"),
+                      style: TextStyle(
+                          color: CommonColors.appBarColor,
+                          fontSize: isSmallDevice ? 13 : 14),
+                      decoration: _inputDecoration("Invoice Date",
+                          isSmallDevice: isSmallDevice),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter invoice date';
@@ -937,6 +975,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Packages.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -959,8 +998,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: model.pckgsController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Invoice No"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Invoice No",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter packages';
@@ -974,6 +1016,7 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Invoice Value.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -995,8 +1038,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: model.invoiceValueController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Invoice Date"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Invoice Date",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter invoice value';
@@ -1100,12 +1146,27 @@ class _PickupState extends State<Pickup> {
                     width: double.infinity,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: CommonButton(
-                        color: CommonColors.colorPrimary!,
-                        onTap: () {
+                      child: ElevatedButton(
+                        onPressed: () {
                           addNewInvoice();
                         },
-                        title: "Add More",
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: CommonColors.colorPrimary,
+                          foregroundColor: CommonColors.White,
+                          padding: EdgeInsets.symmetric(
+                              vertical: isSmallDevice ? 12 : 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          "Add More",
+                          style: TextStyle(
+                            fontSize: isSmallDevice ? 13 : 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1118,12 +1179,27 @@ class _PickupState extends State<Pickup> {
                     width: double.infinity,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: CommonButton(
-                        color: CommonColors.colorPrimary!,
-                        onTap: () {
+                      child: ElevatedButton(
+                        onPressed: () {
                           deleteInvoice(index - 2);
                         },
-                        title: "Delete",
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: CommonColors.colorPrimary,
+                          foregroundColor: CommonColors.White,
+                          padding: EdgeInsets.symmetric(
+                              vertical: isSmallDevice ? 12 : 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          "Delete",
+                          style: TextStyle(
+                            fontSize: isSmallDevice ? 13 : 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1144,9 +1220,10 @@ class _PickupState extends State<Pickup> {
           enabled: canEditCngr,
           initiallyExpanded: true,
           leading: const Icon(Icons.person),
-          title: const Text(
+          title: Text(
             "Consignor Details",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: isSmallDevice ? 18 : 20),
           ),
           children: [
             // heading
@@ -1161,6 +1238,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                   child: _buildFormField(
+                    isSmallDevice: isSmallDevice,
                     label: 'Consignor',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -1212,8 +1290,11 @@ class _PickupState extends State<Pickup> {
                       textInputAction: TextInputAction.done,
                       controller: _consignorNameController,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: CommonColors.appBarColor),
-                      decoration: _inputDecoration("Consignor"),
+                      style: TextStyle(
+                          color: CommonColors.appBarColor,
+                          fontSize: isSmallDevice ? 13 : 14),
+                      decoration: _inputDecoration("Consignor",
+                          isSmallDevice: isSmallDevice),
                       validator: (value) {
                         if (canEditCngr) {
                           if (value == null || value.isEmpty) {
@@ -1234,6 +1315,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Address',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1255,8 +1337,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consignorAddressController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Address"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Address",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1274,6 +1359,7 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Zip Code',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1287,8 +1373,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consignorZipCodeController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Zip Code"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Zip Code",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1311,6 +1400,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'City',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1332,8 +1422,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consignorCityController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("City"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration:
+                        _inputDecoration("City", isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1351,6 +1444,7 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Mobile',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1372,8 +1466,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consignorMobileController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Mobile"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Mobile",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1405,9 +1502,10 @@ class _PickupState extends State<Pickup> {
           enabled: canEditCnge,
           initiallyExpanded: true,
           leading: const Icon(Icons.person),
-          title: const Text(
+          title: Text(
             "Consignee Details",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: isSmallDevice ? 18 : 20),
           ),
           children: [
             // heading
@@ -1422,6 +1520,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                   child: _buildFormField(
+                    isSmallDevice: isSmallDevice,
                     label: 'Consignee',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -1472,8 +1571,11 @@ class _PickupState extends State<Pickup> {
                       textInputAction: TextInputAction.done,
                       controller: _consigneeNameController,
                       keyboardType: TextInputType.text,
-                      style: const TextStyle(color: CommonColors.appBarColor),
-                      decoration: _inputDecoration("Consignee"),
+                      style: TextStyle(
+                          color: CommonColors.appBarColor,
+                          fontSize: isSmallDevice ? 13 : 14),
+                      decoration: _inputDecoration("Consignee",
+                          isSmallDevice: isSmallDevice),
                       validator: (value) {
                         if (canEditCnge) {
                           if (value == null || value.isEmpty) {
@@ -1494,6 +1596,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Address',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1515,8 +1618,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consigneeAddressController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Address"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Address",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1534,6 +1640,7 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Zip Code',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1547,8 +1654,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consigneeZipCodeController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Zip Code"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Zip Code",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1571,6 +1681,7 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'City',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1592,8 +1703,11 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consigneeCityController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("City"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration:
+                        _inputDecoration("City", isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1611,6 +1725,7 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Mobile',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1632,12 +1747,15 @@ class _PickupState extends State<Pickup> {
                     textInputAction: TextInputAction.done,
                     controller: _consigneeMobileController,
                     keyboardType: TextInputType.text,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Mobile"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration: _inputDecoration("Mobile",
+                        isSmallDevice: isSmallDevice),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter consigndd mobile';
+                          return 'Please enter consignee mobile';
                         }
                         return null;
                       } else {
@@ -1781,18 +1899,22 @@ class _PickupState extends State<Pickup> {
 
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.sizeOf(context).width;
+    isSmallDevice = screenWidth <= 360;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: CommonColors.colorPrimary,
           title: Text(
             'Pickup',
-            style: TextStyle(color: CommonColors.White),
+            style: TextStyle(
+                color: CommonColors.White, fontSize: isSmallDevice ? 16 : 18),
           ),
           leading: InkWell(
             onTap: () => {Navigator.pop(context)},
             child: Icon(
               Icons.arrow_back,
               color: CommonColors.White,
+              size: isSmallDevice ? 20 : 24,
             ),
           ),
         ),
@@ -1820,13 +1942,13 @@ class _PickupState extends State<Pickup> {
                       Icon(
                         Icons.local_shipping_outlined,
                         color: CommonColors.primaryColorShade!,
-                        size: 20,
+                        size: isSmallDevice ? 18 : 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Pickup Information',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isSmallDevice ? 14 : 16,
                           fontWeight: FontWeight.w600,
                           color: CommonColors.primaryColorShade!,
                         ),
@@ -1847,6 +1969,7 @@ class _PickupState extends State<Pickup> {
                           children: [
                             Expanded(
                               child: _buildFormField(
+                                isSmallDevice: isSmallDevice,
                                 label: "Consignment#",
                                 isRequired: true,
                                 icon: Icons.label_outline,
@@ -1863,11 +1986,14 @@ class _PickupState extends State<Pickup> {
                                   textInputAction: TextInputAction.done,
                                   controller: _grController,
                                   keyboardType: TextInputType.text,
-                                  style: const TextStyle(
-                                      color: CommonColors.appBarColor),
+                                  style: TextStyle(
+                                      color: CommonColors.appBarColor,
+                                      fontSize: isSmallDevice ? 13 : 14),
                                   decoration: autoGr
-                                      ? _inputDecoration(autoGrLabel)
-                                      : _inputDecoration("Enter Consignment#"),
+                                      ? _inputDecoration(autoGrLabel,
+                                          isSmallDevice: isSmallDevice)
+                                      : _inputDecoration("Enter Consignment#",
+                                          isSmallDevice: isSmallDevice),
                                   validator: (value) {
                                     if (autoGr) {
                                       return null;
@@ -1934,6 +2060,7 @@ class _PickupState extends State<Pickup> {
                                             });
                                           },
                                           child: _buildFormField(
+                                            isSmallDevice: isSmallDevice,
                                             label: "Booking Date",
                                             labelColor:
                                                 CommonColors.appBarColor!,
@@ -1943,8 +2070,14 @@ class _PickupState extends State<Pickup> {
                                               enabled: false,
                                               controller: _bookingdtController,
                                               keyboardType: TextInputType.text,
+                                              style: TextStyle(
+                                                  color:
+                                                      CommonColors.appBarColor,
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
                                               decoration: _inputDecoration(
-                                                  "Booking Date"),
+                                                  "Booking Date",
+                                                  isSmallDevice: isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -1968,6 +2101,7 @@ class _PickupState extends State<Pickup> {
                                             });
                                           },
                                           child: _buildFormField(
+                                            isSmallDevice: isSmallDevice,
                                             label: "Booking Time",
                                             labelColor:
                                                 CommonColors.appBarColor!,
@@ -1978,8 +2112,14 @@ class _PickupState extends State<Pickup> {
                                               controller:
                                                   _bookingtimeController,
                                               keyboardType: TextInputType.text,
+                                              style: TextStyle(
+                                                  color:
+                                                      CommonColors.appBarColor,
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
                                               decoration: _inputDecoration(
-                                                  "Booking Time"),
+                                                  "Booking Time",
+                                                  isSmallDevice: isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -3071,7 +3211,7 @@ class _PickupState extends State<Pickup> {
         )));
   }
 
-  InputDecoration _inputDecoration(String hint) {
+  InputDecoration _inputDecoration(String hint, {bool isSmallDevice = false}) {
     return InputDecoration(
       hint: Text(
         hint,
@@ -3079,6 +3219,7 @@ class _PickupState extends State<Pickup> {
         maxLines: 1,
         style: TextStyle(
           color: CommonColors.grey400!,
+          fontSize: isSmallDevice ? 12 : 14,
         ),
       ),
       // hintText: hint,
@@ -3087,7 +3228,8 @@ class _PickupState extends State<Pickup> {
       //   color: CommonColors.grey400!,
       //   overflow: TextOverflow.ellipsis,
       // ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: 12, vertical: isSmallDevice ? 12 : 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: CommonColors.appBarColor!),
@@ -3119,13 +3261,15 @@ Widget _buildFormField({
   required IconData icon,
   required Widget child,
   Color labelColor = const Color(0xFF334155),
+  bool isSmallDevice = false,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF64748B)),
+          Icon(icon,
+              size: isSmallDevice ? 14 : 16, color: const Color(0xFF64748B)),
           const SizedBox(width: 6),
           Text.rich(
             TextSpan(
@@ -3133,7 +3277,7 @@ Widget _buildFormField({
                 TextSpan(
                   text: label,
                   style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isSmallDevice ? 12 : 14,
                       fontWeight: FontWeight.w500,
                       color: labelColor,
                       overflow: TextOverflow.ellipsis),

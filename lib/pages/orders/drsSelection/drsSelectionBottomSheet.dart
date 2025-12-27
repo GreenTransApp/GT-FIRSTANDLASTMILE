@@ -163,6 +163,9 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return RefreshIndicator(
       color: Colors.white,
       backgroundColor: CommonColors.colorPrimary,
@@ -214,11 +217,16 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Text("Total: ${_deliveryList.length}"),
+                            padding: EdgeInsets.only(
+                                left: isSmallDevice ? 8.0 : 16.0),
+                            child: Text(
+                              "Total: ${_deliveryList.length}",
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 12 : 14),
+                            ),
                           ),
-                          const SizedBox(
-                            width: 16,
+                          SizedBox(
+                            width: isSmallDevice ? 8 : 16,
                           ),
                           AppTooltip(
                             items: [
@@ -233,9 +241,11 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text("Select All"),
-                          const SizedBox(
-                            width: 8,
+                          Text("Select All",
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 12 : 14)),
+                          SizedBox(
+                            width: isSmallDevice ? 4 : 8,
                           ),
                           Checkbox(
                               activeColor: CommonColors.colorPrimary,
@@ -355,6 +365,9 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   }
 
   Widget manifestCard(DrsListModel deliveryModel) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     Color backColor = CommonColors.White!;
     if (deliveryModel.manifesttype == 'D') {
       backColor = CommonColors.green200!;
@@ -370,7 +383,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       manifestType = 'PRS';
     }
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isSmallDevice ? 8 : 16),
       child: GestureDetector(
         onTap: () {
           onCheckChange(
@@ -393,15 +406,15 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                   color: backColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.only(
-                    left: 16, right: 0, top: 8, bottom: 8),
+                padding: EdgeInsets.only(
+                    left: isSmallDevice ? 8 : 16, right: 0, top: 8, bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "${deliveryModel.manifestno.toString()}/$manifestType",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: isSmallDevice ? 11 : 13,
                         fontWeight: FontWeight.w600,
                         color: CommonColors.colorPrimary,
                       ),
@@ -409,7 +422,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                     Container(
                       width: 20,
                       height: 20,
-                      margin: const EdgeInsets.only(right: 16),
+                      margin: EdgeInsets.only(right: isSmallDevice ? 8 : 16),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: _selectedDrsList.contains(deliveryModel)
@@ -434,9 +447,9 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: isSmallDevice ? 8 : 16),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isSmallDevice ? 8 : 16),
                 child: Row(
                   children: [
                     Expanded(
@@ -451,15 +464,16 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                             ),
                             child: Icon(
                               Icons.calendar_today,
-                              size: 16,
+                              size: isSmallDevice ? 12 : 16,
                               color: CommonColors.colorPrimary!,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: isSmallDevice ? 6 : 12),
                           Text(
                             deliveryModel.createddt.toString(),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold
+                            style: TextStyle(
+                                fontSize: isSmallDevice ? 12 : 14,
+                                fontWeight: FontWeight.bold
                                 // color: Color(0xFF475569),
                                 ),
                           ),
@@ -479,15 +493,16 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                             ),
                             child: Icon(
                               Symbols.package_2_rounded,
-                              size: 16,
+                              size: isSmallDevice ? 12 : 16,
                               color: CommonColors.colorPrimary!,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: isSmallDevice ? 6 : 12),
                           Text(
                             '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold
+                            style: TextStyle(
+                                fontSize: isSmallDevice ? 12 : 14,
+                                fontWeight: FontWeight.bold
                                 // color: Color(0xFF475569),
                                 ),
                           ),

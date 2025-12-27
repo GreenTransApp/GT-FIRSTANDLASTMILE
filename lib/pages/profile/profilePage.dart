@@ -38,14 +38,14 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
     Get.back();
   }
 
-  Widget signOut() {
+  Widget signOut(bool isSmallDevice) {
     return InkWell(
       onTap: () {
         logout();
       },
       child: Container(
-        padding: const EdgeInsets.all(12.0),
-        margin: const EdgeInsets.symmetric(horizontal: 12),
+        padding: EdgeInsets.all(isSmallDevice ? 8.0 : 12.0),
+        margin: EdgeInsets.symmetric(horizontal: isSmallDevice ? 8 : 12),
         decoration: BoxDecoration(
             color: CommonColors.white,
             border: Border.all(
@@ -57,13 +57,16 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
             Icon(
               Icons.logout_rounded,
               color: CommonColors.red500,
+              size: isSmallDevice ? 20 : 24,
             ),
-            const SizedBox(
-              width: 8,
+            SizedBox(
+              width: isSmallDevice ? 6 : 8,
             ),
             Text(
               "Sign Out",
-              style: TextStyle(color: CommonColors.red500, fontSize: 18),
+              style: TextStyle(
+                  color: CommonColors.red500,
+                  fontSize: isSmallDevice ? 15 : 18),
             ),
           ],
         ),
@@ -73,11 +76,14 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return SafeArea(
       child: SingleChildScrollView(
         // padding: const EdgeInsets.fromLTRB(10, 10, 10, 80), // prevents overlap
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(isSmallDevice ? 5 : 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -86,12 +92,13 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
                   context,
                   isNullOrEmpty(savedLogin.logoimage)
                       ? ''
-                      : savedLogin.logoimage.toString()),
-              const SizedBox(
-                height: 50,
+                      : savedLogin.logoimage.toString(),
+                  isSmallDevice),
+              SizedBox(
+                height: isSmallDevice ? 30 : 50,
               ),
-              ContactInfoCard(context),
-              signOut()
+              ContactInfoCard(context, isSmallDevice),
+              signOut(isSmallDevice)
             ],
           ),
         ),

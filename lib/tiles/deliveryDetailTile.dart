@@ -197,6 +197,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return TimelineTile(
         isFirst: isFirst,
         isLast: isLast,
@@ -224,14 +227,16 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
           ),
         ),
         endChild: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          padding: EdgeInsets.symmetric(
+              vertical: isSmallDevice ? 8 : 16,
+              horizontal: isSmallDevice ? 8 : 16),
           child: Container(
             decoration: BoxDecoration(
               color: cardBgColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(isSmallDevice ? 12.0 : 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -245,17 +250,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         children: [
                           Text(
                             '${widget.model.grno}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontSize: isSmallDevice ? 14 : 16,
                             ),
                           ),
                           const SizedBox(width: 12),
                           // Stop badge next to GR No
                           Flexible(
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: isSmallDevice ? 8 : 12,
+                                  vertical: 4),
                               decoration: BoxDecoration(
                                 color: CommonColors.colorPrimary!
                                     .withAlpha((0.1 * 255).round()),
@@ -264,7 +270,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               child: Text(
                                 'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: isSmallDevice ? 10 : 12,
                                   fontWeight: FontWeight.bold,
                                   color: CommonColors.colorPrimary,
                                   overflow: TextOverflow.ellipsis,
@@ -291,7 +297,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 child: Text(
                                   status.toString(),
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: isSmallDevice ? 10 : 12,
                                     fontWeight: FontWeight.w500,
                                     color: statusIconColor,
                                   ),
@@ -300,7 +306,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               Icon(
                                 statusIcon,
                                 color: statusIconColor,
-                                size: 24,
+                                size: isSmallDevice ? 20 : 24,
                               ),
                             ],
                           ),
@@ -324,19 +330,19 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Consignee Name',
                               style: TextStyle(
                                 color: Colors.black54,
-                                fontSize: 13,
+                                fontSize: isSmallDevice ? 11 : 13,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               modelDetail.cngename.toString(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: isSmallDevice ? 12 : 14,
                               ),
                             ),
                           ],
@@ -346,11 +352,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Mobile No.',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 13,
+                                fontSize: isSmallDevice ? 11 : 13,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -358,9 +364,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               children: [
                                 Text(
                                   modelDetail.cngemobile ?? '—',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
+                                    fontSize: isSmallDevice ? 12 : 14,
                                   ),
                                 ),
                                 Visibility(
@@ -374,10 +380,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   visible: status == "Pending" ||
                                       status == "Un-Picked",
                                   child: SizedBox(
-                                    width: 32,
-                                    height: 32,
+                                    width: isSmallDevice ? 28 : 32,
+                                    height: isSmallDevice ? 28 : 32,
                                     child: IconButton(
-                                      iconSize: 16,
+                                      iconSize: isSmallDevice ? 14 : 16,
                                       style: ButtonStyle(
                                         backgroundColor: status == "Pending" ||
                                                 status == "Un-Picked"
@@ -442,19 +448,19 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Pcs',
                               style: TextStyle(
                                 color: Colors.black54,
-                                fontSize: 13,
+                                fontSize: isSmallDevice ? 11 : 13,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '${modelDetail.pcs}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: isSmallDevice ? 12 : 14,
                               ),
                             ),
                           ],
@@ -480,9 +486,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 widget.onRefresh();
                               });
                             },
-                            icon: const Icon(Icons.close),
-                            label: const Text('Undeliver'),
+                            icon: Icon(Icons.close,
+                                size: isSmallDevice ? 16 : 24),
+                            label: Text('Undeliver',
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 12 : 14)),
                             style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isSmallDevice ? 8 : 12),
                               backgroundColor: CommonColors.red600,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -500,9 +511,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 widget.onRefresh();
                               });
                             },
-                            icon: const Icon(Icons.check),
-                            label: const Text('Deliver'),
+                            icon: Icon(Icons.check,
+                                size: isSmallDevice ? 16 : 24),
+                            label: Text('Deliver',
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 12 : 14)),
                             style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isSmallDevice ? 8 : 12),
                               backgroundColor: CommonColors.green600,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -528,9 +544,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 widget.onRefresh();
                               });
                             },
-                            icon: const Icon(Icons.check),
-                            label: const Text('Reverse Pickup'),
+                            icon: Icon(Icons.check,
+                                size: isSmallDevice ? 16 : 24),
+                            label: Text('Reverse Pickup',
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 12 : 14)),
                             style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isSmallDevice ? 8 : 12),
                               backgroundColor: CommonColors.colorPrimary,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -554,9 +575,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 widget.onRefresh();
                               });
                             },
-                            icon: const Icon(Icons.check),
-                            label: const Text('Pickup'),
+                            icon: Icon(Icons.check,
+                                size: isSmallDevice ? 16 : 24),
+                            label: Text('Pickup',
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 12 : 14)),
                             style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isSmallDevice ? 8 : 12),
                               backgroundColor: CommonColors.colorPrimary,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(

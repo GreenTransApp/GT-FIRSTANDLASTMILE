@@ -53,6 +53,9 @@ class __LoadingAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallDevice = screenWidth <= 360;
+
     // return AlertDialog(
     //   shape: RoundedRectangleBorder(
     //       borderRadius: BorderRadius.circular(15.0),
@@ -60,16 +63,23 @@ class __LoadingAlert extends StatelessWidget {
     //   title: Column(
     //     children: [
     //       Padding(
-    //         padding: const EdgeInsets.symmetric(vertical: 10),
+    //         padding: EdgeInsets.symmetric(vertical: isSmallDevice ? 8 : 10),
     //         child: Row(
     //           mainAxisAlignment: MainAxisAlignment.spaceAround,
     //           children: [
-    //             CircularProgressIndicator(
-    //               color: CommonColors.colorPrimary,
+    //             SizedBox(
+    //               width: isSmallDevice ? 20 : 24,
+    //               height: isSmallDevice ? 20 : 24,
+    //               child: CircularProgressIndicator(
+    //                 color: CommonColors.colorPrimary,
+    //                 strokeWidth: isSmallDevice ? 2.5 : 3.0,
+    //               ),
     //             ),
-    //             const Text(
+    //             Text(
     //               'Loading...',
-    //               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+    //               style: TextStyle(
+    //                   fontSize: isSmallDevice ? 13 : 15,
+    //                   fontWeight: FontWeight.bold),
     //             )
     //           ],
     //         ),
@@ -80,8 +90,13 @@ class __LoadingAlert extends StatelessWidget {
     return Center(
       child: Container(
         color: Colors.transparent.withAlpha(5),
-        child: CircularProgressIndicator(
-          color: CommonColors.colorPrimary,
+        child: SizedBox(
+          width: isSmallDevice ? 24 : 40,
+          height: isSmallDevice ? 24 : 40,
+          child: CircularProgressIndicator(
+            color: CommonColors.colorPrimary,
+            strokeWidth: isSmallDevice ? 2.5 : 4.0,
+          ),
         ),
       ),
     );

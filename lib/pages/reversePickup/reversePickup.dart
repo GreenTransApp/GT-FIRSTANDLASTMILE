@@ -9,7 +9,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/commonButton.dart';
+
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/reversePickup/model/reversePickupModel.dart';
@@ -226,6 +226,7 @@ class _ReversePickupState extends State<ReversePickup> {
     required bool isRequired,
     required IconData icon,
     required Widget child,
+    required bool isSmallDevice,
     Color labelColor = const Color(0xFF334155),
   }) {
     return Column(
@@ -233,7 +234,8 @@ class _ReversePickupState extends State<ReversePickup> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF64748B)),
+            Icon(icon,
+                size: isSmallDevice ? 14 : 16, color: const Color(0xFF64748B)),
             const SizedBox(width: 6),
             Text.rich(
               TextSpan(
@@ -241,7 +243,7 @@ class _ReversePickupState extends State<ReversePickup> {
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isSmallDevice ? 12 : 14,
                       fontWeight: FontWeight.w500,
                       color: labelColor,
                     ),
@@ -259,17 +261,19 @@ class _ReversePickupState extends State<ReversePickup> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: isSmallDevice ? 4 : 8),
         child,
       ],
     );
   }
 
-  InputDecoration _inputDecoration(String hint) {
+  InputDecoration _inputDecoration(String hint, bool isSmallDevice) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: CommonColors.grey400!),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      hintStyle: TextStyle(
+          color: CommonColors.grey400!, fontSize: isSmallDevice ? 13 : 14),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: 12, vertical: isSmallDevice ? 12 : 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: CommonColors.grey300!),
@@ -296,18 +300,22 @@ class _ReversePickupState extends State<ReversePickup> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: CommonColors.colorPrimary,
           title: Text(
             'Reverse Pickup',
-            style: TextStyle(color: CommonColors.White),
+            style: TextStyle(
+                color: CommonColors.White, fontSize: isSmallDevice ? 16 : 18),
           ),
           leading: InkWell(
             onTap: () => {Navigator.pop(context)},
             child: Icon(
               Icons.arrow_back,
               color: CommonColors.White,
+              size: isSmallDevice ? 20 : 24,
             ),
           ),
         ),
@@ -322,7 +330,7 @@ class _ReversePickupState extends State<ReversePickup> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(isSmallDevice ? 12 : 16),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.only(
@@ -335,13 +343,13 @@ class _ReversePickupState extends State<ReversePickup> {
                       Icon(
                         Icons.local_shipping_outlined,
                         color: CommonColors.primaryColorShade!,
-                        size: 20,
+                        size: isSmallDevice ? 18 : 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Reverse Pickup Information',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isSmallDevice ? 14 : 16,
                           fontWeight: FontWeight.w600,
                           color: CommonColors.primaryColorShade!,
                         ),
@@ -365,6 +373,7 @@ class _ReversePickupState extends State<ReversePickup> {
                                 label: "SKU",
                                 isRequired: false,
                                 icon: Icons.label_outline,
+                                isSmallDevice: isSmallDevice,
                                 child: TextFormField(
                                   focusNode: skuFocus,
                                   onTapOutside: (event) {
@@ -382,9 +391,11 @@ class _ReversePickupState extends State<ReversePickup> {
                                   textInputAction: TextInputAction.done,
                                   controller: _skuController,
                                   keyboardType: TextInputType.text,
-                                  style: const TextStyle(
-                                      color: CommonColors.appBarColor),
-                                  decoration: _inputDecoration("SKU"),
+                                  style: TextStyle(
+                                      color: CommonColors.appBarColor,
+                                      fontSize: isSmallDevice ? 13 : 14),
+                                  decoration:
+                                      _inputDecoration("SKU", isSmallDevice),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter SKU';
@@ -488,15 +499,16 @@ class _ReversePickupState extends State<ReversePickup> {
                                             isRequired: false,
                                             icon: Icons.receipt_long_outlined,
                                             labelColor: CommonColors.grey400!,
+                                            isSmallDevice: isSmallDevice,
                                             child: TextFormField(
                                               enabled: false,
                                               controller: _orderController,
                                               keyboardType: TextInputType.text,
-                                              // style: const TextStyle(
-                                              //     color:
-                                              //         CommonColors.appBarColor),
-                                              decoration:
-                                                  _inputDecoration("Order #"),
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
+                                              decoration: _inputDecoration(
+                                                  "Order #", isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -514,13 +526,18 @@ class _ReversePickupState extends State<ReversePickup> {
                                             isRequired: false,
                                             icon: Icons.calendar_today_outlined,
                                             labelColor: CommonColors.grey400!,
+                                            isSmallDevice: isSmallDevice,
                                             child: TextFormField(
                                               enabled: false,
                                               controller:
                                                   _deliveryDateController,
                                               keyboardType: TextInputType.text,
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
                                               decoration: _inputDecoration(
-                                                  "Delivery Date"),
+                                                  "Delivery Date",
+                                                  isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -539,11 +556,15 @@ class _ReversePickupState extends State<ReversePickup> {
                                       isRequired: false,
                                       icon: Icons.inventory_2_outlined,
                                       labelColor: CommonColors.grey400!,
+                                      isSmallDevice: isSmallDevice,
                                       child: TextFormField(
                                         enabled: false,
                                         controller: _itemController,
                                         keyboardType: TextInputType.text,
-                                        decoration: _inputDecoration("Item"),
+                                        style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14),
+                                        decoration: _inputDecoration(
+                                            "Item", isSmallDevice),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter Item';
@@ -558,12 +579,15 @@ class _ReversePickupState extends State<ReversePickup> {
                                       isRequired: false,
                                       icon: Icons.code_outlined,
                                       labelColor: CommonColors.grey400!,
+                                      isSmallDevice: isSmallDevice,
                                       child: TextFormField(
                                         enabled: false,
                                         controller: _skuCodeController,
                                         keyboardType: TextInputType.text,
-                                        decoration:
-                                            _inputDecoration("SKU Code"),
+                                        style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14),
+                                        decoration: _inputDecoration(
+                                            "SKU Code", isSmallDevice),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter SKU Code';
@@ -581,12 +605,16 @@ class _ReversePickupState extends State<ReversePickup> {
                                             labelColor: CommonColors.grey400!,
                                             isRequired: false,
                                             icon: Icons.calendar_today_outlined,
+                                            isSmallDevice: isSmallDevice,
                                             child: TextFormField(
                                               enabled: false,
                                               controller: _dateController,
                                               keyboardType: TextInputType.text,
-                                              decoration:
-                                                  _inputDecoration("Date"),
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
+                                              decoration: _inputDecoration(
+                                                  "Date", isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -604,12 +632,16 @@ class _ReversePickupState extends State<ReversePickup> {
                                             labelColor: CommonColors.grey400!,
                                             isRequired: false,
                                             icon: Icons.access_time_outlined,
+                                            isSmallDevice: isSmallDevice,
                                             child: TextFormField(
                                               enabled: false,
                                               controller: _timeController,
                                               keyboardType: TextInputType.text,
-                                              decoration:
-                                                  _inputDecoration("Time"),
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      isSmallDevice ? 13 : 14),
+                                              decoration: _inputDecoration(
+                                                  "Time", isSmallDevice),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -628,11 +660,15 @@ class _ReversePickupState extends State<ReversePickup> {
                                       labelColor: CommonColors.grey400!,
                                       isRequired: false,
                                       icon: Icons.person_outline,
+                                      isSmallDevice: isSmallDevice,
                                       child: TextFormField(
                                         enabled: false,
                                         controller: _shipperController,
                                         keyboardType: TextInputType.text,
-                                        decoration: _inputDecoration("Shipper"),
+                                        style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14),
+                                        decoration: _inputDecoration(
+                                            "Shipper", isSmallDevice),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter Shipper';
@@ -647,11 +683,15 @@ class _ReversePickupState extends State<ReversePickup> {
                                       labelColor: CommonColors.grey400!,
                                       isRequired: false,
                                       icon: Icons.phone_android_outlined,
+                                      isSmallDevice: isSmallDevice,
                                       child: TextFormField(
                                         enabled: false,
                                         controller: _mobileController,
                                         keyboardType: TextInputType.text,
-                                        decoration: _inputDecoration("Mobile"),
+                                        style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14),
+                                        decoration: _inputDecoration(
+                                            "Mobile", isSmallDevice),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter Mobile';
@@ -664,6 +704,7 @@ class _ReversePickupState extends State<ReversePickup> {
                                       children: [
                                         const SizedBox(height: 20),
                                         _buildFormField(
+                                          isSmallDevice: isSmallDevice,
                                           label: "Image",
                                           labelColor: CommonColors.grey400!,
                                           isRequired: false,
@@ -729,9 +770,8 @@ class _ReversePickupState extends State<ReversePickup> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 10),
-                                      child: CommonButton(
-                                        color: CommonColors.colorPrimary!,
-                                        onTap: () {
+                                      child: ElevatedButton(
+                                        onPressed: () {
                                           showImagePickerDialog(context,
                                               (file) async {
                                             if (file != null) {
@@ -745,7 +785,26 @@ class _ReversePickupState extends State<ReversePickup> {
                                             }
                                           });
                                         },
-                                        title: "Select  Order Image",
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              CommonColors.primaryColorShade,
+                                          foregroundColor: CommonColors.White,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical:
+                                                  isSmallDevice ? 12 : 16),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        child: Text(
+                                          "Select Order Image",
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -756,7 +815,7 @@ class _ReversePickupState extends State<ReversePickup> {
                                             ? false
                                             : true,
                                     child: Container(
-                                        height: 150,
+                                        height: isSmallDevice ? 120 : 150,
                                         width: MediaQuery.sizeOf(context).width,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 10),
@@ -792,9 +851,11 @@ class _ReversePickupState extends State<ReversePickup> {
                                 label: 'Status',
                                 isRequired: true,
                                 icon: Icons.check_circle_outline,
+                                isSmallDevice: isSmallDevice,
                                 child: DropdownButtonFormField<String>(
                                   value: _selectedStatus,
-                                  decoration: _inputDecoration('Select Status'),
+                                  decoration: _inputDecoration(
+                                      'Select Status', isSmallDevice),
                                   items: _statusList.map((String status) {
                                     return DropdownMenuItem<String>(
                                       value: status,
@@ -821,13 +882,19 @@ class _ReversePickupState extends State<ReversePickup> {
                                 label: 'Return Reason',
                                 isRequired: true,
                                 icon: Icons.label_outline,
+                                isSmallDevice: isSmallDevice,
                                 child: DropdownButtonFormField<ReasonModel>(
                                   value: _selectedReturnReason,
-                                  decoration: _inputDecoration('Select Reason'),
+                                  decoration: _inputDecoration(
+                                      'Select Reason', isSmallDevice),
                                   items: _reasonList.map((ReasonModel reason) {
                                     return DropdownMenuItem<ReasonModel>(
                                       value: reason,
-                                      child: Text(reason.reasonname ?? ''),
+                                      child: Text(
+                                        reason.reasonname ?? '',
+                                        style: TextStyle(
+                                            fontSize: isSmallDevice ? 13 : 14),
+                                      ),
                                     );
                                   }).toList(),
                                   onChanged: (ReasonModel? newValue) {
@@ -849,13 +916,17 @@ class _ReversePickupState extends State<ReversePickup> {
                                 label: "Return Code",
                                 isRequired: true,
                                 icon: Icons.code,
+                                isSmallDevice: isSmallDevice,
                                 child: TextFormField(
                                   focusNode: returnCodeFocus,
                                   onTapOutside: (event) {
                                     returnCodeFocus.unfocus();
                                   },
                                   controller: _returnCodeController,
-                                  decoration: _inputDecoration("Return Code"),
+                                  style: TextStyle(
+                                      fontSize: isSmallDevice ? 13 : 14),
+                                  decoration: _inputDecoration(
+                                      "Return Code", isSmallDevice),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter Return Code';
@@ -908,14 +979,18 @@ class _ReversePickupState extends State<ReversePickup> {
                                 label: 'Remarks',
                                 isRequired: false,
                                 icon: Icons.comment_outlined,
+                                isSmallDevice: isSmallDevice,
                                 child: TextFormField(
                                   focusNode: remarksFocus,
                                   onTapOutside: (event) {
                                     remarksFocus.unfocus();
                                   },
                                   controller: _remarksController,
+                                  style: TextStyle(
+                                      fontSize: isSmallDevice ? 13 : 14),
                                   decoration: _inputDecoration(
-                                      'Enter any additional notes (optional)'),
+                                      'Enter any additional notes (optional)',
+                                      isSmallDevice),
                                   maxLines: 3,
                                 ),
                               ),
@@ -946,7 +1021,8 @@ class _ReversePickupState extends State<ReversePickup> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(
+                            vertical: isSmallDevice ? 12 : 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

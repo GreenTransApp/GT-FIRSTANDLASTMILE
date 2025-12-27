@@ -803,6 +803,14 @@ class _HomeScreen extends State<HomeScreen>
               setState(() {
                 _selectedIndex = value;
                 // _pageController.jumpToPage(value);
+                debugPrint("value $value");
+                if (value == 0) {
+                  allotedRouteKey.currentState?.onRefresh();
+                } else if (value == 1) {
+                  drsSelectionKey.currentState?.refreshScreen();
+                } else if (value == 2) {
+                  runningTripsKey.currentState?.onRefresh();
+                }
               });
             },
             indicatorColor: CommonColors.colorPrimary!

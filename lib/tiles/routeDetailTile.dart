@@ -38,6 +38,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
   bool isConsignVisible = false;
   bool isPickUp = false;
   bool isDesitnation = false;
+  bool isExpanded = false;
   @override
   void initState() {
     super.initState();
@@ -147,65 +148,344 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
         padding: EdgeInsets.symmetric(
             vertical: isSmallDevice ? 8 : 16,
             horizontal: isSmallDevice ? 8 : 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
-              decoration: BoxDecoration(
-                color:
-                    CommonColors.colorPrimary!.withAlpha((0.1 * 255).round()),
-                borderRadius: BorderRadius.circular(12),
-              ),
+            Expanded(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        // modelDetail.grno.toString(),
-                        modelDetail.grno.toString(),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: isSmallDevice ? 10 : 16,
-                        ),
-                      ),
-                      Visibility(
-                        visible: !isConsignVisible,
-                        child: Flexible(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: CommonColors.colorPrimary!
-                                  .withAlpha((0.1 * 255).round()),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              // 'Stop ${modelDetail.sequenceid}',
-                              'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
+                  Container(
+                    padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
+                    decoration: BoxDecoration(
+                      color: CommonColors.colorPrimary!
+                          .withAlpha((0.1 * 255).round()),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              // modelDetail.grno.toString(),
+                              modelDetail.grno.toString(),
                               style: TextStyle(
-                                fontSize: isSmallDevice ? 10 : 12,
                                 fontWeight: FontWeight.bold,
-                                color: CommonColors.colorPrimary,
-                                overflow: TextOverflow.ellipsis,
+                                fontSize: isSmallDevice ? 10 : 16,
                               ),
                             ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Visibility(
+                                  visible: !isConsignVisible,
+                                  child: Flexible(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: CommonColors.colorPrimary!
+                                            .withAlpha((0.1 * 255).round()),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        // 'Stop ${modelDetail.sequenceid}',
+                                        'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
+                                        style: TextStyle(
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: CommonColors.colorPrimary,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (!isConsignVisible)
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        isExpanded = !isExpanded;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Icon(
+                                        isExpanded
+                                            ? Icons.keyboard_arrow_up
+                                            : Icons.keyboard_arrow_down,
+                                        color: CommonColors.colorPrimary,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Visibility(
+                          visible: !isFirst && !isLast,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  modelDetail.address.toString(),
+                                  style: TextStyle(
+                                    fontSize: isSmallDevice ? 10 : 12,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Visibility(
-                    visible: !isFirst && !isLast,
+                    visible: isPickUp,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
-                          child: Text(
-                            modelDetail.address.toString(),
-                            style: TextStyle(
-                              fontSize: isSmallDevice ? 10 : 12,
+                        Text(
+                          'Starting location',
+                          style: TextStyle(
+                            color: CommonColors.appBarColor,
+                            fontSize: isSmallDevice ? 10 : 12,
+                          ),
+                        ),
+                        Text(
+                          '${modelDetail.address}',
+                          style: TextStyle(
+                            color: CommonColors.appBarColor,
+                            fontSize: isSmallDevice ? 10 : 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: isDesitnation,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Destination',
+                          style: TextStyle(
+                            color: CommonColors.black54,
+                            fontSize: isSmallDevice ? 10 : 12,
+                          ),
+                        ),
+                        Text(
+                          '${modelDetail.address}',
+                          style: TextStyle(
+                            color: CommonColors.black54,
+                            fontSize: isSmallDevice ? 10 : 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                      visible: !isConsignVisible,
+                      child: const SizedBox(height: 8)),
+                  Visibility(
+                    visible: !isConsignVisible && isExpanded,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
+                            decoration: BoxDecoration(
+                              // color: CommonColors.grey50,
+                              color: cardBgColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.person,
+                                          size: isSmallDevice ? 12 : 16,
+                                          color: CommonColors.colorPrimary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Name:',
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 10 : 12,
+                                            color: CommonColors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        modelDetail.cnge.toString(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.phone_android_outlined,
+                                          size: isSmallDevice ? 12 : 16,
+                                          color: CommonColors.colorPrimary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Mobile No.:',
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 10 : 12,
+                                            color: CommonColors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        modelDetail.cngemobile.toString(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.inventory_2_outlined,
+                                          size: isSmallDevice ? 12 : 16,
+                                          color: CommonColors.colorPrimary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'pcs:',
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 11 : 13,
+                                            color: CommonColors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        modelDetail.pcs.toString(),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.route_outlined,
+                                          size: isSmallDevice ? 12 : 16,
+                                          color: CommonColors.amber700,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Distance:',
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 10 : 12,
+                                            color: CommonColors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        '${modelDetail.distance}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.inventory_2_outlined,
+                                          size: isSmallDevice ? 12 : 16,
+                                          color: CommonColors.colorPrimary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Type:',
+                                          style: TextStyle(
+                                            fontSize: isSmallDevice ? 10 : 12,
+                                            color: CommonColors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        '${modelDetail.consignmenttypeview}',
+                                        style: TextStyle(
+                                          color: statusIconColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: isSmallDevice ? 10 : 12,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -215,306 +495,35 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                 ],
               ),
             ),
-            Visibility(
-              visible: isPickUp,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Starting location',
-                    style: TextStyle(
-                      color: CommonColors.appBarColor,
-                      fontSize: isSmallDevice ? 10 : 12,
-                    ),
-                  ),
-                  Text(
-                    '${modelDetail.address}',
-                    style: TextStyle(
-                      color: CommonColors.appBarColor,
-                      fontSize: isSmallDevice ? 10 : 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Visibility(
-              visible: isDesitnation,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Destination',
-                    style: TextStyle(
-                      color: CommonColors.black54,
-                      fontSize: isSmallDevice ? 10 : 12,
-                    ),
-                  ),
-                  Text(
-                    '${modelDetail.address}',
-                    style: TextStyle(
-                      color: CommonColors.black54,
-                      fontSize: isSmallDevice ? 10 : 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Visibility(
-                visible: !isConsignVisible, child: const SizedBox(height: 8)),
-            Visibility(
-              visible: !isConsignVisible,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
-                      decoration: BoxDecoration(
-                        // color: CommonColors.grey50,
-                        color: cardBgColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.person,
-                                    size: isSmallDevice ? 12 : 16,
-                                    color: CommonColors.colorPrimary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Name:',
-                                    style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
-                                      color: CommonColors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: Text(
-                                  modelDetail.cnge.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 10 : 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: true,
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone_android_outlined,
-                                    size: isSmallDevice ? 12 : 16,
-                                    color: CommonColors.colorPrimary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Mobile No.:',
-                                    style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
-                                      color: CommonColors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: Text(
-                                  modelDetail.cngemobile.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 10 : 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: true,
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.inventory_2_outlined,
-                                    size: isSmallDevice ? 12 : 16,
-                                    color: CommonColors.colorPrimary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'pcs:',
-                                    style: TextStyle(
-                                      fontSize: isSmallDevice ? 11 : 13,
-                                      color: CommonColors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: Text(
-                                  modelDetail.pcs.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 10 : 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: true,
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.route_outlined,
-                                    size: isSmallDevice ? 12 : 16,
-                                    color: CommonColors.amber700,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Distance:',
-                                    style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
-                                      color: CommonColors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: Text(
-                                  '${modelDetail.distance}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 10 : 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: true,
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.inventory_2_outlined,
-                                    size: isSmallDevice ? 12 : 16,
-                                    color: CommonColors.colorPrimary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Type:',
-                                    style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
-                                      color: CommonColors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Flexible(
-                                child: Text(
-                                  '${modelDetail.consignmenttypeview}',
-                                  style: TextStyle(
-                                    color: statusIconColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 10 : 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  softWrap: true,
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+            if (widget.showDragHandle &&
+                widget.index != 0 &&
+                widget.index != widget.listLength - 1)
+              ReorderableDragStartListener(
+                index: widget.index,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 4, vertical: isSmallDevice ? 8 : 12),
+                    decoration: BoxDecoration(
+                        color: CommonColors.colorPrimary,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        border: Border.all(
+                            color: CommonColors.colorPrimary!, width: 1)),
+                    child: RotatedBox(
+                      quarterTurns: 3,
+                      child: Text(
+                        "Drag",
+                        style: TextStyle(
+                          color: CommonColors.White,
+                          fontSize: isSmallDevice ? 10 : 12,
+                        ),
                       ),
                     ),
                   ),
-                  Visibility(
-                    visible: widget.showDragHandle,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (widget.index != 0 &&
-                            widget.index != widget.listLength - 1)
-                          ReorderableDragStartListener(
-                            index: widget.index,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 0, left: 0, right: 8),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                    vertical: isSmallDevice ? 12 : 24),
-                                decoration: BoxDecoration(
-                                    color: CommonColors.colorPrimary,
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(12)),
-                                    border: Border.all(
-                                        color: CommonColors.colorPrimary!,
-                                        width: 1)),
-                                child: RotatedBox(
-                                  quarterTurns: 3,
-                                  child: Text(
-                                    "Drag",
-                                    style: TextStyle(
-                                      color: CommonColors.White,
-                                      fontSize: isSmallDevice ? 10 : 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              //  Icon(Icons.drag_indicator_rounded,
-                              //     color: Colors.grey),
-                            ),
-                          ),
-                      ],
-                    ),
-                  )
-                ],
+                ),
               ),
-            ),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     if (widget.index != 0 && widget.index != widget.listLength - 1)
-            //       ReorderableDragStartListener(
-            //         index: widget.index,
-            //         child: const Padding(
-            //           padding: EdgeInsets.only(top: 16, left: 8, right: 8),
-            //           child: Icon(Icons.drag_handle, color: Colors.grey),
-            //         ),
-            //       ),
-            //   ],
-            // )
           ],
         ),
       ),

@@ -29,9 +29,13 @@ class RunningTripTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Card(
       // Use Card or Material for better elevation/shadow handling
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(
+          horizontal: isSmallDevice ? 8 : 16, vertical: isSmallDevice ? 4 : 8),
       elevation: 4,
       shadowColor: Colors.grey.withOpacity(0.2), // Lighter shadow
       shape: RoundedRectangleBorder(
@@ -53,18 +57,18 @@ class RunningTripTile extends StatelessWidget {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(isSmallDevice ? 12 : 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(context),
-              const SizedBox(height: 16),
+              _buildHeader(context, isSmallDevice),
+              SizedBox(height: isSmallDevice ? 10 : 16),
               Divider(height: 1, color: Colors.grey[200]),
-              const SizedBox(height: 16),
-              _buildDetailsRow(), // Replaced GridView with Row
-              const SizedBox(height: 16),
+              SizedBox(height: isSmallDevice ? 10 : 16),
+              _buildDetailsRow(isSmallDevice), // Replaced GridView with Row
+              SizedBox(height: isSmallDevice ? 10 : 16),
               // _buildFooter(onRefresh),
-              _buildStatusIndicators(theme, model)
+              _buildStatusIndicators(theme, model, isSmallDevice)
             ],
           ),
         ),
@@ -72,7 +76,7 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, bool isSmallDevice) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -82,27 +86,29 @@ class RunningTripTile extends StatelessWidget {
             children: [
               Text(
                 'Trip #${model.tripid}',
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: isSmallDevice ? 15 : 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1a1a1a),
+                  color: const Color(0xFF1a1a1a),
                 ),
               ),
               const SizedBox(height: 4),
               if (!isNullOrEmpty(model.tripdispatchdatetime))
                 Text(
                   model.tripdispatchdatetime.toString(),
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  style: TextStyle(
+                      fontSize: isSmallDevice ? 11 : 13,
+                      color: Colors.grey[600]),
                 ),
             ],
           ),
         ),
-        _buildActionButton(context),
+        _buildActionButton(context, isSmallDevice),
       ],
     );
   }
 
-  Widget _buildActionButton(BuildContext context) {
+  Widget _buildActionButton(BuildContext context, bool isSmallDevice) {
     return InkWell(
       onTap: () {
         if (_isTripStarted) {
@@ -113,7 +119,8 @@ class RunningTripTile extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(
+            horizontal: isSmallDevice ? 8 : 12, vertical: 8),
         decoration: BoxDecoration(
           color: CommonColors.colorPrimary!,
           // .withAlpha((255 * 0.5).toInt()),
@@ -130,14 +137,14 @@ class RunningTripTile extends StatelessWidget {
               _isTripStarted
                   ? Icons.description_outlined
                   : Icons.schedule_outlined,
-              size: 16,
+              size: isSmallDevice ? 14 : 16,
               color: CommonColors.White,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: isSmallDevice ? 4 : 6),
             Text(
               _isTripStarted ? 'Summary' : 'Start Trip',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: isSmallDevice ? 10 : 12,
                 fontWeight: FontWeight.w600,
                 color: CommonColors.White,
               ),
@@ -149,17 +156,19 @@ class RunningTripTile extends StatelessWidget {
   }
 
   // Optimized: Removed heavy GridView
-  Widget _buildDetailsRow() {
+  Widget _buildDetailsRow(bool isSmallDevice) {
     if (model.tripdispatchdatetime == null) {
-      return const Row(
+      return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Trip Not Started',
               style: TextStyle(
                   color: Colors.red,
+                  fontSize: isSmallDevice ? 12 : 14,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w600)),
-          Icon(Icons.warning_amber_rounded, color: Colors.red)
+          Icon(Icons.warning_amber_rounded,
+              color: Colors.red, size: isSmallDevice ? 18 : 24)
         ],
       );
     } else {
@@ -171,13 +180,15 @@ class RunningTripTile extends StatelessWidget {
                   'Date',
                   isNullOrEmpty(model.tripdispatchdate.toString())
                       ? "Trip not started"
-                      : model.tripdispatchdate.toString())),
+                      : model.tripdispatchdate.toString(),
+                  isSmallDevice)),
           Expanded(
             child: _buildInfoItem(
                 'Starting KM',
                 isNullOrEmpty(model.startreadingkm.toString())
                     ? ""
-                    : "${model.startreadingkm} km"),
+                    : "${model.startreadingkm} km",
+                isSmallDevice),
           ),
           if (model.tripdispatchdatetime != null &&
               model.pendingconsign == 0) ...[
@@ -190,16 +201,36 @@ class RunningTripTile extends StatelessWidget {
                   onRefresh();
                 });
               },
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isSmallDevice ? 8 : 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color:
-                      CommonColors.dangerColor!.withAlpha((255 * 0.3).toInt()),
-                  borderRadius: BorderRadius.circular(6),
+                  color: CommonColors.dangerColor ?? Colors.red,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: CommonColors.dangerColor ?? Colors.red,
+                  ),
                 ),
-                child: Icon(Icons.cancel,
-                    size: 16, color: CommonColors.dangerColor!),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.cancel_outlined,
+                      size: isSmallDevice ? 14 : 16,
+                      color: CommonColors.White,
+                    ),
+                    SizedBox(width: isSmallDevice ? 4 : 6),
+                    Text(
+                      'Close Trip',
+                      style: TextStyle(
+                        fontSize: isSmallDevice ? 10 : 12,
+                        fontWeight: FontWeight.w600,
+                        color: CommonColors.White,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ]
@@ -287,14 +318,14 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(String label, String value) {
+  Widget _buildInfoItem(String label, String value, bool isSmallDevice) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: isSmallDevice ? 10 : 12,
             fontWeight: FontWeight.w500,
             color: Colors.grey[600],
             letterSpacing: 0.3,
@@ -303,10 +334,10 @@ class RunningTripTile extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 14,
+          style: TextStyle(
+            fontSize: isSmallDevice ? 12 : 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1a1a1a),
+            color: const Color(0xFF1a1a1a),
           ),
           overflow: TextOverflow.ellipsis,
         ),
@@ -314,7 +345,8 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIndicators(ThemeData theme, TripModel model) {
+  Widget _buildStatusIndicators(
+      ThemeData theme, TripModel model, bool isSmallDevice) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -325,6 +357,7 @@ class RunningTripTile extends StatelessWidget {
             'Status',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
+              fontSize: isSmallDevice ? 12 : 14,
             ),
           ),
         ),
@@ -337,6 +370,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.noofconsign.toString(),
               color: CommonColors.colorPrimary!,
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
             _buildStatusItem(
               label: 'Pending',
@@ -345,6 +379,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.pendingconsign.toString(),
               color: Colors.orange,
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
           ],
         ),
@@ -360,6 +395,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.deliveredconsign.toString(),
               color: Colors.green,
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
             _buildStatusItem(
               label: 'Undelivered',
@@ -368,6 +404,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.undeliveredconsign.toString(),
               color: Colors.red,
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
             _buildStatusItem(
               label: 'Pickup',
@@ -376,6 +413,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.noofpickups.toString(),
               color: CommonColors.orangeColor!.withAlpha((0.5 * 255).toInt()),
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
             _buildStatusItem(
               label: 'Reverse Pickup',
@@ -384,6 +422,7 @@ class RunningTripTile extends StatelessWidget {
                   : model.noofrvpickups.toString(),
               color: CommonColors.colorPrimary!.withAlpha((0.5 * 255).toInt()),
               theme: theme,
+              isSmallDevice: isSmallDevice,
             ),
           ],
         ),
@@ -397,6 +436,7 @@ class RunningTripTile extends StatelessWidget {
     required String value,
     required Color color,
     required ThemeData theme,
+    required bool isSmallDevice,
   }) {
     return Expanded(
       child: Container(
@@ -413,6 +453,7 @@ class RunningTripTile extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
+                fontSize: isSmallDevice ? 12 : 16,
               ),
             ),
             const SizedBox(height: 2),
@@ -420,7 +461,8 @@ class RunningTripTile extends StatelessWidget {
               label,
               style: TextStyle(
                   color: color.withOpacity(0.8),
-                  overflow: TextOverflow.ellipsis),
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: isSmallDevice ? 10 : 12),
               // style: theme.textTheme.bodySmall?.copyWith(
               //   color: color.withOpacity(0.8),
 

@@ -68,6 +68,9 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     final theme = Theme.of(context);
     return InkWell(
         onTap: () {
@@ -98,11 +101,13 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
             child: Column(
               children: [
                 // Header with dispatch time and edit button
-                if (widget.showHeader) _buildHeader(context, theme),
+                if (widget.showHeader)
+                  _buildHeader(context, theme, isSmallDevice),
 
                 // Card content
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                  padding: EdgeInsets.fromLTRB(
+                      isSmallDevice ? 12 : 20, 12, isSmallDevice ? 12 : 20, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -114,6 +119,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                             : widget.model.manifestno.toString(),
                         theme: theme,
                         isHighlighted: true,
+                        isSmallDevice: isSmallDevice,
                       ),
 
                       const SizedBox(height: 12),
@@ -126,6 +132,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                                 ? ""
                                 : widget.model.manifestdate.toString(),
                         theme: theme,
+                        isSmallDevice: isSmallDevice,
                       ),
                       const SizedBox(height: 12),
 
@@ -148,7 +155,8 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                                     widget.model.noofconsign.toString())
                                 ? ""
                                 : widget.model.noofconsign.toString(),
-                            theme: theme)
+                            theme: theme,
+                            isSmallDevice: isSmallDevice)
                     ],
                   ),
                 ),
@@ -159,7 +167,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     child: Column(
                       children: [
                         const SizedBox(height: 16),
-                        _buildStatusIndicators(theme)
+                        _buildStatusIndicators(theme, isSmallDevice)
                       ],
                     ))
               ],
@@ -168,10 +176,12 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
         ));
   }
 
-  Widget _buildHeader(BuildContext context, ThemeData theme) {
+  Widget _buildHeader(
+      BuildContext context, ThemeData theme, bool isSmallDevice) {
     return Container(
       color: CommonColors.colorPrimary!.withOpacity(0.05),
-      padding: const EdgeInsets.fromLTRB(20, 16, 16, 4),
+      padding: EdgeInsets.fromLTRB(
+          isSmallDevice ? 12 : 20, 16, isSmallDevice ? 12 : 16, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -204,8 +214,8 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     Text(
                       'Dispatch Time',
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                          fontWeight: FontWeight.w600,
+                          fontSize: isSmallDevice ? 14 : 16),
                     ),
                     // isNullOrEmpty(widget.model.dispatchdatetime) ?
                     // InkWell(
@@ -244,10 +254,14 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     Expanded(
                         child: Align(
                             alignment: Alignment.centerRight,
-                            child: Text(isNullOrEmpty(
-                                    widget.model.dispatchtime.toString())
-                                ? ""
-                                : widget.model.dispatchtime.toString())))
+                            child: Text(
+                              isNullOrEmpty(
+                                      widget.model.dispatchtime.toString())
+                                  ? ""
+                                  : widget.model.dispatchtime.toString(),
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 12 : 14),
+                            )))
                   ],
                 ),
         ],
@@ -260,17 +274,19 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
     required String value,
     required ThemeData theme,
     bool isHighlighted = false,
+    required bool isSmallDevice,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 140,
+          width: isSmallDevice ? 100 : 140,
           child: Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.grey.shade700,
               fontWeight: FontWeight.w500,
+              fontSize: isSmallDevice ? 12 : 14,
             ),
           ),
         ),
@@ -278,6 +294,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
           ': ',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: Colors.grey.shade700,
+            fontSize: isSmallDevice ? 12 : 14,
           ),
         ),
         Expanded(
@@ -286,6 +303,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
             style: theme.textTheme.bodyMedium?.copyWith(
               color: isHighlighted ? CommonColors.colorPrimary : Colors.black87,
               fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.w500,
+              fontSize: isSmallDevice ? 12 : 14,
             ),
           ),
         ),
@@ -293,7 +311,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
     );
   }
 
-  Widget _buildStatusIndicators(ThemeData theme) {
+  Widget _buildStatusIndicators(ThemeData theme, bool isSmallDevice) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -303,8 +321,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
           child: Text(
             'Status',
             style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                fontWeight: FontWeight.w600, fontSize: isSmallDevice ? 12 : 14),
           ),
         ),
 
@@ -320,6 +337,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.noofconsign.toString(),
                 color: CommonColors.colorPrimary!,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
               _buildStatusItem(
                 label: 'Delivered',
@@ -328,6 +346,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.deliveredconsign.toString(),
                 color: Colors.green,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
               _buildStatusItem(
                 label: 'Undelivered',
@@ -336,6 +355,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.undeliveredconsign.toString(),
                 color: Colors.red,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
               _buildStatusItem(
                 label: 'Pending',
@@ -344,6 +364,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.pendingDeliveries.toString(),
                 color: Colors.orange,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
             ],
           ),
@@ -359,6 +380,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.noofconsign.toString(),
                 color: CommonColors.colorPrimary!,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
               _buildStatusItem(
                 label: 'Pickup',
@@ -367,6 +389,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.noofpickups.toString(),
                 color: Colors.green,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
               _buildStatusItem(
                 label: 'Reverse Pickup',
@@ -375,6 +398,7 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
                     : widget.model.noofrvpickups.toString(),
                 color: Colors.red,
                 theme: theme,
+                isSmallDevice: isSmallDevice,
               ),
             ],
           ),
@@ -388,11 +412,12 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
     required String value,
     required Color color,
     required ThemeData theme,
+    required bool isSmallDevice,
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        margin: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.symmetric(vertical: isSmallDevice ? 6 : 8),
+        margin: EdgeInsets.only(right: isSmallDevice ? 4 : 8),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
@@ -404,14 +429,17 @@ class DashBoardDeliveryTileState extends State<DashBoardDeliveryTile> {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
+                fontSize: isSmallDevice ? 14 : 16,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                  color: color.withOpacity(0.8),
-                  overflow: TextOverflow.ellipsis),
+                color: color.withOpacity(0.8),
+                overflow: TextOverflow.ellipsis,
+                fontSize: isSmallDevice ? 10 : 12,
+              ),
               // style: theme.textTheme.bodySmall?.copyWith(
               //   color: color.withOpacity(0.8),
 

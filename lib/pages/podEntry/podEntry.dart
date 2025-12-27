@@ -154,6 +154,8 @@ class _PodEntryState extends State<PodEntry> {
               ? "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}"
               : pod.receivetime.toString();
           _destinationNameController.text = pod.destname.toString();
+          _receivedByController.text = pod.cnge.toString();
+
           isSignRequired = pod.sign == "Y" ? true : false;
           isStampRequired = pod.stamp == "Y" ? true : false;
           model.sign = 'N';
@@ -179,7 +181,7 @@ class _PodEntryState extends State<PodEntry> {
     });
 
     viewModel.isErrorLiveData.stream.listen((errMsg) {
-      if (errMsg != null) {
+      if (isNullOrEmpty(errMsg)) {
         failToast(errMsg.toString());
       } else {
         failToast("Something went wrong");
@@ -190,6 +192,8 @@ class _PodEntryState extends State<PodEntry> {
       if (list != null) {
         setState(() {
           _relations = list;
+          _selectedRelation = 'SELF';
+          _relationController.text = 'SELF';
         });
         // _showRelationDialog(context, _relations);
       }
@@ -675,21 +679,23 @@ class _PodEntryState extends State<PodEntry> {
     required bool isRequired,
     required IconData icon,
     required Widget child,
+    required bool isSmallDevice,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF64748B)),
-            const SizedBox(width: 6),
+            Icon(icon,
+                size: isSmallDevice ? 14 : 16, color: const Color(0xFF64748B)),
+            SizedBox(width: isSmallDevice ? 4 : 6),
             Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isSmallDevice ? 12 : 14,
                       fontWeight: FontWeight.w500,
                       color: CommonColors.darkCyanBlue!,
                     ),
@@ -707,17 +713,19 @@ class _PodEntryState extends State<PodEntry> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: isSmallDevice ? 4 : 8),
         child,
       ],
     );
   }
 
-  InputDecoration _inputDecoration(String hint) {
+  InputDecoration _inputDecoration(String hint, bool isSmallDevice) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: CommonColors.grey400!),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      hintStyle: TextStyle(
+          color: CommonColors.grey400!, fontSize: isSmallDevice ? 12 : 14),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: 12, vertical: isSmallDevice ? 12 : 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: CommonColors.grey300!),
@@ -750,25 +758,30 @@ class _PodEntryState extends State<PodEntry> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
           'POD Entry',
-          style: TextStyle(color: CommonColors.White),
+          style: TextStyle(
+              color: CommonColors.White, fontSize: isSmallDevice ? 16 : 18),
         ),
         leading: InkWell(
           onTap: () => {Navigator.pop(context)},
           child: Icon(
             Icons.arrow_back,
             color: CommonColors.White,
+            size: isSmallDevice ? 20 : 24,
           ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(isSmallDevice ? 8 : 16),
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -777,7 +790,7 @@ class _PodEntryState extends State<PodEntry> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isSmallDevice ? 12 : 16),
                     decoration: const BoxDecoration(
                       color: Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.only(
@@ -796,7 +809,7 @@ class _PodEntryState extends State<PodEntry> {
                         Text(
                           'Delivery Information',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: isSmallDevice ? 14 : 16,
                             fontWeight: FontWeight.w600,
                             color: CommonColors.primaryColorShade!,
                           ),
@@ -806,23 +819,25 @@ class _PodEntryState extends State<PodEntry> {
                   ),
                   const Divider(height: 1),
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isSmallDevice ? 12 : 16),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: "Consignment Number",
                             isRequired: false,
                             icon: Icons.inventory_2_outlined,
                             child: TextFormField(
                               enabled: false,
                               controller: _grNoController,
-                              style: const TextStyle(
-                                  color: CommonColors.appBarColor),
-                              decoration:
-                                  _inputDecoration("Consignment Number"),
+                              style: TextStyle(
+                                  color: CommonColors.appBarColor,
+                                  fontSize: isSmallDevice ? 13 : 14),
+                              decoration: _inputDecoration(
+                                  "Consignment Number", isSmallDevice),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter consignment number';
@@ -833,15 +848,18 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           const SizedBox(height: 20),
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: "Total Weight",
                             isRequired: false,
                             icon: Icons.inventory_2_outlined,
                             child: TextFormField(
                               enabled: false,
-                              style: const TextStyle(
-                                  color: CommonColors.appBarColor),
+                              style: TextStyle(
+                                  color: CommonColors.appBarColor,
+                                  fontSize: isSmallDevice ? 13 : 14),
                               controller: _totalWeightController,
-                              decoration: _inputDecoration("Total Weight"),
+                              decoration: _inputDecoration(
+                                  "Total Weight", isSmallDevice),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter total weight';
@@ -856,12 +874,14 @@ class _PodEntryState extends State<PodEntry> {
                             children: [
                               Expanded(
                                 child: _buildFormField(
+                                    isSmallDevice: isSmallDevice,
                                     label: "Delivery Date",
                                     isRequired: false,
                                     icon: Icons.calendar_today,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 15),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: isSmallDevice ? 12 : 15),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                             color: CommonColors.grey300!),
@@ -874,10 +894,12 @@ class _PodEntryState extends State<PodEntry> {
                                           Text(
                                             _deliveryDateController.text
                                                 .toString(),
-                                            style:
-                                                const TextStyle(fontSize: 16),
+                                            style: TextStyle(
+                                                fontSize:
+                                                    isSmallDevice ? 13 : 16),
                                           ),
                                           Icon(Icons.calendar_month,
+                                              size: isSmallDevice ? 20 : 24,
                                               color: CommonColors.grey),
                                         ],
                                       ),
@@ -886,12 +908,14 @@ class _PodEntryState extends State<PodEntry> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _buildFormField(
+                                  isSmallDevice: isSmallDevice,
                                   label: 'Delivery Time',
                                   isRequired: true,
                                   icon: Icons.access_time,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 15),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: isSmallDevice ? 12 : 15),
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: CommonColors.grey300!),
@@ -904,9 +928,12 @@ class _PodEntryState extends State<PodEntry> {
                                         Text(
                                           _deliveryTimeController.text
                                               .toString(),
-                                          style: const TextStyle(fontSize: 16),
+                                          style: TextStyle(
+                                              fontSize:
+                                                  isSmallDevice ? 13 : 16),
                                         ),
                                         Icon(Icons.access_time,
+                                            size: isSmallDevice ? 20 : 24,
                                             color: CommonColors.grey),
                                       ],
                                     ),
@@ -917,17 +944,20 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           const SizedBox(height: 20),
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: 'Received By',
                             isRequired: true,
                             icon: Icons.person_outline,
                             child: TextFormField(
                               controller: _receivedByController,
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 13 : 14),
                               focusNode: receivedByFocus,
                               onTapOutside: (event) {
                                 receivedByFocus.unfocus();
                               },
-                              decoration:
-                                  _inputDecoration("Enter recipient's name"),
+                              decoration: _inputDecoration(
+                                  "Enter recipient's name", isSmallDevice),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter recipient name';
@@ -938,11 +968,14 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           const SizedBox(height: 20),
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: 'Receiver Mobile Number',
                             isRequired: true,
                             icon: Icons.phone_android_outlined,
                             child: TextFormField(
                               maxLength: 10,
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 13 : 14),
                               buildCounter: (context,
                                   {required currentLength,
                                   required isFocused,
@@ -950,6 +983,7 @@ class _PodEntryState extends State<PodEntry> {
                                 return Text(
                                   '$currentLength / $maxLength',
                                   style: TextStyle(
+                                    fontSize: isSmallDevice ? 10 : 12,
                                     color: currentLength > (maxLength ?? 0)
                                         ? Colors.red
                                         : Colors.grey,
@@ -965,8 +999,8 @@ class _PodEntryState extends State<PodEntry> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               keyboardType: TextInputType.number,
-                              decoration:
-                                  _inputDecoration('Enter mobile number'),
+                              decoration: _inputDecoration(
+                                  'Enter mobile number', isSmallDevice),
                               validator: (value) {
                                 if (value == null ||
                                     value.isEmpty ||
@@ -980,12 +1014,17 @@ class _PodEntryState extends State<PodEntry> {
                           const SizedBox(height: 20),
                           // Relation
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: 'Relation',
                             isRequired: true,
                             icon: Icons.people_outline,
                             child: DropdownButtonFormField<String>(
                               value: _selectedRelation,
-                              decoration: _inputDecoration('Select relation'),
+                              style: TextStyle(
+                                  fontSize: isSmallDevice ? 13 : 14,
+                                  color: Colors.black),
+                              decoration: _inputDecoration(
+                                  'Select relation', isSmallDevice),
                               items:
                                   _relations.map((PodRelationsModel relation) {
                                 return DropdownMenuItem<String>(
@@ -1023,10 +1062,13 @@ class _PodEntryState extends State<PodEntry> {
                           // const SizedBox(height: 20),
                           // Delivery Packages
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: "Delivery Pckgs",
                             isRequired: true,
                             icon: Icons.delivery_dining_outlined,
                             child: TextFormField(
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 13 : 14),
                               focusNode: dlvPckgsFocus,
                               onTapOutside: (event) {
                                 dlvPckgsFocus.unfocus();
@@ -1036,7 +1078,8 @@ class _PodEntryState extends State<PodEntry> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               keyboardType: TextInputType.number,
-                              decoration: _inputDecoration('Delivery Packages'),
+                              decoration: _inputDecoration(
+                                  'Delivery Packages', isSmallDevice),
                               validator: (value) {
                                 if (isNullOrEmpty(value)) {
                                   return 'Please enter delivery packages';
@@ -1050,10 +1093,13 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           // Damage Packages
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: "Damaged Pckgs",
                             isRequired: true,
                             icon: Icons.delivery_dining_outlined,
                             child: TextFormField(
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 13 : 14),
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly
                               ],
@@ -1078,7 +1124,8 @@ class _PodEntryState extends State<PodEntry> {
                               },
                               controller: _damagedPckgsController,
                               // keyboardType: TextInputType.phone,
-                              decoration: _inputDecoration('Damaged Packages'),
+                              decoration: _inputDecoration(
+                                  'Damaged Packages', isSmallDevice),
                               // validator: (value) {
                               //   if (isNullOrEmpty(value)) {
                               //     return 'Please enter damanged packages';
@@ -1107,6 +1154,7 @@ class _PodEntryState extends State<PodEntry> {
                                         .toString()) >
                                     0,
                             child: _buildFormField(
+                              isSmallDevice: isSmallDevice,
                               label: 'Damage Reason',
                               isRequired: _damagedPckgsController.text
                                       .toString()
@@ -1117,7 +1165,11 @@ class _PodEntryState extends State<PodEntry> {
                               icon: Icons.people_outline,
                               child: DropdownButtonFormField<ReasonModel>(
                                 value: _selectedDamageReason,
-                                decoration: _inputDecoration('Select reason'),
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 13 : 14,
+                                    color: Colors.black),
+                                decoration: _inputDecoration(
+                                    'Select reason', isSmallDevice),
                                 items: _damageReason.map((ReasonModel reason) {
                                   return DropdownMenuItem<ReasonModel>(
                                     value: reason,
@@ -1293,7 +1345,7 @@ class _PodEntryState extends State<PodEntry> {
                                               ])),
                                         ),
                                         Container(
-                                            height: 150,
+                                            height: isSmallDevice ? 120 : 150,
                                             width: MediaQuery.sizeOf(context)
                                                     .width /
                                                 2,
@@ -1362,7 +1414,7 @@ class _PodEntryState extends State<PodEntry> {
                                           ),
                                         ),
                                         Container(
-                                            height: 150,
+                                            height: isSmallDevice ? 120 : 150,
                                             width: MediaQuery.sizeOf(context)
                                                     .width /
                                                 2,
@@ -1406,6 +1458,7 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           // Remarks
                           _buildFormField(
+                            isSmallDevice: isSmallDevice,
                             label: 'Remarks',
                             isRequired: false,
                             icon: Icons.comment_outlined,
@@ -1415,8 +1468,11 @@ class _PodEntryState extends State<PodEntry> {
                                 remarksFocus.unfocus();
                               },
                               controller: _remarksController,
+                              style:
+                                  TextStyle(fontSize: isSmallDevice ? 13 : 14),
                               decoration: _inputDecoration(
-                                  'Enter any additional notes (optional)'),
+                                  'Enter any additional notes (optional)',
+                                  isSmallDevice),
                               maxLines: 3,
                             ),
                           ),
@@ -1473,14 +1529,16 @@ class _PodEntryState extends State<PodEntry> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: isSmallDevice ? 10 : 15),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10))),
                               child: Text("Upload Signature",
                                   style: TextStyle(
+                                      fontSize: isSmallDevice ? 12 : 14,
                                       color: CommonColors.White,
                                       fontWeight: FontWeight.bold)),
                             ),
@@ -1504,14 +1562,16 @@ class _PodEntryState extends State<PodEntry> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: isSmallDevice ? 10 : 15),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10))),
                               child: Text("Upload POD",
                                   style: TextStyle(
+                                      fontSize: isSmallDevice ? 12 : 14,
                                       color: CommonColors.White,
                                       fontWeight: FontWeight.bold)),
                             ),
@@ -1561,7 +1621,7 @@ class _PodEntryState extends State<PodEntry> {
                                       ])),
                                 ),
                                 Container(
-                                    height: 150,
+                                    height: isSmallDevice ? 120 : 150,
                                     width: MediaQuery.sizeOf(context).width / 2,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10),
@@ -1624,7 +1684,7 @@ class _PodEntryState extends State<PodEntry> {
                                       ])),
                                 ),
                                 Container(
-                                    height: 150,
+                                    height: isSmallDevice ? 120 : 150,
                                     width: MediaQuery.sizeOf(context).width / 2,
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10),
@@ -1678,16 +1738,17 @@ class _PodEntryState extends State<PodEntry> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(
+                            vertical: isSmallDevice ? 10 : 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Submit POD',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isSmallDevice ? 14 : 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

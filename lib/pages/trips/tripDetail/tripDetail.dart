@@ -113,13 +113,17 @@ class _TripDetailState extends State<TripDetail> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Scaffold(
       // backgroundColor: CommonColors.grey600,
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
           'Trip Detail',
-          style: TextStyle(color: CommonColors.White),
+          style: TextStyle(
+              color: CommonColors.White, fontSize: isSmallDevice ? 12 : 20),
         ),
         leading: IconButton(
             onPressed: () {
@@ -178,8 +182,8 @@ class _TripDetailState extends State<TripDetail> {
                   itemBuilder: (context, index) {
                     var currentData = tripSummaryList[index];
                     return Padding(
-                        padding:
-                            const EdgeInsetsGeometry.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: isSmallDevice ? 8 : 16),
                         child: DashBoardDeliveryTile(
                           model: currentData,
                           tripModel: widget.model,
@@ -194,13 +198,14 @@ class _TripDetailState extends State<TripDetail> {
                         ));
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return const Divider(
+                    return Divider(
                       color: Colors.grey, // Customize divider color
                       thickness: 1, // Customize divider thickness
                       height:
                           20, // Customize the height of the divider (including spacing)
-                      indent: 16, // Indent from the left
-                      endIndent: 16, // Indent from the right
+                      indent: isSmallDevice ? 8 : 16, // Indent from the left
+                      endIndent:
+                          isSmallDevice ? 8 : 16, // Indent from the right
                     );
                   },
                 ),

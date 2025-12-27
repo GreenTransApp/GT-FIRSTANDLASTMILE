@@ -116,12 +116,16 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
           'Trip Detail',
-          style: TextStyle(color: CommonColors.White),
+          style: TextStyle(
+              color: CommonColors.White, fontSize: isSmallDevice ? 18 : 20),
         ),
         leading: IconButton(
             onPressed: () {
@@ -130,6 +134,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
             icon: Icon(
               Icons.arrow_back,
               color: CommonColors.White,
+              size: isSmallDevice ? 25 : 30,
             )),
         actions: [
           InkWell(
@@ -143,7 +148,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Image.asset(
                 "assets/images/map.png",
-                height: 35,
+                height: isSmallDevice ? 25 : 35,
               ),
             ),
           ),
@@ -159,7 +164,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
               ),
             ))
           : Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.symmetric(
+                  horizontal: isSmallDevice ? 8 : 10, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -170,7 +176,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(isSmallDevice ? 12.0 : 16.0),
                       child: Column(
                         children: [
                           // Basic Info
@@ -180,18 +186,20 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Trip ID',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black54,
+                                        fontSize: isSmallDevice ? 13 : 14,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       widget.tripModel.tripid.toString(),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
+                                        fontSize: isSmallDevice ? 14 : 16,
                                       ),
                                     ),
                                   ],
@@ -201,18 +209,20 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Consignment',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black54,
+                                        fontSize: isSmallDevice ? 13 : 14,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       '${widget.tripModel.noofconsign}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
+                                        fontSize: isSmallDevice ? 14 : 16,
                                       ),
                                     ),
                                   ],
@@ -228,10 +238,10 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                   const SizedBox(height: 24),
 
                   // Consignments Title
-                  const Text(
+                  Text(
                     'Consignments',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: isSmallDevice ? 16 : 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

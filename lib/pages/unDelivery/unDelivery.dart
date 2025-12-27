@@ -604,13 +604,15 @@ class _UnDeliveryState extends State<UnDelivery> {
     required bool isRequired,
     required IconData icon,
     required Widget child,
+    required bool isSmallDevice,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF64748B)),
+            Icon(icon,
+                size: isSmallDevice ? 14 : 16, color: const Color(0xFF64748B)),
             const SizedBox(width: 6),
             Text.rich(
               TextSpan(
@@ -618,7 +620,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: isSmallDevice ? 12 : 14,
                       fontWeight: FontWeight.w500,
                       color: CommonColors.darkCyanBlue!,
                       overflow: TextOverflow.ellipsis,
@@ -638,17 +640,19 @@ class _UnDeliveryState extends State<UnDelivery> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: isSmallDevice ? 4 : 8),
         child,
       ],
     );
   }
 
-  InputDecoration _inputDecoration(String hint) {
+  InputDecoration _inputDecoration(String hint, bool isSmallDevice) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: CommonColors.grey400!),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      hintStyle: TextStyle(
+          color: CommonColors.grey400!, fontSize: isSmallDevice ? 13 : 14),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: 12, vertical: isSmallDevice ? 12 : 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: CommonColors.grey300!),
@@ -675,20 +679,22 @@ class _UnDeliveryState extends State<UnDelivery> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isSmallDevice = screenWidth <= 360;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         foregroundColor: CommonColors.White,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Report Undelivery',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: isSmallDevice ? 16 : 18,
             fontWeight: FontWeight.w600,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back, size: isSmallDevice ? 20 : 24),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -701,7 +707,7 @@ class _UnDeliveryState extends State<UnDelivery> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(isSmallDevice ? 12 : 16),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.only(
@@ -714,13 +720,13 @@ class _UnDeliveryState extends State<UnDelivery> {
                       Icon(
                         Icons.local_shipping_outlined,
                         color: CommonColors.primaryColorShade!,
-                        size: 20,
+                        size: isSmallDevice ? 18 : 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'UnDelivery Information',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isSmallDevice ? 14 : 16,
                           fontWeight: FontWeight.w600,
                           color: CommonColors.primaryColorShade!,
                         ),
@@ -732,14 +738,18 @@ class _UnDeliveryState extends State<UnDelivery> {
                 const SizedBox(height: 20),
                 // Date and Time row
                 _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: "Consignment Number",
                   isRequired: false,
                   icon: Icons.inventory_2_outlined,
                   child: TextFormField(
                     enabled: false,
                     controller: _grNoController,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                    decoration: _inputDecoration("Consignment Number"),
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: isSmallDevice ? 13 : 14),
+                    decoration:
+                        _inputDecoration("Consignment Number", isSmallDevice),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter consignment number';
@@ -755,12 +765,14 @@ class _UnDeliveryState extends State<UnDelivery> {
                       child:
                           // _buildFieldLabel('Undelivery Date', true),
                           _buildFormField(
+                              isSmallDevice: isSmallDevice,
                               label: "UnDelivery Date",
                               isRequired: true,
                               icon: Icons.calendar_today,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 15),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: isSmallDevice ? 12 : 15),
                                 decoration: BoxDecoration(
                                   border:
                                       Border.all(color: CommonColors.grey300!),
@@ -772,10 +784,12 @@ class _UnDeliveryState extends State<UnDelivery> {
                                   children: [
                                     Text(
                                       _unDeliverDateController.text.toString(),
-                                      style: const TextStyle(fontSize: 16),
+                                      style: TextStyle(
+                                          fontSize: isSmallDevice ? 13 : 16),
                                     ),
                                     Icon(Icons.calendar_month,
-                                        color: CommonColors.grey),
+                                        color: CommonColors.grey,
+                                        size: isSmallDevice ? 20 : 24),
                                   ],
                                 ),
                               )),
@@ -783,12 +797,14 @@ class _UnDeliveryState extends State<UnDelivery> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildFormField(
+                        isSmallDevice: isSmallDevice,
                         label: 'UnDelivery Time',
                         isRequired: true,
                         icon: Icons.access_time,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 15),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: isSmallDevice ? 12 : 15),
                           decoration: BoxDecoration(
                             border: Border.all(color: CommonColors.grey300!),
                             borderRadius: BorderRadius.circular(8),
@@ -798,9 +814,12 @@ class _UnDeliveryState extends State<UnDelivery> {
                             children: [
                               Text(
                                 _unDeliveryTimeController.text.toString(),
-                                style: const TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                    fontSize: isSmallDevice ? 13 : 16),
                               ),
-                              Icon(Icons.access_time, color: CommonColors.grey),
+                              Icon(Icons.access_time,
+                                  color: CommonColors.grey,
+                                  size: isSmallDevice ? 20 : 24),
                             ],
                           ),
                         ),
@@ -812,6 +831,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                 // Reason
 
                 _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Reason',
                   isRequired: true,
                   icon: Icons.lightbulb_outline,
@@ -820,7 +840,11 @@ class _UnDeliveryState extends State<UnDelivery> {
                     child: DropdownButtonFormField<ReasonModel>(
                       isExpanded: true,
                       value: _selectedReason,
-                      decoration: _inputDecoration('Select reason'),
+                      decoration:
+                          _inputDecoration('Select reason', isSmallDevice),
+                      style: TextStyle(
+                          fontSize: isSmallDevice ? 13 : 14,
+                          color: CommonColors.black),
                       items: _reasonList.map((ReasonModel reason) {
                         return DropdownMenuItem<ReasonModel>(
                           value: reason,
@@ -848,6 +872,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                 const SizedBox(height: 20),
                 // Action
                 _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Action',
                   isRequired: true,
                   icon: Icons.call_to_action,
@@ -856,7 +881,11 @@ class _UnDeliveryState extends State<UnDelivery> {
                     child: DropdownButtonFormField<ActionModel>(
                       isExpanded: true,
                       value: _selectedAction,
-                      decoration: _inputDecoration('Select action'),
+                      decoration:
+                          _inputDecoration('Select action', isSmallDevice),
+                      style: TextStyle(
+                          fontSize: isSmallDevice ? 13 : 14,
+                          color: CommonColors.black),
                       items: _actionList.map((ActionModel action) {
                         return DropdownMenuItem<ActionModel>(
                           value: action,
@@ -879,6 +908,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                 ),
                 const SizedBox(height: 20),
                 _buildFormField(
+                  isSmallDevice: isSmallDevice,
                   label: 'Remarks',
                   isRequired: false,
                   icon: Icons.comment_outlined,
@@ -888,8 +918,9 @@ class _UnDeliveryState extends State<UnDelivery> {
                       remarksFocus.unfocus();
                     },
                     controller: _remarksController,
+                    style: TextStyle(fontSize: isSmallDevice ? 13 : 14),
                     decoration: _inputDecoration(
-                        'Enter any additional notes (optional)'),
+                        'Enter any additional notes (optional)', isSmallDevice),
                     maxLines: 3,
                   ),
                 ),
@@ -915,14 +946,15 @@ class _UnDeliveryState extends State<UnDelivery> {
                     },
                     child: Container(
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10, vertical: isSmallDevice ? 12 : 15),
                       decoration: BoxDecoration(
                           color: CommonColors.primaryColorShade,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10))),
                       child: Text("Upload UnDelivery Image",
                           style: TextStyle(
+                              fontSize: isSmallDevice ? 13 : 14,
                               color: CommonColors.White,
                               fontWeight: FontWeight.bold)),
                     ),
@@ -960,7 +992,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                         ),
                       ),
                       Container(
-                        height: 150,
+                        height: isSmallDevice ? 120 : 150,
                         width: MediaQuery.sizeOf(context).width,
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         margin: EdgeInsets.symmetric(horizontal: 10),
@@ -1001,16 +1033,17 @@ class _UnDeliveryState extends State<UnDelivery> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: CommonColors.primaryColorShade,
                       foregroundColor: CommonColors.White,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(
+                          vertical: isSmallDevice ? 12 : 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Submit Undelivery',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: isSmallDevice ? 14 : 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
