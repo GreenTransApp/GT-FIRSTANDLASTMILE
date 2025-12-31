@@ -226,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 60),
                         // Logo
                         Image.asset(
-                          'assets/images/gtinfinitilogo.png',
+                          'assets/icon.png',
                           width: MediaQuery.of(context).size.width * 0.6,
                           height: 80,
                         ),

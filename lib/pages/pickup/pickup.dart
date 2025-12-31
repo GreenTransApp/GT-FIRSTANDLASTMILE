@@ -583,7 +583,7 @@ class _PickupState extends State<Pickup> {
                     child: _buildFormField(
                   isSmallDevice: isSmallDevice,
                   label: 'Invoice No.',
-                  isRequired: true,
+                  isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
                     // focusNode: skuFocus,
@@ -609,12 +609,12 @@ class _PickupState extends State<Pickup> {
                         fontSize: isSmallDevice ? 13 : 14),
                     decoration: _inputDecoration("Invoice No",
                         isSmallDevice: isSmallDevice),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Invoice No.';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Please enter Invoice No.';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                 )),
                 const SizedBox(
@@ -631,7 +631,7 @@ class _PickupState extends State<Pickup> {
                   child: _buildFormField(
                     isSmallDevice: isSmallDevice,
                     label: 'Invoice Date.',
-                    isRequired: true,
+                    isRequired: false,
                     icon: Icons.numbers,
                     child: TextFormField(
                       // focusNode: skuFocus,
@@ -648,12 +648,12 @@ class _PickupState extends State<Pickup> {
                           fontSize: isSmallDevice ? 13 : 14),
                       decoration: _inputDecoration("Invoice Date",
                           isSmallDevice: isSmallDevice),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter invoice date';
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Please enter invoice date';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                   ),
                 ))
@@ -669,7 +669,7 @@ class _PickupState extends State<Pickup> {
                     child: _buildFormField(
                   isSmallDevice: isSmallDevice,
                   label: 'Packages.',
-                  isRequired: true,
+                  isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
                     // focusNode: skuFocus,
@@ -700,12 +700,12 @@ class _PickupState extends State<Pickup> {
                         fontSize: isSmallDevice ? 13 : 14),
                     decoration: _inputDecoration("Invoice No",
                         isSmallDevice: isSmallDevice),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Invoice No';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Please enter Invoice No';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                 )),
                 const SizedBox(
@@ -714,7 +714,7 @@ class _PickupState extends State<Pickup> {
                 Expanded(
                     child: _buildFormField(
                   label: 'Invoice Value.',
-                  isRequired: true,
+                  isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
                     // focusNode: skuFocus,
@@ -738,12 +738,12 @@ class _PickupState extends State<Pickup> {
                     keyboardType: TextInputType.text,
                     style: const TextStyle(color: CommonColors.appBarColor),
                     decoration: _inputDecoration("Invoice Value"),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter invoice date';
-                      }
-                      return null;
-                    },
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Please enter invoice date';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                 ))
               ],
@@ -2196,9 +2196,9 @@ class _PickupState extends State<Pickup> {
                                                         .map((branch) =>
                                                             CommonDataModel<
                                                                 BranchModel>(
-                                                              branch.stnCode ??
+                                                              branch.zipCode ??
                                                                   branch
-                                                                      .stnCode ??
+                                                                      .zipCode ??
                                                                   'Unknown',
                                                               branch,
                                                             ))
@@ -2210,7 +2210,7 @@ class _PickupState extends State<Pickup> {
                                                   (data) {
                                                     _selectedOrigin = data;
                                                     _orgPincodeController.text =
-                                                        _selectedOrigin!.stnCode
+                                                        _selectedOrigin!.zipCode
                                                             .toString();
 
                                                     _orgController.text =
@@ -2391,9 +2391,9 @@ class _PickupState extends State<Pickup> {
                                                         .map((branch) =>
                                                             CommonDataModel<
                                                                 BranchModel>(
-                                                              branch.stnCode ??
+                                                              branch.zipCode ??
                                                                   branch
-                                                                      .stnCode ??
+                                                                      .zipCode ??
                                                                   'Unknown',
                                                               branch,
                                                             ))
@@ -2645,8 +2645,9 @@ class _PickupState extends State<Pickup> {
                                     isRequired: false,
                                     icon: Icons.person,
                                     child: TextFormField(
-                                      enabled: canEditCust &&
-                                          _selectedCustomer != null,
+                                      enabled: (canEditCust &&
+                                          _selectedCustomer != null),
+                                      readOnly: true,
                                       controller: _deptController,
                                       keyboardType: TextInputType.text,
                                       onTap: () {

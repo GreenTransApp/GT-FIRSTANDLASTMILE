@@ -12,7 +12,6 @@ import 'package:gtlmd/pages/home/homeRepository.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 
-
 class HomeViewModel extends BaseViewModel {
   final HomeRepository _repo = HomeRepository();
 

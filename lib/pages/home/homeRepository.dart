@@ -37,7 +37,7 @@ class HomeRepository extends BaseRepository {
       try {
         // viewDialog.add(true);
         CommonResponse resp =
-            await apiGet("$lmdUrl/getDashboardDetails", params);
+            await apiGet("$lmdUrl/getDashboardDetailsV2", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
@@ -70,7 +70,7 @@ class HomeRepository extends BaseRepository {
             //     deliveryDashboardList.add([]);
             //   }
             // }
-            else if (entry.key == "Table3") {
+            else if (entry.key == "Table1") {
               List<dynamic> list2 = entry.value;
               List<TripModel> resultList = List.generate(
                   list2.length, (index) => TripModel.fromJson(list2[index]));

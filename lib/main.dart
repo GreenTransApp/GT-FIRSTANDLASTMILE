@@ -28,7 +28,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String _title = "GT-LMD";
+  static const String _title = "First2Last Mile";
 
   // This widget is the root of your application.
   @override

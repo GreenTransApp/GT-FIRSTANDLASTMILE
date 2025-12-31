@@ -29,6 +29,7 @@ import 'package:gtlmd/pages/routes/routesList/allotedRouteWidget.dart';
 import 'package:gtlmd/pages/runningTrips/runningTrips.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/pages/updateVersionScreen/updateVersionScreen.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
@@ -204,7 +205,7 @@ class _HomeScreen extends State<HomeScreen>
           authService.logout(context);
         } else if (validate.requiredaupdate == "Y") {
           failToast(validate.commandmessage.toString());
-          // _updateScreen(context);
+          _updateScreen(context);
           // } else if (validate.executiveid == null ||
           //     validate.employeeid == null) {
         } else if (validate.executiveid == null) {
@@ -389,7 +390,8 @@ class _HomeScreen extends State<HomeScreen>
 
   void _updateScreen(BuildContext context) {
     // storageClear();
-    Routes.goToPage(RoutesName.update, "Update");
+    // Routes.goToPage(RoutesName.update, "Update");
+    Get.offAll(const UpdateVersionScreen());
   }
 
   logout() {
@@ -440,8 +442,8 @@ class _HomeScreen extends State<HomeScreen>
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
       // "prmfromdt": ENV.isDebugging == true ? "2025-01-01" : fromDt,
-      "prmfromdt": fromDt,
-      "prmtodt": toDt,
+      "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
+      "prmtodt": convert2SmallDateTime(dashboardToDt.toString()),
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -526,147 +528,152 @@ class _HomeScreen extends State<HomeScreen>
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Current Date',
-                    style: TextStyle(
-                      fontSize: isSmallDevice ? 10 : 12,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      fontSize: isSmallDevice ? 12 : 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 8),
-              Visibility(
-                visible: employeeid != null,
-                child: InkWell(
-                  onTap: () {
-                    Get.to(() => const AttendanceScreen())?.then((_) {
-                      getDashboardDetails();
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      // Punch status indicator with color based on status
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: CommonColors.colorPrimary,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white30),
-                        ),
-                        child: Row(
-                          children: [
-                            // Status indicator dot
-                            Container(
-                              width: isSmallDevice ? 6 : 8,
-                              height: isSmallDevice ? 6 : 8,
-                              margin: const EdgeInsets.only(right: 6),
-                              decoration: BoxDecoration(
-                                color:
-                                    attendanceModel.attendancestatus == "Absent"
-                                        ? CommonColors.dangerColor
-                                        : CommonColors.successColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Text(
-                              attendanceModel.attendancestatus == 'Present'
-                                  ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                      .toString()
-                                      .toUpperCase()
-                                  : "Absent",
-                              style: TextStyle(
-                                fontSize: isSmallDevice ? 10 : 12,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.chevron_right,
-                        size: isSmallDevice ? 16 : 20,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Visibility(
-                visible: ENV.isDebugging,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.to(const BluetoothScreen());
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: CommonColors.white!),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.bluetooth,
-                        size: isSmallDevice ? 16 : 24,
-                        color: CommonColors.white),
-                  ),
-                ),
-              )
-            ],
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // OutlinedButton.icon(
-              //   onPressed: () {
-              //     showDatePickerBottomSheet(context, _dateChanged);
-              //   },
-              //   icon: Icon(Icons.calendar_today,
-              //       size: 16, color: CommonColors.white),
-              //   label: const Text(''),
-              //   style: OutlinedButton.styleFrom(
-              //     padding:
-              //         const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              //     side: BorderSide(color: CommonColors.white!),
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              // ),
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Current Date',
+                        style: TextStyle(
+                          fontSize: isSmallDevice ? 10 : 12,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                          fontSize: isSmallDevice ? 12 : 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  const SizedBox(width: 8),
+                  Visibility(
+                    visible: ENV.isDebugging,
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.to(const BluetoothScreen());
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: CommonColors.white!),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.bluetooth,
+                            size: isSmallDevice ? 16 : 24,
+                            color: CommonColors.white),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // OutlinedButton.icon(
+                  //   onPressed: () {
+                  //     showDatePickerBottomSheet(context, _dateChanged);
+                  //   },
+                  //   icon: Icon(Icons.calendar_today,
+                  //       size: 16, color: CommonColors.white),
+                  //   label: const Text(''),
+                  //   style: OutlinedButton.styleFrom(
+                  //     padding:
+                  //         const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  //     side: BorderSide(color: CommonColors.white!),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(8),
+                  //     ),
+                  //   ),
+                  // ),
 
-              GestureDetector(
-                onTap: () {
-                  showDatePickerBottomSheet(context, _dateChanged);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: CommonColors.colorPrimary,
-                      border: Border.all(color: CommonColors.white!)),
-                  child: Icon(Icons.calendar_today,
-                      size: isSmallDevice ? 14 : 16, color: CommonColors.white),
-                ),
-              )
+                  GestureDetector(
+                    onTap: () {
+                      showDatePickerBottomSheet(context, _dateChanged);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: CommonColors.colorPrimary,
+                          border: Border.all(color: CommonColors.white!)),
+                      child: Icon(Icons.calendar_today,
+                          size: isSmallDevice ? 14 : 16,
+                          color: CommonColors.white),
+                    ),
+                  )
+                ],
+              ),
             ],
+          ),
+          const SizedBox(height: 8),
+          Visibility(
+            visible: employeeid != null,
+            child: InkWell(
+              onTap: () {
+                Get.to(() => const AttendanceScreen())?.then((_) {
+                  getDashboardDetails();
+                });
+              },
+              child: Row(
+                children: [
+                  // Punch status indicator with color based on status
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: CommonColors.colorPrimary,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Row(
+                      children: [
+                        // Status indicator dot
+                        Container(
+                          width: isSmallDevice ? 6 : 8,
+                          height: isSmallDevice ? 6 : 8,
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            color: attendanceModel.attendancestatus == "Absent"
+                                ? CommonColors.dangerColor
+                                : CommonColors.successColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Text(
+                          attendanceModel.attendancestatus == 'Present'
+                              ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                                  .toString()
+                                  .toUpperCase()
+                              : "Absent",
+                          style: TextStyle(
+                            fontSize: isSmallDevice ? 10 : 12,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // const SizedBox(width: 8),
+                  // Icon(
+                  //   Icons.chevron_right,
+                  //   size: isSmallDevice ? 16 : 20,
+                  //   color: Colors.white,
+                  // ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -700,7 +707,7 @@ class _HomeScreen extends State<HomeScreen>
                   ));
             }),
             title: Text(
-              'LMD Dashboard',
+              'Dashboard',
               style: TextStyle(
                   color: CommonColors.white, fontSize: isSmallDevice ? 16 : 20),
             ),
@@ -725,7 +732,7 @@ class _HomeScreen extends State<HomeScreen>
             ),
             backgroundColor: CommonColors.colorPrimary,
             title: Text(
-              'LMD Dashboard',
+              'Dashboard',
               style: TextStyle(
                 fontSize: isSmallDevice ? 16 : 20,
                 fontWeight: FontWeight.w600,

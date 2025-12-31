@@ -61,11 +61,11 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     super.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    refreshScreen();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   refreshScreen();
+  // }
 
   setObservers() {
     viewModel.deliveryDetailLiveData.stream.listen((resp) {

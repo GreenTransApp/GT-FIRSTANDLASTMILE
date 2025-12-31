@@ -164,7 +164,53 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Visibility(
+                              visible: !isConsignVisible,
+                              child: Flexible(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: CommonColors.colorPrimary!
+                                        .withAlpha((0.1 * 255).round()),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    // 'Stop ${modelDetail.sequenceid}',
+                                    'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
+                                    style: TextStyle(
+                                      fontSize: isSmallDevice ? 10 : 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: CommonColors.colorPrimary,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (!isConsignVisible)
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isExpanded = !isExpanded;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Icon(
+                                    isExpanded
+                                        ? Icons.keyboard_arrow_up
+                                        : Icons.keyboard_arrow_down,
+                                    color: CommonColors.colorPrimary,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
                           children: [
                             Text(
                               // modelDetail.grno.toString(),
@@ -173,52 +219,6 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: isSmallDevice ? 10 : 16,
                               ),
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Visibility(
-                                  visible: !isConsignVisible,
-                                  child: Flexible(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: CommonColors.colorPrimary!
-                                            .withAlpha((0.1 * 255).round()),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        // 'Stop ${modelDetail.sequenceid}',
-                                        'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
-                                        style: TextStyle(
-                                          fontSize: isSmallDevice ? 10 : 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: CommonColors.colorPrimary,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (!isConsignVisible)
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        isExpanded = !isExpanded;
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Icon(
-                                        isExpanded
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
-                                        color: CommonColors.colorPrimary,
-                                      ),
-                                    ),
-                                  ),
-                              ],
                             ),
                           ],
                         ),
@@ -410,7 +410,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                // const SizedBox(height: 8),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -447,7 +447,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                // const SizedBox(height: 8),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,

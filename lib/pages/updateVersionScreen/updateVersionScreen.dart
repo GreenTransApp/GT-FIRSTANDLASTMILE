@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gtlmd/common/Toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UpdateVersionScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _UpdateVersionScreenState extends State<UpdateVersionScreen> {
             ),
           ),
           InkWell(
+            onTap: () => {successToast("Work in progress")},
             // onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.greensoft.greentranserp')),
             // // launch('https://play.google.com/store/apps/details?id=com.greensoft.greentranserp'),
             // onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.greensoft.gthr')),

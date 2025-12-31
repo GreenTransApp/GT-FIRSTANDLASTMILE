@@ -844,7 +844,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                           _inputDecoration('Select reason', isSmallDevice),
                       style: TextStyle(
                           fontSize: isSmallDevice ? 13 : 14,
-                          color: CommonColors.black),
+                          color: CommonColors.appBarColor),
                       items: _reasonList.map((ReasonModel reason) {
                         return DropdownMenuItem<ReasonModel>(
                           value: reason,
@@ -885,7 +885,7 @@ class _UnDeliveryState extends State<UnDelivery> {
                           _inputDecoration('Select action', isSmallDevice),
                       style: TextStyle(
                           fontSize: isSmallDevice ? 13 : 14,
-                          color: CommonColors.black),
+                          color: CommonColors.appBarColor),
                       items: _actionList.map((ActionModel action) {
                         return DropdownMenuItem<ActionModel>(
                           value: action,
