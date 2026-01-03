@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/pages/home/isolates.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
@@ -39,7 +41,8 @@ class HomeRepository extends BaseRepository {
         CommonResponse resp =
             await apiGet("$lmdUrl/getDashboardDetailsV2", params);
         if (resp.commandStatus == 1) {
-          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          final Map<String, dynamic> table = await compute(
+              parseDashboardDetailIsolate, resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
           for (final entry in entries) {
             if (entry.key == "Table") {
@@ -109,16 +112,20 @@ class HomeRepository extends BaseRepository {
             await apiPost("${loginBaseUrl}ValidateDevice", params);
 
         if (resp.commandStatus == 1) {
-          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-          List<dynamic> list = table.values.first;
-          List<ValidateDeviceModel> resultList = List.generate(list.length,
-              (index) => ValidateDeviceModel.fromJson(list[index]));
-          ValidateDeviceModel validateResponse = resultList[0];
+          // Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          // List<dynamic> list = table.values.first;
+          // List<ValidateDeviceModel> resultList = List.generate(list.length,
+          //     (index) => ValidateDeviceModel.fromJson(list[index]));
+          // ValidateDeviceModel validateResponse = resultList[0];
+          final Map<String, dynamic> rawMap = await compute(
+              parseValidateDeviceIsolate, resp.dataSet.toString());
+          final ValidateDeviceModel validateResponse =
+              ValidateDeviceModel.fromJson(rawMap);
           executiveid = validateResponse.executiveid;
           employeeid = validateResponse.employeeid;
           // ValidateDeviceModel.fromJson(resultList[0]);
           if (validateResponse.commandstatus == 1) {
-            validateDeviceList.add(resultList[0]);
+            validateDeviceList.add(validateResponse);
           }
         } else {
           isErrorLiveData.add(resp.commandMessage!);

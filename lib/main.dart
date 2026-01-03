@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
@@ -21,7 +22,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const MyApp());
 }
 
@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SizeConfig.init(context);
     return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: _title,

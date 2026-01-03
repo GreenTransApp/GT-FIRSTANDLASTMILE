@@ -74,7 +74,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     viewToDt = DateFormat('dd-MM-yyyy').format(todayDateTime);
     // DateTime fromdt = DateTime.parse(fromDt);
     // DateTime todt = DateTime.parse(toDt);
-    getDeliveryList();
+    // getDeliveryList();
   }
 
   setObservers() {

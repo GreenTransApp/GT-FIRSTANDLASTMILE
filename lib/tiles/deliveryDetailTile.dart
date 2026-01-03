@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/app_sizes.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
 
@@ -228,15 +230,17 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         ),
         endChild: Padding(
           padding: EdgeInsets.symmetric(
-              vertical: isSmallDevice ? 8 : 16,
-              horizontal: isSmallDevice ? 8 : 16),
+              vertical: SizeConfig.verticalPadding,
+              horizontal: SizeConfig.horizontalPadding),
           child: Container(
             decoration: BoxDecoration(
               color: cardBgColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: EdgeInsets.all(isSmallDevice ? 12.0 : 16.0),
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -248,11 +252,13 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            '${widget.model.grno}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: isSmallDevice ? 14 : 16,
+                          Flexible(
+                            child: Text(
+                              '${widget.model.grno}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -260,8 +266,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           Flexible(
                             child: Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: isSmallDevice ? 8 : 12,
-                                  vertical: 4),
+                                  horizontal: SizeConfig.smallHorizontalPadding,
+                                  vertical: SizeConfig.smallVerticalPadding),
                               decoration: BoxDecoration(
                                 color: CommonColors.colorPrimary!
                                     .withAlpha((0.1 * 255).round()),
@@ -270,7 +276,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               child: Text(
                                 'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
                                 style: TextStyle(
-                                  fontSize: isSmallDevice ? 10 : 12,
+                                  fontSize: SizeConfig.extraSmallTextSize,
                                   fontWeight: FontWeight.bold,
                                   color: CommonColors.colorPrimary,
                                   overflow: TextOverflow.ellipsis,
@@ -287,8 +293,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        SizeConfig.extraSmallHorizontalPadding,
+                                    vertical:
+                                        SizeConfig.extraSmallVerticalPadding),
                                 // decoration: BoxDecoration(
                                 //   color: cardBgColor
                                 //       .withAlpha((0.7 * 255).round()),
@@ -297,7 +306,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 child: Text(
                                   status.toString(),
                                   style: TextStyle(
-                                    fontSize: isSmallDevice ? 10 : 12,
+                                    fontSize: SizeConfig.extraSmallTextSize,
                                     fontWeight: FontWeight.w500,
                                     color: statusIconColor,
                                   ),
@@ -306,7 +315,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               Icon(
                                 statusIcon,
                                 color: statusIconColor,
-                                size: isSmallDevice ? 20 : 24,
+                                size: SizeConfig.extraLargeIconSize,
                               ),
                             ],
                           ),
@@ -321,7 +330,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                   // Consignment Details
                   Row(
@@ -334,15 +343,16 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               'Consignee Name',
                               style: TextStyle(
                                 color: Colors.black54,
-                                fontSize: isSmallDevice ? 11 : 13,
+                                fontSize: SizeConfig.extraSmallTextSize,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(
+                                height: SizeConfig.extraSmallVerticalSpacing),
                             Text(
                               modelDetail.cngename.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: isSmallDevice ? 12 : 14,
+                                fontSize: SizeConfig.smallTextSize,
                               ),
                             ),
                           ],
@@ -356,17 +366,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               'Mobile No.',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: isSmallDevice ? 11 : 13,
+                                fontSize: SizeConfig.extraSmallTextSize,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(
+                                height: SizeConfig.extraSmallVerticalSpacing),
                             Row(
                               children: [
                                 Text(
                                   modelDetail.cngemobile ?? '—',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: isSmallDevice ? 12 : 14,
+                                    fontSize: SizeConfig.smallTextSize,
                                   ),
                                 ),
                                 Visibility(
@@ -380,10 +391,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   visible: status == "Pending" ||
                                       status == "Un-Picked",
                                   child: SizedBox(
-                                    width: isSmallDevice ? 28 : 32,
-                                    height: isSmallDevice ? 28 : 32,
+                                    width:
+                                        SizeConfig.extraLargeHorizontalPadding,
+                                    height:
+                                        SizeConfig.extraLargeVerticalPadding,
                                     child: IconButton(
-                                      iconSize: isSmallDevice ? 14 : 16,
+                                      iconSize: SizeConfig.extraSmallIconSize,
                                       style: ButtonStyle(
                                         backgroundColor: status == "Pending" ||
                                                 status == "Un-Picked"
@@ -404,8 +417,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                                     "Make a phone call?",
                                                     "Are you sure you want to call ${modelDetail.cngemobile}?",
                                                     "",
-                                                    const Icon(
-                                                        Icons.phone_outlined),
+                                                    Icon(Icons.phone_outlined,
+                                                        size: SizeConfig
+                                                            .extraSmallIconSize),
                                                     () {
                                                   _makePhoneCall(
                                                       modelDetail.cngemobile);
@@ -416,14 +430,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                                     "Invalid Phone Number",
                                                     "The phone number is not valid",
                                                     'address',
-                                                    const Icon(
-                                                        Icons.phone_outlined),
+                                                    Icon(
+                                                      Icons.phone_outlined,
+                                                      size: SizeConfig
+                                                          .smallIconSize,
+                                                    ),
                                                     () {});
                                               }
                                             }
                                           : null,
                                       icon: Icon(
                                         Icons.call_outlined,
+                                        size: SizeConfig.smallIconSize,
                                         color: status == "Pending"
                                             ? CommonColors.White
                                             : CommonColors.grey300,
@@ -440,7 +458,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                   Row(
                     children: [
@@ -452,7 +470,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               'Pcs',
                               style: TextStyle(
                                 color: Colors.black54,
-                                fontSize: isSmallDevice ? 11 : 13,
+                                fontSize: SizeConfig.extraSmallTextSize,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -460,7 +478,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               '${modelDetail.pcs}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: isSmallDevice ? 12 : 14,
+                                fontSize: SizeConfig.smallTextSize,
                               ),
                             ),
                           ],
@@ -473,7 +491,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                   // Action Buttons for Pending
                   if (modelDetail.consignmenttype == "D" &&
                       status == "Pending") ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: SizeConfig.smallVerticalSpacing),
                     Row(
                       children: [
                         Expanded(
@@ -487,13 +505,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               });
                             },
                             icon: Icon(Icons.close,
-                                size: isSmallDevice ? 16 : 24),
+                                size: SizeConfig.mediumIconSize),
                             label: Text('Undeliver',
                                 style: TextStyle(
-                                    fontSize: isSmallDevice ? 12 : 14)),
+                                    fontSize: SizeConfig.smallTextSize)),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                  vertical: isSmallDevice ? 8 : 12),
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
                               backgroundColor: CommonColors.red600,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -512,13 +531,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               });
                             },
                             icon: Icon(Icons.check,
-                                size: isSmallDevice ? 16 : 24),
+                                size: SizeConfig.mediumIconSize),
                             label: Text('Deliver',
                                 style: TextStyle(
-                                    fontSize: isSmallDevice ? 12 : 14)),
+                                    fontSize: SizeConfig.smallTextSize)),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                  vertical: isSmallDevice ? 8 : 12),
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
                               backgroundColor: CommonColors.green600,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -545,13 +565,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               });
                             },
                             icon: Icon(Icons.check,
-                                size: isSmallDevice ? 16 : 24),
+                                size: SizeConfig.mediumIconSize),
                             label: Text('Reverse Pickup',
                                 style: TextStyle(
-                                    fontSize: isSmallDevice ? 12 : 14)),
+                                    fontSize: SizeConfig.smallTextSize)),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                  vertical: isSmallDevice ? 8 : 12),
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
                               backgroundColor: CommonColors.colorPrimary,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -576,13 +597,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               });
                             },
                             icon: Icon(Icons.check,
-                                size: isSmallDevice ? 16 : 24),
+                                size: SizeConfig.mediumIconSize),
                             label: Text('Pickup',
                                 style: TextStyle(
-                                    fontSize: isSmallDevice ? 12 : 14)),
+                                    fontSize: SizeConfig.smallTextSize)),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                  vertical: isSmallDevice ? 8 : 12),
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
                               backgroundColor: CommonColors.colorPrimary,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
@@ -599,301 +621,5 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
             ),
           ),
         ));
-
-/* 
-        SizedBox(
-      child: TimelineTile(
-        isFirst: isFirst,
-        isLast: isLast,
-        indicatorStyle:
-            IndicatorStyle(width: 20, color: CommonColors.colorPrimary!),
-        afterLineStyle: LineStyle(color: CommonColors.colorPrimary!),
-        beforeLineStyle: LineStyle(color: CommonColors.colorPrimary!),
-        endChild: Card(
-          elevation: 1,
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-          child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      color: StringToHexaColor(
-                          widget.model.statusColor.toString()),
-                      width: 2),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: RichText(
-                                text: TextSpan(
-                                    text: widget.model.grno,
-                                    // text: "",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: CommonColors.colorPrimary,
-                                        decoration: TextDecoration.underline,
-                                        decorationColor:
-                                            CommonColors.colorPrimary))),
-                          ),
-                          Flexible(
-                            fit: FlexFit.tight,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: /* Text(
-                                    "Status: Undelivered",
-                                    style: TextStyle(
-                                        color: CommonColors.colorPrimary),
-                                  ), */
-                                      RichText(
-                                    text: TextSpan(
-                                      text: "Status: ",
-                                      style: const TextStyle(
-                                          color: CommonColors.appBarColor),
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text: status,
-                                          style: TextStyle(
-                                            color: StringToHexaColor(
-                                              widget.model.statusColor
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Consignee Name',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                " : ${widget.model.cngename}",
-                                maxLines: 3,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Mobile No.',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                " : ${widget.model.cngemobile}",
-                                maxLines: 3,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: widget.model.deliverystatus == 'U',
-                    child: Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Undelivery reason: ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            fit: FlexFit.tight,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  " : ${widget.model.undeliverreason}",
-                                  maxLines: 3,
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const Divider(
-                    thickness: 1,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Pcs ',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                " : ${widget.model.pcs}",
-                                maxLines: 3,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // const Divider(
-                  //   thickness: 1,
-                  // ),
-
-                  Visibility(
-                    visible: showActionBtn,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(UnDelivery(
-                                  deliveryDetailModel: modelDetail,
-                                  currentDeliveryModel: currentDelivery));
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
-                              decoration: BoxDecoration(
-                                  color: CommonColors.dangerColor,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10))),
-                              child: Text("Un-Deliver".toUpperCase(),
-                                  style: TextStyle(color: CommonColors.White)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(
-                                  PodEntry(deliveryDetailModel: modelDetail));
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
-                              decoration: BoxDecoration(
-                                  color: CommonColors.successColor,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10))),
-                              child: Text("Deliver".toUpperCase(),
-                                  style: TextStyle(color: CommonColors.White)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
-    );
-
- */
   }
 }

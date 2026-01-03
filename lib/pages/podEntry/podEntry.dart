@@ -15,10 +15,13 @@ import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/utils.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/podEntry/Model/podEntryModel.dart';
+import 'package:gtlmd/pages/podEntry/Model/stickerModel.dart';
 import 'package:gtlmd/pages/podEntry/podEntryViewModel.dart';
 import 'package:gtlmd/pages/podEntry/podRelationModel.dart';
+import 'package:gtlmd/pages/podEntry/scanAndLoad.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PodEntry extends StatefulWidget {
@@ -799,21 +802,45 @@ class _PodEntryState extends State<PodEntry> {
                       ),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          Icons.local_shipping_outlined,
-                          color: CommonColors.primaryColorShade!,
-                          size: 20,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.local_shipping_outlined,
+                              color: CommonColors.primaryColorShade!,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Delivery Information',
+                              style: TextStyle(
+                                fontSize: isSmallDevice ? 14 : 16,
+                                fontWeight: FontWeight.w600,
+                                color: CommonColors.primaryColorShade!,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Delivery Information',
-                          style: TextStyle(
-                            fontSize: isSmallDevice ? 14 : 16,
-                            fontWeight: FontWeight.w600,
-                            color: CommonColors.primaryColorShade!,
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(ScanAndLoad(
+                              stickersList: [
+                                StickerModel(
+                                    stickerNo: 'one', isSelected: false),
+                                StickerModel(
+                                    stickerNo: 'two', isSelected: false),
+                                StickerModel(
+                                    stickerNo: 'three', isSelected: false),
+                                StickerModel(
+                                    stickerNo: 'four', isSelected: false),
+                              ],
+                            ));
+                          },
+                          child: const Icon(
+                            Symbols.qr_code_scanner_rounded,
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

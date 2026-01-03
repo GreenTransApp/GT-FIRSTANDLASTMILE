@@ -5,8 +5,11 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dart_ipify/dart_ipify.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart'
+    show DiscoveredDevice;
 import 'package:get/get.dart';
 import 'package:get_ip_address/get_ip_address.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -48,6 +51,7 @@ UserCredsModel userCredsModel = UserCredsModel();
 AttendanceModel todayAttendance = AttendanceModel();
 int? executiveid = null;
 int? employeeid = null;
+DiscoveredDevice? connectedDevice;
 
 // List<CurrentDeliveryModel> activeDrsList = List.empty(growable: true);
 class ScreenDimension {
@@ -399,14 +403,19 @@ Future<LoginCredsModel> getLoginCreds() async {
 }
 
 Future<LoginModel> getLoginData() async {
-  String? rawStorageUser =
+  final String? rawStorageUser =
       await AuthenticationService().storageGet(ENV.loginPrefTag);
+
   if (rawStorageUser != null) {
-    Map<String, dynamic> te = jsonDecode(rawStorageUser);
-    LoginModel loginResponse = LoginModel.fromJson(te);
-    savedLogin = loginResponse;
+    savedLogin = await compute(_parseLoginInBackground, rawStorageUser);
   }
+
   return savedLogin;
+}
+
+LoginModel _parseLoginInBackground(String rawJson) {
+  final Map<String, dynamic> jsonMap = jsonDecode(rawJson);
+  return LoginModel.fromJson(jsonMap);
 }
 
 void callCompanyBottomSheetDialog(BuildContext context,
@@ -428,11 +437,14 @@ Future<UserModel> getUserData() async {
   String? rawStorageUser =
       await AuthenticationService().storageGet(ENV.userPrefTag);
   if (rawStorageUser != null) {
-    Map<String, dynamic> te = jsonDecode(rawStorageUser);
-    UserModel userModel = UserModel.fromJson(te);
-    savedUser = userModel;
+    savedUser = _getUserDataInBackground(rawStorageUser);
   }
   return savedUser;
+}
+
+UserModel _getUserDataInBackground(String rawJson) {
+  final Map<String, dynamic> jsonMap = jsonDecode(rawJson);
+  return UserModel.fromJson(jsonMap);
 }
 
 inputField(

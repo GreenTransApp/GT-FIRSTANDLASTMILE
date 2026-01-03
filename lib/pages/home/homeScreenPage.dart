@@ -875,12 +875,7 @@ class _HomeScreen extends State<HomeScreen>
                     visible: ENV.isDebugging,
                     child: GestureDetector(
                       onTap: () async {
-                        final TimeOfDay? selectedTime = await showTimePicker(
-                          initialTime: TimeOfDay.now(),
-                          context: context,
-                        );
-
-                        debugPrint(formatTimeString(selectedTime.toString()));
+                        Bluetooth.printReceipt();
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

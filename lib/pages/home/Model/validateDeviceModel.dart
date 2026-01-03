@@ -27,14 +27,14 @@ class ValidateDeviceModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['commandstatus'] = this.commandstatus;
-    data['commandmessage'] = this.commandmessage;
-    data['validlogin'] = this.validlogin;
-    data['singledevice'] = this.singledevice;
-    data['requiredaupdate'] = this.requiredaupdate;
-    data['executiveid'] = this.executiveid;
-    data['employeeid'] = this.employeeid;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['commandstatus'] = commandstatus;
+    data['commandmessage'] = commandmessage;
+    data['validlogin'] = validlogin;
+    data['singledevice'] = singledevice;
+    data['requiredaupdate'] = requiredaupdate;
+    data['executiveid'] = executiveid;
+    data['employeeid'] = employeeid;
     return data;
   }
 }
