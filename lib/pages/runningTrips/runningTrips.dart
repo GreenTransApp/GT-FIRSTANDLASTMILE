@@ -29,7 +29,7 @@ class RunningTrips extends StatefulWidget {
 }
 
 class RunningTripsState extends State<RunningTrips> {
-  List<TripModel> _deliveryList = List.empty(growable: true);
+  List<TripModel> _tripList = List.empty(growable: true);
   late AttendanceModel _attendanceModel = AttendanceModel();
   late LoadingAlertService loadingAlertService;
   RunningTripsViewModel viewModel = RunningTripsViewModel();
@@ -41,7 +41,7 @@ class RunningTripsState extends State<RunningTrips> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
-    getTripList();
+    // getTripList();
   }
 
   setObservers() {
@@ -65,7 +65,7 @@ class RunningTripsState extends State<RunningTrips> {
 
     viewModel.tripsListData.stream.listen((data) {
       setState(() {
-        _deliveryList = data;
+        _tripList = data;
       });
     });
   }
@@ -97,7 +97,7 @@ class RunningTripsState extends State<RunningTrips> {
       onRefresh: onRefresh,
       child: Scaffold(
         body: Container(
-          child: (_deliveryList.isEmpty) == true
+          child: (_tripList.isEmpty) == true
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
@@ -121,9 +121,9 @@ class RunningTripsState extends State<RunningTrips> {
               : ListView.builder(
                   shrinkWrap: true,
                   // physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _deliveryList.length,
+                  itemCount: _tripList.length,
                   itemBuilder: (context, index) {
-                    var currentData = _deliveryList[index];
+                    var currentData = _tripList[index];
                     return RunningTripTile(
                       model: currentData,
                       attendanceModel: _attendanceModel,

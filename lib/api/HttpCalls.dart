@@ -2,8 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gtlmd/api/model/ApiCallParametersModel.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/common/debug.dart';
+import 'package:gtlmd/common/utils.dart';
+import 'package:gtlmd/pages/login/models/loginModel.dart';
+import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:http/http.dart' as http;
 
 String companyId = "71727374";
@@ -102,6 +106,31 @@ class ApiService {
     }
   }
 
+  Future<CommonResponse> postWithCommonModel(
+    String url,
+    Map<String, dynamic> params, {
+    String spNameToCall = "",
+  }) async {
+    try {
+      final UserModel userData = await getUserData();
+      final LoginModel userLoginData = await getLoginData();
+
+      final ApiCallParametersModel parameters = ApiCallParametersModel(
+        companyId: userData.companyid.toString(),
+        parameters: params,
+        userCode: userData.usercode ?? "",
+        loginBranchCode: userData.loginbranchcode ?? "",
+        sessionId: userData.sessionid,
+        spName: spNameToCall,
+      );
+
+      final apiResponse = await post(url, parameters.toJson());
+      return apiResponse;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Static function for compute to call
   static dynamic _parseJson(String jsonString) {
     return jsonDecode(jsonString);
@@ -120,6 +149,11 @@ Future<CommonResponse> apiGet(
 Future<CommonResponse> apiPost(
     String apiName, Map<String, dynamic> params) async {
   return ApiService.instance.post(apiName, params);
+}
+
+Future<CommonResponse> apiPostWithModel(
+    String apiName, Map<String, dynamic> params) async {
+  return ApiService.instance.postWithCommonModel(apiName, params);
 }
 
 // Example

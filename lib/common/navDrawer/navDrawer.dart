@@ -7,6 +7,7 @@ import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
+import 'package:gtlmd/pages/tripMis/tripMis.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
 
 class SideMenu extends StatelessWidget {
@@ -127,6 +128,17 @@ class SideMenu extends StatelessWidget {
                   const ImageIcon(AssetImage('assets/images/truck.png')),
               press: () {
                 Get.to(const CloseTrip());
+              }),
+          const Divider(
+            thickness: 1,
+          ),
+          SideMenuItem(
+              isSmallDevice: isSmallDevice,
+              title: 'Trip MIS',
+              leadingIcon:
+                  const ImageIcon(AssetImage('assets/images/truck.png')),
+              press: () {
+                Get.to(const TripMis());
               }),
           const Divider(
             thickness: 1,

@@ -37,10 +37,10 @@ class UserModel {
   String? companyid1;
   String? compname;
 
-  // ✅ Newly added fields
   String? mobileno;
   String? emailid;
   String? displayusername;
+  String? drivercode;
 
   UserModel({
     this.commandstatus,
@@ -83,6 +83,7 @@ class UserModel {
     this.mobileno,
     this.emailid,
     this.displayusername,
+    this.drivercode,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -126,6 +127,7 @@ class UserModel {
     mobileno = json['mobileno'];
     emailid = json['emailid'];
     displayusername = json['displayusername'];
+    drivercode = json['drivercode'];
   }
 
   Map<String, dynamic> toJson() {
@@ -170,6 +172,7 @@ class UserModel {
     data['mobileno'] = mobileno;
     data['emailid'] = emailid;
     data['displayusername'] = displayusername;
+    data['drivercode'] = drivercode;
     return data;
   }
 }

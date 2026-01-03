@@ -69,7 +69,7 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
 
   void _getRoutesList() {
     Map<String, String> params = {
-      "prmcompanyid": savedLogin.companyid.toString(),
+      // "prmcompanyid": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
