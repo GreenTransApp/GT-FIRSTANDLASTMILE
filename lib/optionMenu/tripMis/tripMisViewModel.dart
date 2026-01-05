@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
-import 'package:gtlmd/pages/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/pages/tripMis/tripMisRepository.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
+import 'package:gtlmd/optionMenu/tripMis/tripMisRepository.dart';
 import 'package:gtlmd/pages/trips/tripDetail/tripDetailRepository.dart';
 
 class TripMisViewModel extends BaseViewModel {

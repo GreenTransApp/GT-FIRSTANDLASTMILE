@@ -7,7 +7,7 @@ import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
-import 'package:gtlmd/pages/tripMis/tripMis.dart';
+import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
 
 class SideMenu extends StatelessWidget {

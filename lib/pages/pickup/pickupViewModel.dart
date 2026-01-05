@@ -1,21 +1,21 @@
 import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
-import 'package:gtlmd/pages/pickup/CngrCngeModel.dart';
-import 'package:gtlmd/pages/pickup/LoadTypeModel.dart';
-import 'package:gtlmd/pages/pickup/bookingTypeModel.dart';
-import 'package:gtlmd/pages/pickup/branchModel.dart';
-import 'package:gtlmd/pages/pickup/customerModel.dart';
-import 'package:gtlmd/pages/pickup/deliveryTypeModel.dart';
-import 'package:gtlmd/pages/pickup/departmentModel.dart';
-import 'package:gtlmd/pages/pickup/pickResp.dart';
+import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
+import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/branchModel.dart';
+import 'package:gtlmd/pages/pickup/model/customerModel.dart';
+import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
+import 'package:gtlmd/pages/pickup/model/pickResp.dart';
 
 import 'package:gtlmd/pages/pickup/pickup.dart';
-import 'package:gtlmd/pages/pickup/pickupDetailModel.dart';
+import 'package:gtlmd/pages/pickup/model/pickupDetailModel.dart';
 import 'package:gtlmd/pages/pickup/pickupRepository.dart';
-import 'package:gtlmd/pages/pickup/pinCodeModel.dart';
-import 'package:gtlmd/pages/pickup/savePickupRespModel.dart';
-import 'package:gtlmd/pages/pickup/serviceTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/pinCodeModel.dart';
+import 'package:gtlmd/pages/pickup/model/savePickupRespModel.dart';
+import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 
 class PickupViewModel extends BaseViewModel {
   final PickupRepository repository = PickupRepository();

@@ -9,7 +9,7 @@ import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/textFormatter/upperCaseTextFormatter.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/utils.dart';
-import 'package:gtlmd/pages/pickup/ContentModel.dart';
+import 'package:gtlmd/pages/pickup/model/ContentModel.dart';
 
 // class CommonDataModel<T> {
 //   String title;

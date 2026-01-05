@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/pages/tripMis/Model/tripMisModel.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
 
 class TripMisTile extends StatelessWidget {
   final TripMisModel model;

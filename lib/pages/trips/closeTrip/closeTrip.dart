@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
@@ -6,10 +6,9 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTripViewModel.dart';
-import 'package:gtlmd/pages/closedDrs/closedDrs.dart';
-import 'package:gtlmd/pages/closedDrs/closedDrsViewModel.dart';
+import 'package:gtlmd/optionMenu/closedDrs/closedDrs.dart';
+import 'package:gtlmd/optionMenu/closedDrs/closedDrsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
-
 
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -29,7 +28,7 @@ class _CloseTripState extends State<CloseTrip> {
   List<TripModel> currentTripModel = [];
   late LoadingAlertService loadingAlertService;
 
-   @override
+  @override
   void initState() {
     super.initState();
     // fromdt = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
@@ -75,7 +74,8 @@ class _CloseTripState extends State<CloseTrip> {
     };
     viewModel.getClosedTripList(params);
   }
-   void _dateChanged(String fromDt, String toDt) {
+
+  void _dateChanged(String fromDt, String toDt) {
     debugPrint("fromDt ${fromDt}");
     debugPrint("toDt ${toDt}");
 
@@ -87,13 +87,15 @@ class _CloseTripState extends State<CloseTrip> {
     viewToDt = DateFormat('dd-MM-yyyy').format(todt);
     getClosedTrips();
   }
+
   @override
   Widget build(BuildContext context) {
-      final theme = Theme.of(context);
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
-        title: const Text('Closed Trips', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Closed Trips', style: TextStyle(color: Colors.white)),
         foregroundColor: CommonColors.White,
       ),
       body: Column(
@@ -158,17 +160,13 @@ class _CloseTripState extends State<CloseTrip> {
         ],
       ),
     );
-  
   }
 
-   Widget _tile(TripModel model, ThemeData theme) {
+  Widget _tile(TripModel model, ThemeData theme) {
     final theme = Theme.of(context);
     return InkWell(
         onTap: () {
-          
-            Get.to(ClosedDrs(model: model))
-                ?.then((_) => {});
-          
+          Get.to(ClosedDrs(model: model))?.then((_) => {});
         },
         child: Card(
           elevation: 0,
@@ -181,7 +179,7 @@ class _CloseTripState extends State<CloseTrip> {
             child: Column(
               children: [
                 // Header with dispatch time and edit button
-                _buildHeader(context, theme,model),
+                _buildHeader(context, theme, model),
 
                 // Card content
                 Padding(
@@ -246,7 +244,7 @@ class _CloseTripState extends State<CloseTrip> {
                       //       ),
                       //       IconButton(
                       //           onPressed: () {
-                               
+
                       //           },
                       //           icon: Icon(
                       //             Icons.cancel_outlined,
@@ -274,8 +272,7 @@ class _CloseTripState extends State<CloseTrip> {
         ));
   }
 
-  
-Widget _buildHeader(BuildContext context, ThemeData theme,TripModel model) {
+  Widget _buildHeader(BuildContext context, ThemeData theme, TripModel model) {
     return Container(
       color: CommonColors.colorPrimary!.withOpacity(0.05),
       padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
@@ -314,8 +311,7 @@ Widget _buildHeader(BuildContext context, ThemeData theme,TripModel model) {
               : Expanded(
                   child: Align(
                       alignment: Alignment.centerRight,
-                      child:
-                          Text(model.tripdispatchdatetime.toString())))
+                      child: Text(model.tripdispatchdatetime.toString())))
         ],
       ),
     );

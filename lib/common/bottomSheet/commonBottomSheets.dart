@@ -8,7 +8,7 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/textFormatter/upperCaseTextFormatter.dart';
 import 'package:get/get.dart';
-import 'package:gtlmd/pages/pickup/invoiceModel.dart';
+import 'package:gtlmd/pages/pickup/model/invoiceModel.dart';
 
 class CommonDataModel<T> {
   String title;

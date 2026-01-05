@@ -1,9 +1,9 @@
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
-import 'package:gtlmd/pages/pickup/LoadTypeModel.dart';
-import 'package:gtlmd/pages/pickup/bookingTypeModel.dart';
-import 'package:gtlmd/pages/pickup/deliveryTypeModel.dart';
-import 'package:gtlmd/pages/pickup/pickupDetailModel.dart';
-import 'package:gtlmd/pages/pickup/serviceTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
+import 'package:gtlmd/pages/pickup/model/pickupDetailModel.dart';
+import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 
 class PickResp {
   List<PickupDetailModel> pickupList;

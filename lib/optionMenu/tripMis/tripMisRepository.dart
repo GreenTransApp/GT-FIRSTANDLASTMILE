@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 
-import 'package:gtlmd/pages/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/pages/tripMis/tripMis.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
+import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 import '../../common/commonResponse.dart';

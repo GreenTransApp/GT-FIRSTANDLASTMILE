@@ -3,8 +3,8 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/commonButton.dart';
-import 'package:gtlmd/pages/pickup/contentSelectionBS.dart';
-import 'package:gtlmd/pages/pickup/invoiceModel.dart';
+import 'package:gtlmd/pages/pickup/model/contentSelectionBS.dart';
+import 'package:gtlmd/pages/pickup/model/invoiceModel.dart';
 
 import 'package:intl/intl.dart';
 
