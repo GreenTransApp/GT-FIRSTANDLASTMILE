@@ -23,6 +23,7 @@ class TripMis extends StatefulWidget {
 
 class _TripMisState extends State<TripMis> {
   List<TripMisModel> _tripList = List.empty(growable: true);
+  List<TripMisModel> filterList = List.empty(growable: true);
   late LoadingAlertService loadingAlertService;
   TripMisViewModel viewModel = TripMisViewModel();
   String fromDt = "";
@@ -32,6 +33,8 @@ class _TripMisState extends State<TripMis> {
   String formattedDate = '';
   late DateTime todayDateTime;
   late String smallDateTime;
+  TextEditingController _searchController = TextEditingController();
+  late String query = "";
   @override
   void initState() {
     super.initState();
@@ -119,6 +122,35 @@ class _TripMisState extends State<TripMis> {
     onRefresh();
   }
 
+  void updateSearch(String newQuery) {
+    List<TripMisModel> newMatchQuery = [];
+
+    if (newQuery.isEmpty) {
+      setState(() {
+        query = '';
+        filterList = _tripList;
+      });
+    } else {
+      for (var trip in _tripList) {
+        if (trip.tripId
+                .toString()
+                .toLowerCase()
+                .contains(newQuery.toLowerCase()) ||
+            trip.branchName
+                .toString()
+                .toLowerCase()
+                .contains(newQuery.toLowerCase())) {
+          newMatchQuery.add(trip);
+        }
+      }
+
+      setState(() {
+        query = newQuery;
+        filterList = newMatchQuery;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -162,10 +194,50 @@ class _TripMisState extends State<TripMis> {
         body: Column(
           children: [
             Container(
+              decoration: BoxDecoration(color: CommonColors.colorPrimary),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _searchController,
+                  keyboardType: TextInputType.multiline,
+                  cursorColor: Colors.black,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Colors.black,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchController.clear();
+                          updateSearch('');
+                        });
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+                    filled: true,
+                    fillColor: CommonColors.White,
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        borderSide: BorderSide(color: Colors.black)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.black)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.black)),
+                  ),
+                  onChanged: updateSearch,
+                ),
+              ),
+            ),
+            Container(
               width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.fromLTRB(0, 16, 16, 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   OutlinedButton.icon(
                     onPressed: () {
@@ -214,9 +286,9 @@ class _TripMisState extends State<TripMis> {
                     : ListView.builder(
                         shrinkWrap: true,
                         // physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: _tripList.length,
+                        itemCount: filterList.length,
                         itemBuilder: (context, index) {
-                          var currentData = _tripList[index];
+                          var currentData = filterList[index];
                           return TripMisTile(
                             model: currentData,
                           );

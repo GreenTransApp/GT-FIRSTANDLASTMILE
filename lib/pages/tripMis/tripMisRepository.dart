@@ -23,7 +23,7 @@ class TripMisRepository extends BaseRepository {
         // viewDialog.add(true);
 
         CommonResponse resp =
-            await apiPostWithModel("${lmdUrl}GetTripMISReport", params);
+            await apiPostWithModel("${lmdUrl}GetLMDLiveData", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
