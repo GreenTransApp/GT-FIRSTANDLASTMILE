@@ -3,6 +3,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
@@ -108,10 +109,11 @@ class RunningTripsState extends State<RunningTrips> {
                         children: [
                           Lottie.asset("assets/emptyDelivery.json",
                               height: 150),
-                          const Text(
+                          Text(
                             "No Trips",
                             style: TextStyle(
-                                fontSize: 18, color: CommonColors.appBarColor),
+                                fontSize: SizeConfig.mediumTextSize,
+                                color: CommonColors.appBarColor),
                           )
                         ],
                       ),

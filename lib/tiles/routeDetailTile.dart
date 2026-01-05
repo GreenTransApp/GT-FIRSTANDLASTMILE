@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -146,8 +147,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
       ),
       endChild: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: isSmallDevice ? 8 : 16,
-            horizontal: isSmallDevice ? 8 : 16),
+            vertical: SizeConfig.verticalPadding,
+            horizontal: SizeConfig.horizontalPadding),
         child: Row(
           children: [
             Expanded(
@@ -155,11 +156,12 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
+                    padding: EdgeInsets.all(SizeConfig.smallIconSize),
                     decoration: BoxDecoration(
                       color: CommonColors.colorPrimary!
                           .withAlpha((0.1 * 255).round()),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius:
+                          BorderRadius.circular(SizeConfig.largeRadius),
                     ),
                     child: Column(
                       children: [
@@ -170,18 +172,22 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                               visible: !isConsignVisible,
                               child: Flexible(
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          SizeConfig.smallHorizontalPadding,
+                                      vertical:
+                                          SizeConfig.smallVerticalPadding),
                                   decoration: BoxDecoration(
                                     color: CommonColors.colorPrimary!
                                         .withAlpha((0.1 * 255).round()),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.largeRadius),
                                   ),
                                   child: Text(
                                     // 'Stop ${modelDetail.sequenceid}',
                                     'Stop ${widget.index} / ${modelDetail.consignmenttypeview}',
                                     style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
+                                      fontSize: SizeConfig.extraSmallTextSize,
                                       fontWeight: FontWeight.bold,
                                       color: CommonColors.colorPrimary,
                                       overflow: TextOverflow.ellipsis,
@@ -198,7 +204,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                   });
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
+                                  padding: EdgeInsets.only(
+                                      left: SizeConfig.smallHorizontalPadding),
                                   child: Icon(
                                     isExpanded
                                         ? Icons.keyboard_arrow_up
@@ -209,7 +216,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                               ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: SizeConfig.smallVerticalSpacing),
                         Row(
                           children: [
                             Text(
@@ -217,7 +224,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                               modelDetail.grno.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: isSmallDevice ? 10 : 16,
+                                fontSize: SizeConfig.smallTextSize,
                               ),
                             ),
                           ],
@@ -231,7 +238,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                 child: Text(
                                   modelDetail.address.toString(),
                                   style: TextStyle(
-                                    fontSize: isSmallDevice ? 10 : 12,
+                                    fontSize: SizeConfig.smallTextSize,
                                   ),
                                 ),
                               ),
@@ -250,14 +257,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                           'Starting location',
                           style: TextStyle(
                             color: CommonColors.appBarColor,
-                            fontSize: isSmallDevice ? 10 : 12,
+                            fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
                         Text(
                           '${modelDetail.address}',
                           style: TextStyle(
                             color: CommonColors.appBarColor,
-                            fontSize: isSmallDevice ? 10 : 12,
+                            fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
                       ],
@@ -272,14 +279,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                           'Destination',
                           style: TextStyle(
                             color: CommonColors.black54,
-                            fontSize: isSmallDevice ? 10 : 12,
+                            fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
                         Text(
                           '${modelDetail.address}',
                           style: TextStyle(
                             color: CommonColors.black54,
-                            fontSize: isSmallDevice ? 10 : 12,
+                            fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
                       ],
@@ -294,11 +301,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                       children: [
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.smallHorizontalPadding,
+                                vertical: SizeConfig.smallVerticalPadding),
                             decoration: BoxDecoration(
                               // color: CommonColors.grey50,
                               color: cardBgColor,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius:
+                                  BorderRadius.circular(SizeConfig.smallRadius),
                             ),
                             child: Column(
                               children: [
@@ -310,14 +320,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.person,
-                                          size: isSmallDevice ? 12 : 16,
+                                          size: SizeConfig.extraSmallIconSize,
                                           color: CommonColors.colorPrimary,
                                         ),
-                                        const SizedBox(width: 4),
                                         Text(
                                           'Name:',
                                           style: TextStyle(
-                                            fontSize: isSmallDevice ? 10 : 12,
+                                            fontSize:
+                                                SizeConfig.extraSmallTextSize,
                                             color: CommonColors.black54,
                                           ),
                                         ),
@@ -328,7 +338,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         modelDetail.cnge.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -346,14 +357,15 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.phone_android_outlined,
-                                          size: isSmallDevice ? 12 : 16,
+                                          size: SizeConfig.smallIconSize,
                                           color: CommonColors.colorPrimary,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           'Mobile No.:',
                                           style: TextStyle(
-                                            fontSize: isSmallDevice ? 10 : 12,
+                                            fontSize:
+                                                SizeConfig.extraSmallTextSize,
                                             color: CommonColors.black54,
                                           ),
                                         ),
@@ -364,7 +376,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         modelDetail.cngemobile.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -382,14 +395,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.inventory_2_outlined,
-                                          size: isSmallDevice ? 12 : 16,
+                                          size: SizeConfig.smallIconSize,
                                           color: CommonColors.colorPrimary,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'pcs:',
+                                          'Pcs:',
                                           style: TextStyle(
-                                            fontSize: isSmallDevice ? 11 : 13,
+                                            fontSize: SizeConfig.smallTextSize,
                                             color: CommonColors.black54,
                                           ),
                                         ),
@@ -400,7 +413,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         modelDetail.pcs.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -437,7 +451,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         '${modelDetail.distance}',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize: SizeConfig.smallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -456,14 +470,14 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.inventory_2_outlined,
-                                          size: isSmallDevice ? 12 : 16,
+                                          size: SizeConfig.smallIconSize,
                                           color: CommonColors.colorPrimary,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           'Type:',
                                           style: TextStyle(
-                                            fontSize: isSmallDevice ? 10 : 12,
+                                            fontSize: SizeConfig.smallTextSize,
                                             color: CommonColors.black54,
                                           ),
                                         ),
@@ -475,7 +489,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         style: TextStyle(
                                           color: statusIconColor,
                                           fontWeight: FontWeight.w600,
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize: SizeConfig.smallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -501,14 +515,15 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
               ReorderableDragStartListener(
                 index: widget.index,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
+                  padding: EdgeInsets.only(left: SizeConfig.horizontalPadding),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 4, vertical: isSmallDevice ? 8 : 12),
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                         color: CommonColors.colorPrimary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.mediumRadius)),
                         border: Border.all(
                             color: CommonColors.colorPrimary!, width: 1)),
                     child: RotatedBox(
@@ -517,7 +532,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                         "Drag",
                         style: TextStyle(
                           color: CommonColors.White,
-                          fontSize: isSmallDevice ? 10 : 12,
+                          fontSize: SizeConfig.smallTextSize,
                         ),
                       ),
                     ),
@@ -545,7 +560,9 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                       BorderSide(width: 0.5, color: CommonColors.disableColor)),
               // borderRadius: const BorderRadius.all(Radius.circular(10))
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             child: Column(
               children: [
                 Visibility(
@@ -555,7 +572,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(isSmallDevice ? 0.0 : 0.0),
+                        padding: const EdgeInsets.all(0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -567,7 +584,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                 children: [
                                   Text('${widget.model.grno}',
                                       style: TextStyle(
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize: SizeConfig.smallTextSize,
                                           fontWeight: FontWeight.bold)),
                                 ],
                               ),
@@ -582,18 +599,18 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: CircleAvatar(
-                                      radius: 20,
+                                      radius: SizeConfig.smallRadius,
                                       backgroundColor:
                                           CommonColors.colorPrimary,
                                       child: CircleAvatar(
-                                        radius: 19,
+                                        radius: SizeConfig.mediumRadius,
                                         backgroundColor: CommonColors.White,
                                         child: Text(
                                           "${widget.model.sequenceid}",
                                           style: TextStyle(
                                               color: CommonColors.colorPrimary,
                                               fontSize:
-                                                  isSmallDevice ? 10 : 12),
+                                                  SizeConfig.smallTextSize),
                                         ),
                                       ),
                                     ),
@@ -626,7 +643,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(isSmallDevice ? 0.0 : 0.0),
+                        padding: const EdgeInsets.all(0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -639,7 +656,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                   Text('Pcs ',
                                       style: TextStyle(
                                           fontStyle: FontStyle.italic,
-                                          fontSize: isSmallDevice ? 10 : 12)),
+                                          fontSize: SizeConfig.smallTextSize)),
                                 ],
                               ),
                             ),
@@ -656,7 +673,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
+                                      fontSize: SizeConfig.smallTextSize,
                                     ),
                                   ),
                                 ],
@@ -679,7 +696,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                   Text('Distance ',
                                       style: TextStyle(
                                           fontStyle: FontStyle.italic,
-                                          fontSize: isSmallDevice ? 10 : 12)),
+                                          fontSize: SizeConfig.smallTextSize)),
                                 ],
                               ),
                             ),
@@ -696,7 +713,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: isSmallDevice ? 10 : 12,
+                                      fontSize: SizeConfig.smallTextSize,
                                     ),
                                   ),
                                 ],
@@ -730,7 +747,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       softWrap: false,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          fontSize: isSmallDevice ? 10 : 12,
+                                          fontSize: SizeConfig.smallTextSize,
                                           fontWeight: FontWeight.bold,
                                           // color: CommonColors.colorPrimary,
                                           // decoration: TextDecoration.underline,
@@ -761,8 +778,6 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
   }
 
   _buildIndicatorStyle() {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isSmallDevice = screenWidth <= 360;
     Color? indicatorBackgroundColor = CommonColors.White;
     if (isPickUp) {
       indicatorBackgroundColor = CommonColors.colorPrimary;
@@ -779,8 +794,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
       borderColor = CommonColors.green600;
     }
     return IndicatorStyle(
-      width: isSmallDevice ? 20 : 30,
-      height: isSmallDevice ? 20 : 30,
+      width: SizeConfig.largeHorizontalSpacing,
+      height: SizeConfig.largeVerticalSpacing,
       indicator: Container(
         decoration: BoxDecoration(
           color: indicatorBackgroundColor,
@@ -794,7 +809,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
             ? Icon(
                 Icons.local_shipping_outlined,
                 color: CommonColors.White,
-                size: isSmallDevice ? 12 : 16,
+                size: SizeConfig.smallIconSize,
               )
             : isDesitnation
                 ? Icon(

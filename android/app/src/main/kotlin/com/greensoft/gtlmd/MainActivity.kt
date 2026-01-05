@@ -18,6 +18,9 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "scan_channel"
+    private val BLUETOOTH_CHANNEL = "bluetooth_channel"
+    private val REQUEST_ENABLE_BT = 1
+    private var bluetoothResult: MethodChannel.Result? = null
     private lateinit var scanReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +49,33 @@ class MainActivity: FlutterActivity() {
         val filter = IntentFilter()
         filter.addAction("android.intent.ACTION_DECODE_DATA") // Use the intent action from ScanSettings
         registerReceiver(scanReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+
+        MethodChannel(engine.dartExecutor.binaryMessenger, BLUETOOTH_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "enableBluetooth") {
+                bluetoothResult = result
+                val enableBtIntent = Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                try {
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+                } catch (e: Exception) {
+                    result.error("BLE_ERROR", "Could not start bluetooth enablement intent", e.message)
+                    bluetoothResult = null
+                }
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                bluetoothResult?.success(true)
+            } else {
+                bluetoothResult?.success(false)
+            }
+            bluetoothResult = null
+        }
     }
 
         override fun onDestroy() {

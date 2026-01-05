@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 
 class InfoItem extends StatelessWidget {
   final String label;
@@ -13,9 +14,6 @@ class InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isSmallDevice = screenWidth <= 360;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,7 +22,7 @@ class InfoItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           label,
           style: TextStyle(
-            fontSize: isSmallDevice ? 10 : 12,
+            fontSize: SizeConfig.smallTextSize,
             color: CommonColors.appBarColor,
           ),
         ),
@@ -33,7 +31,7 @@ class InfoItem extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           value,
           style: TextStyle(
-            fontSize: isSmallDevice ? 14 : 18,
+            fontSize: SizeConfig.mediumTextSize,
             fontWeight: FontWeight.w500,
             color: CommonColors.colorPrimary!,
           ),

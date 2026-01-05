@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/routes/routeDetail/routeDetail.dart';
-
 import 'package:gtlmd/tiles/infoItem.dart';
 
 class DashBoardRouteTile extends StatefulWidget {
@@ -29,20 +28,19 @@ class DashBoardRouteTile extends StatefulWidget {
 class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isSmallDevice = screenWidth <= 360;
-
     return Card(
       elevation: 4,
       margin: EdgeInsets.symmetric(
-          horizontal: isSmallDevice ? 12 : 24,
-          vertical: isSmallDevice ? 8 : 16),
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       // shape: RoundedRectangleBorder(
       //     borderRadius: BorderRadius.circular(12),
       //     side: const BorderSide(color: Colors.black
       //     )),
       child: Padding(
-        padding: EdgeInsets.all(isSmallDevice ? 10.0 : 16.0),
+        padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.horizontalPadding,
+            vertical: SizeConfig.verticalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,14 +53,16 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                   child: Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(isSmallDevice ? 4 : 8),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                            vertical: SizeConfig.smallVerticalPadding),
                         decoration: BoxDecoration(
                           color: CommonColors.colorPrimary!
                               .withAlpha((255 * 0.1).toInt()),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Icon(Icons.location_on,
-                            size: isSmallDevice ? 12 : 16,
+                            size: SizeConfig.mediumIconSize,
                             color: CommonColors.colorPrimary),
                       ),
                       const SizedBox(width: 8),
@@ -72,7 +72,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: isSmallDevice ? 14 : 16,
+                            fontSize: SizeConfig.mediumTextSize,
                             fontWeight: FontWeight.w500,
                             color: CommonColors.colorPrimary,
                           ),
@@ -95,7 +95,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                     widget.model.planningdt.toString(),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: isSmallDevice ? 10 : 12,
+                      fontSize: SizeConfig.extraSmallTextSize,
                       color: CommonColors.colorPrimary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -104,11 +104,13 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
               ],
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: SizeConfig.smallVerticalSpacing),
 
             // Card Content
             Container(
-              padding: EdgeInsets.all(isSmallDevice ? 10 : 16),
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
               decoration: BoxDecoration(
                 color:
                     CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
@@ -117,7 +119,7 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                       CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
               ),
               child: Table(
                 columnWidths: const {
@@ -186,12 +188,13 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                         children: [
                           Icon(
                             Icons.remove_red_eye,
-                            size: isSmallDevice ? 18 : 24,
+                            size: SizeConfig.largeIconSize,
                           ),
-                          SizedBox(width: isSmallDevice ? 8 : 12),
+                          SizedBox(width: SizeConfig.horizontalPadding),
                           Text(
                             "View Details",
-                            style: TextStyle(fontSize: isSmallDevice ? 12 : 14),
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize),
                           ),
                         ],
                       ),
@@ -207,12 +210,13 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.warning_amber_rounded,
-                        size: 14, color: CommonColors.red600),
+                        size: SizeConfig.smallIconSize,
+                        color: CommonColors.red600),
                     const SizedBox(width: 4),
                     Text(
                       'You must punch-in to access routes',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: SizeConfig.smallTextSize,
                         color: CommonColors.red600,
                       ),
                     ),

@@ -85,6 +85,7 @@ dependencies:
   material_symbols_icons: ^4.2874.0
   flutter_esc_pos_utils: ^1.0.1
   flutter_reactive_ble: ^5.4.0
+  flutter_native_splash: ^2.4.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -126,12 +127,11 @@ flutter_launcher_icons:
   background_color_ios: "#ffffff"
 
 flutter_native_splash:
-  color: "#e1f5fe"
+  android: true
+  ios: true
+  color: "#ffffff"
   image: assets/icon.png
-  android_12:
-    image: assets/icon.png
-    color: "#42a5f5"
-    icon_background_color: "#eeeeee"
+
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package

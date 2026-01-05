@@ -7,6 +7,10 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+
+final bluetoothChannel = MethodChannel('bluetooth_channel');
 
 class BluetoothScreen extends StatefulWidget {
   const BluetoothScreen({super.key});
@@ -18,20 +22,52 @@ class BluetoothScreen extends StatefulWidget {
 class _BluetoothScreenState extends State<BluetoothScreen> {
   late final FlutterReactiveBle flutterReactiveBle;
 
-  @override
-  void initState() {
-    super.initState();
-    flutterReactiveBle = FlutterReactiveBle();
-    scan();
-  }
+  BleStatus _currentStatus = BleStatus.unknown;
+  StreamSubscription<BleStatus>? _statusSubscription;
+  bool _isScanningWaitingForReady = false;
 
   StreamSubscription? _scanSubscription;
   StreamSubscription<ConnectionStateUpdate>? _connectionSubscription;
   List<DiscoveredDevice> devices = [];
   bool _isScanning = false;
   bool _isConnecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    flutterReactiveBle = FlutterReactiveBle();
+    _subscribeToBluetoothStatus();
+    scan();
+  }
+
+  void _subscribeToBluetoothStatus() {
+    _statusSubscription = flutterReactiveBle.statusStream.listen((status) {
+      debugPrint('Bluetooth Status: $status');
+      setState(() {
+        _currentStatus = status;
+      });
+      if (status == BleStatus.ready && _isScanningWaitingForReady) {
+        _isScanningWaitingForReady = false;
+        scan();
+      }
+    });
+  }
+
   scan() async {
     debugPrint('Scanning');
+
+    if (_currentStatus != BleStatus.ready) {
+      bool enabled = await _ensureBluetoothEnabled();
+      if (!enabled) {
+        debugPrint('Bluetooth not enabled, cannot scan');
+        return;
+      }
+      // If we just enabled it, status might take a moment to update to ready
+      if (_currentStatus != BleStatus.ready) {
+        _isScanningWaitingForReady = true;
+        return;
+      }
+    }
 
     PermissionStatus status = await requestPermission();
     if (status.isGranted || status.isLimited) {
@@ -53,12 +89,12 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
           }
         }, onError: (error) {
           setState(() {
-            _isScanning = true;
+            _isScanning = false;
           });
           debugPrint('Bluetooth LE Error: $error');
         }, onDone: () {
           setState(() {
-            _isScanning = true;
+            _isScanning = false;
           });
           debugPrint('Bluetooth LE Scan Done');
         });
@@ -69,6 +105,57 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         });
       }
     }
+  }
+
+  Future<bool> _ensureBluetoothEnabled() async {
+    if (_currentStatus == BleStatus.poweredOff) {
+      if (Platform.isAndroid) {
+        try {
+          final bool? result =
+              await bluetoothChannel.invokeMethod('enableBluetooth');
+          return result ?? false;
+        } catch (e) {
+          debugPrint('Error enabling bluetooth: $e');
+          Get.snackbar(
+            'Bluetooth Error',
+            'Please turn on Bluetooth manually',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return false;
+        }
+      } else {
+        Get.snackbar(
+          'Bluetooth Off',
+          'Please turn on Bluetooth from settings',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    } else if (_currentStatus == BleStatus.unauthorized) {
+      Get.snackbar(
+        'Permission Required',
+        'Bluetooth permission is required for scanning',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } else if (_currentStatus == BleStatus.locationServicesDisabled) {
+      Get.snackbar(
+        'Location Off',
+        'Please turn on Location services for Bluetooth scanning',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+
+    return _currentStatus == BleStatus.ready;
   }
 
   stopScan() {
@@ -278,7 +365,19 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     Color statusColor = Colors.grey;
     IconData statusIcon = Icons.bluetooth_disabled;
 
-    if (_isScanning) {
+    if (_currentStatus == BleStatus.poweredOff) {
+      statusText = "Bluetooth is Powered Off";
+      statusColor = Colors.red;
+      statusIcon = Icons.bluetooth_disabled;
+    } else if (_currentStatus == BleStatus.unauthorized) {
+      statusText = "Bluetooth Permission Denied";
+      statusColor = Colors.red;
+      statusIcon = Icons.security;
+    } else if (_currentStatus == BleStatus.locationServicesDisabled) {
+      statusText = "Location Services Disabled";
+      statusColor = Colors.orange;
+      statusIcon = Icons.location_off;
+    } else if (_isScanning) {
       statusText = "Searching for Devices...";
       statusColor = Colors.blue;
       statusIcon = Icons.search;
@@ -483,6 +582,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
 
   @override
   void dispose() {
+    _statusSubscription?.cancel();
     _scanSubscription?.cancel();
     // disconnect();
     super.dispose();

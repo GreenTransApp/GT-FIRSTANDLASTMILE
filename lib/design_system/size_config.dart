@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:gtlmd/design_system/app_spacing.dart';
 import 'package:gtlmd/design_system/app_text_sizes.dart';
 import 'package:gtlmd/design_system/icons_sizes.dart';
+import 'package:gtlmd/design_system/radius_sizes.dart';
 import 'device_type.dart';
 
 class SizeConfig {
@@ -40,6 +41,12 @@ class SizeConfig {
   static double largeIconSize = 0;
   static double extraLargeIconSize = 0;
 
+  static double smallRadius = 0;
+  static double mediumRadius = 0;
+  static double largeRadius = 0;
+  static double extraLargeRadius = 0;
+  static double extraExtraLargeRadius = 0;
+
   static void init(BuildContext context) {
     final media = MediaQuery.of(context);
 
@@ -74,6 +81,11 @@ class SizeConfig {
     mediumIconSize = getMediumIconSize();
     largeIconSize = getLargeIconSize();
     extraLargeIconSize = getExtraLargeIconSize();
+
+    smallRadius = getSmallRadius();
+    mediumRadius = getMediumRadius();
+    largeRadius = getLargeRadius();
+    extraLargeRadius = getExtraExtraLargeRadius();
   }
 
   /// Base scale only for mobile devices
@@ -438,6 +450,71 @@ class SizeConfig {
         return IconSizes.twentyTwo;
       case DeviceType.tablet:
         return IconSizes.twentyFour;
+    }
+  }
+
+  static double getSmallRadius() {
+    switch (deviceType) {
+      case DeviceType.smallPhone:
+        return RadiusSizes.two;
+      case DeviceType.mediumPhone:
+        return RadiusSizes.four;
+      case DeviceType.largePhone:
+        return RadiusSizes.six;
+      case DeviceType.tablet:
+        return RadiusSizes.eight;
+    }
+  }
+
+  static double getMediumRadius() {
+    switch (deviceType) {
+      case DeviceType.smallPhone:
+        return RadiusSizes.four;
+      case DeviceType.mediumPhone:
+        return RadiusSizes.eight;
+      case DeviceType.largePhone:
+        return RadiusSizes.twelve;
+      case DeviceType.tablet:
+        return RadiusSizes.sixteen;
+    }
+  }
+
+  static double getLargeRadius() {
+    switch (deviceType) {
+      case DeviceType.smallPhone:
+        return RadiusSizes.six;
+      case DeviceType.mediumPhone:
+        return RadiusSizes.twelve;
+      case DeviceType.largePhone:
+        return RadiusSizes.twenty;
+      case DeviceType.tablet:
+        return RadiusSizes.twentyFour;
+    }
+  }
+
+  static double getExtraLargeRadius() {
+    switch (deviceType) {
+      case DeviceType.smallPhone:
+        return RadiusSizes.twelve;
+      case DeviceType.mediumPhone:
+        return RadiusSizes.sixteen;
+      case DeviceType.largePhone:
+        return RadiusSizes.twentyFour;
+      case DeviceType.tablet:
+        return RadiusSizes.thirtyTwo;
+    }
+  }
+
+  static double getExtraExtraLargeRadius() {
+    switch (deviceType) {
+      case DeviceType.smallPhone:
+        return RadiusSizes.twentyFour;
+      case DeviceType.mediumPhone:
+        return RadiusSizes.twentyEight;
+      case DeviceType.largePhone:
+        return RadiusSizes.thirtyTwo;
+      case DeviceType.tablet:
+        return RadiusSizes.thirtySix;
     }
   }
 }
