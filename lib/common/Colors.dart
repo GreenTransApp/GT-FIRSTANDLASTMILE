@@ -56,4 +56,22 @@ class CommonColors {
   static Color? aliceBlue = const Color(0xFFE1E6EF);
   static Color? orange = const Color.fromARGB(255, 241, 137, 1);
   static Color? blue600 = Colors.blue.shade600;
+
+// CHANGE all Color? to Color (non-nullable)
+  static const Color pageBackground = Color.fromARGB(255, 246, 246, 246);
+  static const Color primaryLight = Color.fromARGB(255, 227, 228, 240);
+  static const Color primaryLighter = Color.fromARGB(255, 238, 240, 255);
+  static const Color analytics4H =
+      Color.fromARGB(255, 255, 170, 102); // Soft warm orange
+  static const Color analytics6H =
+      Color.fromARGB(255, 255, 204, 153); // Light peach/gold
+  static const Color analytics24H =
+      Color.fromARGB(255, 255, 153, 170); // Gentle coral
+  static const Color analyticsPost =
+      Color.fromARGB(255, 255, 218, 128); // Muted gold
+
+  static const Color textPrimary = Color.fromARGB(255, 33, 33, 33);
+  static const Color textSecondary = Color.fromARGB(255, 117, 117, 117);
+  static const Color dividerColor = Color.fromARGB(255, 224, 224, 224);
+  static const Color shadow = Color.fromARGB(30, 0, 0, 0);
 }

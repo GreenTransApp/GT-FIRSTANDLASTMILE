@@ -85,7 +85,7 @@ class _TripMisState extends State<TripMis> {
   }
 
   getTripMISList() {
-    final TripMisJsonParams parameters = TripMisJsonParams(
+    final LiveDataJsonParams parameters = LiveDataJsonParams(
         fromdt: convert2SmallDateTime(fromDt.toString()),
         todt: convert2SmallDateTime(toDt.toString()),
         branchname: 'ALL',
