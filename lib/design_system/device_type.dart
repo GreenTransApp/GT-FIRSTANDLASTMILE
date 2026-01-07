@@ -10,6 +10,8 @@ enum DeviceType {
 class DeviceInfo {
   static DeviceType getType(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    debugPrint('Device Width: $width');
+    debugPrint('Device Height: ${MediaQuery.of(context).size.height}');
 
     if (width < 500) return DeviceType.smallPhone;
     if (width < 600) return DeviceType.mediumPhone;

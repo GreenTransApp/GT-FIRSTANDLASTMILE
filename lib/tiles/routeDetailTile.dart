@@ -294,7 +294,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                   ),
                   Visibility(
                       visible: !isConsignVisible,
-                      child: const SizedBox(height: 8)),
+                      child: SizedBox(height: SizeConfig.smallVerticalSpacing)),
                   Visibility(
                     visible: !isConsignVisible && isExpanded,
                     child: Row(
@@ -320,9 +320,10 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.person,
-                                          size: SizeConfig.extraSmallIconSize,
+                                          size: SizeConfig.smallIconSize,
                                           color: CommonColors.colorPrimary,
                                         ),
+                                        const SizedBox(width: 4),
                                         Text(
                                           'Name:',
                                           style: TextStyle(
@@ -433,14 +434,15 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       children: [
                                         Icon(
                                           Icons.route_outlined,
-                                          size: isSmallDevice ? 12 : 16,
+                                          size: SizeConfig.smallIconSize,
                                           color: CommonColors.amber700,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           'Distance:',
                                           style: TextStyle(
-                                            fontSize: isSmallDevice ? 10 : 12,
+                                            fontSize:
+                                                SizeConfig.extraSmallTextSize,
                                             color: CommonColors.black54,
                                           ),
                                         ),
@@ -451,7 +453,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                         '${modelDetail.distance}',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: SizeConfig.smallTextSize,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 1,
@@ -518,8 +521,8 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                   padding: EdgeInsets.only(left: SizeConfig.horizontalPadding),
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.horizontalPadding,
-                        vertical: SizeConfig.verticalPadding),
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallVerticalPadding),
                     decoration: BoxDecoration(
                         color: CommonColors.colorPrimary,
                         borderRadius: BorderRadius.all(
