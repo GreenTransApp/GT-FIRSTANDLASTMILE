@@ -3,8 +3,8 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntry_offlineModel.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/model/undelivery_offlineModel.dart';
-import 'package:gtlmd/pages/widget/offlinePodWidget.dart';
-import 'package:gtlmd/pages/widget/offlineUndeliveryWidget.dart';
+import 'package:gtlmd/widget/offlinePodWidget.dart';
+import 'package:gtlmd/widget/offlineUndeliveryWidget.dart';
 
 class OfflinedrsBottomSheet extends StatefulWidget {
   const OfflinedrsBottomSheet({super.key});

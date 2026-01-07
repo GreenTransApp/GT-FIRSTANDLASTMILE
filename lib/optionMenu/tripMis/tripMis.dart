@@ -7,9 +7,9 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
-import 'package:gtlmd/pages/tripMis/Model/tripMisJsonPramas.dart';
-import 'package:gtlmd/pages/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/pages/tripMis/tripMisViewModel.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
+import 'package:gtlmd/optionMenu/tripMis/tripMisViewModel.dart';
 import 'package:gtlmd/tiles/tripMisTile.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -85,7 +85,7 @@ class _TripMisState extends State<TripMis> {
   }
 
   getTripMISList() {
-    final TripMisJsonParams parameters = TripMisJsonParams(
+    final LiveDataJsonParams parameters = LiveDataJsonParams(
         fromdt: convert2SmallDateTime(fromDt.toString()),
         todt: convert2SmallDateTime(toDt.toString()),
         branchname: 'ALL',

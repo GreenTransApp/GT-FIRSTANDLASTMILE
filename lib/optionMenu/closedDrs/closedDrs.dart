@@ -6,7 +6,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/pages/attendance/models/viewAttendanceModel.dart';
-import 'package:gtlmd/pages/closedDrs/closedDrsViewModel.dart';
+import 'package:gtlmd/optionMenu/closedDrs/closedDrsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 
@@ -16,8 +16,11 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class ClosedDrs extends StatefulWidget {
-   TripModel model;
-   ClosedDrs({super.key,required this.model,});
+  TripModel model;
+  ClosedDrs({
+    super.key,
+    required this.model,
+  });
 
   @override
   State<ClosedDrs> createState() => _ClosedDrsState();
@@ -264,7 +267,8 @@ class _ClosedDrsState extends State<ClosedDrs> {
               //       ),
               //     ),
               //   )
-              Text("Data Not found".toUpperCase(),style:TextStyle(color: CommonColors.colorPrimary))
+              Text("Data Not found".toUpperCase(),
+                  style: TextStyle(color: CommonColors.colorPrimary))
               : Expanded(
                   child: Align(
                       alignment: Alignment.centerRight,

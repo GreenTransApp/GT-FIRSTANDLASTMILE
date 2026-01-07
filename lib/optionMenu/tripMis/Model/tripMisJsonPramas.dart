@@ -1,4 +1,4 @@
-class TripMisJsonParams {
+class LiveDataJsonParams {
   String? fromdt;
   String? todt;
   String? branchname;
@@ -8,7 +8,7 @@ class TripMisJsonParams {
   String? drsno;
   String? cnno;
 
-  TripMisJsonParams({
+  LiveDataJsonParams({
     this.fromdt,
     this.todt,
     this.branchname,
@@ -19,7 +19,7 @@ class TripMisJsonParams {
     this.cnno,
   });
 
-  TripMisJsonParams.fromJson(Map<String, dynamic> json) {
+  LiveDataJsonParams.fromJson(Map<String, dynamic> json) {
     fromdt = json['fromdt'];
     todt = json['todt'];
     branchname = json['branchname'];

@@ -2,20 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
+import 'package:gtlmd/common/commonResponse.dart';
 
-import 'package:gtlmd/pages/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/pages/tripMis/tripMis.dart';
+import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-import '../../common/commonResponse.dart';
+import '../../api/HttpCalls.dart';
 
-class TripMisRepository extends BaseRepository {
-  StreamController<List<TripMisModel>> tripsListData = StreamController();
+class DeliveryPerformanceRepository extends BaseRepository {
+  StreamController<DeliveryPerformanceModel> performanceLiveData =
+      StreamController();
   StreamController<bool> viewDialog = StreamController();
 
-  Future<void> getTripMIS(Map<String, dynamic> params) async {
+  Future<void> getDeliveryPerformanceData(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
@@ -29,13 +29,14 @@ class TripMisRepository extends BaseRepository {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
           for (final entry in entries) {
-            if (entry.key == "Table4") {
+            if (entry.key == "Table7") {
               List<dynamic> list2 = entry.value;
-              List<TripMisModel> resultList = List.generate(
-                  list2.length, (index) => TripMisModel.fromJson(list2[index]));
+              List<DeliveryPerformanceModel> resultList = List.generate(
+                  list2.length,
+                  (index) => DeliveryPerformanceModel.fromJson(list2[index]));
 
-              // var data = resultList;
-              tripsListData.add(resultList);
+              var data = resultList;
+              performanceLiveData.add(resultList[0]);
             }
           }
         } else {

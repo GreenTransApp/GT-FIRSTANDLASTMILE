@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
-import 'package:gtlmd/pages/closedDrs/closedDrsRepository.dart';
+import 'package:gtlmd/optionMenu/closedDrs/closedDrsRepository.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
-
 
 class ClosedDrsViewModel extends BaseViewModel {
   final ClosedDrsRepository _repo = ClosedDrsRepository();
