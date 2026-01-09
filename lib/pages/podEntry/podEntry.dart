@@ -19,7 +19,7 @@ import 'package:gtlmd/pages/podEntry/Model/podEntryModel.dart';
 import 'package:gtlmd/pages/podEntry/Model/stickerModel.dart';
 import 'package:gtlmd/pages/podEntry/podEntryViewModel.dart';
 import 'package:gtlmd/pages/podEntry/podRelationModel.dart';
-import 'package:gtlmd/pages/podEntry/scanAndLoad.dart';
+import 'package:gtlmd/pages/podEntry/scanAndDeliver.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -70,12 +70,16 @@ class _PodEntryState extends State<PodEntry> {
   String? _podFilePath;
   String? _damageImg1FilePath;
   String? _damageImg2FilePath;
-  List<String> _damageImages = [];
+  // List<String> _damageImages = [];
+  List<String> _damageImages = List.empty(growable: true);
   bool isSignRequired = true;
   bool isStampRequired = true;
   PodEntryModel model = PodEntryModel();
-  List<PodRelationsModel> _relations = [];
-  List<ReasonModel> _damageReason = [];
+  // List<PodRelationsModel> _relations = [];
+  // List<ReasonModel> _damageReason = [];
+  List<PodRelationsModel> _relations = List.empty(growable: true);
+  List<ReasonModel> _damageReason = List.empty(growable: true);
+  List<PodStickerModel> _stickerList = List.empty(growable: true);
 
   late FocusNode receivedByFocus;
   late FocusNode receiverMobileNumFocus;
@@ -99,8 +103,8 @@ class _PodEntryState extends State<PodEntry> {
     _podTimeController.text = DateFormat('hh:mm').format(DateTime.now());
     _deliveryDateController.text = /* formatDate(DateTime.now()); */
         DateFormat('dd-MM-yyyy').format(DateTime.now());
-    _deliverPckgsController.text = modelDetail.pcs.toString();
-    _damagedPckgsController.text = "0";
+    // _deliverPckgsController.text = modelDetail.pcs.toString();
+    // _damagedPckgsController.text = "0";
     _deliveryTimeController.text = DateFormat('h:mm a').format(DateTime.now());
     // _deliverByController.text = savedUser.username.toString();
     WidgetsBinding.instance.addPostFrameCallback(
@@ -130,41 +134,44 @@ class _PodEntryState extends State<PodEntry> {
     }
   }
 
+  setPodData(PodEntryModel pod) {
+    _originNameController.text = isNullOrEmpty(pod.origin.toString()) == true
+        ? "Data Not Found"
+        : pod.origin.toString();
+    _destinationNameController.text =
+        isNullOrEmpty(pod.destname.toString()) == true
+            ? "Data Not Found"
+            : pod.destname.toString();
+    _bookingDateController.text =
+        isNullOrEmpty(pod.grdt.toString()) == true ? "" : pod.grdt.toString();
+    _bookingTimeController.text = isNullOrEmpty(pod.picktime.toString()) == true
+        ? ""
+        : pod.picktime.toString();
+    _arrivalDateController.text = pod.receivedt == null
+        ? DateFormat('dd-MM-yyyy').format(DateTime.now())
+        : pod.receivedt.toString();
+    _arrivalTimeController.text = pod.receivetime == null
+        ? "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}"
+        : pod.receivetime.toString();
+    _destinationNameController.text = pod.destname.toString();
+    _receivedByController.text = pod.cnge.toString();
+
+    isSignRequired = pod.sign == "Y" ? true : false;
+    isStampRequired = pod.stamp == "Y" ? true : false;
+    model.sign = 'N';
+    model.stamp = 'N';
+    _totalWeightController.text = '${pod.cweight.toString()} Kg';
+
+    _deliverPckgsController.text = pod.deliverpckgs.toString() ?? "0";
+    _damagedPckgsController.text = pod.damagepckgs.toString() ?? "0";
+  }
+
   setObservers() {
     viewModel.podEntryLiveData.stream.listen((pod) {
       if (pod.commandstatus == 1) {
         setState(() {
           model = pod;
-          _originNameController.text =
-              isNullOrEmpty(pod.origin.toString()) == true
-                  ? "Data Not Found"
-                  : pod.origin.toString();
-          _destinationNameController.text =
-              isNullOrEmpty(pod.destname.toString()) == true
-                  ? "Data Not Found"
-                  : pod.destname.toString();
-          _bookingDateController.text =
-              isNullOrEmpty(pod.grdt.toString()) == true
-                  ? ""
-                  : pod.grdt.toString();
-          _bookingTimeController.text =
-              isNullOrEmpty(pod.picktime.toString()) == true
-                  ? ""
-                  : pod.picktime.toString();
-          _arrivalDateController.text = pod.receivedt == null
-              ? DateFormat('dd-MM-yyyy').format(DateTime.now())
-              : pod.receivedt.toString();
-          _arrivalTimeController.text = pod.receivetime == null
-              ? "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}"
-              : pod.receivetime.toString();
-          _destinationNameController.text = pod.destname.toString();
-          _receivedByController.text = pod.cnge.toString();
-
-          isSignRequired = pod.sign == "Y" ? true : false;
-          isStampRequired = pod.stamp == "Y" ? true : false;
-          model.sign = 'N';
-          model.stamp = 'N';
-          _totalWeightController.text = '${pod.cweight.toString()} Kg';
+          setPodData(model);
         });
       } else {
         if (pod.commandmessage != null) {
@@ -209,6 +216,11 @@ class _PodEntryState extends State<PodEntry> {
         });
         // _showRelationDialog(context, _relations);
       }
+    });
+    viewModel.podStickerLiveData.stream.listen((list) {
+      setState(() {
+        _stickerList = list;
+      });
     });
 
     viewModel.savePodLiveData.stream.listen((resp) {
@@ -763,111 +775,6 @@ class _PodEntryState extends State<PodEntry> {
     _damageImg2FilePath = null;
   }
 
-  List<StickerModel> temporaryStickerList() {
-    return [
-      StickerModel(stickerNo: 'one', isSelected: false),
-      StickerModel(stickerNo: 'two', isSelected: false),
-      StickerModel(stickerNo: 'three', isSelected: false),
-      StickerModel(stickerNo: 'four', isSelected: false),
-      StickerModel(stickerNo: 'five', isSelected: false),
-      StickerModel(stickerNo: 'six', isSelected: false),
-      StickerModel(stickerNo: 'seven', isSelected: false),
-      StickerModel(stickerNo: 'eight', isSelected: false),
-      StickerModel(stickerNo: 'nine', isSelected: false),
-      StickerModel(stickerNo: 'ten', isSelected: false),
-      StickerModel(stickerNo: 'eleven', isSelected: false),
-      StickerModel(stickerNo: 'twelve', isSelected: false),
-      StickerModel(stickerNo: 'thirteen', isSelected: false),
-      StickerModel(stickerNo: 'fourteen', isSelected: false),
-      StickerModel(stickerNo: 'fifteen', isSelected: false),
-      StickerModel(stickerNo: 'sixteen', isSelected: false),
-      StickerModel(stickerNo: 'seventeen', isSelected: false),
-      StickerModel(stickerNo: 'eighteen', isSelected: false),
-      StickerModel(stickerNo: 'nineteen', isSelected: false),
-      StickerModel(stickerNo: 'twenty', isSelected: false),
-      StickerModel(stickerNo: 'twenty-one', isSelected: false),
-      StickerModel(stickerNo: 'twenty-two', isSelected: false),
-      StickerModel(stickerNo: 'twenty-three', isSelected: false),
-      StickerModel(stickerNo: 'twenty-four', isSelected: false),
-      StickerModel(stickerNo: 'twenty-five', isSelected: false),
-      StickerModel(stickerNo: 'twenty-six', isSelected: false),
-      StickerModel(stickerNo: 'twenty-seven', isSelected: false),
-      StickerModel(stickerNo: 'twenty-eight', isSelected: false),
-      StickerModel(stickerNo: 'twenty-nine', isSelected: false),
-      StickerModel(stickerNo: 'thirty', isSelected: false),
-      StickerModel(stickerNo: 'thirty-one', isSelected: false),
-      StickerModel(stickerNo: 'thirty-two', isSelected: false),
-      StickerModel(stickerNo: 'thirty-three', isSelected: false),
-      StickerModel(stickerNo: 'thirty-four', isSelected: false),
-      StickerModel(stickerNo: 'thirty-five', isSelected: false),
-      StickerModel(stickerNo: 'thirty-six', isSelected: false),
-      StickerModel(stickerNo: 'thirty-seven', isSelected: false),
-      StickerModel(stickerNo: 'thirty-eight', isSelected: false),
-      StickerModel(stickerNo: 'thirty-nine', isSelected: false),
-      StickerModel(stickerNo: 'forty', isSelected: false),
-      StickerModel(stickerNo: 'forty-one', isSelected: false),
-      StickerModel(stickerNo: 'forty-two', isSelected: false),
-      StickerModel(stickerNo: 'forty-three', isSelected: false),
-      StickerModel(stickerNo: 'forty-four', isSelected: false),
-      StickerModel(stickerNo: 'forty-five', isSelected: false),
-      StickerModel(stickerNo: 'forty-six', isSelected: false),
-      StickerModel(stickerNo: 'forty-seven', isSelected: false),
-      StickerModel(stickerNo: 'forty-eight', isSelected: false),
-      StickerModel(stickerNo: 'forty-nine', isSelected: false),
-      StickerModel(stickerNo: 'fifty', isSelected: false),
-      StickerModel(stickerNo: 'fifty-one', isSelected: false),
-      StickerModel(stickerNo: 'fifty-two', isSelected: false),
-      StickerModel(stickerNo: 'fifty-three', isSelected: false),
-      StickerModel(stickerNo: 'fifty-four', isSelected: false),
-      StickerModel(stickerNo: 'fifty-five', isSelected: false),
-      StickerModel(stickerNo: 'fifty-six', isSelected: false),
-      StickerModel(stickerNo: 'fifty-seven', isSelected: false),
-      StickerModel(stickerNo: 'fifty-eight', isSelected: false),
-      StickerModel(stickerNo: 'fifty-nine', isSelected: false),
-      StickerModel(stickerNo: 'sixty', isSelected: false),
-      StickerModel(stickerNo: 'sixty-one', isSelected: false),
-      StickerModel(stickerNo: 'sixty-two', isSelected: false),
-      StickerModel(stickerNo: 'sixty-three', isSelected: false),
-      StickerModel(stickerNo: 'sixty-four', isSelected: false),
-      StickerModel(stickerNo: 'sixty-five', isSelected: false),
-      StickerModel(stickerNo: 'sixty-six', isSelected: false),
-      StickerModel(stickerNo: 'sixty-seven', isSelected: false),
-      StickerModel(stickerNo: 'sixty-eight', isSelected: false),
-      StickerModel(stickerNo: 'sixty-nine', isSelected: false),
-      StickerModel(stickerNo: 'seventy', isSelected: false),
-      StickerModel(stickerNo: 'seventy-one', isSelected: false),
-      StickerModel(stickerNo: 'seventy-two', isSelected: false),
-      StickerModel(stickerNo: 'seventy-three', isSelected: false),
-      StickerModel(stickerNo: 'seventy-four', isSelected: false),
-      StickerModel(stickerNo: 'seventy-five', isSelected: false),
-      StickerModel(stickerNo: 'seventy-six', isSelected: false),
-      StickerModel(stickerNo: 'seventy-seven', isSelected: false),
-      StickerModel(stickerNo: 'seventy-eight', isSelected: false),
-      StickerModel(stickerNo: 'seventy-nine', isSelected: false),
-      StickerModel(stickerNo: 'eighty', isSelected: false),
-      StickerModel(stickerNo: 'eighty-one', isSelected: false),
-      StickerModel(stickerNo: 'eighty-two', isSelected: false),
-      StickerModel(stickerNo: 'eighty-three', isSelected: false),
-      StickerModel(stickerNo: 'eighty-four', isSelected: false),
-      StickerModel(stickerNo: 'eighty-five', isSelected: false),
-      StickerModel(stickerNo: 'eighty-six', isSelected: false),
-      StickerModel(stickerNo: 'eighty-seven', isSelected: false),
-      StickerModel(stickerNo: 'eighty-eight', isSelected: false),
-      StickerModel(stickerNo: 'eighty-nine', isSelected: false),
-      StickerModel(stickerNo: 'ninety', isSelected: false),
-      StickerModel(stickerNo: 'ninety-one', isSelected: false),
-      StickerModel(stickerNo: 'ninety-two', isSelected: false),
-      StickerModel(stickerNo: 'ninety-three', isSelected: false),
-      StickerModel(stickerNo: 'ninety-four', isSelected: false),
-      StickerModel(stickerNo: 'ninety-five', isSelected: false),
-      StickerModel(stickerNo: 'ninety-six', isSelected: false),
-      StickerModel(stickerNo: 'ninety-seven', isSelected: false),
-      StickerModel(stickerNo: 'ninety-eight', isSelected: false),
-      StickerModel(stickerNo: 'ninety-nine', isSelected: false),
-      StickerModel(stickerNo: 'hundred', isSelected: false),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -935,14 +842,18 @@ class _PodEntryState extends State<PodEntry> {
                             ),
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(ScanAndLoad(
-                              stickersList: temporaryStickerList(),
-                            ));
-                          },
-                          child: const Icon(
-                            Symbols.qr_code_scanner_rounded,
+                        Visibility(
+                          visible: _stickerList.isNotEmpty,
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(ScanAndLoad(
+                                stickersList: _stickerList,
+                                deliveryDetailModel: modelDetail,
+                              ));
+                            },
+                            child: const Icon(
+                              Symbols.qr_code_scanner_rounded,
+                            ),
                           ),
                         )
                       ],
@@ -1192,7 +1103,7 @@ class _PodEntryState extends State<PodEntry> {
                           // const SizedBox(height: 20),
                           // Delivery Packages
                           _buildFormField(
-                            label: "Delivery Pckgs",
+                            label: "Deliver Pckgs",
                             isRequired: true,
                             icon: Icons.delivery_dining_outlined,
                             child: TextFormField(
@@ -1703,8 +1614,8 @@ class _PodEntryState extends State<PodEntry> {
                             child: Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.largeHorizontalPadding,
-                                  vertical: SizeConfig.largeVerticalPadding),
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: BorderRadius.all(
@@ -1886,9 +1797,9 @@ class _PodEntryState extends State<PodEntry> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: CommonColors.whiteShade,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(12),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                        bottomRight: Radius.circular(SizeConfig.largeRadius),
                       ),
                     ),
                     child: ElevatedButton(
@@ -1899,8 +1810,8 @@ class _PodEntryState extends State<PodEntry> {
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
                         padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.largeHorizontalPadding,
-                            vertical: SizeConfig.largeVerticalPadding),
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(SizeConfig.largeRadius),
