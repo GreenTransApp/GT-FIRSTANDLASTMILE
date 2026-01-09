@@ -14,6 +14,8 @@ class PodEntryModel {
   String? cngr;
   String? cnge;
   String? pckgs;
+  int? damagepckgs;
+  int? deliverpckgs; // added
   double? cweight;
   String? receivedt;
   String? receivetime;
@@ -32,39 +34,42 @@ class PodEntryModel {
   String? dlvboyname;
   String? poddate;
 
-  PodEntryModel(
-      {this.commandstatus,
-      this.commandmessage,
-      this.grno,
-      this.custcode,
-      this.custname,
-      this.orgcode,
-      this.origin,
-      this.destcode,
-      this.destname,
-      this.saletype,
-      this.grdt,
-      this.picktime,
-      this.cngr,
-      this.cnge,
-      this.pckgs,
-      this.cweight,
-      this.receivedt,
-      this.receivetime,
-      this.dlvdt,
-      this.dlvtime,
-      this.name,
-      this.relation,
-      this.phno,
-      this.sign,
-      this.stamp,
-      this.signimage,
-      this.podimage,
-      this.remarks,
-      this.createid,
-      this.drsno,
-      this.dlvboyname,
-      this.poddate});
+  PodEntryModel({
+    this.commandstatus,
+    this.commandmessage,
+    this.grno,
+    this.custcode,
+    this.custname,
+    this.orgcode,
+    this.origin,
+    this.destcode,
+    this.destname,
+    this.saletype,
+    this.grdt,
+    this.picktime,
+    this.cngr,
+    this.cnge,
+    this.pckgs,
+    this.damagepckgs,
+    this.deliverpckgs, // added
+    this.cweight,
+    this.receivedt,
+    this.receivetime,
+    this.dlvdt,
+    this.dlvtime,
+    this.name,
+    this.relation,
+    this.phno,
+    this.sign,
+    this.stamp,
+    this.signimage,
+    this.podimage,
+    this.remarks,
+    this.createid,
+    this.drsno,
+    this.dlvboyname,
+    this.poddate,
+  });
 
   PodEntryModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -82,6 +87,8 @@ class PodEntryModel {
     cngr = json['cngr'];
     cnge = json['cnge'];
     pckgs = json['pckgs'];
+    damagepckgs = json['damagepckgs'];
+    deliverpckgs = json['deliverpckgs']; // added
     cweight = json['cweight'];
     receivedt = json['receivedt'];
     receivetime = json['receivetime'];
@@ -102,39 +109,41 @@ class PodEntryModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['commandstatus'] = this.commandstatus;
-    data['commandmessage'] = this.commandmessage;
-    data['grno'] = this.grno;
-    data['custcode'] = this.custcode;
-    data['custname'] = this.custname;
-    data['orgcode'] = this.orgcode;
-    data['origin'] = this.origin;
-    data['destcode'] = this.destcode;
-    data['destname'] = this.destname;
-    data['saletype'] = this.saletype;
-    data['grdt'] = this.grdt;
-    data['picktime'] = this.picktime;
-    data['cngr'] = this.cngr;
-    data['cnge'] = this.cnge;
-    data['pckgs'] = this.pckgs;
-    data['cweight'] = this.cweight;
-    data['receivedt'] = this.receivedt;
-    data['receivetime'] = this.receivetime;
-    data['dlvdt'] = this.dlvdt;
-    data['dlvtime'] = this.dlvtime;
-    data['name'] = this.name;
-    data['relation'] = this.relation;
-    data['phno'] = this.phno;
-    data['sign'] = this.sign;
-    data['stamp'] = this.stamp;
-    data['signimage'] = this.signimage;
-    data['podimage'] = this.podimage;
-    data['remarks'] = this.remarks;
-    data['createid'] = this.createid;
-    data['drsno'] = this.drsno;
-    data['dlvboyname'] = this.dlvboyname;
-    data['poddate'] = this.poddate;
+    final Map<String, dynamic> data = {};
+    data['commandstatus'] = commandstatus;
+    data['commandmessage'] = commandmessage;
+    data['grno'] = grno;
+    data['custcode'] = custcode;
+    data['custname'] = custname;
+    data['orgcode'] = orgcode;
+    data['origin'] = origin;
+    data['destcode'] = destcode;
+    data['destname'] = destname;
+    data['saletype'] = saletype;
+    data['grdt'] = grdt;
+    data['picktime'] = picktime;
+    data['cngr'] = cngr;
+    data['cnge'] = cnge;
+    data['pckgs'] = pckgs;
+    data['damagepckgs'] = damagepckgs;
+    data['deliverpckgs'] = deliverpckgs; // added
+    data['cweight'] = cweight;
+    data['receivedt'] = receivedt;
+    data['receivetime'] = receivetime;
+    data['dlvdt'] = dlvdt;
+    data['dlvtime'] = dlvtime;
+    data['name'] = name;
+    data['relation'] = relation;
+    data['phno'] = phno;
+    data['sign'] = sign;
+    data['stamp'] = stamp;
+    data['signimage'] = signimage;
+    data['podimage'] = podimage;
+    data['remarks'] = remarks;
+    data['createid'] = createid;
+    data['drsno'] = drsno;
+    data['dlvboyname'] = dlvboyname;
+    data['poddate'] = poddate;
     return data;
   }
 }

@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/podEntry/Model/podEntryModel.dart';
+import 'package:gtlmd/pages/podEntry/Model/stickerModel.dart';
 import 'package:gtlmd/pages/podEntry/podRelationModel.dart';
 import 'package:gtlmd/pages/unDelivery/Model/unDeliveryModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
@@ -17,10 +19,13 @@ class PodEntryRepository extends BaseRepository {
   StreamController<PodEntryModel> podEntryLiveData = StreamController();
   StreamController<List<PodRelationsModel>> podRelationLiveData =
       StreamController();
+  StreamController<List<PodStickerModel>> stickerLiveData = StreamController();
   StreamController<List<ReasonModel>> podDamageReasonLiveData =
       StreamController();
 
   StreamController<UpdateDeliveryModel> savePodLiveData = StreamController();
+  StreamController<UpdateDeliveryModel> updatedstickerLiveData =
+      StreamController();
   // StreamController<UpdateDeliveryModel> savePodOfflineLiveData =
   //     StreamController();
 
@@ -34,15 +39,42 @@ class PodEntryRepository extends BaseRepository {
             await apiGet("${lmdUrl}getPodEntryDetail", params);
 
         if (resp.commandStatus == 1) {
+          // Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          // List<dynamic> list = table.values.first;
+
+          // List<PodEntryModel> resultList = List.generate(
+          //     list.length, (index) => PodEntryModel.fromJson(list[index]));
+          // PodEntryModel response = resultList[0];
+
+          // if (response.commandstatus == 1) {
+          //   podEntryLiveData.add(resultList[0]);
+          // }
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-          List<dynamic> list = table.values.first;
+          Iterable<MapEntry<String, dynamic>> entries = table.entries;
+          for (final entry in entries) {
+            if (entry.key == "Table") {
+              try {
+                List<dynamic> list2 = entry.value;
+                List<PodEntryModel> resultList = List.generate(list2.length,
+                    (index) => PodEntryModel.fromJson(list2[index]));
 
-          List<PodEntryModel> resultList = List.generate(
-              list.length, (index) => PodEntryModel.fromJson(list[index]));
-          PodEntryModel response = resultList[0];
+                // var data = resultList;
+                podEntryLiveData.add(resultList[0]);
+              } catch (e) {
+                debugPrint("Error parsing Table2: $e");
+              }
+            } else if (entry.key == "Table1") {
+              try {
+                List<dynamic> list2 = entry.value;
+                List<PodStickerModel> resultList = List.generate(list2.length,
+                    (index) => PodStickerModel.fromJson(list2[index]));
 
-          if (response.commandstatus == 1) {
-            podEntryLiveData.add(resultList[0]);
+                // var data = resultList;
+                stickerLiveData.add(resultList);
+              } catch (e) {
+                debugPrint("Error parsing Table2: $e");
+              }
+            }
           }
         } else {
           isErrorLiveData.add(resp.commandMessage!);
@@ -120,6 +152,36 @@ class PodEntryRepository extends BaseRepository {
         isErrorLiveData.add(resp.commandMessage!);
       }
       viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> updateScanedSticker(Map<String, dynamic> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+
+    if (hasInternet) {
+      CommonResponse resp = await apiPost("${lmdUrl}UpdatePodSticker", params);
+      viewDialog.add(false);
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<UpdateDeliveryModel> resultList = List.generate(
+            list.length, (index) => UpdateDeliveryModel.fromJson(list[index]));
+        UpdateDeliveryModel response = resultList[0];
+
+        if (response.commandstatus == 1) {
+          updatedstickerLiveData.add(resultList[0]);
+        } else {
+          viewDialog.add(false);
+          isErrorLiveData.add(response.commandmessage ?? "Data Not Found");
+        }
+      } else {
+        viewDialog.add(false);
+        isErrorLiveData.add(resp.commandMessage.toString());
+      }
     } else {
       viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
