@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/profile/widgets/contactInfoCard.dart';
 import 'package:gtlmd/pages/profile/widgets/profileCard.dart';
 
@@ -79,29 +80,39 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSmallDevice = screenWidth <= 360;
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        // padding: const EdgeInsets.fromLTRB(10, 10, 10, 80), // prevents overlap
-        child: Container(
-          padding: EdgeInsets.all(isSmallDevice ? 5 : 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ProfileCard(
-                  context,
-                  isNullOrEmpty(savedLogin.logoimage)
-                      ? ''
-                      : savedLogin.logoimage.toString(),
-                  isSmallDevice),
-              SizedBox(
-                height: isSmallDevice ? 30 : 50,
-              ),
-              ContactInfoCard(context, isSmallDevice),
-              signOut(isSmallDevice)
-            ],
+    return Scaffold(
+      backgroundColor: CommonColors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.mediumHorizontalSpacing,
+                vertical: SizeConfig.mediumVerticalSpacing),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ProfileCard(
+                    context,
+                    isNullOrEmpty(savedLogin.logoimage)
+                        ? ''
+                        : savedLogin.logoimage.toString(),
+                    isSmallDevice),
+                SizedBox(
+                  height: SizeConfig.mediumVerticalSpacing,
+                ),
+                ContactInfoCard(context, isSmallDevice),
+              ],
+            ),
           ),
         ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.paddingOf(context).bottom + 16,
+          left: SizeConfig.horizontalPadding,
+          right: SizeConfig.horizontalPadding,
+        ),
+        child: signOut(isSmallDevice),
       ),
     );
   }

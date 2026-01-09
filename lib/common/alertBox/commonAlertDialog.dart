@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 
 bool isDialogShowing = false;
 void noCallBack() {}
@@ -88,55 +89,127 @@ class _CommonAlertDialogState extends State<CommonAlertDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(title),
-      icon: icon,
-      iconColor: iconColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+      ),
+      backgroundColor: CommonColors.white,
+      surfaceTintColor: CommonColors.white,
+      titlePadding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+      title: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: IconTheme(
+              data: IconThemeData(
+                size: SizeConfig.extraLargeIconSize,
+                color: iconColor,
+              ),
+              child: icon,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: SizeConfig.largeTextSize,
+              color: CommonColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [Text(msg), Text(address)],
-      ),
-      actions: [
-        Column(
-          children: [
-            Divider(
-              color: CommonColors.disableColor,
+        children: [
+          Text(
+            msg,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: SizeConfig.mediumTextSize,
+              color: CommonColors.textSecondary,
+              height: 1.4,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    cancelCallBack.call();
-                    // Navigator.pop(context);
-                    Get.back();
-                  },
-                  child: const Text(
-                    'cancel',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                Container(
-                  height: 30.0,
-                  width: 1.0,
-                  color: CommonColors.disableColor,
-                  margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-                ),
-                TextButton(
-                    onPressed: () {
-                      okayCallBack.call();
-                      // Navigator.pop(context);
-                      Get.back();
-                    },
-                    child: const Text(
-                      'okay',
-                      style: TextStyle(color: Colors.black),
-                    )),
-              ],
+          ),
+          if (address.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              address,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: SizeConfig.smallTextSize,
+                color: CommonColors.textSecondary.withOpacity(0.7),
+              ),
             ),
           ],
-        )
+        ],
+      ),
+      actionsPadding: const EdgeInsets.only(bottom: 24, left: 20, right: 20),
+      actions: [
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  cancelCallBack.call();
+                  Get.back();
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: CommonColors.textSecondary.withOpacity(0.3),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: Text(
+                  'CANCEL',
+                  style: TextStyle(
+                    color: CommonColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: SizeConfig.smallTextSize,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  okayCallBack.call();
+                  Get.back();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CommonColors.colorPrimary,
+                  elevation: 0,
+                  side: BorderSide(
+                    color: CommonColors.colorPrimary!
+                        .withAlpha((0.2 * 255).toInt()),
+                    width: 2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: Text(
+                  'OKAY',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: SizeConfig.smallTextSize,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

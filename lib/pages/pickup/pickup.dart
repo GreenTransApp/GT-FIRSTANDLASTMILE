@@ -11,6 +11,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
@@ -22,9 +23,9 @@ import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/invoiceModel.dart';
 import 'package:gtlmd/pages/pickup/model/pickResp.dart';
 import 'package:gtlmd/pages/pickup/model/pickupDetailModel.dart';
-import 'package:gtlmd/pages/pickup/pickupViewModel.dart';
 import 'package:gtlmd/pages/pickup/model/pinCodeModel.dart';
 import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
+import 'package:gtlmd/pages/pickup/pickupViewModel.dart';
 import 'package:intl/intl.dart';
 
 class Pickup extends StatefulWidget {
@@ -573,7 +574,7 @@ class _PickupState extends State<Pickup> {
               "Invoice #: 1",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             // first row
@@ -581,7 +582,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Invoice No.',
                   isRequired: false,
                   icon: Icons.numbers,
@@ -607,8 +607,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Invoice No",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Invoice No",
+                    ),
                     // validator: (value) {
                     //   if (value == null || value.isEmpty) {
                     //     return 'Please enter Invoice No.';
@@ -629,7 +630,6 @@ class _PickupState extends State<Pickup> {
                     setState(() {});
                   },
                   child: _buildFormField(
-                    isSmallDevice: isSmallDevice,
                     label: 'Invoice Date.',
                     isRequired: false,
                     icon: Icons.numbers,
@@ -646,8 +646,9 @@ class _PickupState extends State<Pickup> {
                       style: TextStyle(
                           color: CommonColors.appBarColor,
                           fontSize: isSmallDevice ? 13 : 14),
-                      decoration: _inputDecoration("Invoice Date",
-                          isSmallDevice: isSmallDevice),
+                      decoration: _inputDecoration(
+                        "Invoice Date",
+                      ),
                       // validator: (value) {
                       //   if (value == null || value.isEmpty) {
                       //     return 'Please enter invoice date';
@@ -667,7 +668,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Packages.',
                   isRequired: false,
                   icon: Icons.numbers,
@@ -698,8 +698,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Invoice No",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Invoice No",
+                    ),
                     // validator: (value) {
                     //   if (value == null || value.isEmpty) {
                     //     return 'Please enter Invoice No';
@@ -878,7 +879,7 @@ class _PickupState extends State<Pickup> {
             // heading
             Text(
               "Invoice #: $index",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             const SizedBox(
               height: 8,
@@ -888,7 +889,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Invoice No.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -915,8 +915,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Invoice No",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Invoice No",
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter invoice no';
@@ -937,7 +938,6 @@ class _PickupState extends State<Pickup> {
                     setState(() {});
                   },
                   child: _buildFormField(
-                    isSmallDevice: isSmallDevice,
                     label: 'Invoice Date.',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -954,8 +954,9 @@ class _PickupState extends State<Pickup> {
                       style: TextStyle(
                           color: CommonColors.appBarColor,
                           fontSize: isSmallDevice ? 13 : 14),
-                      decoration: _inputDecoration("Invoice Date",
-                          isSmallDevice: isSmallDevice),
+                      decoration: _inputDecoration(
+                        "Invoice Date",
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter invoice date';
@@ -975,7 +976,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Packages.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1001,8 +1001,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Invoice No",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Invoice No",
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter packages';
@@ -1016,7 +1017,6 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Invoice Value.',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1041,8 +1041,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Invoice Date",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Invoice Date",
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter invoice value';
@@ -1238,7 +1239,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                   child: _buildFormField(
-                    isSmallDevice: isSmallDevice,
                     label: 'Consignor',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -1293,8 +1293,9 @@ class _PickupState extends State<Pickup> {
                       style: TextStyle(
                           color: CommonColors.appBarColor,
                           fontSize: isSmallDevice ? 13 : 14),
-                      decoration: _inputDecoration("Consignor",
-                          isSmallDevice: isSmallDevice),
+                      decoration: _inputDecoration(
+                        "Consignor",
+                      ),
                       validator: (value) {
                         if (canEditCngr) {
                           if (value == null || value.isEmpty) {
@@ -1315,7 +1316,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Address',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1340,8 +1340,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Address",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Address",
+                    ),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1359,7 +1360,6 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Zip Code',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1376,8 +1376,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Zip Code",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Zip Code",
+                    ),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1400,7 +1401,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'City',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1425,8 +1425,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration:
-                        _inputDecoration("City", isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "City",
+                    ),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1444,7 +1445,6 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Mobile',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1469,8 +1469,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Mobile",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Mobile",
+                    ),
                     validator: (value) {
                       if (canEditCngr) {
                         if (value == null || value.isEmpty) {
@@ -1520,7 +1521,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                   child: _buildFormField(
-                    isSmallDevice: isSmallDevice,
                     label: 'Consignee',
                     isRequired: true,
                     icon: Icons.numbers,
@@ -1573,9 +1573,10 @@ class _PickupState extends State<Pickup> {
                       keyboardType: TextInputType.text,
                       style: TextStyle(
                           color: CommonColors.appBarColor,
-                          fontSize: isSmallDevice ? 13 : 14),
-                      decoration: _inputDecoration("Consignee",
-                          isSmallDevice: isSmallDevice),
+                          fontSize: SizeConfig.mediumTextSize),
+                      decoration: _inputDecoration(
+                        "Consignee",
+                      ),
                       validator: (value) {
                         if (canEditCnge) {
                           if (value == null || value.isEmpty) {
@@ -1596,7 +1597,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Address',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1620,9 +1620,10 @@ class _PickupState extends State<Pickup> {
                     keyboardType: TextInputType.text,
                     style: TextStyle(
                         color: CommonColors.appBarColor,
-                        fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Address",
-                        isSmallDevice: isSmallDevice),
+                        fontSize: SizeConfig.mediumTextSize),
+                    decoration: _inputDecoration(
+                      "Address",
+                    ),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1640,7 +1641,6 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Zip Code',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1657,8 +1657,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Zip Code",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Zip Code",
+                    ),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1681,7 +1682,6 @@ class _PickupState extends State<Pickup> {
               children: [
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'City',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1706,8 +1706,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration:
-                        _inputDecoration("City", isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "City",
+                    ),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1725,7 +1726,6 @@ class _PickupState extends State<Pickup> {
                 ),
                 Expanded(
                     child: _buildFormField(
-                  isSmallDevice: isSmallDevice,
                   label: 'Mobile',
                   isRequired: true,
                   icon: Icons.numbers,
@@ -1750,8 +1750,9 @@ class _PickupState extends State<Pickup> {
                     style: TextStyle(
                         color: CommonColors.appBarColor,
                         fontSize: isSmallDevice ? 13 : 14),
-                    decoration: _inputDecoration("Mobile",
-                        isSmallDevice: isSmallDevice),
+                    decoration: _inputDecoration(
+                      "Mobile",
+                    ),
                     validator: (value) {
                       if (canEditCnge) {
                         if (value == null || value.isEmpty) {
@@ -1907,20 +1908,22 @@ class _PickupState extends State<Pickup> {
           title: Text(
             'Pickup',
             style: TextStyle(
-                color: CommonColors.White, fontSize: isSmallDevice ? 16 : 18),
+                color: CommonColors.White, fontSize: SizeConfig.mediumTextSize),
           ),
           leading: InkWell(
             onTap: () => {Navigator.pop(context)},
             child: Icon(
               Icons.arrow_back,
               color: CommonColors.White,
-              size: isSmallDevice ? 20 : 24,
+              size: SizeConfig.largeIconSize,
             ),
           ),
         ),
         body: SafeArea(
             child: SingleChildScrollView(
-          padding: const EdgeInsets.all(4.0),
+          padding: EdgeInsets.symmetric(
+              vertical: SizeConfig.smallVerticalPadding,
+              horizontal: SizeConfig.smallHorizontalPadding),
           child: Card(
             elevation: 4,
             shape:
@@ -1929,12 +1932,12 @@ class _PickupState extends State<Pickup> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF1F5F9),
+                  padding: EdgeInsets.all(SizeConfig.mediumHorizontalSpacing),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(SizeConfig.largeRadius),
+                      topRight: Radius.circular(SizeConfig.largeRadius),
                     ),
                   ),
                   child: Row(
@@ -1942,13 +1945,13 @@ class _PickupState extends State<Pickup> {
                       Icon(
                         Icons.local_shipping_outlined,
                         color: CommonColors.primaryColorShade!,
-                        size: isSmallDevice ? 18 : 20,
+                        size: SizeConfig.mediumTextSize,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Pickup Information',
                         style: TextStyle(
-                          fontSize: isSmallDevice ? 14 : 16,
+                          fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w600,
                           color: CommonColors.primaryColorShade!,
                         ),
@@ -1958,7 +1961,9 @@ class _PickupState extends State<Pickup> {
                 ),
                 const Divider(height: 1),
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.symmetric(
+                      vertical: SizeConfig.mediumVerticalSpacing,
+                      horizontal: SizeConfig.mediumHorizontalSpacing),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -1969,7 +1974,6 @@ class _PickupState extends State<Pickup> {
                           children: [
                             Expanded(
                               child: _buildFormField(
-                                isSmallDevice: isSmallDevice,
                                 label: "Consignment#",
                                 isRequired: true,
                                 icon: Icons.label_outline,
@@ -1988,12 +1992,14 @@ class _PickupState extends State<Pickup> {
                                   keyboardType: TextInputType.text,
                                   style: TextStyle(
                                       color: CommonColors.appBarColor,
-                                      fontSize: isSmallDevice ? 13 : 14),
+                                      fontSize: SizeConfig.mediumTextSize),
                                   decoration: autoGr
-                                      ? _inputDecoration(autoGrLabel,
-                                          isSmallDevice: isSmallDevice)
-                                      : _inputDecoration("Enter Consignment#",
-                                          isSmallDevice: isSmallDevice),
+                                      ? _inputDecoration(
+                                          autoGrLabel,
+                                        )
+                                      : _inputDecoration(
+                                          "Enter Consignment#",
+                                        ),
                                   validator: (value) {
                                     if (autoGr) {
                                       return null;
@@ -2007,14 +2013,14 @@ class _PickupState extends State<Pickup> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: SizeConfig.mediumVerticalSpacing),
                             Row(
                               children: [
-                                const Text(
+                                Text(
                                   "Auto ",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                      fontSize: SizeConfig.mediumTextSize),
                                 ),
                                 Checkbox(
                                   value: autoGr,
@@ -2029,16 +2035,16 @@ class _PickupState extends State<Pickup> {
                             )
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: SizeConfig.mediumVerticalSpacing),
                         Column(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: EdgeInsets.all(SizeConfig.smallTextSize),
                               decoration: BoxDecoration(
                                   border:
                                       Border.all(color: CommonColors.grey600!),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(12))),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(SizeConfig.largeRadius))),
                               child: Column(
                                 children: [
                                   // const SizedBox(height: 20),
@@ -2047,7 +2053,7 @@ class _PickupState extends State<Pickup> {
                                   // Row(
                                   //   children: [consigneeDetailsCard()],
                                   // ),
-                                  const SizedBox(width: 20),
+                                  SizedBox(width: SizeConfig.mediumTextSize),
                                   Row(
                                     children: [
                                       Expanded(
@@ -2060,7 +2066,6 @@ class _PickupState extends State<Pickup> {
                                             });
                                           },
                                           child: _buildFormField(
-                                            isSmallDevice: isSmallDevice,
                                             label: "Booking Date",
                                             labelColor:
                                                 CommonColors.appBarColor!,
@@ -2073,11 +2078,11 @@ class _PickupState extends State<Pickup> {
                                               style: TextStyle(
                                                   color:
                                                       CommonColors.appBarColor,
-                                                  fontSize:
-                                                      isSmallDevice ? 13 : 14),
+                                                  fontSize: SizeConfig
+                                                      .mediumTextSize),
                                               decoration: _inputDecoration(
-                                                  "Booking Date",
-                                                  isSmallDevice: isSmallDevice),
+                                                "Booking Date",
+                                              ),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -2089,7 +2094,9 @@ class _PickupState extends State<Pickup> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(
+                                          width:
+                                              SizeConfig.mediumVerticalSpacing),
                                       Expanded(
                                         child: InkWell(
                                           onTap: () async {
@@ -2101,7 +2108,6 @@ class _PickupState extends State<Pickup> {
                                             });
                                           },
                                           child: _buildFormField(
-                                            isSmallDevice: isSmallDevice,
                                             label: "Booking Time",
                                             labelColor:
                                                 CommonColors.appBarColor!,
@@ -2115,11 +2121,11 @@ class _PickupState extends State<Pickup> {
                                               style: TextStyle(
                                                   color:
                                                       CommonColors.appBarColor,
-                                                  fontSize:
-                                                      isSmallDevice ? 13 : 14),
+                                                  fontSize: SizeConfig
+                                                      .mediumTextSize),
                                               decoration: _inputDecoration(
-                                                  "Booking Time",
-                                                  isSmallDevice: isSmallDevice),
+                                                "Booking Time",
+                                              ),
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -2133,17 +2139,22 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
 
                                   Card(
                                     // elevation: 8,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(
+                                            SizeConfig.largeRadius),
                                         side: BorderSide(
                                             color: CommonColors.grey400!,
                                             width: 1)),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: SizeConfig.verticalPadding,
+                                          horizontal:
+                                              SizeConfig.horizontalPadding),
                                       child: Column(
                                         children: [
                                           // _buildFormField(
@@ -2234,7 +2245,9 @@ class _PickupState extends State<Pickup> {
                                               },
                                             ),
                                           ),
-                                          const SizedBox(height: 20),
+                                          SizedBox(
+                                              height: SizeConfig
+                                                  .mediumVerticalSpacing),
                                           // _buildFormField(
                                           //   label: 'Origin',
                                           //   isRequired: true,
@@ -2327,12 +2340,14 @@ class _PickupState extends State<Pickup> {
                                     ),
                                   ),
 
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Card(
                                       // elevation: 8,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                            16.0), // Adjust corner radius as needed
+                                            SizeConfig
+                                                .largeRadius), // Adjust corner radius as needed
                                         side: BorderSide(
                                           color: CommonColors
                                               .grey400!, // Border color
@@ -2340,7 +2355,8 @@ class _PickupState extends State<Pickup> {
                                         ),
                                       ),
                                       child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
+                                        padding: EdgeInsets.all(
+                                            SizeConfig.mediumVerticalSpacing),
                                         child: Column(children: [
                                           // _buildFormField(
                                           //   label: 'Destination Pincode',
@@ -2431,7 +2447,9 @@ class _PickupState extends State<Pickup> {
                                               },
                                             ),
                                           ),
-                                          const SizedBox(height: 20),
+                                          SizedBox(
+                                              height: SizeConfig
+                                                  .mediumVerticalSpacing),
                                           // _buildFormField(
                                           //   label: 'Destionation',
                                           //   isRequired: true,
@@ -2522,9 +2540,8 @@ class _PickupState extends State<Pickup> {
                                           ),
                                         ]),
                                       )),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Row(
                                     children: [
                                       Expanded(
@@ -2592,7 +2609,8 @@ class _PickupState extends State<Pickup> {
                                       )
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   _buildFormField(
                                     label: "Bill To Customer",
                                     labelColor: CommonColors.appBarColor!,
@@ -2638,7 +2656,8 @@ class _PickupState extends State<Pickup> {
                                       },
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   _buildFormField(
                                     label: "Department",
                                     labelColor: CommonColors.appBarColor!,
@@ -2683,12 +2702,13 @@ class _PickupState extends State<Pickup> {
                                   ),
 
                                   consignorDetailsCard(),
-                                  const SizedBox(
-                                    width: 12,
+                                  SizedBox(
+                                    width: SizeConfig.smallHorizontalSpacing,
                                   ),
                                   consigneeDetailsCard(),
 
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Row(
                                     children: [
                                       Expanded(
@@ -2766,7 +2786,9 @@ class _PickupState extends State<Pickup> {
                                         //   ),
                                         // ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(
+                                          width: SizeConfig
+                                              .smallHorizontalSpacing),
                                       Expanded(
                                         child: _buildFormField(
                                           label: 'Load Type',
@@ -2810,7 +2832,8 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Row(
                                     children: [
                                       Expanded(
@@ -2839,7 +2862,9 @@ class _PickupState extends State<Pickup> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(
+                                          width: SizeConfig
+                                              .smallHorizontalSpacing),
                                       Expanded(
                                         child: _buildFormField(
                                           label: 'Delivery Type',
@@ -2880,9 +2905,11 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   defaultInvoiceCard(),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics:
@@ -2893,7 +2920,8 @@ class _PickupState extends State<Pickup> {
                                           invoiceList[index], index + 2);
                                     },
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Row(
                                     children: [
                                       Expanded(
@@ -2930,7 +2958,9 @@ class _PickupState extends State<Pickup> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(
+                                          width: SizeConfig
+                                              .mediumHorizontalSpacing),
                                       Expanded(
                                         child: _buildFormField(
                                           label: "Vol. Weight",
@@ -2967,7 +2997,8 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Row(
                                     children: [
                                       Expanded(
@@ -3036,7 +3067,8 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   _buildFormField(
                                     label: 'Remarks',
                                     isRequired: false,
@@ -3052,15 +3084,20 @@ class _PickupState extends State<Pickup> {
                                       maxLines: 3,
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
                                   Container(
-                                    padding: const EdgeInsets.all(8),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: SizeConfig.verticalPadding,
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
                                     decoration: BoxDecoration(
                                         border: Border.all(
                                             color: CommonColors.grey400!,
                                             width: 1),
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(12))),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                                SizeConfig.largeRadius))),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -3071,8 +3108,9 @@ class _PickupState extends State<Pickup> {
                                               Icons.camera_alt_outlined,
                                               color: Colors.black54,
                                             ),
-                                            const SizedBox(
-                                              width: 16,
+                                            SizedBox(
+                                              width: SizeConfig
+                                                  .mediumHorizontalSpacing,
                                             ),
                                             const Text(
                                               "DOCUMENT UPLOAD",
@@ -3110,7 +3148,8 @@ class _PickupState extends State<Pickup> {
                                           ],
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.all(16.0),
+                                          padding: EdgeInsets.all(
+                                              SizeConfig.mediumVerticalSpacing),
                                           child: SizedBox(
                                             height: 200,
                                             width: MediaQuery.sizeOf(context)
@@ -3118,9 +3157,10 @@ class _PickupState extends State<Pickup> {
                                             child: Container(
                                               decoration: BoxDecoration(
                                                   color: CommonColors.grey300,
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(12))),
+                                                  borderRadius: BorderRadius
+                                                      .all(Radius.circular(
+                                                          SizeConfig
+                                                              .largeIconSize))),
                                               child: isNullOrEmpty(
                                                       _itemImagePath)
                                                   ? InkWell(
@@ -3180,14 +3220,15 @@ class _PickupState extends State<Pickup> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 20,
+                                  SizedBox(
+                                    height: SizeConfig.mediumVerticalSpacing,
                                   ),
                                   SizedBox(
                                     width: double.infinity,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical:
+                                              SizeConfig.mediumVerticalSpacing),
                                       child: CommonButton(
                                         color: CommonColors.colorPrimary!,
                                         onTap: () {
@@ -3212,7 +3253,7 @@ class _PickupState extends State<Pickup> {
         )));
   }
 
-  InputDecoration _inputDecoration(String hint, {bool isSmallDevice = false}) {
+  InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hint: Text(
         hint,
@@ -3220,7 +3261,7 @@ class _PickupState extends State<Pickup> {
         maxLines: 1,
         style: TextStyle(
           color: CommonColors.grey400!,
-          fontSize: isSmallDevice ? 12 : 14,
+          fontSize: SizeConfig.smallTextSize,
         ),
       ),
       // hintText: hint,
@@ -3230,26 +3271,27 @@ class _PickupState extends State<Pickup> {
       //   overflow: TextOverflow.ellipsis,
       // ),
       contentPadding: EdgeInsets.symmetric(
-          horizontal: 12, vertical: isSmallDevice ? 12 : 16),
+          horizontal: SizeConfig.mediumHorizontalSpacing,
+          vertical: SizeConfig.mediumVerticalSpacing),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: CommonColors.appBarColor!),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+        borderSide: const BorderSide(color: CommonColors.appBarColor),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: CommonColors.appBarColor!),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+        borderSide: const BorderSide(color: CommonColors.appBarColor),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide:
             BorderSide(color: CommonColors.primaryColorShade!, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1.5),
       ),
     );
@@ -3262,7 +3304,7 @@ Widget _buildFormField({
   required IconData icon,
   required Widget child,
   Color labelColor = const Color(0xFF334155),
-  bool isSmallDevice = false,
+  // bool isSmallDevice = false,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -3270,15 +3312,15 @@ Widget _buildFormField({
       Row(
         children: [
           Icon(icon,
-              size: isSmallDevice ? 14 : 16, color: const Color(0xFF64748B)),
-          const SizedBox(width: 6),
+              size: SizeConfig.largeIconSize, color: const Color(0xFF64748B)),
+          SizedBox(width: SizeConfig.extraSmallHorizontalSpacing),
           Text.rich(
             TextSpan(
               children: [
                 TextSpan(
                   text: label,
                   style: TextStyle(
-                      fontSize: isSmallDevice ? 12 : 14,
+                      fontSize: SizeConfig.smallTextSize,
                       fontWeight: FontWeight.w500,
                       color: labelColor,
                       overflow: TextOverflow.ellipsis),
@@ -3296,7 +3338,7 @@ Widget _buildFormField({
           ),
         ],
       ),
-      const SizedBox(height: 8),
+      SizedBox(height: SizeConfig.smallVerticalSpacing),
       child,
     ],
   );

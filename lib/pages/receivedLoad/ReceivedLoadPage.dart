@@ -8,10 +8,12 @@ import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/receivedLoad/ReceivedLoadViewModel.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 import 'package:gtlmd/tiles/receivedLoadTile.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class ReceivedLoadPage extends StatefulWidget {
@@ -36,9 +38,12 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
   final ReceivedLoadViewModel viewModel = ReceivedLoadViewModel();
   AllotedRouteModel modelDetail = AllotedRouteModel();
   BaseRepository baseRepo = BaseRepository();
+  bool showLoading = false;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
     modelDetail = widget.model;
     for (var i = 0; i < widget.receivedLoadList.length; i++) {
       if (widget.receivedLoadList[i].consignmenttype == 'D') {
@@ -46,10 +51,8 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
       }
     }
 
-    baseRepo.scanBarcode();
     setObservers();
-    // debugPrint(_receivedLoadList.toString());
-    // _receivedLoadList = widget.receivedLoadList;
+    baseRepo.scanBarcode();
   }
 
   @override
@@ -101,13 +104,11 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
     viewModel.routeAcceptLiveData.stream.listen((resp) {
       if (resp.commandstatus == 1) {
         setState(() {
-          var acceptRouteModel = resp;
-          showSuccessAlert(context, "SUCCESSFULLY\n Routes Are Accepted", "",
+          showSuccessAlert(context, "SUCCESSFULLY\n Route Accepted", "",
               okayCallBackForAlert);
-          // successToast("PLANNING ACCEPTED SUCCESSFULLY");
         });
       } else {
-        failToast(resp.commandmessage.toString() ?? "Something went wrong");
+        failToast(resp.commandmessage.toString());
       }
     });
   }
@@ -126,11 +127,6 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
         grnoList.add(actualRouteList[i].grno.toString());
       }
     }
-
-    // if (selected == 0) {
-    //   failToast("Select at least one delivery to accept");
-    //   return;
-    // }
 
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
@@ -152,7 +148,7 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
         "Are you sure you want to 'ACCEPT' route  ",
         //  ' $_currentAddress ' ,
         "",
-        Icon(Icons.dangerous),
+        const Icon(Symbols.check_circle),
         _acceptRoute,
         cancelCallBack: okayCallBackForAlert,
         iconColor: CommonColors.successColor!,
@@ -221,71 +217,108 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
               )),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: CommonColors.colorPrimary,
+          foregroundColor: CommonColors.White,
           onPressed: () {
-            // if (!showScan) {
             setState(() {
               showScan = !showScan;
             });
-            // }
           },
           child: const Icon(Icons.camera_alt_rounded),
         ),
         body: SingleChildScrollView(
-          physics: ScrollPhysics(),
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text("Select All"),
-                    IconButton(
-                      icon: _selectAll
-                          ? Icon(Icons.check_box,
-                              color: CommonColors.colorPrimary)
-                          : const Icon(Icons.check_box_outline_blank),
-                      onPressed: _toggleSelectAll,
-                    ),
-                  ],
-                ),
-                Visibility(
-                  visible: showScan,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: SizedBox(
-                        height: MediaQuery.sizeOf(context).height * 0.2,
-                        child: QRView(
-                            key: qrKey, onQRViewCreated: _onQRViewCreated)),
+          physics: const ScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text("Select All"),
+                  IconButton(
+                    icon: _selectAll
+                        ? Icon(Icons.check_box,
+                            color: CommonColors.colorPrimary)
+                        : const Icon(Icons.check_box_outline_blank),
+                    onPressed: _toggleSelectAll,
                   ),
+                ],
+              ),
+              Visibility(
+                visible: showScan,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
+                  child: SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.2,
+                      child: QRView(
+                          key: qrKey, onQRViewCreated: _onQRViewCreated)),
                 ),
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: _receivedLoadList.length,
-                    itemBuilder: (context, index) {
-                      var data = _receivedLoadList[index];
-                      return ReceivedLoadTile(
-                        model: data,
-                        index: index,
-                        onCheckChange: onCheckChange,
-                      );
-                    })
-              ],
-            ),
+              ),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _receivedLoadList.length,
+                  itemBuilder: (context, index) {
+                    var data = _receivedLoadList[index];
+                    return ReceivedLoadTile(
+                      model: data,
+                      index: index,
+                      onCheckChange: onCheckChange,
+                    );
+                  })
+            ],
           ),
         ),
         persistentFooterButtons: [
+          // SizedBox(
+          //   height: 60,
+          //   child: CommonButton(
+          //       title: "Submit".toUpperCase(),
+          //       color: CommonColors.colorPrimary!,
+          //       onTap: () {
+          //         alterForAccept();
+          //       }),
+          // )
+
           Container(
-            height: 60,
-            child: CommonButton(
-                title: "Submit".toUpperCase(),
-                color: CommonColors.colorPrimary!,
-                onTap: () {
-                  alterForAccept();
-                }),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+                vertical: SizeConfig.verticalPadding,
+                horizontal: SizeConfig.horizontalPadding),
+            decoration: BoxDecoration(
+              color: CommonColors.whiteShade,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                bottomRight: Radius.circular(SizeConfig.largeRadius),
+              ),
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                alterForAccept();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CommonColors.colorPrimary,
+                foregroundColor: CommonColors.White,
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                  fontSize: SizeConfig.smallTextSize,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ),
         ],
       ),

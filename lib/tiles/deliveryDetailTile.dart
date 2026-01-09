@@ -390,24 +390,24 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 Visibility(
                                   visible: status == "Pending" ||
                                       status == "Un-Picked",
-                                  child: SizedBox(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: status == "Pending" ||
+                                              status == "Un-Picked"
+                                          ? CommonColors.colorPrimary
+                                          : CommonColors.grey400,
+                                      borderRadius: BorderRadius.circular(
+                                          SizeConfig.extraLargeRadius),
+                                    ),
                                     width:
                                         SizeConfig.extraLargeHorizontalPadding,
                                     height:
                                         SizeConfig.extraLargeVerticalPadding,
-                                    child: IconButton(
-                                      iconSize: SizeConfig.extraSmallIconSize,
-                                      style: ButtonStyle(
-                                        backgroundColor: status == "Pending" ||
-                                                status == "Un-Picked"
-                                            ? WidgetStatePropertyAll(
-                                                CommonColors.colorPrimary)
-                                            : WidgetStatePropertyAll(
-                                                CommonColors.grey400),
-                                      ),
-                                      onPressed: status == "Pending" ||
-                                              status == "Un-Picked"
-                                          ? () {
+                                    child: Center(
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            if (status == 'Pending' ||
+                                                status == 'Un-Picked') {
                                               if (modelDetail.cngemobile
                                                       .toString()
                                                       .length ==
@@ -438,15 +438,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                                     () {});
                                               }
                                             }
-                                          : null,
-                                      icon: Icon(
-                                        Icons.call_outlined,
-                                        size: SizeConfig.smallIconSize,
-                                        color: status == "Pending"
-                                            ? CommonColors.White
-                                            : CommonColors.grey300,
-                                      ),
-                                      disabledColor: CommonColors.grey200,
+                                          },
+                                          child: Icon(
+                                            Icons.call_outlined,
+                                            color: CommonColors.White,
+                                            size: SizeConfig.smallIconSize,
+                                          )),
                                     ),
                                   ),
                                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailModel.dart';
 
 class ReceivedLoadTile extends StatefulWidget {
@@ -23,7 +24,6 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     modelDetail = widget.model;
   }
@@ -41,11 +41,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      margin: EdgeInsets.symmetric(
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
+      padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       decoration: BoxDecoration(
           border: Border.all(color: CommonColors.colorPrimary!, width: 1),
-          borderRadius: BorderRadius.circular(10)),
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,16 +60,18 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
               Text(
                 modelDetail.grno.toString(),
                 // "GR#",
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: SizeConfig.mediumTextSize,
                 ),
               ),
               Row(
                 children: [
                   Text(
                     "Receive ${modelDetail.pcs.toString()} Pieces: ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: SizeConfig.mediumTextSize),
                   ),
                   Checkbox(
                     value: modelDetail.checked,
@@ -82,9 +88,11 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
             ],
           ),
           const Divider(),
-          const SizedBox(height: 10),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             decoration: BoxDecoration(
               color: CommonColors.grey200,
               borderRadius: BorderRadius.circular(8),
@@ -95,19 +103,20 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                 Flexible(
                   child: Text(
                     modelDetail.address.toString(),
-                    // "address",
                     style: const TextStyle(),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   decoration: BoxDecoration(
                     color: CommonColors.grey200,
                     borderRadius: BorderRadius.circular(8),
@@ -121,14 +130,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                             children: [
                               Icon(
                                 Icons.person,
-                                size: 16,
+                                size: SizeConfig.largeIconSize,
                                 color: CommonColors.colorPrimary,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing),
                               Text(
                                 'Name:',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.black54,
                                 ),
                               ),
@@ -137,10 +147,9 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           Flexible(
                             child: Text(
                               modelDetail.cnge.toString(),
-                              // "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -157,14 +166,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                             children: [
                               Icon(
                                 Icons.phone_android_outlined,
-                                size: 16,
+                                size: SizeConfig.largeIconSize,
                                 color: CommonColors.colorPrimary,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing),
                               Text(
                                 'Mobile No.:',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.black54,
                                 ),
                               ),
@@ -173,10 +183,9 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           Flexible(
                             child: Text(
                               modelDetail.cngemobile.toString(),
-                              // "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -193,14 +202,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                             children: [
                               Icon(
                                 Icons.inventory_2_outlined,
-                                size: 16,
+                                size: SizeConfig.largeIconSize,
                                 color: CommonColors.colorPrimary,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing),
                               Text(
                                 'pcs:',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.black54,
                                 ),
                               ),
@@ -209,10 +219,9 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           Flexible(
                             child: Text(
                               modelDetail.pcs.toString(),
-                              // "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -222,7 +231,7 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: SizeConfig.mediumVerticalSpacing),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -230,14 +239,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                             children: [
                               Icon(
                                 Icons.route_outlined,
-                                size: 16,
+                                size: SizeConfig.largeIconSize,
                                 color: CommonColors.amber700,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing),
                               Text(
                                 'Distance:',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.black54,
                                 ),
                               ),
@@ -246,10 +256,9 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           Flexible(
                             child: Text(
                               '${modelDetail.distance}',
-                              // "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
@@ -259,7 +268,7 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: SizeConfig.mediumVerticalSpacing),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -267,14 +276,15 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                             children: [
                               Icon(
                                 Icons.inventory_2_outlined,
-                                size: 16,
+                                size: SizeConfig.largeIconSize,
                                 color: CommonColors.colorPrimary,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing),
                               Text(
                                 'Type:',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.black54,
                                 ),
                               ),
@@ -283,10 +293,9 @@ class _ReceivedLoadTileState extends State<ReceivedLoadTile> {
                           Flexible(
                             child: Text(
                               '${modelDetail.consignmenttypeview}',
-                              // "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,

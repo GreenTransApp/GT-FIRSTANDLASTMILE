@@ -2,35 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/profile/widgets/profileInfoCard.dart';
 
 Widget ContactInfoCard(BuildContext context, bool isSmallDevice) {
   return Container(
     width: MediaQuery.sizeOf(context).width,
-    padding: EdgeInsets.all(
-        MediaQuery.sizeOf(context).width * (isSmallDevice ? 0.03 : 0.04)),
-    margin: EdgeInsets.all(
-        MediaQuery.sizeOf(context).width * (isSmallDevice ? 0.005 : 0.01)),
+    padding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.mediumHorizontalSpacing,
+        vertical: SizeConfig.mediumVerticalSpacing),
+    margin: EdgeInsets.symmetric(
+        horizontal: SizeConfig.mediumHorizontalSpacing,
+        vertical: SizeConfig.mediumVerticalSpacing),
     decoration: BoxDecoration(
         // shape: BoxShape.circle,
         border: Border.all(color: CommonColors.appBarColor),
-        borderRadius: BorderRadius.circular(16)),
+        borderRadius: BorderRadius.circular(SizeConfig.extraLargeRadius)),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'CONTACT INFORMATION',
           style: TextStyle(
-              fontWeight: FontWeight.w500, fontSize: isSmallDevice ? 14 : 16),
+              fontWeight: FontWeight.w500, fontSize: SizeConfig.mediumTextSize),
         ),
-        const SizedBox(
-          height: 8,
+        SizedBox(
+          height: SizeConfig.mediumVerticalSpacing,
           width: 12,
         ),
         Container(
           height: 1,
           width: MediaQuery.sizeOf(context).width,
-          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width * 0.02),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.smallHorizontalPadding,
+              vertical: SizeConfig.smallVerticalPadding),
           color: CommonColors.grey200,
         ),
         ProfileInfoCard(
@@ -44,7 +49,9 @@ Widget ContactInfoCard(BuildContext context, bool isSmallDevice) {
         Container(
           height: 1,
           width: MediaQuery.sizeOf(context).width,
-          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width * 0.02),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.smallHorizontalPadding,
+              vertical: SizeConfig.smallVerticalPadding),
           color: CommonColors.grey200,
         ),
         ProfileInfoCard(
@@ -58,7 +65,9 @@ Widget ContactInfoCard(BuildContext context, bool isSmallDevice) {
         Container(
           height: 1,
           width: MediaQuery.sizeOf(context).width,
-          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width * 0.02),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.smallHorizontalPadding,
+              vertical: SizeConfig.smallVerticalPadding),
           color: CommonColors.grey200,
         ),
         ProfileInfoCard(

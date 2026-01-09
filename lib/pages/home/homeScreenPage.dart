@@ -14,6 +14,7 @@ import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
@@ -511,12 +512,13 @@ class _HomeScreen extends State<HomeScreen>
 
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: isSmallDevice ? 8 : 16, vertical: isSmallDevice ? 8 : 12),
+          horizontal: SizeConfig.mediumHorizontalSpacing,
+          vertical: SizeConfig.mediumVerticalSpacing),
       margin: EdgeInsets.only(
-          top: 16,
-          bottom: 4,
-          left: isSmallDevice ? 8 : 16,
-          right: isSmallDevice ? 8 : 16),
+          top: SizeConfig.mediumVerticalSpacing,
+          bottom: SizeConfig.smallVerticalSpacing,
+          left: SizeConfig.mediumHorizontalSpacing,
+          right: SizeConfig.mediumHorizontalSpacing),
       decoration: BoxDecoration(
         color: CommonColors.colorPrimary,
         borderRadius: BorderRadius.circular(12),
@@ -541,23 +543,22 @@ class _HomeScreen extends State<HomeScreen>
                       Text(
                         'Current Date',
                         style: TextStyle(
-                          fontSize: isSmallDevice ? 10 : 12,
-                          color: Colors.white70,
+                          fontSize: SizeConfig.mediumTextSize,
+                          color: CommonColors.White,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: SizeConfig.smallVerticalSpacing),
                       Text(
                         formattedDate,
                         style: TextStyle(
-                          fontSize: isSmallDevice ? 12 : 14,
+                          fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                          color: CommonColors.White,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 8),
-                  const SizedBox(width: 8),
+                  SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                   Visibility(
                     visible: ENV.isDebugging,
                     child: GestureDetector(
@@ -565,13 +566,16 @@ class _HomeScreen extends State<HomeScreen>
                         Get.to(const BluetoothScreen());
                       },
                       child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.smallHorizontalSpacing,
+                            vertical: SizeConfig.smallVerticalSpacing),
                         decoration: BoxDecoration(
                           border: Border.all(color: CommonColors.white!),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(Icons.bluetooth,
-                            size: isSmallDevice ? 16 : 24,
-                            color: CommonColors.white),
+                            size: SizeConfig.extraLargeIconSize,
+                            color: CommonColors.White),
                       ),
                     ),
                   )
@@ -602,21 +606,23 @@ class _HomeScreen extends State<HomeScreen>
                       showDatePickerBottomSheet(context, _dateChanged);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(isSmallDevice ? 8 : 12),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.mediumHorizontalSpacing,
+                          vertical: SizeConfig.mediumVerticalSpacing),
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: CommonColors.colorPrimary,
-                          border: Border.all(color: CommonColors.white!)),
+                          border: Border.all(color: CommonColors.White!)),
                       child: Icon(Icons.calendar_today,
-                          size: isSmallDevice ? 14 : 16,
-                          color: CommonColors.white),
+                          size: SizeConfig.largeIconSize,
+                          color: CommonColors.White),
                     ),
                   )
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: SizeConfig.smallVerticalSpacing),
           Visibility(
             visible: employeeid != null,
             child: InkWell(
@@ -629,11 +635,13 @@ class _HomeScreen extends State<HomeScreen>
                 children: [
                   // Punch status indicator with color based on status
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.mediumHorizontalSpacing,
+                        vertical: SizeConfig.mediumVerticalSpacing),
                     decoration: BoxDecoration(
                       color: CommonColors.colorPrimary,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius:
+                          BorderRadius.circular(SizeConfig.largeRadius),
                       border: Border.all(color: Colors.white30),
                     ),
                     child: Row(
@@ -657,7 +665,7 @@ class _HomeScreen extends State<HomeScreen>
                                   .toUpperCase()
                               : "Absent",
                           style: TextStyle(
-                            fontSize: isSmallDevice ? 10 : 12,
+                            fontSize: SizeConfig.mediumTextSize,
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
                           ),
@@ -688,10 +696,10 @@ class _HomeScreen extends State<HomeScreen>
     if (attendanceModel == null) {
       return Scaffold(
           appBar: AppBar(
-            shape: const RoundedRectangleBorder(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                bottomRight: Radius.circular(SizeConfig.largeRadius),
               ),
             ),
             backgroundColor: CommonColors.colorPrimary,
@@ -702,14 +710,15 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Icons.menu,
-                    size: isSmallDevice ? 20 : 24,
+                    size: SizeConfig.mediumIconSize,
                     color: CommonColors.white,
                   ));
             }),
             title: Text(
               'Dashboard',
               style: TextStyle(
-                  color: CommonColors.white, fontSize: isSmallDevice ? 16 : 20),
+                  color: CommonColors.white,
+                  fontSize: SizeConfig.extraLargeIconSize),
             ),
           ),
           drawer: const SideMenu(),
@@ -718,23 +727,23 @@ class _HomeScreen extends State<HomeScreen>
               "data not  found ".toUpperCase(),
               style: TextStyle(
                   color: CommonColors.successColor,
-                  fontSize: isSmallDevice ? 16 : 20),
+                  fontSize: SizeConfig.mediumTextSize),
             ),
           ));
     } else {
       return Scaffold(
           appBar: AppBar(
-            shape: const RoundedRectangleBorder(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                bottomRight: Radius.circular(SizeConfig.largeRadius),
               ),
             ),
             backgroundColor: CommonColors.colorPrimary,
             title: Text(
               'Dashboard',
               style: TextStyle(
-                fontSize: isSmallDevice ? 16 : 20,
+                fontSize: SizeConfig.extraLargeIconSize,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -746,7 +755,7 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Icons.menu,
-                    size: isSmallDevice ? 20 : 24,
+                    size: SizeConfig.largeIconSize,
                     color: CommonColors.white,
                   ));
             }),
@@ -773,37 +782,15 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Symbols.autorenew_rounded,
-                    size: isSmallDevice ? 16 : 24,
+                    size: SizeConfig.largeIconSize,
                     color: CommonColors.white,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
             ],
           ),
           extendBody: true,
-          // bottomNavigationBar: BottomNavigationBar(
-          //   // type: BottomNavigationBarType.fixed,
-          //   backgroundColor: CommonColors.white,
-          //   currentIndex: _selectedIndex,
-          //   selectedItemColor: CommonColors.colorPrimary,
-          //   unselectedItemColor: CommonColors.grey600,
-          //   onTap: (value) {
-          //     setState(() {
-          //       _selectedIndex = value;
-          //       _pageController.jumpToPage(value);
-          //     });
-          //   },
-          //   items: const [
-          //     BottomNavigationBarItem(icon: Icon(Icons.route), label: 'ROUTES'),
-          //     BottomNavigationBarItem(
-          //         icon: Icon(Symbols.package_2), label: 'ORDERS'),
-          //     BottomNavigationBarItem(
-          //         icon: Icon(Symbols.delivery_truck_bolt), label: 'TRIPS'),
-          //     BottomNavigationBarItem(
-          //         icon: Icon(Icons.account_circle_rounded), label: 'PROFILE'),
-          //   ],
-          // ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: _selectedIndex,
             onDestinationSelected: (value) {
@@ -824,39 +811,40 @@ class _HomeScreen extends State<HomeScreen>
                 .withAlpha((0.15 * 255).toInt()), // light background
             destinations: [
               NavigationDestination(
-                icon: Icon(Icons.route, size: isSmallDevice ? 16 : 24),
+                icon: Icon(Icons.route, size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
                   Icons.route,
-                  size: isSmallDevice ? 16 : 24,
+                  size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "ROUTES",
               ),
               NavigationDestination(
-                icon: Icon(Symbols.package_2, size: isSmallDevice ? 16 : 24),
+                icon: Icon(Symbols.package_2,
+                    size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
                   Symbols.package_2,
-                  size: isSmallDevice ? 16 : 24,
+                  size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "CREATE TRIP",
               ),
               NavigationDestination(
                 icon: Icon(Symbols.delivery_truck_bolt,
-                    size: isSmallDevice ? 16 : 24),
+                    size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
                   Symbols.delivery_truck_bolt,
-                  size: isSmallDevice ? 16 : 24,
+                  size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "TRIPS",
               ),
               NavigationDestination(
-                icon: Icon(Icons.account_circle_outlined,
-                    size: isSmallDevice ? 16 : 24),
+                icon: Icon(Symbols.person_rounded,
+                    size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
-                  Icons.account_circle_outlined,
-                  size: isSmallDevice ? 16 : 24,
+                  Symbols.person_rounded,
+                  size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "PROFILE",

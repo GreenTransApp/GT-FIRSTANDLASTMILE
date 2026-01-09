@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 
 Widget ProfileInfoCard(
     String title,
@@ -14,9 +15,11 @@ Widget ProfileInfoCard(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
-          width: isSmallDevice ? 32 : 40,
-          height: isSmallDevice ? 32 : 40,
-          padding: const EdgeInsets.all(4),
+          width: isSmallDevice ? 30 : 40,
+          height: isSmallDevice ? 30 : 40,
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.smallHorizontalPadding,
+              vertical: SizeConfig.smallVerticalPadding),
           decoration: BoxDecoration(
               color: iconBackground,
               // border: Border.all(),
@@ -26,8 +29,8 @@ Widget ProfileInfoCard(
             color: iconColor,
           ),
         ),
-        const SizedBox(
-          width: 8,
+        SizedBox(
+          width: SizeConfig.smallHorizontalSpacing,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,14 +39,14 @@ Widget ProfileInfoCard(
               title,
               style: TextStyle(
                   fontWeight: FontWeight.w300,
-                  fontSize: isSmallDevice ? 10 : 12),
+                  fontSize: SizeConfig.smallTextSize),
             ),
             const SizedBox(height: 4),
             Text(
               value,
               style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: isSmallDevice ? 11 : 13),
+                  fontSize: SizeConfig.smallTextSize),
             ),
           ],
         )

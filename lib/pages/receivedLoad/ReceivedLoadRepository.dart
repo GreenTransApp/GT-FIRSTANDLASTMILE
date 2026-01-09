@@ -1,8 +1,6 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-
 
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/routes/routeDetail/Model/routeDetailUpdateModel.dart';
@@ -13,13 +11,12 @@ import 'package:gtlmd/api/HttpCalls.dart';
 
 import '../../base/BaseRepository.dart';
 
+class ReceivedLoadRepository extends BaseRepository {
+  StreamController<RouteUpdateModel> routeAcceptList = StreamController();
+  StreamController<bool> loadingDialog = StreamController();
 
-class  ReceivedLoadRepository extends  BaseRepository{
-StreamController<RouteUpdateModel> routeAcceptList = StreamController();
-  
-
-   Future<void> updateDetailOnAccept(Map<String, String> params) async {
-    viewDialog.add(true);
+  Future<void> updateDetailOnAccept(Map<String, String> params) async {
+    loadingDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
@@ -28,6 +25,7 @@ StreamController<RouteUpdateModel> routeAcceptList = StreamController();
 
         CommonResponse resp =
             await apiPost("${lmdUrl}AcceptRouteWithConsignmentNo", params);
+        loadingDialog.add(false);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -42,17 +40,16 @@ StreamController<RouteUpdateModel> routeAcceptList = StreamController();
         } else {
           isErrorLiveData.add(resp.commandMessage!);
         }
-        viewDialog.add(false);
       } on SocketException catch (_) {
         isErrorLiveData.add("No Internet");
-        viewDialog.add(false);
+        loadingDialog.add(false);
       } catch (err) {
         isErrorLiveData.add(err.toString());
-        viewDialog.add(false);
+        loadingDialog.add(false);
       }
-      viewDialog.add(false);
+      // loadingDialog.add(false);
     } else {
-      viewDialog.add(false);
+      loadingDialog.add(false);
       isErrorLiveData.add("No Internet available");
     }
   }

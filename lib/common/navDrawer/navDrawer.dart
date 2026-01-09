@@ -4,12 +4,14 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformancePage.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -18,29 +20,14 @@ class SideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isSmallDevice = screenWidth <= 360;
-    // final authService = AuthenticationService();
-
-    void _logout(BuildContext context) {
-      authService.storageClear();
-      Routes.goToPage(RoutesName.login, "Login");
-    }
-
-    void _updateScreen(BuildContext context) {
-      authService.storageClear();
-      Routes.goToPage(RoutesName.update, "Update");
-    }
 
     okayCallBack() {
       Future.delayed(Duration.zero, () {
-        // Get.off(const LoginPage());
-        // authService.storageRemove(ENV.userPrefTag);
-        // authService.storageRemove(ENV.loginPrefTag);
         authService.logout(context);
       });
     }
 
     void cancelPopup() {
-      // Navigator.pop(context);
       Get.back();
     }
 
@@ -50,119 +37,165 @@ class SideMenu extends StatelessWidget {
           cancelCallBack: cancelPopup);
     }
 
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-              child: Container(
-            decoration: BoxDecoration(
-                color: CommonColors.colorPrimary,
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: ListTile(
-              leading: CircleAvatar(
-                radius: isSmallDevice ? 22 : 25,
-                backgroundColor: CommonColors.dangerColor,
-                child: Image.network(
-                  savedLogin.logoimage.toString(),
-                  errorBuilder: (context, error, stackTrace) {
-                    return CircleAvatar(
-                      backgroundImage:
-                          AssetImage("assets/images/defaultimage.png"),
-                      radius: isSmallDevice ? 30 : 35,
-                    );
-                  },
-                  fit: BoxFit.fill,
-                ),
-              ),
+    final currentRoute = Get.currentRoute;
 
-//  CircleAvatar(
-//                 backgroundImage: AssetImage(
-//                    ),
-//                 radius: 40,
-//               ),
-              title: Text(
-                savedLogin.compname ?? "Data Not Found",
-                style: TextStyle(
-                    color: CommonColors.white,
-                    fontSize: isSmallDevice ? 14 : 16),
-              ),
-              subtitle: Text(savedUser.username ?? "Data Not Found",
-                  style: TextStyle(
-                      color: CommonColors.white,
-                      fontSize: isSmallDevice ? 12 : 14)),
+    return Drawer(
+      backgroundColor: CommonColors.white ?? Colors.white,
+      child: Column(
+        children: [
+          // Modern Header with Gradient
+          Container(
+            padding: EdgeInsets.only(
+              top: MediaQuery.paddingOf(context).top + 20,
+              bottom: 20,
+              left: SizeConfig.horizontalPadding,
+              right: SizeConfig.horizontalPadding,
             ),
-          )),
-          SideMenuItem(
-              isSmallDevice: isSmallDevice,
-              title: 'DashBoard',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/dashboards.png')),
-              press: () {
-                // Get.to(HomeScreen());
-                Navigator.pop(context);
-              }),
-          const Divider(
-            thickness: 1,
-          ),
-          Visibility(
-            visible: employeeid != null,
-            child: Column(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  CommonColors.colorPrimary ?? const Color(0xFF2934AB),
+                  (CommonColors.colorPrimary ?? const Color(0xFF2934AB))
+                      .withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
               children: [
-                SideMenuItem(
-                    isSmallDevice: isSmallDevice,
-                    title: 'View Attendance',
-                    leadingIcon: const ImageIcon(
-                        AssetImage('assets/images/attendance.png')),
-                    press: () {
-                      Get.to(const AttendanceScreen());
-                    }),
-                const Divider(
-                  thickness: 1,
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color:
+                        (CommonColors.white ?? Colors.white).withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircleAvatar(
+                    radius: SizeConfig.extraLargeRadius * 0.8,
+                    backgroundColor: CommonColors.white ?? Colors.white,
+                    child: ClipOval(
+                      child: Image.network(
+                        savedLogin.logoimage.toString(),
+                        width: SizeConfig.extraLargeRadius * 1.6,
+                        height: SizeConfig.extraLargeRadius * 1.6,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            "assets/icon.png",
+                            fit: BoxFit.contain,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        savedUser.displayusername!,
+                        style: TextStyle(
+                          color: CommonColors.white ?? Colors.white,
+                          fontSize: SizeConfig.mediumTextSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        savedUser.username ?? "User",
+                        style: TextStyle(
+                          color: (CommonColors.white ?? Colors.white)
+                              .withOpacity(0.8),
+                          fontSize: SizeConfig.smallTextSize,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          SideMenuItem(
-              isSmallDevice: isSmallDevice,
-              title: 'Closed Trips',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/truck.png')),
-              press: () {
-                Get.to(const CloseTrip());
-              }),
-          const Divider(
-            thickness: 1,
+          const SizedBox(height: 12),
+          // Navigation Items
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Dashboard',
+                    isSelected: currentRoute == RoutesName.home,
+                    leadingIcon: const Icon(Symbols.dashboard_rounded),
+                    press: () {
+                      Navigator.pop(context);
+                      if (currentRoute != RoutesName.home) {
+                        Routes.goToPage(RoutesName.home, "Dashboard");
+                      }
+                    },
+                  ),
+                  if (employeeid != null) ...[
+                    SideMenuItem(
+                      isSmallDevice: isSmallDevice,
+                      title: 'View Attendance',
+                      leadingIcon: const ImageIcon(
+                          AssetImage('assets/images/attendance.png')),
+                      press: () {
+                        Navigator.pop(context);
+                        Get.to(const AttendanceScreen());
+                      },
+                    ),
+                  ],
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Closed Trips',
+                    leadingIcon: const Icon(Symbols.no_crash_rounded),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(const CloseTrip());
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Trip MIS',
+                    leadingIcon: const Icon(Symbols.cognition_2_rounded),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(const TripMis());
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Delivery Performance',
+                    leadingIcon: const Icon(Symbols.analytics),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(const DeliveryPerformancePage());
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
+          // Bottom Actions
+          const Divider(height: 1),
           SideMenuItem(
-              isSmallDevice: isSmallDevice,
-              title: 'Trip MIS',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/truck.png')),
-              press: () {
-                Get.to(const TripMis());
-              }),
-          const Divider(
-            thickness: 1,
+            isSmallDevice: isSmallDevice,
+            title: 'Log-Out',
+            leadingIcon: const Icon(Symbols.logout_rounded),
+            press: () {
+              logout();
+            },
           ),
-          SideMenuItem(
-              isSmallDevice: isSmallDevice,
-              title: 'Delivery Performance',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/truck.png')),
-              press: () {
-                Get.to(const DeliveryPerformancePage());
-              }),
-          const Divider(
-            thickness: 1,
-          ),
-          SideMenuItem(
-              isSmallDevice: isSmallDevice,
-              title: 'Log-Out',
-              leadingIcon:
-                  const ImageIcon(AssetImage('assets/images/exit.png')),
-              press: () {
-                logout();
-              }),
+          SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
         ],
       ),
     );
