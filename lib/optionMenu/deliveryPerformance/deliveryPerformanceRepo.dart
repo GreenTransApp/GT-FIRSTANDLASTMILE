@@ -6,6 +6,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
+import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 import '../../api/HttpCalls.dart';
@@ -29,14 +30,25 @@ class DeliveryPerformanceRepository extends BaseRepository {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
           for (final entry in entries) {
+            if (entry.key == "Table") {
+              List<dynamic> list = entry.value;
+              List<UpsertTripResponseModel> resultList = List.generate(
+                  list.length,
+                  (index) => UpsertTripResponseModel.fromJson(list[index]));
+              if (resultList.isNotEmpty &&
+                  resultList.first.commandstatus == -1) {
+                isErrorLiveData.add(resultList.first.commandmessage.toString());
+              }
+            }
             if (entry.key == "Table7") {
               List<dynamic> list2 = entry.value;
               List<DeliveryPerformanceModel> resultList = List.generate(
                   list2.length,
                   (index) => DeliveryPerformanceModel.fromJson(list2[index]));
 
-              var data = resultList;
-              performanceLiveData.add(resultList[0]);
+              if (resultList.isNotEmpty) {
+                performanceLiveData.add(resultList[0]);
+              }
             }
           }
         } else {

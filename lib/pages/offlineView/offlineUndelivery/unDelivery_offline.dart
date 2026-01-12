@@ -7,6 +7,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/utils.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/model/undelivery_offlineModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
@@ -87,7 +88,8 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF64748B)),
+            Icon(icon,
+                size: SizeConfig.largeIconSize, color: const Color(0xFF64748B)),
             const SizedBox(width: 6),
             Text.rich(
               TextSpan(
@@ -95,7 +97,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: SizeConfig.smallTextSize,
                       fontWeight: FontWeight.w500,
                       color: CommonColors.darkCyanBlue!,
                     ),
@@ -113,7 +115,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: SizeConfig.verticalPadding),
         child,
       ],
     );
@@ -123,26 +125,28 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
     return InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: CommonColors.grey400!),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide:
             BorderSide(color: CommonColors.primaryColorShade!, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1.5),
       ),
     );
@@ -210,7 +214,10 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Existing GR"),
+            title: Text("Existing GR",
+                style: TextStyle(
+                    fontSize: SizeConfig.mediumTextSize,
+                    fontWeight: FontWeight.w600)),
             icon: const Icon(Icons.warning_amber_rounded),
             iconColor: CommonColors.dangerColor,
             content: Column(
@@ -318,10 +325,10 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
         backgroundColor: CommonColors.colorPrimary,
         foregroundColor: CommonColors.White,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Report Undelivery',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: SizeConfig.mediumTextSize,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -334,17 +341,21 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF1F5F9),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(SizeConfig.largeRadius),
+                      topRight: Radius.circular(SizeConfig.largeRadius),
                     ),
                   ),
                   child: Row(
@@ -352,13 +363,13 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                       Icon(
                         Icons.local_shipping_outlined,
                         color: CommonColors.primaryColorShade!,
-                        size: 20,
+                        size: SizeConfig.mediumTextSize,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: SizeConfig.smallHorizontalSpacing),
                       Text(
                         'UnDelivery Information',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w600,
                           color: CommonColors.primaryColorShade!,
                         ),
@@ -367,7 +378,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                   ),
                 ),
                 const Divider(height: 1),
-                const SizedBox(height: 20),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
                 // Date and Time row
                 Row(
@@ -403,12 +414,16 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 15),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          SizeConfig.smallHorizontalSpacing,
+                                      vertical:
+                                          SizeConfig.smallVerticalSpacing),
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: CommonColors.grey300!),
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(
+                                        SizeConfig.largeRadius),
                                   ),
                                   child: Row(
                                     mainAxisAlignment:
@@ -417,7 +432,9 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                                       Text(
                                         _unDeliverDateController.text
                                             .toString(),
-                                        style: const TextStyle(fontSize: 16),
+                                        style: TextStyle(
+                                            fontSize:
+                                                SizeConfig.mediumTextSize),
                                       ),
                                       Icon(Icons.calendar_month,
                                           color: CommonColors.black54),
@@ -426,7 +443,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                                 ),
                               )),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: SizeConfig.smallHorizontalSpacing),
                     Expanded(
                       child: Expanded(
                         child: _buildFormField(
@@ -438,12 +455,14 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                               _selectTime(context);
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.smallHorizontalSpacing,
+                                  vertical: SizeConfig.smallVerticalSpacing),
                               decoration: BoxDecoration(
                                 border:
                                     Border.all(color: CommonColors.grey300!),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(
+                                    SizeConfig.largeRadius),
                               ),
                               child: Row(
                                 mainAxisAlignment:
@@ -451,7 +470,8 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                                 children: [
                                   Text(
                                     _unDeliveryTimeController.text.toString(),
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize),
                                   ),
                                   Icon(Icons.access_time,
                                       color: CommonColors.black54),
@@ -464,7 +484,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
                 _buildFormField(
                   label: "Consignment Number",
@@ -487,7 +507,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     },
                   ),
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                 Visibility(
                   visible: grUnDeliveryExists,
@@ -497,8 +517,8 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                         Icons.warning_outlined,
                         color: CommonColors.dangerColor,
                       ),
-                      const SizedBox(
-                        width: 10,
+                      SizedBox(
+                        width: SizeConfig.smallHorizontalSpacing,
                       ),
                       Text(
                         'Undelivery for GR number already exist.',
@@ -509,7 +529,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                 ),
                 Visibility(
                   visible: grUnDeliveryExists,
-                  child: const SizedBox(height: 20),
+                  child: SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 ),
 
                 // Reason
@@ -541,7 +561,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 // Action
                 _buildFormField(
                   label: 'Action',
@@ -570,7 +590,7 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 _buildFormField(
                   label: 'Remarks',
                   isRequired: false,
@@ -586,9 +606,10 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     maxLines: 3,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding),
                   child: InkWell(
                     onTap: () {
                       showImagePickerDialog(
@@ -608,12 +629,13 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     },
                     child: Container(
                       alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
                       decoration: BoxDecoration(
                           color: CommonColors.primaryColorShade,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeRadius))),
                       child: Text("Upload UnDelivery Image",
                           style: TextStyle(
                               color: CommonColors.White,
@@ -629,14 +651,16 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
                         child: Text.rich(
                           TextSpan(
                             children: [
                               TextSpan(
                                 text: "UnDelivery Image",
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   fontWeight: FontWeight.w500,
                                   color: CommonColors.darkCyanBlue!,
                                 ),
@@ -655,11 +679,13 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                       Container(
                         height: 150,
                         width: MediaQuery.sizeOf(context).width,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding),
+                        margin: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(5)),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeRadius)),
                           border: Border.all(
                               width: 1, color: CommonColors.colorPrimary!),
                         ),
@@ -680,12 +706,14 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   decoration: BoxDecoration(
                     color: CommonColors.whiteShade,
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                      bottomRight: Radius.circular(SizeConfig.largeRadius),
                     ),
                   ),
                   child: ElevatedButton(
@@ -695,16 +723,18 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: CommonColors.primaryColorShade,
                       foregroundColor: CommonColors.White,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(
+                          vertical: SizeConfig.verticalPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius:
+                            BorderRadius.circular(SizeConfig.largeRadius),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Submit Undelivery',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: SizeConfig.mediumTextSize,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

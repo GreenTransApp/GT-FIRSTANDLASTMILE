@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:get/get.dart';
+import 'dart:ui';
+
+import 'package:gtlmd/design_system/size_config.dart';
 
 class LoadingAlertService {
   late BuildContext context;
@@ -49,53 +52,87 @@ class LoadingAlertService {
 class __LoadingAlert extends StatelessWidget {
   final VoidCallback cancelCallBack;
 
-  __LoadingAlert({required this.cancelCallBack});
+  const __LoadingAlert({required this.cancelCallBack});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isSmallDevice = screenWidth <= 360;
-
-    // return AlertDialog(
-    //   shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(15.0),
-    //       side: BorderSide(color: CommonColors.colorPrimary!, width: 1.5)),
-    //   title: Column(
-    //     children: [
-    //       Padding(
-    //         padding: EdgeInsets.symmetric(vertical: isSmallDevice ? 8 : 10),
-    //         child: Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-    //           children: [
-    //             SizedBox(
-    //               width: isSmallDevice ? 20 : 24,
-    //               height: isSmallDevice ? 20 : 24,
-    //               child: CircularProgressIndicator(
-    //                 color: CommonColors.colorPrimary,
-    //                 strokeWidth: isSmallDevice ? 2.5 : 3.0,
-    //               ),
-    //             ),
-    //             Text(
-    //               'Loading...',
-    //               style: TextStyle(
-    //                   fontSize: isSmallDevice ? 13 : 15,
-    //                   fontWeight: FontWeight.bold),
-    //             )
-    //           ],
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-    return Center(
-      child: Container(
-        color: Colors.transparent.withAlpha(5),
-        child: SizedBox(
-          width: isSmallDevice ? 24 : 40,
-          height: isSmallDevice ? 24 : 40,
-          child: CircularProgressIndicator(
-            color: CommonColors.colorPrimary,
-            strokeWidth: isSmallDevice ? 2.5 : 4.0,
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(
+              vertical: SizeConfig.largeVerticalPadding,
+              horizontal: SizeConfig.largeHorizontalPadding),
+          padding: EdgeInsets.symmetric(
+              vertical: SizeConfig.largeVerticalPadding,
+              horizontal: SizeConfig.largeHorizontalPadding),
+          decoration: BoxDecoration(
+            color: CommonColors.White,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha((0.1 * 255).toInt()),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+            border: Border.all(
+              color: CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: SizeConfig.largeHorizontalSpacing,
+                    height: SizeConfig.largeVerticalSpacing,
+                    child: CircularProgressIndicator(
+                      color: CommonColors.colorPrimary!
+                          .withAlpha((0.2 * 255).toInt()),
+                      strokeWidth: 3,
+                      value: 1.0, // Background circle
+                    ),
+                  ),
+                  SizedBox(
+                    width: SizeConfig.largeHorizontalSpacing,
+                    height: SizeConfig.largeVerticalSpacing,
+                    child: CircularProgressIndicator(
+                      color: CommonColors.colorPrimary,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  Icon(
+                    Icons.sync,
+                    color: CommonColors.colorPrimary,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                ],
+              ),
+              SizedBox(height: SizeConfig.mediumVerticalSpacing),
+              Text(
+                'Please wait...',
+                style: TextStyle(
+                  fontSize: SizeConfig.mediumTextSize,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Processing your request',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: SizeConfig.smallTextSize,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ),
         ),
       ),

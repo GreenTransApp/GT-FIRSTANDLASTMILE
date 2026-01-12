@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/textFormatter/upperCaseTextFormatter.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:intl/intl.dart';
 
 class DatePicker extends StatefulWidget {
@@ -62,9 +63,9 @@ class _DatePickerState extends State<DatePicker> {
       );
 
       if (pickedDate != null) {
-        print(pickedDate);
+        // print(pickedDate);
         String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-        print(formattedDate);
+        // print(formattedDate);
         setState(() {
           fromDateController.text = formattedDate;
           fromDt = pickedDate.toString();
@@ -95,9 +96,9 @@ class _DatePickerState extends State<DatePicker> {
       );
 
       if (dropDate != null) {
-        print(dropDate);
+        // print(dropDate);
         String formattedDate = DateFormat('dd-MM-yyyy').format(dropDate);
-        print(formattedDate);
+        // print(formattedDate);
         setState(() {
           toDateController.text = formattedDate;
           toDt = dropDate.toString();
@@ -145,10 +146,10 @@ class _DatePickerState extends State<DatePicker> {
             style: TextStyle(
                 color: CommonColors.appBarColor.withAlpha((0.6 * 255).toInt()),
                 fontWeight: FontWeight.w600,
-                fontSize: 24),
+                fontSize: SizeConfig.largeTextSize),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: SizeConfig.smallVerticalSpacing),
           Text(
             'Choose your start and end dates',
             style: TextStyle(
@@ -159,13 +160,17 @@ class _DatePickerState extends State<DatePicker> {
             children: [
               Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                            vertical: SizeConfig.smallVerticalPadding),
                         child: Text.rich(
                           TextSpan(
                             text: 'FROM DATE',
@@ -190,17 +195,20 @@ class _DatePickerState extends State<DatePicker> {
                         obscureText: false,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
@@ -226,13 +234,17 @@ class _DatePickerState extends State<DatePicker> {
               ),
               Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                            vertical: SizeConfig.smallVerticalPadding),
                         child: Text.rich(
                             TextSpan(text: 'TO DATE', children: <InlineSpan>[
                           TextSpan(
@@ -250,17 +262,20 @@ class _DatePickerState extends State<DatePicker> {
                         obscureText: false,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
                           disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius:
+                                BorderRadius.circular(SizeConfig.largeRadius),
                             borderSide: const BorderSide(
                                 width: 0.5, color: Colors.grey),
                           ),
@@ -286,7 +301,7 @@ class _DatePickerState extends State<DatePicker> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
           Container(
             margin: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.2),

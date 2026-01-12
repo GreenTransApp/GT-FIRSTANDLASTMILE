@@ -1,16 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
-import 'package:gtlmd/pages/login/models/UpdatePasswordModel.dart';
-import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
+
+import 'package:provider/provider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 
 class Forgotpassword extends StatefulWidget {
   const Forgotpassword({super.key});
@@ -23,88 +20,56 @@ class _ForgotpasswordState extends State<Forgotpassword> {
   late LoadingAlertService loadingAlertService;
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confimPasswordController = TextEditingController();
-  LoginViewModel viewModel = LoginViewModel();
-  late CommonUpdateModel updatePasswordModel = CommonUpdateModel();
-// final authService = AuthenticationService();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => loadingAlertService = LoadingAlertService(context: context));
-    setObservers();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void setObservers() {
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
-      failToast(errMsg);
-    });
-    viewModel.viewDialog.stream.listen((showLoading) {
-      if (showLoading) {
-        loadingAlertService.showLoading();
-      } else {
-        loadingAlertService.hideLoading();
-      }
-    });
-    viewModel.updatePasswordLiveData.stream.listen((updatepassword) {
-      if (updatepassword == 1) {
-        // validateUserLogin();
-        Get.off(() => const LoginPage());
-      } else {
-        failToast("Something went wrong");
-      }
-    });
-
-    viewModel.validateUserLoginLiveData.stream.listen((resp) {
-      debugPrint(resp.toString());
-      if (resp.commandstatus == 1) {
-        // Get.off(HomeScreen());
-        authService.login(context);
-      } else {
-        failToast(resp.commandmessage.toString() ?? "Something went wrong");
-      }
-      // hideProgressBar();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadingAlertService = LoadingAlertService(context: context);
+      context.read<LoginProvider>().clearError();
     });
   }
 
   void validateAndChangePassword() {
-    if (newPasswordController.value.text == '') {
+    if (newPasswordController.text.isEmpty) {
       failToast('Please provide a new password');
-    } else if (confimPasswordController.value.text == '') {
+    } else if (confimPasswordController.text.isEmpty) {
       failToast('Please confirm password');
-    } else if (newPasswordController.value.text !=
-        confimPasswordController.value.text) {
-      failToast('Confirm Password Not  Same As New Password.');
+    } else if (newPasswordController.text != confimPasswordController.text) {
+      failToast('Confirm Password Not Same As New Password.');
     } else {
-      _UpdateUserPassword();
-      // all conditions are satisfied, call the API to change password
+      _updateUserPassword();
     }
   }
 
-  void validateUserLogin() {
-    Map<String, String> params = {
-      "prmconstring": userCredsModel.companyid.toString(),
-      "prmusername": userCredsModel.username.toString(),
-      "prmappversion": ENV.appVersion,
-      "prmappversiondt": ENV.appVersionDate,
-      "prmdeviceid": getUuid()
-    };
-    viewModel.validateUserForLogin(params);
-  }
-
-  Future<void> _UpdateUserPassword() async {
+  void _updateUserPassword() {
     Map<String, String> params = {
       "prmcompanyid": userCredsModel.companyid.toString(),
       "prmoldpassword": userCredsModel.userpassword.toString(),
       "prmnewpassword": newPasswordController.text,
       "prmusercode": userCredsModel.username.toString()
     };
-    viewModel.UpdatePassword(params);
+    context.read<LoginProvider>().updatePassword(params);
+  }
+
+  void _handleStateChange(
+      LoginStatus status, String? error, LoginProvider provider) {
+    if (status == LoginStatus.loading) {
+      loadingAlertService.showLoading();
+    } else {
+      loadingAlertService.hideLoading();
+    }
+
+    if (status == LoginStatus.error && error != null) {
+      failToast(error);
+      provider.clearError();
+    }
+
+    if (status == LoginStatus.success) {
+      if (provider.updatePasswordResponse == 1) {
+        Get.off(() => const LoginPage());
+      }
+    }
   }
 
   Widget _buildPasswordField({
@@ -138,77 +103,77 @@ class _ForgotpasswordState extends State<Forgotpassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // ✅ Let Scaffold adjust when keyboard opens
-      resizeToAvoidBottomInset: true,
+    return Consumer<LoginProvider>(
+      builder: (context, provider, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleStateChange(provider.status, provider.errorMessage, provider);
+        });
 
-      appBar: AppBar(
-        backgroundColor: CommonColors.colorPrimary,
-        title: const Text(
-          "Forgot Password",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () =>
-              FocusScope.of(context).unfocus(), // tap outside to hide keyboard
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Image.asset(
-                    "assets/forgotPasswordIllustration.png",
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // 🔹 New Password Field
-                _buildPasswordField(
-                  controller: newPasswordController,
-                  label: "New Password",
-                ),
-                const SizedBox(height: 20),
-
-                // 🔹 Confirm Password Field
-                _buildPasswordField(
-                  controller: confimPasswordController,
-                  label: "Confirm Password",
-                ),
-                const SizedBox(height: 40),
-
-                // 🔹 Submit Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: CommonColors.colorPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                    ),
-                    onPressed: validateAndChangePassword,
-                    child: const Text(
-                      'UPDATE',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ],
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            backgroundColor: CommonColors.colorPrimary,
+            title: const Text(
+              "Forgot Password",
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: Image.asset(
+                        "assets/forgotPasswordIllustration.png",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _buildPasswordField(
+                      controller: newPasswordController,
+                      label: "New Password",
+                    ),
+                    const SizedBox(height: 20),
+                    _buildPasswordField(
+                      controller: confimPasswordController,
+                      label: "Confirm Password",
+                    ),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: CommonColors.colorPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32),
+                          ),
+                        ),
+                        onPressed: validateAndChangePassword,
+                        child: const Text(
+                          'UPDATE',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

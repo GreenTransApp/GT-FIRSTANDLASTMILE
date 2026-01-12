@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:intl/intl.dart';
 
@@ -122,17 +122,18 @@ class _AttendanceTileState extends State<AttendanceTile> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM d, EEEE');
     return
         // Status Card
         Container(
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha((0.05 * 255).toInt()),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -142,16 +143,19 @@ class _AttendanceTileState extends State<AttendanceTile> {
         children: [
           // Header with status and profile
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             child: Row(
               children: [
                 // Status indicator
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.smallHorizontalPadding,
+                      vertical: SizeConfig.smallVerticalPadding),
                   decoration: BoxDecoration(
                     color: cardColor.withAlpha((0.1 * 255).round()),
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
                   ),
                   child: Row(
                     children: [
@@ -163,7 +167,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                           shape: BoxShape.circle,
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      SizedBox(width: SizeConfig.smallHorizontalSpacing),
                       Text(
                         getDayInWeek(dateDt) == "Sunday"
                             ? "WeeklyOff"
@@ -172,7 +176,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                                 ? "Present"
                                 : "Absent",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.w500,
                           color: cardColor,
                         ),
@@ -211,7 +215,8 @@ class _AttendanceTileState extends State<AttendanceTile> {
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
                             color: Colors.grey[300],
-                            child: const Icon(Icons.person, size: 30),
+                            child: Icon(Icons.person,
+                                size: SizeConfig.largeIconSize),
                           );
                         },
                       ),
@@ -226,27 +231,29 @@ class _AttendanceTileState extends State<AttendanceTile> {
 
           // Date and time info
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(SizeConfig.largeRadius),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   decoration: BoxDecoration(
                     color:
                         const Color(0xFF3F51B5).withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.calendar_today,
-                    color: Color(0xFF3F51B5),
-                    size: 24,
+                    color: const Color(0xFF3F51B5),
+                    size: SizeConfig.largeIconSize,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: SizeConfig.smallHorizontalSpacing),
                 Text(
                   "${getMonthInWords(dateDt)} ${dateDt.day.toString()}, ${getDayInWeek(dateDt)}",
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: SizeConfig.mediumTextSize,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF2E3A59),
                   ),
@@ -257,12 +264,15 @@ class _AttendanceTileState extends State<AttendanceTile> {
 
           // Hours info
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             decoration: BoxDecoration(
               color: const Color(0xFFF5F7FA),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
             ),
-            margin: const EdgeInsets.symmetric(horizontal: 20),
+            margin:
+                EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
             child: Column(
               children: [
                 // Working hours
@@ -272,7 +282,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                     Text(
                       'Working Hours',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: SizeConfig.smallTextSize,
                         color: Colors.grey[700],
                       ),
                     ),
@@ -281,15 +291,15 @@ class _AttendanceTileState extends State<AttendanceTile> {
                               widget.attendanceModel.workinghours == "")
                           ? "00:00:00"
                           : widget.attendanceModel.workinghours.toString(),
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: SizeConfig.smallTextSize,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF2E3A59),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 // Extra hours
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -297,7 +307,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                     Text(
                       'Extra Hours',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: SizeConfig.smallTextSize,
                         color: Colors.grey[700],
                       ),
                     ),
@@ -306,8 +316,8 @@ class _AttendanceTileState extends State<AttendanceTile> {
                               widget.attendanceModel.extrahours == ""
                           ? "00:00:00 "
                           : widget.attendanceModel.extrahours.toString(),
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: SizeConfig.smallTextSize,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF2E3A59),
                       ),
@@ -316,7 +326,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                 ),
                 Visibility(
                     visible: showElapsedTime,
-                    child: const SizedBox(height: 12)),
+                    child: SizedBox(height: SizeConfig.mediumVerticalSpacing)),
                 Visibility(
                   visible: showElapsedTime,
                   child: Row(
@@ -325,7 +335,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                       Text(
                         'Elapsed Hours',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: SizeConfig.smallTextSize,
                           color: Colors.grey[700],
                         ),
                       ),
@@ -333,10 +343,10 @@ class _AttendanceTileState extends State<AttendanceTile> {
                         elapsedTime == "" || elapsedTime == "0"
                             ? "0 Secs"
                             : elapsedTime,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF2E3A59),
+                          color: const Color(0xFF2E3A59),
                         ),
                       ),
                     ],
@@ -346,28 +356,33 @@ class _AttendanceTileState extends State<AttendanceTile> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
           // Check-in info
           Visibility(
             visible: showPunchIn,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: cardColor.withAlpha((0.2 * 255).round()),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius:
+                          BorderRadius.circular(SizeConfig.largeRadius),
                     ),
                     child: Icon(
                       Icons.directions_run,
                       color: cardColor,
-                      size: 24,
+                      size: SizeConfig.largeIconSize,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                   Flexible(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,27 +390,27 @@ class _AttendanceTileState extends State<AttendanceTile> {
                         Text(
                           getDayInWeek(dateDt) == "Sunday"
                               ? "Weekly Off"
-                              : 'Checked in at ${singleInTime ?? "00:00"}',
+                              : 'Checked in at $singleInTime',
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: SizeConfig.smallTextSize,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2E3A59),
+                            color: const Color(0xFF2E3A59),
                           ),
                         ),
                         Visibility(
                             visible: getDayInWeek(dateDt) != "Sunday",
-                            child: const SizedBox(height: 4)),
+                            child: SizedBox(
+                                height: SizeConfig.smallVerticalSpacing)),
                         Visibility(
                           visible: getDayInWeek(dateDt) != "Sunday",
                           child: Wrap(
                               crossAxisAlignment: WrapCrossAlignment.start,
                               children: [
                                 Text(
-                                  "${widget.attendanceModel.ingpslocation}" ??
-                                      "Not Available",
+                                  "${widget.attendanceModel.ingpslocation}",
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: SizeConfig.smallTextSize,
                                     color: Colors.grey[600],
                                   ),
                                 ),
@@ -412,15 +427,20 @@ class _AttendanceTileState extends State<AttendanceTile> {
           Visibility(
             visible: showPunchOut,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: CommonColors.dangerColor!
                           .withAlpha((0.2 * 255).round()),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius:
+                          BorderRadius.circular(SizeConfig.largeRadius),
                     ),
                     child: Image.asset(
                       "assets/images/punchoutIcon.png",
@@ -429,7 +449,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                       color: CommonColors.dangerColor,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                   Flexible(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -437,17 +457,18 @@ class _AttendanceTileState extends State<AttendanceTile> {
                         Text(
                           getDayInWeek(dateDt) == "Sunday"
                               ? "Weekly Off"
-                              : 'Checked out at ${singleOutTime ?? "00:00"}',
+                              : 'Checked out at $singleOutTime',
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: SizeConfig.mediumTextSize,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2E3A59),
+                            color: const Color(0xFF2E3A59),
                           ),
                         ),
                         Visibility(
                             visible: getDayInWeek(dateDt) != "Sunday",
-                            child: const SizedBox(height: 4)),
+                            child: SizedBox(
+                                height: SizeConfig.smallVerticalSpacing)),
                         Visibility(
                           visible: getDayInWeek(dateDt) != "Sunday",
                           child: SizedBox(
@@ -459,7 +480,7 @@ class _AttendanceTileState extends State<AttendanceTile> {
                                     "Not Available",
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: SizeConfig.smallTextSize,
                                   color: Colors.grey[600],
                                 ),
                               ),
@@ -474,306 +495,9 @@ class _AttendanceTileState extends State<AttendanceTile> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
         ],
       ),
     );
-
-/*     
-     Card(
-        shadowColor: cardColor,
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-        shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            side: BorderSide(color: cardColor, width: 0.7)),
-        elevation: 8,
-        child: Container(
-          // color: Colors.amber,
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      Icon(
-                        Icons.calendar_month_outlined,
-                        color: CommonColors.weeklyOffColor,
-                        size: 40,
-                      )
-                    ],
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                dateDt.day.toString(),
-                                style: TextStyle(
-                                  color: cardColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                widget.attendanceModel.attendancestatus
-                                        ?.toUpperCase() ??
-                                    "Absent".toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: cardColor,
-                                  // color: Color(colorToInt)
-                                ),
-                              ),
-                            ),
-                            const Spacer(),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: ClipOval(
-                                child: Container(
-                                  height: 50,
-                                  width: 50,
-                                  child: InkWell(
-                                    onTap: () {
-                                      showDialogWithImage(context,
-                                          widget.attendanceModel.imagepath!);
-                                    },
-                                    child: Image.network(
-                                      isNullOrEmpty(widget
-                                                  .attendanceModel.imagepath
-                                                  .toString()) ==
-                                              true
-                                          ? defaultImage
-                                          : widget.attendanceModel.imagepath
-                                              .toString(),
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return CircleAvatar(
-                                          child: Icon(Icons.person),
-                                        );
-                                      },
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Text(
-                                    getMonthInWords(dateDt).substring(0, 3),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Text(
-                                    getDayInWeek(dateDt).substring(0, 3),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text(
-                                    "Working Hours : ",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text(
-                                    "Extra Hours  : ",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    (widget.attendanceModel.workinghours ==
-                                                null ||
-                                            widget.attendanceModel
-                                                    .workinghours ==
-                                                "")
-                                        ? "00:00:00"
-                                        : widget.attendanceModel.workinghours
-                                            .toString(),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    widget.attendanceModel.extrahours == null ||
-                                            widget.attendanceModel.extrahours ==
-                                                ""
-                                        ? "00:00:00 "
-                                        : widget.attendanceModel.extrahours
-                                            .toString(),
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                        overflow: TextOverflow.ellipsis,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Visibility(
-                          visible: showElapsedTime,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              elapsedTime == "" || elapsedTime == "0"
-                                  ? "0 Secs"
-                                  : elapsedTime,
-                              style: TextStyle(
-                                  color: CommonColors.colorPrimary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Visibility(
-                visible: showPunchIn,
-                child: Column(
-                  children: [
-                    const Divider(
-                      thickness: 0.5,
-                      color: Colors.grey,
-                    ),
-                    Row(
-                      children: [
-                        // Icon(Icons.person),
-                        Image.asset(
-                          "assets/images/punchinIcon.png",
-                          height: 30,
-                          color: CommonColors.successColor,
-                        ),
-
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                              padding: const EdgeInsets.all(15),
-                              //  color: Colors.blue,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Text(
-                                      singleInTime ?? "00:00",
-                                      style: TextStyle(
-                                          color: CommonColors.colorPrimary,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ]),
-                                  Text(
-                                      textAlign: TextAlign.start,
-                                      widget.attendanceModel.ingpslocation ??
-                                          "Not Available",
-                                      overflow: TextOverflow.ellipsis),
-                                ],
-                              ),
-                            ))
-                      ],
-                    ),
-                    Visibility(
-                      visible: showPunchOut,
-                      child: Row(
-                        children: [
-                          // Icon(Icons.person),
-                          Image.asset(
-                            "assets/images/punchoutIcon.png",
-                            height: 30,
-                            color: CommonColors.dangerColor,
-                          ),
-
-                          Expanded(
-                              flex: 3,
-                              child: Container(
-                                padding: const EdgeInsets.all(15),
-                                //  color: Colors.blue,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(children: [
-                                      Text(
-                                        singleOutTime,
-                                        style: TextStyle(
-                                            color: CommonColors.colorPrimary,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    ]),
-                                    Text(
-                                        textAlign: TextAlign.start,
-                                        widget.attendanceModel.outgpslocation ??
-                                            "Not Available",
-                                        overflow: TextOverflow.ellipsis),
-                                  ],
-                                ),
-                              ))
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
-
- */
   }
 }

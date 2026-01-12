@@ -6,6 +6,7 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsOption.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:lottie/lottie.dart';
@@ -54,29 +55,39 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 32),
+                    SizedBox(height: SizeConfig.largeVerticalSpacing),
                     Lottie.asset(
                       'assets/password.json',
                       width: 200,
                       height: 200,
                     ),
-                    const SizedBox(height: 32),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Password',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    SizedBox(height: SizeConfig.largeVerticalSpacing),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Password',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: SizeConfig.largeTextSize,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    SizedBox(
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding),
+                      padding: EdgeInsets.symmetric(
+                          vertical: SizeConfig.verticalPadding,
+                          horizontal: SizeConfig.horizontalPadding),
                       height: 72,
                       child: TextField(
                         // Add isPasswordVisible if you want toggle
@@ -87,15 +98,18 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
                             color: CommonColors.appBarColor,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(
+                                SizeConfig.extraLargeRadius),
                           ),
                           label: const Text("Password"),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(
+                                SizeConfig.extraLargeRadius),
                             borderSide: const BorderSide(color: Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(
+                                SizeConfig.extraLargeRadius),
                             borderSide: const BorderSide(color: Colors.black),
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -105,17 +119,22 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
                         keyboardType: TextInputType.text,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: SizeConfig.mediumVerticalSpacing),
                     Container(
                       width: double.infinity,
                       height: 69,
-                      padding: const EdgeInsets.all(5),
+                      margin: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
                       child: ElevatedButton(
                           style: ButtonStyle(
-                            shape: const WidgetStatePropertyAll(
+                            shape: WidgetStatePropertyAll(
                                 RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(32)))),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            SizeConfig.extraLargeRadius)))),
                             backgroundColor: WidgetStatePropertyAll(
                                 CommonColors.colorPrimary),
                           ),
@@ -123,8 +142,10 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
                             verifyPassword();
                           },
                           child: Text(
-                            'Submit',
-                            style: TextStyle(color: CommonColors.white),
+                            'SUBMIT',
+                            style: TextStyle(
+                                color: CommonColors.white,
+                                fontSize: SizeConfig.largeTextSize),
                           )),
                     ),
                   ],
@@ -135,7 +156,7 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: Image.asset(
-                'assets/poweredby.png',
+                'assets/poweredBy.png',
                 width: 200,
                 height: 50,
               ),
@@ -170,7 +191,8 @@ class _OfflinePasswordScreenState extends State<OfflinePasswordScreen> {
   }
 
   void fetchLoginPrefs() async {
-    String? offlineCredsStr = await authService.storageGet(ENV.offlineLoginCredsTag);
+    String? offlineCredsStr =
+        await authService.storageGet(ENV.offlineLoginCredsTag);
     try {
       offlineCreds = jsonDecode(offlineCredsStr.toString());
     } catch (err) {

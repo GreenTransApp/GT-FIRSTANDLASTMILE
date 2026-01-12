@@ -9,11 +9,13 @@ import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
-import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 
 import 'firebase_options.dart';
+
+import 'package:provider/provider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 
 final locationService = LocationService();
 Future<void> main() async {
@@ -22,7 +24,14 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -50,18 +59,11 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  final LoginViewModel loginViewModel = LoginViewModel();
-  // final authService  = AuthenticationService();
+  // Removed local LoginViewModel
+
   _goToLogin() {
-    /* Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-      (route) => false
-      );
- */
     debugPrint('go to login');
-    Get.off(LoginPage());
-    // Get.off(HomeScreen());
+    Get.off(() => const LoginPage());
   }
 
   Future<void> userLogin(String user) async {
@@ -77,66 +79,72 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       "prmdevicedt": ENV.deviceDate,
       "prmdeviceid": getUuid()
     };
-    loginViewModel.loginUserAtStart(params);
+
+    // Access provider and call login
+    context.read<LoginProvider>().loginUser(params);
   }
 
   _goToHomeScreen() {
-/*     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => BottomNavigator()),
-        (Route<dynamic> route) => false);*/
-
-    // Get.off(HomeScreen());
     AuthenticationService().login(context);
   }
 
   void setObserver() {
-    loginViewModel.isErrorLiveData.stream.listen((err) {
-      // if (err.toString().contains("ineternet connection")) {
+    // We can use the provider to observe state changes
+    final loginProvider = context.read<LoginProvider>();
+
+    loginProvider.addListener(_loginStateListener);
+  }
+
+  void _loginStateListener() {
+    final loginProvider = context.read<LoginProvider>();
+
+    if (loginProvider.status == LoginStatus.error) {
       _goToLogin();
-      // }
-    });
+    } else if (loginProvider.status == LoginStatus.success) {
+      if (loginProvider.loginResponse?.commandstatus == 1) {
+        debugPrint('Going to HomeScreen');
+        getUserData();
+        _goToHomeScreen();
+      } else {
+        debugPrint('Login failed but status success (re-check logic)');
+        _goToHomeScreen(); // Following original flow
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    setObserver();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setObserver();
 
-    authService.storageGet(ENV.loginPrefTag).then((login) => {
-          ScreenDimension.width = MediaQuery.of(context).size.width,
-          ScreenDimension.height = MediaQuery.of(context).size.height,
-          if (login == null)
-            {
-              // navigate to login screen
-              debugPrint('Login data is null'),
-              _goToLogin()
+      authService.storageGet(ENV.loginPrefTag).then((login) {
+        ScreenDimension.width = MediaQuery.of(context).size.width;
+        ScreenDimension.height = MediaQuery.of(context).size.height;
+        if (login == null) {
+          debugPrint('Login data is null');
+          _goToLogin();
+        } else {
+          authService.storageGet(ENV.userPrefTag).then((user) {
+            if (user == null) {
+              debugPrint('User data is null');
+              _goToLogin();
+            } else {
+              debugPrint('User login');
+              userLogin(login);
             }
-          else
-            {
-              // todo Later
-              authService.storageGet(ENV.userPrefTag).then((user) => {
-                    if (user == null)
-                      {debugPrint('User data is null'), _goToLogin()}
-                    else
-                      {
-                        loginViewModel.loginResponseLiveData.stream
-                            .listen((resp) {
-                          if (resp.commandstatus == 1) {
-                            debugPrint('Going to HomeScreen');
-                            getUserData();
-                            _goToHomeScreen();
-                          } else {
-                            debugPrint('Going to HomeScreen');
-                            _goToHomeScreen();
-                          }
-                        }),
-                        debugPrint('User login'),
-                        userLogin(login)
-                      }
-                  })
-            }
-        });
+          });
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // Safely remove listener if context is still valid or use a different approach
+    // In MyStatefulWidget (Splash screen basically), it might be destroyed soon.
+    super.dispose();
   }
 
   @override

@@ -543,7 +543,7 @@ class _HomeScreen extends State<HomeScreen>
                       Text(
                         'Current Date',
                         style: TextStyle(
-                          fontSize: SizeConfig.mediumTextSize,
+                          fontSize: SizeConfig.smallTextSize,
                           color: CommonColors.White,
                         ),
                       ),
@@ -551,7 +551,7 @@ class _HomeScreen extends State<HomeScreen>
                       Text(
                         formattedDate,
                         style: TextStyle(
-                          fontSize: SizeConfig.mediumTextSize,
+                          fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.w500,
                           color: CommonColors.White,
                         ),
@@ -584,23 +584,6 @@ class _HomeScreen extends State<HomeScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // OutlinedButton.icon(
-                  //   onPressed: () {
-                  //     showDatePickerBottomSheet(context, _dateChanged);
-                  //   },
-                  //   icon: Icon(Icons.calendar_today,
-                  //       size: 16, color: CommonColors.white),
-                  //   label: const Text(''),
-                  //   style: OutlinedButton.styleFrom(
-                  //     padding:
-                  //         const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  //     side: BorderSide(color: CommonColors.white!),
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(8),
-                  //     ),
-                  //   ),
-                  // ),
-
                   GestureDetector(
                     onTap: () {
                       showDatePickerBottomSheet(context, _dateChanged);
@@ -636,8 +619,8 @@ class _HomeScreen extends State<HomeScreen>
                   // Punch status indicator with color based on status
                   Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.mediumHorizontalSpacing,
-                        vertical: SizeConfig.mediumVerticalSpacing),
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: CommonColors.colorPrimary,
                       borderRadius:
@@ -665,7 +648,7 @@ class _HomeScreen extends State<HomeScreen>
                                   .toUpperCase()
                               : "Absent",
                           style: TextStyle(
-                            fontSize: SizeConfig.mediumTextSize,
+                            fontSize: SizeConfig.smallTextSize,
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
                           ),

@@ -7,6 +7,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
 import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
+import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 import '../../common/commonResponse.dart';
@@ -28,15 +29,30 @@ class TripMisRepository extends BaseRepository {
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
-          for (final entry in entries) {
-            if (entry.key == "Table4") {
-              List<dynamic> list2 = entry.value;
-              List<TripMisModel> resultList = List.generate(
-                  list2.length, (index) => TripMisModel.fromJson(list2[index]));
+          try {
+            for (final entry in entries) {
+              if (entry.key == "Table") {
+                List<dynamic> list = entry.value;
+                List<UpsertTripResponseModel> resultList = List.generate(
+                    list.length,
+                    (index) => UpsertTripResponseModel.fromJson(list[index]));
+                if (resultList.isNotEmpty &&
+                    resultList.first.commandstatus == -1) {
+                  isErrorLiveData
+                      .add(resultList.first.commandmessage.toString());
+                }
+              }
+              if (entry.key == "Table4") {
+                List<dynamic> list2 = entry.value;
+                List<TripMisModel> resultList = List.generate(list2.length,
+                    (index) => TripMisModel.fromJson(list2[index]));
 
-              // var data = resultList;
-              tripsListData.add(resultList);
+                // var data = resultList;
+                tripsListData.add(resultList);
+              }
             }
+          } catch (err) {
+            isErrorLiveData.add(err.toString());
           }
         } else {
           isErrorLiveData.add(resp.commandMessage!);

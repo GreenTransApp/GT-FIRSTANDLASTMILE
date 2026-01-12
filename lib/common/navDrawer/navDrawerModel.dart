@@ -81,8 +81,7 @@ class SideMenuItem extends StatelessWidget {
                 size: 20,
                 color: isSelected
                     ? CommonColors.colorPrimary!.withAlpha((0.5 * 255).toInt())
-                    : CommonColors.textSecondary!
-                        .withAlpha((0.3 * 255).toInt()),
+                    : CommonColors.textSecondary.withAlpha((0.3 * 255).toInt()),
               ),
               onTap: press,
             ),

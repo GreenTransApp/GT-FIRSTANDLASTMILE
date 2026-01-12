@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/podEntry_offline.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/unDelivery_offline.dart';
 import 'package:lottie/lottie.dart';
@@ -65,7 +66,7 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
           transform: Matrix4.translationValues(0, isHovered ? -5 : 0, 0),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(SizeConfig.extraLargeRadius),
             border: Border.all(
               color: isHovered
                   ? iconColor
@@ -81,14 +82,18 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
               ),
             ],
           ),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
           child: Column(
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: backgroundColor,
                       shape: BoxShape.circle,
@@ -96,26 +101,26 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
                     child: Icon(
                       iconData,
                       color: iconColor,
-                      size: 28,
+                      size: SizeConfig.largeIconSize,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: SizeConfig.largeTextSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: SizeConfig.smallVerticalSpacing),
                         Text(
                           description,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: SizeConfig.smallTextSize,
                             color: Colors.grey[600],
                           ),
                         ),
@@ -132,7 +137,7 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: SizeConfig.mediumVerticalSpacing),
               SizedBox(
                 height: 120,
                 width: 120,
@@ -162,10 +167,10 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Delivery Action',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: SizeConfig.largeTextSize,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -176,7 +181,9 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
           child: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -193,7 +200,7 @@ class _OfflineDrsOptionState extends State<OfflineDrsOption>
                     option: Offlinedrsoption.POD,
                     lottieAsset: 'assets/delivery.json',
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: SizeConfig.mediumVerticalSpacing),
                   _buildOptionCard(
                     title: 'Undelivery',
                     description:

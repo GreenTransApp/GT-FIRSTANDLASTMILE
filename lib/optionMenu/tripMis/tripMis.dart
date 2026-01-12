@@ -7,6 +7,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
 import 'package:gtlmd/optionMenu/tripMis/tripMisViewModel.dart';
@@ -76,6 +77,7 @@ class _TripMisState extends State<TripMis> {
     viewModel.tripsListData.stream.listen((data) {
       setState(() {
         _tripList = data;
+        filterList = data;
       });
     });
   }
@@ -182,7 +184,9 @@ class _TripMisState extends State<TripMis> {
                 showDatePickerBottomSheet(context, _dateChanged);
               },
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
                 child: Icon(
                   Icons.calendar_today_rounded,
                   color: CommonColors.white,
@@ -196,16 +200,20 @@ class _TripMisState extends State<TripMis> {
             Container(
               decoration: BoxDecoration(color: CommonColors.colorPrimary),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
                 child: TextField(
                   controller: _searchController,
-                  keyboardType: TextInputType.multiline,
-                  cursorColor: Colors.black,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.done,
+                  cursorColor: CommonColors.appBarColor,
                   obscureText: false,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.search,
-                      color: Colors.black,
+                      color: CommonColors.appBarColor,
+                      size: SizeConfig.largeIconSize,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -215,50 +223,62 @@ class _TripMisState extends State<TripMis> {
                           updateSearch('');
                         });
                       },
-                      icon: const Icon(Icons.clear),
+                      icon: _searchController.text.isNotEmpty
+                          ? const Icon(Icons.clear)
+                          : const Icon(
+                              Icons.clear,
+                              color: Colors.transparent,
+                            ),
                     ),
+                    hintText: 'Search',
                     filled: true,
                     fillColor: CommonColors.White,
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        borderSide: BorderSide(color: Colors.black)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.extraLargeRadius)),
+                        borderSide:
+                            const BorderSide(color: CommonColors.appBarColor)),
                     enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.black)),
+                        borderRadius:
+                            BorderRadius.circular(SizeConfig.extraLargeRadius),
+                        borderSide:
+                            const BorderSide(color: CommonColors.appBarColor)),
                     focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(color: Colors.black)),
+                        borderRadius:
+                            BorderRadius.circular(SizeConfig.extraLargeRadius),
+                        borderSide:
+                            const BorderSide(color: CommonColors.appBarColor)),
                   ),
                   onChanged: updateSearch,
                 ),
               ),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      showDatePickerBottomSheet(context, _dateChanged);
-                    },
-                    icon: Icon(Icons.calendar_today,
-                        size: 16, color: CommonColors.colorPrimary),
-                    label: Text('$viewFromDt - $viewToDt',
-                        style: TextStyle(color: CommonColors.colorPrimary)),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      side: BorderSide(color: CommonColors.colorPrimary!),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   width: MediaQuery.of(context).size.width,
+            //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.start,
+            //     children: [
+            //       OutlinedButton.icon(
+            //         onPressed: () {
+            //           showDatePickerBottomSheet(context, _dateChanged);
+            //         },
+            //         icon: Icon(Icons.calendar_today,
+            //             size: 16, color: CommonColors.colorPrimary),
+            //         label: Text('$viewFromDt - $viewToDt',
+            //             style: TextStyle(color: CommonColors.colorPrimary)),
+            //         style: OutlinedButton.styleFrom(
+            //           padding: const EdgeInsets.symmetric(
+            //               horizontal: 16, vertical: 12),
+            //           side: BorderSide(color: CommonColors.colorPrimary!),
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(8),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Expanded(
               child: Container(
                 child: (_tripList.isEmpty) == true

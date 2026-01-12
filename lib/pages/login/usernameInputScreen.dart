@@ -11,7 +11,10 @@ import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/UserCredsModel.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:get/get.dart';
-import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
+// import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
+
+import 'package:provider/provider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 
 class UsernameInputScreen extends StatefulWidget {
   const UsernameInputScreen({super.key});
@@ -21,8 +24,6 @@ class UsernameInputScreen extends StatefulWidget {
 }
 
 class _UsernameInputScreenState extends State<UsernameInputScreen> {
-  // late UserCredsModel userCredsModel = UserCredsModel();
-  LoginViewModel viewModel = LoginViewModel();
   late LoadingAlertService loadingAlertService;
   TextEditingController usernameController = TextEditingController();
 
@@ -32,99 +33,105 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
     if (ENV.isDebugging) {
       usernameController.text = ENV.debuggingUserName.toUpperCase();
     }
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => loadingAlertService = LoadingAlertService(context: context));
-    setObservers();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadingAlertService = LoadingAlertService(context: context);
+      context.read<LoginProvider>().clearError();
+    });
   }
 
   void _validateUserMobile() {
-    debugPrint("Validating Device: ${usernameController.value.text}");
-
-    Map<String, String> params = {"prmmobileno": usernameController.value.text};
-    viewModel.validateUserMobileFromD2D(params);
+    debugPrint("Validating Device: ${usernameController.text}");
+    Map<String, String> params = {"prmmobileno": usernameController.text};
+    context.read<LoginProvider>().validateUserMobileFromD2D(params);
   }
 
-  setObservers() {
-    viewModel.userCredsLiveData.stream.listen((userCreds) {
-      if (userCreds.commandstatus == 1) {
-        userCredsModel = userCreds;
-        Get.to(() => LoginWithOtp(usermobileno: usernameController.value.text));
-      } else {
-        failToast(
-            userCreds.commandmessage.toString() ?? "Something went wrong");
-      }
-    });
+  void _handleStateChange(
+      LoginStatus status, String? error, LoginProvider provider) {
+    if (status == LoginStatus.loading) {
+      loadingAlertService.showLoading();
+    } else {
+      loadingAlertService.hideLoading();
+    }
 
-    viewModel.viewDialog.stream.listen((showLoading) {
-      if (showLoading) {
-        loadingAlertService.showLoading();
-      } else {
-        loadingAlertService.hideLoading();
+    if (status == LoginStatus.error && error != null) {
+      failToast(error);
+      provider.clearError();
+    }
+
+    if (status == LoginStatus.success) {
+      if (provider.userCredsResponse != null &&
+          provider.userCredsResponse!.commandstatus == 1) {
+        userCredsModel = provider.userCredsResponse!;
+        Get.to(() => LoginWithOtp(usermobileno: usernameController.text));
+      } else if (provider.userCredsResponse != null) {
+        failToast(provider.userCredsResponse!.commandmessage ??
+            "Something went wrong");
       }
-    });
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
-      failToast(errMsg);
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: MediaQuery.sizeOf(context).width * 0.01,
-            vertical: MediaQuery.sizeOf(context).height * 0.1,
-          ),
-          child: Column(
-            spacing: 12,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Enter username:',
-                style: TextStyle(fontSize: 24, color: Colors.black),
+    return Consumer<LoginProvider>(
+      builder: (context, provider, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleStateChange(provider.status, provider.errorMessage, provider);
+        });
+
+        return Scaffold(
+          body: SafeArea(
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.sizeOf(context).width * 0.01,
+                vertical: MediaQuery.sizeOf(context).height * 0.1,
               ),
-              Container(
-                height: 69,
-                margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.sizeOf(context).width * 0.1),
-                child: inputField(TextInputType.number, usernameController,
-                    "username", null, null, true, 32),
-              ),
-              Container(
-                width: double.infinity,
-                height: 69,
-                margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.sizeOf(context).width * 0.1),
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: const WidgetStatePropertyAll(
-                          RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)))),
-                      backgroundColor:
-                          WidgetStatePropertyAll(CommonColors.colorPrimary),
-                    ),
-                    onPressed: () => {
-                          if (usernameController.value.text.isEmpty)
-                            {
-                              // navigate()
-                              failToast('Please provide the username')
-                            }
-                          else if (usernameController.value.text.length != 10)
-                            {failToast('Please provide a valid username')}
-                          else
-                            {_validateUserMobile()}
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Enter username:',
+                    style: TextStyle(fontSize: 24, color: Colors.black),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 69,
+                    margin: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.sizeOf(context).width * 0.1),
+                    child: inputField(TextInputType.number, usernameController,
+                        "username", null, null, true, 32),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    height: 69,
+                    margin: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.sizeOf(context).width * 0.1),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          backgroundColor: CommonColors.colorPrimary,
+                        ),
+                        onPressed: () {
+                          if (usernameController.text.isEmpty) {
+                            failToast('Please provide the username');
+                          } else if (usernameController.text.length != 10) {
+                            failToast('Please provide a valid username');
+                          } else {
+                            _validateUserMobile();
+                          }
                         },
-                    child: Text(
-                      'Continue',
-                      style: TextStyle(color: CommonColors.White),
-                    )),
-              )
-            ],
+                        child: Text(
+                          'Continue',
+                          style: TextStyle(color: CommonColors.White),
+                        )),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

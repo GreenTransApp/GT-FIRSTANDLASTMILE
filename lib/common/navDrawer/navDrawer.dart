@@ -56,7 +56,7 @@ class SideMenu extends StatelessWidget {
                 colors: [
                   CommonColors.colorPrimary ?? const Color(0xFF2934AB),
                   (CommonColors.colorPrimary ?? const Color(0xFF2934AB))
-                      .withOpacity(0.8),
+                      .withAlpha((0.8 * 255).toInt()),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -67,8 +67,8 @@ class SideMenu extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color:
-                        (CommonColors.white ?? Colors.white).withOpacity(0.2),
+                    color: (CommonColors.white ?? Colors.white)
+                        .withAlpha((0.2 * 255).toInt()),
                     shape: BoxShape.circle,
                   ),
                   child: CircleAvatar(
@@ -111,7 +111,7 @@ class SideMenu extends StatelessWidget {
                         savedUser.username ?? "User",
                         style: TextStyle(
                           color: (CommonColors.white ?? Colors.white)
-                              .withOpacity(0.8),
+                              .withAlpha((0.8 * 255).toInt()),
                           fontSize: SizeConfig.smallTextSize,
                         ),
                         maxLines: 1,

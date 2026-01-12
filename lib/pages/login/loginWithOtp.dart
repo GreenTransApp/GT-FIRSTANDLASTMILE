@@ -3,124 +3,75 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/pages/home/homeScreenPage.dart';
 import 'package:gtlmd/pages/login/forgotPassword.dart';
-import 'package:gtlmd/pages/login/models/ValidateLoginWithOtpModel.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
-import 'package:gtlmd/pages/login/models/loginCredsModel.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
-import 'package:gtlmd/pages/login/viewModel/loginViewModel.dart';
 import 'package:get/get.dart';
-import 'package:gtlmd/service/authenticationService.dart';
+
+import 'package:provider/provider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 
 class LoginWithOtp extends StatefulWidget {
-  late String usermobileno;
-  int _seconds = 119;
-  Timer? _timer;
-  bool _showButton = false;
+  final String usermobileno;
 
-  LoginWithOtp({super.key, required this.usermobileno});
+  const LoginWithOtp({super.key, required this.usermobileno});
 
   @override
   State<LoginWithOtp> createState() => _LoginWithOtpState();
 }
 
 class _LoginWithOtpState extends State<LoginWithOtp> {
-  final LoginViewModel viewModel = LoginViewModel();
   late LoadingAlertService loadingAlertService;
   TextEditingController first = TextEditingController();
   TextEditingController second = TextEditingController();
   TextEditingController third = TextEditingController();
   TextEditingController fourth = TextEditingController();
-  late ValidateLoginwithOtpModel validateotpModel = ValidateLoginwithOtpModel();
-// final authService = AuthenticationService();
+
+  int _seconds = 119;
+  Timer? _timer;
+  bool _showButton = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => loadingAlertService = LoadingAlertService(context: context));
-    setObservers();
-    _getLoginOtp();
-  }
-
-  setObservers() {
-    viewModel.viewDialog.stream.listen((showLoading) {
-      if (showLoading) {
-        loadingAlertService.showLoading();
-      } else {
-        loadingAlertService.hideLoading();
-      }
-    });
-
-    viewModel.validateOtpLiveData.stream.listen((validate) {
-      validateotpModel = validate;
-      if (validateotpModel.commandstatus == 1) {
-        debugPrint("OTP is: ${extractLoginOtp(validateotpModel.smstext!)}");
-      } else {
-        debugPrint("command status is: ${validateotpModel.commandstatus}");
-      }
-    });
-
-    viewModel.validateUserLoginLiveData.stream.listen((resp) {
-      debugPrint(resp.toString());
-      if (resp.commandstatus == 1) {
-        // hideProgressBar();
-        // Get.to(HomeScreen());
-        navigate();
-      } else {
-        failToast(resp.commandmessage ?? "Something went wrong");
-      }
-      // hideProgressBar();
-    });
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
-      failToast(errMsg);
-    });
-
-    viewModel.loginResponseLiveData.stream.listen((resp) {
-      debugPrint('Login resp live data');
-      LoginModel loginCredsModel =
-          LoginModel(username: resp.username, password: resp.password);
-      authService.storagePush(
-          ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
-      companyId = savedLogin.companyid.toString();
-      validateUserLogin();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadingAlertService = LoadingAlertService(context: context);
+      _getLoginOtp();
     });
   }
 
   void _getLoginOtp() {
-    // failToast('data not found');
     _resetAndStartTimer();
     debugPrint("_getLoginOtp called");
     Map<String, String> params = {
       "prmcompanyid": userCredsModel.companyid.toString(),
-      // "prmusercode": widget.usermobileno,
       "prmmobileno": userCredsModel.username.toString()
     };
-    debugPrint("Validating Device: ");
-
-    viewModel.validateLoginWithOtp(params);
-    _startTimer();
+    context.read<LoginProvider>().validateLoginWithOtp(params);
   }
 
-  String extractLoginOtp(String text) {
-    // Use a regular expression to find the OTP.
-    RegExp regExp = RegExp(r'OTP\s*for\s*login\s*is\s*(\d+)');
-    Match? match = regExp.firstMatch(text);
+  void _onVerifyPressed() {
+    String otp = first.text + second.text + third.text + fourth.text;
+    final provider = context.read<LoginProvider>();
 
-    if (match != null) {
-      return match.group(1)!; // Return the captured OTP.
+    if (otp.length < 4) {
+      failToast('Please enter OTP Correctly');
+      return;
+    }
+
+    if (otp != provider.otpResponse?.otp) {
+      failToast("Entered OTP is Invalid, Please Try Again");
     } else {
-      return ''; // Return an empty string if OTP is not found.
+      _userLogin();
     }
   }
 
-  Future<void> userLogin() async {
+  Future<void> _userLogin() async {
     Map<String, String> params = {
       "prmusername": userCredsModel.username.toString(),
       "prmpassword": userCredsModel.userpassword.toString(),
@@ -129,10 +80,10 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
       "prmdevicedt": ENV.appVersionDate,
       "prmdeviceid": getUuid()
     };
-    viewModel.loginUser(params);
+    context.read<LoginProvider>().loginUser(params);
   }
 
-  void validateUserLogin() {
+  void _validateUserLogin() {
     Map<String, String> params = {
       "prmconstring": userCredsModel.companyid.toString(),
       "prmusername": userCredsModel.username.toString(),
@@ -140,61 +91,73 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
       "prmappversiondt": ENV.appVersionDate,
       "prmdeviceid": getUuid()
     };
-    viewModel.validateUserForLogin(params);
+    context.read<LoginProvider>().validateUserForLogin(params);
   }
 
-  void validateEnteredOtp() {
-    String otp = '';
-    otp += first.value.text;
-    otp += second.value.text;
-    otp += third.value.text;
-    otp += fourth.value.text;
-    debugPrint('OTP -> $otp');
-    if (otp != validateotpModel.otp) {
-      failToast("Entered OTP is Invalid,Please Try Again");
+  void _handleStateChange(
+      LoginStatus status, String? error, LoginProvider provider) {
+    if (status == LoginStatus.loading) {
+      loadingAlertService.showLoading();
     } else {
-      // navigate();
-      // validateUserLogin();
-      userLogin();
+      loadingAlertService.hideLoading();
+    }
+
+    if (status == LoginStatus.error && error != null) {
+      failToast(error);
+      provider.clearError();
+    }
+
+    if (status == LoginStatus.success) {
+      if (provider.otpResponse != null) {
+        // OTP received, already handled in extracting logic if needed or just wait for it
+        // Original code logged: extractLoginOtp(validateotpModel.smstext!)
+      } else if (provider.loginResponse != null) {
+        final resp = provider.loginResponse!;
+        LoginModel loginCredsModel =
+            LoginModel(username: resp.username, password: resp.password);
+        authService.storagePush(
+            ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
+        _validateUserLogin();
+      } else if (provider.userResponse != null) {
+        if (provider.userResponse!.commandstatus == 1) {
+          _navigate();
+        }
+      }
     }
   }
 
-  navigate() {
-    switch (authenticaionFlow) {
+  void _navigate() {
+    switch (authenticationFlow) {
       case AuthenticationFlow.forgotPassword:
-        // Get.to(const Forgotpassword());
-        Get.off(const Forgotpassword());
+        Get.off(() => const Forgotpassword());
+        break;
       case AuthenticationFlow.loginWithOtp:
-        // Get.off(HomeScreen());
-        // Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => HomeScreen()),
-        //     (route) => false);
         authService.login(context);
+        break;
     }
   }
 
   void _startTimer() {
-    widget._timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (widget._seconds > 0) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_seconds > 0) {
         setState(() {
-          widget._seconds--;
+          _seconds--;
         });
       } else {
-        widget._timer?.cancel(); // Cancel the timer
+        _timer?.cancel();
         setState(() {
-          widget._showButton = true;
+          _showButton = true;
         });
       }
     });
   }
 
   void _resetAndStartTimer() {
-    widget._timer?.cancel(); // Cancel existing timer before starting a new one
-    widget._timer = null;
+    _timer?.cancel();
+    _timer = null;
     setState(() {
-      widget._seconds = 119;
-      widget._showButton = false;
+      _seconds = 119;
+      _showButton = false;
     });
     _startTimer();
   }
@@ -207,379 +170,175 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     super.dispose();
-    widget._timer?.cancel();
-    widget._timer = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: CommonColors.white,
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        backgroundColor: CommonColors.colorPrimary,
-        title: Text(
-          'Enter OTP',
-          style: TextStyle(color: CommonColors.white),
-        ),
-        elevation: 2,
-      ),
-      body: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 12,
-        children: [
-          // Container(
-          //   decoration: BoxDecoration(
-          //       image: const DecorationImage(
-          //         image: AssetImage('assets/icon.png'),
-          //         fit: BoxFit.cover,
-          //       ),
-          //       borderRadius: const BorderRadius.all(
-          //         Radius.circular(12),
-          //       ),
-          //       border: Border.all(
-          //         color: CommonColors.colorPrimary!,
-          //       )),
-          //   margin: EdgeInsets.symmetric(
-          //       horizontal: MediaQuery.sizeOf(context).width * 0.04,
-          //       vertical: MediaQuery.sizeOf(context).height * 0.02),
-          //   padding: const EdgeInsets.all(4),
-          //   width: MediaQuery.sizeOf(context).width,
-          //   height: 150,
-          // ),
-          Image.asset(
-            "assets/otpIllustration.png",
-            width: MediaQuery.sizeOf(context).width * 0.7,
-            height: MediaQuery.sizeOf(context).height * 0.4,
-          ),
+    return Consumer<LoginProvider>(
+      builder: (context, provider, child) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleStateChange(provider.status, provider.errorMessage, provider);
+        });
 
-          Expanded(
-            child: Center(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 12,
-                    children: [
-                      Container(
-                        height: 65,
-                        width: 65,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey[100], // background color
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: TextField(
-                            cursorColor: CommonColors.colorPrimary,
-                            cursorWidth: 1,
-                            onChanged: (value) {
-                              debugPrint('Value changed for 1: $value');
-                              if (value.length == 1) {
-                                FocusScope.of(context).nextFocus();
-                              } /* else if (value.length == 0) {
-                            FocusScope.of(context).previousFocus();
-                          } */
-                            },
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[100],
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                            ),
-                            controller: first,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 65,
-                        width: 65,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey[100]!, // background color
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: TextField(
-                            cursorWidth: 1,
-                            cursorColor: CommonColors.colorPrimary,
-                            onChanged: (value) {
-                              debugPrint('Value changed for 2: $value');
-                              if (value.length == 1) {
-                                FocusScope.of(context).nextFocus();
-                              } /* else if (value.length == 0) {
-                                FocusScope.of(context).previousFocus();
-                              } */
-                            },
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[100],
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                            ),
-                            controller: second,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 65,
-                        width: 65,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey[100]!, // background color
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: TextField(
-                            cursorWidth: 1,
-                            cursorColor: CommonColors.colorPrimary,
-                            onChanged: (value) {
-                              debugPrint('Value changed for 3: $value');
-                              if (value.length == 1) {
-                                FocusScope.of(context).nextFocus();
-                              } /* else if (value.length == 0) {
-                                FocusScope.of(context).previousFocus();
-                              } */
-                            },
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[100],
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                            ),
-                            controller: third,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 65,
-                        width: 65,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey[100]!, // background color
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: TextField(
-                            cursorWidth: 1,
-                            cursorColor: CommonColors.colorPrimary,
-                            onChanged: (value) {
-                              /* if (value.length == 1) {
-                            FocusScope.of(context).nextFocus();
-                          } else  */
-                              debugPrint('Value changed for 4: $value');
-                              /* if (value.length == 0) {
-                                FocusScope.of(context).previousFocus();
-                              } else */
-                              if (value.length == 1) {
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[100],
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(32)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueGrey[100]!),
-                              ),
-                            ),
-                            controller: fourth,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: MediaQuery.sizeOf(context).width * 0.1),
-                        child: Text(
-                          _formatTime(widget._seconds) == '00:00'
-                              ? ''
-                              : _formatTime(widget._seconds),
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: CommonColors.white,
+              onPressed: () => Get.back(),
             ),
+            backgroundColor: CommonColors.colorPrimary,
+            title: Text(
+              'Enter OTP',
+              style: TextStyle(color: CommonColors.white),
+            ),
+            elevation: 2,
           ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.end,
-          //   children: [
-          //     Container(
-          //       margin: EdgeInsets.symmetric(
-          //           horizontal: MediaQuery.sizeOf(context).width * 0.2),
-          //       child: Text(
-          //         _formatTime(widget._seconds) == '00:00'
-          //             ? ''
-          //             : _formatTime(widget._seconds),
-          //         style: TextStyle(color: Colors.black, fontSize: 16),
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.sizeOf(context).height * 0.01),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Didn't receive any sms? ",
-                  style: TextStyle(fontSize: 16),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Image.asset(
+                "assets/otpIllustration.png",
+                width: MediaQuery.sizeOf(context).width * 0.7,
+                height: MediaQuery.sizeOf(context).height * 0.4,
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _otpDigitField(first),
+                          const SizedBox(width: 12),
+                          _otpDigitField(second),
+                          const SizedBox(width: 12),
+                          _otpDigitField(third),
+                          const SizedBox(width: 12),
+                          _otpDigitField(fourth),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.sizeOf(context).width * 0.1),
+                            child: Text(
+                              _formatTime(_seconds) == '00:00'
+                                  ? ''
+                                  : _formatTime(_seconds),
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                InkWell(
-                  onTap: () => {
-                    setState(() {
-                      if (widget._showButton) {
-                        // _resetAndStartTimer();
-                        _getLoginOtp();
-                      }
-                    })
-                  },
-                  child: Text(
-                    "Resend Code",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: widget._showButton == true
-                            ? CommonColors.colorPrimary
-                            : CommonColors.disabled),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-      persistentFooterButtons: [
-        Container(
-          width: double.infinity,
-          height: 69,
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 12, bottom: 6),
-          child: ElevatedButton(
-              style: ButtonStyle(
-                shape: const WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(32)))),
-                backgroundColor:
-                    WidgetStatePropertyAll(CommonColors.colorPrimary),
               ),
-              onPressed: () {
-                if (first.value.text.isEmpty ||
-                    second.value.text.isEmpty ||
-                    third.value.text.isEmpty ||
-                    fourth.value.text.isEmpty) {
-                  failToast('Please enter OTP Correctly');
-                } else {
-                  validateEnteredOtp();
-                }
-              },
-              child: const Text(
-                'Verify',
-                style: TextStyle(color: Colors.white),
-              )),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.sizeOf(context).height * 0.01),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Didn't receive any sms? ",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    InkWell(
+                      onTap: _showButton ? _getLoginOtp : null,
+                      child: Text(
+                        "Resend Code",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: _showButton
+                                ? CommonColors.colorPrimary
+                                : CommonColors.disabled),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+          persistentFooterButtons: [
+            Container(
+              width: double.infinity,
+              height: 69,
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, top: 12, bottom: 6),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32)),
+                    backgroundColor: CommonColors.colorPrimary,
+                  ),
+                  onPressed: _onVerifyPressed,
+                  child: const Text(
+                    'Verify',
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _otpDigitField(TextEditingController controller) {
+    return Container(
+      height: 65,
+      width: 65,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[100],
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: TextField(
+          cursorColor: CommonColors.colorPrimary,
+          cursorWidth: 1,
+          onChanged: (value) {
+            if (value.length == 1) {
+              FocusScope.of(context).nextFocus();
+            }
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.blueGrey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32),
+              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+            ),
+            contentPadding: EdgeInsets.zero,
+          ),
+          controller: controller,
+          style: Theme.of(context).textTheme.headlineSmall,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.center,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(1),
+            FilteringTextInputFormatter.digitsOnly
+          ],
         ),
-      ],
+      ),
     );
   }
 }

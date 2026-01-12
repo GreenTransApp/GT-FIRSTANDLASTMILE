@@ -8,6 +8,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/bottomSheet/signatureBottomSheet.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntry_offlineModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
@@ -116,15 +117,16 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF64748B)),
-            const SizedBox(width: 6),
+            Icon(icon,
+                size: SizeConfig.largeIconSize, color: const Color(0xFF64748B)),
+            SizedBox(width: SizeConfig.mediumHorizontalSpacing),
             Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: SizeConfig.smallTextSize,
                       fontWeight: FontWeight.w500,
                       color: CommonColors.darkCyanBlue!,
                     ),
@@ -142,7 +144,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: SizeConfig.smallVerticalSpacing),
         child,
       ],
     );
@@ -152,26 +154,28 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
     return InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: CommonColors.grey400!),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      contentPadding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.horizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide:
             BorderSide(color: CommonColors.primaryColorShade!, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         borderSide: BorderSide(color: CommonColors.red!, width: 1.5),
       ),
     );
@@ -426,21 +430,23 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(SizeConfig.largeRadius),
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(SizeConfig.largeRadius)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF1F5F9),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                        topLeft: Radius.circular(SizeConfig.largeRadius),
+                        topRight: Radius.circular(SizeConfig.largeRadius),
                       ),
                     ),
                     child: Row(
@@ -450,11 +456,11 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                           color: CommonColors.primaryColorShade!,
                           size: 20,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                         Text(
                           'Delivery Information',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: SizeConfig.mediumTextSize,
                             fontWeight: FontWeight.w600,
                             color: CommonColors.primaryColorShade!,
                           ),
@@ -464,7 +470,9 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                   ),
                   const Divider(height: 1),
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -492,7 +500,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(height: SizeConfig.smallVerticalSpacing),
                           Visibility(
                             visible: grPodExists,
                             child: Row(
@@ -514,7 +522,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                           ),
                           Visibility(
                             visible: grPodExists,
-                            child: const SizedBox(height: 20),
+                            child: SizedBox(
+                                height: SizeConfig.smallVerticalSpacing),
                           ),
 
                           Row(
@@ -553,13 +562,16 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                         });
                                       },
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 15),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                SizeConfig.horizontalPadding,
+                                            vertical:
+                                                SizeConfig.verticalPadding),
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                               color: CommonColors.grey300!),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                              SizeConfig.largeRadius),
                                         ),
                                         child: Row(
                                           mainAxisAlignment:
@@ -568,8 +580,9 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                             Text(
                                               _deliveryDateController.text
                                                   .toString(),
-                                              style:
-                                                  const TextStyle(fontSize: 16),
+                                              style: TextStyle(
+                                                  fontSize: SizeConfig
+                                                      .mediumTextSize),
                                             ),
                                             Icon(Icons.calendar_month,
                                                 color: CommonColors.black54),
@@ -578,7 +591,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                       ),
                                     )),
                               ),
-                              const SizedBox(width: 16),
+                              SizedBox(
+                                  width: SizeConfig.mediumHorizontalSpacing),
                               Expanded(
                                 child: _buildFormField(
                                   label: 'Delivery Time',
@@ -592,12 +606,15 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 15),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              SizeConfig.horizontalPadding,
+                                          vertical: SizeConfig.verticalPadding),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                             color: CommonColors.grey300!),
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(
+                                            SizeConfig.largeRadius),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
@@ -606,8 +623,9 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                           Text(
                                             _deliveryTimeController.text
                                                 .toString(),
-                                            style:
-                                                const TextStyle(fontSize: 16),
+                                            style: TextStyle(
+                                                fontSize:
+                                                    SizeConfig.mediumTextSize),
                                           ),
                                           Icon(Icons.access_time,
                                               color: CommonColors.black54),
@@ -619,7 +637,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           _buildFormField(
                             label: 'Received By',
                             isRequired: true,
@@ -640,7 +658,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           _buildFormField(
                             label: 'Receiver Mobile Number',
                             isRequired: true,
@@ -678,7 +696,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           // Relation
                           _buildFormField(
                             label: 'Relation',
@@ -708,7 +726,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           // Delivery Person
                           // _buildFormField(
                           //   label: 'Delivery Person',
@@ -742,9 +760,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               },
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           // Damage Packages
                           _buildFormField(
                             label: "Damaged Pckgs",
@@ -829,8 +845,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 20,
+                          SizedBox(
+                            height: SizeConfig.mediumVerticalSpacing,
                           ),
 
                           Visibility(
@@ -841,8 +857,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                         .toString()) >
                                     0,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -874,14 +890,17 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                       },
                                       child: Container(
                                         alignment: Alignment.center,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 15),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                SizeConfig.horizontalPadding,
+                                            vertical:
+                                                SizeConfig.verticalPadding),
                                         decoration: BoxDecoration(
                                             color:
                                                 CommonColors.primaryColorShade,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(10))),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                    SizeConfig.largeRadius))),
                                         child: Text("Damage Image",
                                             style: TextStyle(
                                                 color: CommonColors.White,
@@ -976,7 +995,11 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.all(10.0),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  SizeConfig.horizontalPadding,
+                                              vertical:
+                                                  SizeConfig.verticalPadding),
                                           child: Text.rich(TextSpan(
                                               text: 'Damage Image',
                                               children: <InlineSpan>[
@@ -992,14 +1015,16 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                             height: 150,
                                             width: MediaQuery.sizeOf(context)
                                                 .width,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 10),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: SizeConfig
+                                                    .horizontalPadding),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: SizeConfig
+                                                    .horizontalPadding),
                                             decoration: BoxDecoration(
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(5)),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      SizeConfig.largeRadius)),
                                               border: Border.all(
                                                   width: 1,
                                                   color: CommonColors
@@ -1026,7 +1051,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                 ),
 /* 
                                 Expanded(
-                                  child: InkWell(
+                                  child: InkWell(                     
                                     onTap: () {
                                       // model.stamp = 'Y';
                                       showImagePickerDialog(context,
@@ -1162,8 +1187,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                           ),
 
  */
-                          const SizedBox(
-                            height: 20,
+                          SizedBox(
+                            height: SizeConfig.mediumVerticalSpacing,
                           ),
                           // Remarks
                           _buildFormField(
@@ -1186,7 +1211,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       spacing: 8,
@@ -1220,12 +1246,13 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10))),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(SizeConfig.largeRadius))),
                               child: Text("Upload Signature",
                                   style: TextStyle(
                                       color: CommonColors.White,
@@ -1251,12 +1278,13 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10))),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(SizeConfig.largeRadius))),
                               child: Text("Upload POD",
                                   style: TextStyle(
                                       color: CommonColors.White,
@@ -1286,7 +1314,6 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                     _signatureFilePath = path;
                                   });
                                 } else {
-                                  // model.sign = 'N';
                                   failToast(
                                       'Something went wrong. Please try again');
                                 }
@@ -1311,13 +1338,16 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                 Container(
                                     height: 150,
                                     width: MediaQuery.sizeOf(context).width / 2,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(5)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              SizeConfig.largeRadius)),
                                       border: Border.all(
                                           width: 1,
                                           color: CommonColors.colorPrimary!),
@@ -1350,7 +1380,6 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                     _podFilePath = file!.path;
                                   });
                                 } else {
-                                  // model!.stamp = 'N';
                                   failToast("File not selected");
                                 }
                               });
@@ -1360,7 +1389,9 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(10.0),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig.horizontalPadding,
+                                      vertical: SizeConfig.verticalPadding),
                                   child: Text.rich(TextSpan(
                                       text: 'POD Image',
                                       children: <InlineSpan>[
@@ -1374,13 +1405,16 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                                 Container(
                                     height: 150,
                                     width: MediaQuery.sizeOf(context).width / 2,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(5)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              SizeConfig.largeRadius)),
                                       border: Border.all(
                                           width: 1,
                                           color: CommonColors.colorPrimary!),
@@ -1408,12 +1442,14 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                   ),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: CommonColors.whiteShade,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(12),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                        bottomRight: Radius.circular(SizeConfig.largeRadius),
                       ),
                     ),
                     child: ElevatedButton(
@@ -1423,16 +1459,18 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(
+                            vertical: SizeConfig.verticalPadding),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(SizeConfig.largeRadius),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Submit POD',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

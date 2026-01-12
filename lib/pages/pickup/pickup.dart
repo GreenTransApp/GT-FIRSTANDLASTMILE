@@ -2308,14 +2308,14 @@ class _PickupState extends State<Pickup> {
 
                                                 showCommonBottomSheet(
                                                   context,
-                                                  "Select Origin Pincode",
+                                                  "Select Origin",
                                                   (data) {
                                                     _selectedOrigin = data;
                                                     _orgController.text =
                                                         _selectedOrigin!.stnName
                                                             .toString();
                                                     _orgPincodeController.text =
-                                                        _selectedOrigin!.stnCode
+                                                        _selectedOrigin!.zipCode
                                                             .toString();
                                                     setState(() {});
                                                   },
@@ -2518,7 +2518,7 @@ class _PickupState extends State<Pickup> {
                                                             .toString();
                                                     _destPincodeController
                                                             .text =
-                                                        _selectedDest!.stnCode
+                                                        _selectedDest!.zipCode
                                                             .toString();
                                                     setState(() {});
                                                   },

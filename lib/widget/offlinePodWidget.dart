@@ -5,6 +5,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntryOfflineRespModel.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntry_offlineModel.dart';
@@ -281,7 +282,7 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
         automaticallyImplyLeading: false,
         title: Text(
           "Total PODs: ${offlinePods.length}",
-          style: const TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: SizeConfig.mediumTextSize),
         ),
         actions: [
           Row(
@@ -311,7 +312,9 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -323,7 +326,7 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
                       color: CommonColors.red500, fontWeight: FontWeight.w400),
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: SizeConfig.mediumVerticalSpacing),
               ListView.builder(
                 itemCount: offlinePods.length,
                 shrinkWrap: true,
@@ -332,9 +335,12 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
                 itemBuilder: (context, index) {
                   var item = offlinePods[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    margin: EdgeInsets.symmetric(
+                        vertical: SizeConfig.verticalPadding),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
                       child: Row(
                         children: [
                           Checkbox(
@@ -352,87 +358,92 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
                               });
                             },
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                           Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '#${index + 1}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '#${index + 1}',
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'GR: ${item.prmgrno}',
-                                    style: const TextStyle(
-                                      // color: Colors.grey,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                    SizedBox(
+                                        width:
+                                            SizeConfig.mediumHorizontalSpacing),
+                                    Text(
+                                      'GR: ${item.prmgrno}',
+                                      style: TextStyle(
+                                        // color: Colors.grey,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeConfig.mediumTextSize,
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
+                                    Expanded(
                                       child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          commonAlertDialog(
-                                              context,
-                                              "Delete ${item.prmgrno}",
-                                              "Are you sure you want to delete pod?",
-                                              "",
-                                              const Icon(Icons.delete_outline),
-                                              () {
-                                            _deletePod(index);
-                                          });
-                                        },
-                                        child: const Icon(Icons.delete_outline),
-                                      )
-                                    ],
-                                  ))
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.prmname!,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              commonAlertDialog(
+                                                  context,
+                                                  "Delete ${item.prmgrno}",
+                                                  "Are you sure you want to delete pod?",
+                                                  "",
+                                                  const Icon(
+                                                      Icons.delete_outline),
+                                                  () {
+                                                _deletePod(index);
+                                              });
+                                            },
+                                            child: const Icon(
+                                                Icons.delete_outline),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '${item.prmphno}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
+                                SizedBox(
+                                    height: SizeConfig.smallVerticalSpacing),
+                                Text(
+                                  item.prmname!,
+                                  style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
                                   ),
-                                  Text(
-                                    '📦 ${item.prmdeliverpckgs} pieces',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
+                                ),
+                                SizedBox(
+                                    height: SizeConfig.smallVerticalSpacing),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${item.prmphno}',
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )),
+                                    Text(
+                                      '📦 ${item.prmdeliverpckgs} pieces',
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   );
                 },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [],
               ),
             ],
           ),

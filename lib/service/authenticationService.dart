@@ -1,28 +1,29 @@
- import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/pages/home/homeScreenPage.dart';
-import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 
 class AuthenticationService {
-   AuthService() {
-    isLogin(); 
+  AuthService() {
+    isLogin();
   }
 
- BehaviorSubject<bool?> isAuthenticated = BehaviorSubject<bool?>.seeded(null);
+  BehaviorSubject<bool?> isAuthenticated = BehaviorSubject<bool?>.seeded(null);
   String token = '';
 
-void storagePush(String key, String value) async {
-  final prefs = await SharedPreferences.getInstance();
-  debugPrint("Storage KEY: $key");
-  debugPrint("Storage VAL: $value");
-  await prefs.setString(key, value);
-}
+  void storagePush(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    debugPrint("Storage KEY: $key");
+    debugPrint("Storage VAL: $value");
+    await prefs.setString(key, value);
+  }
 
   Future<void> isLogin() async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,31 +35,36 @@ void storagePush(String key, String value) async {
     }
   }
 
-Future<String?> storageGet(String key) async {
-  final prefs = await SharedPreferences.getInstance();
-  final String? resp = prefs.getString(key);
-  return resp;
-}
-
-void storageRemove(String key) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove(key);
-}
-
-void storageClear() async {
-  // final prefs = await SharedPreferences.getInstance();
-  storageRemove(ENV.userPrefTag);
-  storageRemove(ENV.loginPrefTag);
-  // await prefs.clear();
-}
-
-void login(BuildContext context) {
-    isAuthenticated.add(true);
-       Get.off( HomeScreen());
+  Future<String?> storageGet(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? resp = prefs.getString(key);
+    return resp;
   }
-   
-    void logout(BuildContext context) {
+
+  void storageRemove(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+  }
+
+  void storageClear() async {
+    // final prefs = await SharedPreferences.getInstance();
+    storageRemove(ENV.userPrefTag);
+    storageRemove(ENV.loginPrefTag);
+    // await prefs.clear();
+  }
+
+  void login(BuildContext context) {
+    isAuthenticated.add(true);
+    Get.off(HomeScreen());
+  }
+
+  void logout(BuildContext context) {
     storageClear();
+    try {
+      context.read<LoginProvider>().resetState();
+    } catch (e) {
+      debugPrint("Error resetting LoginProvider: $e");
+    }
     Routes.goToPage(RoutesName.login, "Login");
   }
- }
+}

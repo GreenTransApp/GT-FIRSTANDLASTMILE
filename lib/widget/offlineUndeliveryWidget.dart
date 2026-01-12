@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/model/undelivery_offlineModel.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/offlineUndeliveryViewModel.dart';
@@ -231,7 +232,7 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
         automaticallyImplyLeading: false,
         title: Text(
           "Total Undeliveries: ${offlineUndelivery.length}",
-          style: const TextStyle(fontSize: 18),
+          style: TextStyle(fontSize: SizeConfig.smallTextSize),
         ),
         actions: [
           Row(
@@ -260,7 +261,9 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -272,16 +275,19 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
                 itemBuilder: (context, index) {
                   var item = offlineUndelivery[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    margin: EdgeInsets.symmetric(
+                        vertical: SizeConfig.mediumVerticalSpacing),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
                       child: Row(
                         children: [
                           Text(
                             '#${index + 1}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: SizeConfig.mediumTextSize,
                             ),
                           ),
                           Checkbox(
@@ -299,7 +305,7 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
                               });
                             },
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: SizeConfig.smallHorizontalSpacing),
                           Expanded(
                               child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,18 +340,18 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
                                   ))
                                 ],
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: SizeConfig.smallVerticalSpacing),
                               Text(
                                 "Reason: ${item.prmreason ?? 'N/A'}",
-                                style: const TextStyle(
-                                  fontSize: 13,
+                                style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 "Action: ${item.prmaction ?? 'N/A'}",
-                                style: const TextStyle(
-                                  fontSize: 13,
+                                style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize,
                                 ),
                               ),
                             ],
