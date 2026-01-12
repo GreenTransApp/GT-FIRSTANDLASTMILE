@@ -1,12 +1,12 @@
 class SESSION {
-  static bool isDebugging = true;
-  // static bool isDebugging = false;
+  // static bool isDebugging = true;
+  static bool isDebugging = false;
 }
 
 class URL {
   static const imageBaseUrl = "https://greentrans.in:446/";
-  // static const baseUrl = "https://greentrans.in:444/API";
-  static const baseUrl = "http://192.168.1.252:45455/API";
+  static const baseUrl = "https://greentrans.in:444/API";
+  // static const baseUrl = "http://192.168.1.252:45455/API";
   // static const baseUrl = "http://192.168.1.253:45457/API";
 }
 
