@@ -180,13 +180,18 @@ class _CommonBottomSheetState<T> extends State<CommonBottomSheet> {
               itemBuilder: (context, index) {
                 return ListTile(
                   selected: (filterList.elementAt(index).title ==
-                      searchController.text),
+                      searchController.text.toString()),
                   selectedColor: Colors.green,
+                  trailing: filterList.elementAt(index).title ==
+                          searchController.text.toString()
+                      ? const Icon(Icons.check)
+                      : null,
                   title: Text(filterList.elementAt(index).title,
                       textAlign: TextAlign.center),
                   onTap: () {
                     searchController.text = filterList.elementAt(index).title;
                     currentModel = filterList.elementAt(index);
+                    setState(() {});
                   },
                 );
               },

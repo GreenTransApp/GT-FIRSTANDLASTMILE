@@ -19,6 +19,7 @@ import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
@@ -846,7 +847,8 @@ class _HomeScreen extends State<HomeScreen>
                     visible: ENV.isDebugging,
                     child: GestureDetector(
                       onTap: () async {
-                        Bluetooth.printReceipt();
+                        // Bluetooth.printReceipt();
+                        Get.to(() => BookingWithEwayBill());
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

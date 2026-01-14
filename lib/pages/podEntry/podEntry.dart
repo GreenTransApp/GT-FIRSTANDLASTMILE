@@ -776,6 +776,30 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   @override
+  void dispose() {
+    _grNoController.dispose();
+    _podDateController.dispose();
+    _podTimeController.dispose();
+    _originNameController.dispose();
+    _destinationNameController.dispose();
+    _bookingDateController.dispose();
+    _bookingTimeController.dispose();
+    _deliveryDateController.dispose();
+    _deliveryTimeController.dispose();
+    _receivedByController.dispose();
+    _receiverMobileByController.dispose();
+    _relationController.dispose();
+    _remarksController.dispose();
+    _arrivalDateController.dispose();
+    _arrivalTimeController.dispose();
+    _deliverPckgsController.dispose();
+    _damagedPckgsController.dispose();
+    _totalWeightController.dispose();
+    _damagedReasonController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSmallDevice = screenWidth <= 360;
