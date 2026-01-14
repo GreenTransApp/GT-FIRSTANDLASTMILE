@@ -4,19 +4,16 @@ import 'dart:io';
 
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
-
-import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
-import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
+import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/validateEwayBillModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-import '../../common/commonResponse.dart';
-
-class TripMisRepository extends BaseRepository {
-  StreamController<List<TripMisModel>> tripsListData = StreamController();
+class BookingWithEwayBillRepository extends BaseRepository {
+  StreamController<String> isErrorLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
-
-  Future<void> getTripMIS(Map<String, dynamic> params) async {
+  StreamController<List<ValidateEwayBillModel>> validateEwayBillList =
+      StreamController();
+  Future<void> getEwayBillCreds(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
@@ -33,22 +30,15 @@ class TripMisRepository extends BaseRepository {
             for (final entry in entries) {
               if (entry.key == "Table") {
                 List<dynamic> list = entry.value;
-                List<UpsertTripResponseModel> resultList = List.generate(
+                List<ValidateEwayBillModel> resultList = List.generate(
                     list.length,
-                    (index) => UpsertTripResponseModel.fromJson(list[index]));
+                    (index) => ValidateEwayBillModel.fromJson(list[index]));
                 if (resultList.isNotEmpty &&
                     resultList.first.commandstatus == -1) {
                   isErrorLiveData
                       .add(resultList.first.commandmessage.toString());
+                  validateEwayBillList.add(resultList);
                 }
-              }
-              if (entry.key == "Table4") {
-                List<dynamic> list2 = entry.value;
-                List<TripMisModel> resultList = List.generate(list2.length,
-                    (index) => TripMisModel.fromJson(list2[index]));
-
-                // var data = resultList;
-                tripsListData.add(resultList);
               }
             }
           } catch (err) {

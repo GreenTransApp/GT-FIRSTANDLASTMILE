@@ -570,9 +570,11 @@ class _PickupState extends State<Pickup> {
         child: Column(
           children: [
             // heading
-            const Text(
+            Text(
               "Invoice #: 1",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: SizeConfig.largeTextSize),
             ),
             const SizedBox(
               height: 8,
