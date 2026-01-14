@@ -415,15 +415,17 @@ class _HomeScreen extends State<HomeScreen>
     Get.back();
   }
 
-  void validateDevice() {
+  Future<void> validateDevice() async {
     // failToast('data not found');
+    String deviceId = await getDeviceId();
     Map<String, String> params = {
       "prmconstring": savedLogin.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmpassword": savedUser.password.toString(),
       "prmappversion": ENV.appVersion,
       "prmapp": ENV.appName,
-      "prmdeviceid": getUuid(),
+      // "prmdeviceid": getUuid(),
+      "prmdeviceid": deviceId,
       "prmsessionid": savedUser.sessionid.toString(),
       "prmappplatform": Platform.isAndroid ? "ANDROID" : "IOS",
     };

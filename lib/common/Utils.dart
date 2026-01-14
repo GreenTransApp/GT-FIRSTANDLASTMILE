@@ -30,6 +30,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 const METHOD_CHANNEL = MethodChannel('com.map_api_key.flutter');
@@ -903,4 +904,15 @@ Future<bool> requestAppPermission(Permission permission,
     debugPrint(' Error requesting permission: $e');
     return false;
   }
+}
+
+Future<String> getDeviceId() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  String? id = prefs.getString('device_uuid');
+  if (id == null) {
+    id = const Uuid().v4();
+    await prefs.setString('device_uuid', id);
+  }
+  return id;
 }

@@ -70,14 +70,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     Map<String, dynamic> valueMap = jsonDecode(user.trim());
     LoginModel userObj = LoginModel.fromJson(valueMap);
     savedLogin = userObj;
-
+    String deviceId = await getDeviceId();
     Map<String, String> params = {
       "prmusername": userObj.username.toString(),
       "prmpassword": userObj.password.toString(),
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
       "prmdevicedt": ENV.deviceDate,
-      "prmdeviceid": getUuid()
+      // "prmdeviceid": getUuid()
+      "prmdeviceid": deviceId
     };
 
     // Access provider and call login

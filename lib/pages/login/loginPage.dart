@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _onLoginPressed() {
+  Future<void> _onLoginPressed() async {
     if (usermobileController.text.isEmpty && passwordController.text.isEmpty) {
       failToast('Username and password are required');
       return;
@@ -59,13 +59,16 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    String deviceId = await getDeviceId();
+
     Map<String, String> params = {
       "prmusername": usermobileController.text,
       "prmpassword": passwordController.text,
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
       "prmdevicedt": ENV.appVersionDate,
-      "prmdeviceid": getUuid()
+      // "prmdeviceid": getUuid()
+      "prmdeviceid": deviceId
     };
 
     context.read<LoginProvider>().loginUser(params);
@@ -124,13 +127,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _validateUserLogin(String companyIdVal, String usernameVal) {
+  Future<void> _validateUserLogin(
+      String companyIdVal, String usernameVal) async {
+    String deviceId = await getDeviceId();
     Map<String, String> params = {
       "prmconstring": companyIdVal,
       "prmusername": usernameVal,
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
-      "prmdeviceid": getUuid()
+      // "prmdeviceid": getUuid()
+      "prmdeviceid": deviceId
     };
     context.read<LoginProvider>().validateUserForLogin(params);
   }

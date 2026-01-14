@@ -72,24 +72,28 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
   }
 
   Future<void> _userLogin() async {
+    String deviceId = await getDeviceId();
     Map<String, String> params = {
       "prmusername": userCredsModel.username.toString(),
       "prmpassword": userCredsModel.userpassword.toString(),
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
       "prmdevicedt": ENV.appVersionDate,
-      "prmdeviceid": getUuid()
+      // "prmdeviceid": getUuid()
+      "prmdeviceid": deviceId
     };
     context.read<LoginProvider>().loginUser(params);
   }
 
-  void _validateUserLogin() {
+  Future<void> _validateUserLogin() async {
+    String deviceId = await getDeviceId();
     Map<String, String> params = {
       "prmconstring": userCredsModel.companyid.toString(),
       "prmusername": userCredsModel.username.toString(),
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
-      "prmdeviceid": getUuid()
+      // "prmdeviceid": getUuid()
+      "prmdeviceid": deviceId
     };
     context.read<LoginProvider>().validateUserForLogin(params);
   }
