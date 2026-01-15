@@ -17,6 +17,7 @@ class AppFormField extends StatelessWidget {
   final VoidCallback? endIconOnTap;
   final Color? endIconColor;
   final String? Function(String?)? validator;
+  final ValueChanged<String>? onChanged;
 
   const AppFormField(
       {super.key,
@@ -33,7 +34,8 @@ class AppFormField extends StatelessWidget {
       this.endIcon,
       this.endIconOnTap,
       this.endIconColor,
-      this.validator});
+      this.validator,
+      this.onChanged});
 
   InputDecoration _inputDecoration(
     String label,
@@ -133,6 +135,7 @@ class AppFormField extends StatelessWidget {
           textInputAction: textInputAction,
           onTap: isInput ? null : onTap,
           onFieldSubmitted: (_) => onSubmitted?.call(),
+          onChanged: onChanged,
           decoration: _inputDecoration(label),
           validator: validator,
         ));

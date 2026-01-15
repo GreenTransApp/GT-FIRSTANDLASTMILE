@@ -43,6 +43,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   final FocusNode _destNameFocusNode = FocusNode();
   final TextEditingController _custNameController = TextEditingController();
   final FocusNode _custNameFocusNode = FocusNode();
+  final TextEditingController _deptNameController = TextEditingController();
+  final FocusNode _deptNameFocusNode = FocusNode();
   final TextEditingController _cngrNameController = TextEditingController();
   final FocusNode _cngrNameFocusNode = FocusNode();
   final TextEditingController _cngrGstController = TextEditingController();
@@ -76,8 +78,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   DepartmentModel? _selectedDept;
   CngrCngeModel? _selectedCngr;
   CngrCngeModel? _selectedCnge;
-  CngrCngeModel? _selectedServiceType;
-  CngrCngeModel? _selectedDeliveryType;
+  ServiceTypeModel? _selectedServiceType;
+  DeliveryTypeModel? _selectedDeliveryType;
   late EwayBillModel _firstEwayBill;
   late EwayBillCredentialsModel _ewaybillCreds;
   String selectedImagePath = "";
@@ -87,6 +89,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   List<CustomerModel> _customerList = [];
   List<CngrCngeModel> _cngrList = [];
   List<CngrCngeModel> _cngeList = [];
+  List<DepartmentModel> _departmentList = [];
   bool _isLoadingLov = false;
 
   final List<ServiceTypeModel> _serviceTypeList = [
@@ -123,6 +126,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       getCustomerList(),
       getCngrCngeList('R'),
       getCngrCngeList('E'),
+      getDepartmentList(),
       // getEwayBillCreds(),
     ];
 
@@ -135,6 +139,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
           _customerList = results[1] as List<CustomerModel>;
           _cngrList = results[2] as List<CngrCngeModel>;
           _cngeList = results[3] as List<CngrCngeModel>;
+          _departmentList = results[4] as List<DepartmentModel>;
           _isLoadingLov = false;
         });
         debugPrint('LOV DATA FETCHED SUCCESSFULLY');
@@ -188,6 +193,16 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     };
 
     return lovViewModel.getCngrCngeList(params, type);
+  }
+
+  Future<List<DepartmentModel>> getDepartmentList() async {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmcustcode": _selectedCustomer!.custCode.toString(),
+      "prmorgcode": _selectedOrigin!.stnCode.toString(),
+    };
+
+    return lovViewModel.getDepartmentList(params);
   }
 
   Future<void> getEwayBillCreds() async {
@@ -776,6 +791,23 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     debugPrint(params.toString());
   }
 
+  void changeChargeableWeight(String value) {
+    double gross = double.tryParse(_gweightController.text) ?? 0;
+    double chargeable = double.tryParse(value) ?? 0;
+
+    if (chargeable < gross) {
+      // Show toast
+      // Fluttertoast.showToast(
+      //   msg: "Chargeable Weight can't be less than Gross Weight",
+      // );
+      failToast("Chargeable Weight can't be less than Gross Weight");
+
+      // Set chargeable weight equal to gross weight
+      _cweightController.text = gross.toString();
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -845,8 +877,32 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       height: SizeConfig.mediumVerticalSpacing,
                     ),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        Expanded(
+                          child: AppFormField(
+                            controller: _grNoController,
+                            focusNode: _grNoFocusNode,
+                            label: 'Consignment',
+                            isRequired: autoGr ? false : true,
+                            icon: Icons.code,
+                            isInput: autoGr ? false : true,
+                            keyboardType: TextInputType.text,
+                            onSubmitted: () {
+                              FocusScope.of(context)
+                                  .requestFocus(_grNoFocusNode);
+                            },
+                            validator: (value) {
+                              if (isNullOrEmpty(value) && !autoGr) {
+                                return 'Consignment is required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: SizeConfig.smallHorizontalSpacing,
+                        ),
                         Row(
                           children: [
                             Text(
@@ -868,27 +924,6 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             )
                           ],
                         ),
-                        Expanded(
-                          child: AppFormField(
-                            controller: _grNoController,
-                            focusNode: _grNoFocusNode,
-                            label: 'Consignment',
-                            isRequired: autoGr ? false : true,
-                            icon: Icons.code,
-                            isInput: autoGr ? false : true,
-                            keyboardType: TextInputType.text,
-                            onSubmitted: () {
-                              FocusScope.of(context)
-                                  .requestFocus(_grNoFocusNode);
-                            },
-                            validator: (value) {
-                              if (isNullOrEmpty(value) && !autoGr) {
-                                return 'Consignment is required';
-                              }
-                              return null;
-                            },
-                          ),
-                        )
                       ],
                     ),
                     SizedBox(
@@ -902,6 +937,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       icon: Icons.location_on,
                       isInput: false,
                       keyboardType: TextInputType.none,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Origin is required';
+                        }
+                        return null;
+                      },
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<BranchModel>> commonList =
@@ -931,6 +974,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       icon: Icons.location_on,
                       isInput: false,
                       keyboardType: TextInputType.none,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Destination is required';
+                        }
+                        return null;
+                      },
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<BranchModel>> commonList =
@@ -959,6 +1010,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       label: 'Customer',
                       isRequired: true,
                       icon: Icons.person,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Customer is required';
+                        }
+                        return null;
+                      },
                       isInput: false,
                       keyboardType: TextInputType.none,
                       onTap: () {
@@ -984,6 +1043,49 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     SizedBox(
                       height: SizeConfig.mediumHorizontalSpacing,
                     ),
+                    AppFormField(
+                      controller: _deptNameController,
+                      focusNode: _deptNameFocusNode,
+                      label: 'Department',
+                      isRequired: true,
+                      icon: Icons.person,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Department is required';
+                        }
+                        return null;
+                      },
+                      isInput: false,
+                      keyboardType: TextInputType.none,
+                      onTap: () {
+                        if (_selectedCustomer == null) {
+                          failToast('Please select customer first');
+                        } else {
+                          FocusScope.of(context).unfocus();
+                          List<CommonDataModel<DepartmentModel>> commonList =
+                              _departmentList
+                                  .map((department) =>
+                                      CommonDataModel<DepartmentModel>(
+                                        department.custDeptName ??
+                                            department.custDeptName ??
+                                            'Unknown',
+                                        department,
+                                      ))
+                                  .toList();
+                          showCommonBottomSheet(context, 'Select Department',
+                              (data) {
+                            _selectedDept = data;
+                            _deptNameController.text = data.custDeptName;
+                            _deptNameFocusNode.unfocus();
+                          }, commonList);
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: SizeConfig.mediumHorizontalSpacing,
+                    ),
                     Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -1001,6 +1103,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               isRequired: true,
                               icon: Icons.person,
                               isInput: false,
+                              endIcon: Icons.arrow_drop_down,
+                              endIconColor: CommonColors.grey400,
                               keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
@@ -1072,6 +1176,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               isRequired: true,
                               icon: Icons.person,
                               isInput: false,
+                              endIcon: Icons.arrow_drop_down,
+                              endIconColor: CommonColors.grey400,
                               keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
@@ -1146,7 +1252,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       isInput: false,
                       icon: Icons.abc,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
                       keyboardType: TextInputType.none,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Service Type is required';
+                        }
+                        return null;
+                      },
                       onTap: () async {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<ServiceTypeModel>> commonList =
@@ -1176,6 +1290,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       isInput: false,
                       icon: Icons.abc,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Delivery Type is required';
+                        }
+                        return null;
+                      },
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
                       keyboardType: TextInputType.none,
                       onTap: () async {
                         FocusScope.of(context).unfocus();
@@ -1264,6 +1386,9 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             isRequired: true,
                             keyboardType: TextInputType.number,
                             icon: Icons.abc,
+                            onChanged: (value) {
+                              changeChargeableWeight(value);
+                            },
                             validator: (value) {
                               if (isNullOrEmpty(value)) {
                                 return 'Chargeable Weight is required';
@@ -1307,14 +1432,18 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                           Icon(
                             Symbols.attach_file,
                             size: SizeConfig.largeIconSize,
+                            weight: 700,
                           ),
                           SizedBox(
                             width: SizeConfig.extraSmallHorizontalSpacing,
                           ),
                           Text(
                             'Attach File',
-                            style:
-                                TextStyle(fontSize: SizeConfig.mediumTextSize),
+                            style: TextStyle(
+                                fontSize: SizeConfig.largeTextSize,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                                decorationStyle: TextDecorationStyle.dashed),
                           )
                         ],
                       ),
@@ -1440,9 +1569,9 @@ class _AnimatedLoadingTextState extends State<AnimatedLoadingText> {
                 ),
               ),
               // Empty space to prevent layout jump
-              Opacity(
+              const Opacity(
                 opacity: 0,
-                child: const Text("..."),
+                child: Text("..."),
               ),
             ],
           ),
