@@ -8,6 +8,7 @@ class EwayBillModel {
   String? invoiceno;
   String? invoicevalue;
   String? invoicedate;
+  bool isValidated = false;
 
   /// CONTROLLERS
   final TextEditingController ewaybillnoCtrl;

@@ -1,6 +1,6 @@
 class EwayBillCredentialsModel {
-  int? commandStatus;
-  String? commandMessage;
+  int? commandstatus;
+  String? commandmessage;
   String? ewayEnabled;
   String? stateGst;
   String? compGst;
@@ -8,8 +8,8 @@ class EwayBillCredentialsModel {
   String? ewayPassword;
 
   EwayBillCredentialsModel({
-    this.commandStatus,
-    this.commandMessage,
+    this.commandstatus,
+    this.commandmessage,
     this.ewayEnabled,
     this.stateGst,
     this.compGst,
@@ -19,8 +19,8 @@ class EwayBillCredentialsModel {
 
   factory EwayBillCredentialsModel.fromJson(Map<String, dynamic> json) {
     return EwayBillCredentialsModel(
-      commandStatus: json['commandstatus'],
-      commandMessage: json['commandmessage'],
+      commandstatus: json['commandstatus'],
+      commandmessage: json['commandmessage'],
       ewayEnabled: json['ewayEnabled'],
       stateGst: json['stateGst'],
       compGst: json['compGst'],
@@ -31,8 +31,8 @@ class EwayBillCredentialsModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'commandstatus': commandStatus,
-      'commandmessage': commandMessage,
+      'commandstatus': commandstatus,
+      'commandmessage': commandmessage,
       'ewayEnabled': ewayEnabled,
       'stateGst': stateGst,
       'compGst': compGst,

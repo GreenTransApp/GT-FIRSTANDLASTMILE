@@ -11,8 +11,8 @@ import 'package:gtlmd/common/viewModel/lovViewModel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/appFormField.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillViewModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillModel.dart';
-import 'package:gtlmd/pages/bookingWithEWayBill/models/validateEwayBillModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:gtlmd/pages/pickup/model/customerModel.dart';
@@ -30,6 +30,7 @@ class BookingWithEwayBill extends StatefulWidget {
 }
 
 class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _bookingDateController = TextEditingController();
   final FocusNode _bookingDateFocusNode = FocusNode();
   final TextEditingController _bookingTimeController = TextEditingController();
@@ -78,7 +79,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   CngrCngeModel? _selectedServiceType;
   CngrCngeModel? _selectedDeliveryType;
   late EwayBillModel _firstEwayBill;
-  late ValidateEwayBillModel _validateEwayBill;
+  late EwayBillCredentialsModel _ewaybillCreds;
   String selectedImagePath = "";
 
   List<EwayBillModel> _ewayBillList = [];
@@ -204,9 +205,42 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   setObserver() {
     viewModel.validateEwayBillList.stream.listen((data) {
       // debugPrint(data.toString());
-      _validateEwayBill = data.first;
+      _ewaybillCreds = data.first;
       if (data.isNotEmpty && data.first.commandstatus == -1) {
         failToast(data.first.commandmessage.toString());
+      }
+    });
+
+    viewModel.refreshEwb.stream.listen((data) {
+      debugPrint(data.toString());
+      if (data.containsKey('ewaybillno')) {
+        String ewaybillno = data['ewaybillno'];
+        EwayBillModel? targetModel;
+
+        if (_firstEwayBill.ewaybillnoCtrl.text == ewaybillno) {
+          targetModel = _firstEwayBill;
+        } else {
+          try {
+            targetModel = _ewayBillList.firstWhere(
+              (element) => element.ewaybillnoCtrl.text == ewaybillno,
+            );
+          } catch (e) {
+            targetModel = null;
+          }
+        }
+
+        if (targetModel != null) {
+          final model = targetModel;
+          setState(() {
+            model.ewaybilldateCtrl.text = data['ewbDate'] ?? '';
+            model.validuptoCtrl.text = data['validUpto'] ?? '';
+            model.invoicenoCtrl.text = data['docNo'] ?? '';
+            model.invoicevalueCtrl.text = data['totalValue']?.toString() ?? '';
+            model.invoicedateCtrl.text = data['docDate'] ?? '';
+            model.isValidated = true;
+            model.syncFromControllers();
+          });
+        }
       }
     });
   }
@@ -229,6 +263,19 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   deleteEwayBill(int index) {
     _ewayBillList.removeAt(index);
     setState(() {});
+  }
+
+  validateEwayBill(String ewaybillno, EwayBillCredentialsModel credentials) {
+    if (credentials.ewayEnabled != 'Y') {
+      failToast('Eway Bill API Not Allow To Login');
+      return;
+    }
+
+    Map<String, String> params = {
+      "userid": credentials.ewayUserId.toString(),
+      "password": credentials.ewayPassword.toString(),
+    };
+    viewModel.ewayBillLogin(params, ewaybillno, credentials.compGst!);
   }
 
   Widget defaultEWayBillCard() {
@@ -257,8 +304,25 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "EwayBill No",
                     isRequired: true,
                     icon: Icons.abc,
+                    keyboardType: TextInputType.text,
                     endIcon: Icons.check,
-                    endIconOnTap: () {},
+                    endIconColor: _firstEwayBill.isValidated
+                        ? Colors.green
+                        : CommonColors.primaryColorShade,
+                    endIconOnTap: () {
+                      if (isNullOrEmpty(_firstEwayBill.ewaybillnoCtrl.text)) {
+                        failToast('EwayBill No requried');
+                      } else {
+                        validateEwayBill(
+                            _firstEwayBill.ewaybillnoCtrl.text, _ewaybillCreds);
+                      }
+                    },
+                    validator: (value) {
+                      if (isNullOrEmpty(value)) {
+                        return 'EwayBill No is required';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 SizedBox(
@@ -271,6 +335,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "EwayBill Date",
                     isRequired: true,
                     icon: Icons.calendar_today,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
@@ -287,6 +353,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Valid UpTo",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
                 SizedBox(
@@ -299,6 +367,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice No",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
@@ -315,6 +385,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice Value",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
                 SizedBox(
@@ -327,9 +399,40 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice Date",
                     isRequired: true,
                     icon: Icons.calendar_today,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: SizeConfig.mediumVerticalSpacing,
+            ),
+            Visibility(
+              visible: _firstEwayBill.isValidated == false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning_outlined,
+                    color: CommonColors.red,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.smallHorizontalSpacing,
+                  ),
+                  Text(
+                    'EWAY Bill not validated',
+                    style: TextStyle(
+                        color: CommonColors.red,
+                        fontSize: SizeConfig.mediumTextSize,
+                        fontWeight: FontWeight.w500),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(
+              height: SizeConfig.mediumVerticalSpacing,
             ),
             SizedBox(
               width: double.infinity,
@@ -366,7 +469,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     );
   }
 
-  Widget eWayBillCard(EwayBillModel eWayBill, int index) {
+  Widget eWayBillCard(EwayBillModel model, int index) {
     EwayBillModel eWayBill = _ewayBillList[index - 2];
     return Card(
       child: Padding(
@@ -393,6 +496,20 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "EwayBill No",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: true,
+                    keyboardType: TextInputType.text,
+                    endIcon: Icons.check,
+                    endIconColor: eWayBill.isValidated
+                        ? Colors.green
+                        : CommonColors.primaryColorShade,
+                    endIconOnTap: () {
+                      if (isNullOrEmpty(eWayBill.ewaybillnoCtrl.text)) {
+                        failToast('EwayBill No requried');
+                      } else {
+                        validateEwayBill(
+                            eWayBill.ewaybillnoCtrl.text, _ewaybillCreds);
+                      }
+                    },
                   ),
                 ),
                 SizedBox(
@@ -405,6 +522,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "EwayBill Date",
                     isRequired: true,
                     icon: Icons.calendar_today,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
@@ -421,6 +540,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Valid UpTo",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
                 SizedBox(
@@ -433,6 +554,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice No",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
@@ -449,6 +572,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice Value",
                     isRequired: true,
                     icon: Icons.abc,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
                 SizedBox(
@@ -461,9 +586,40 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     label: "Invoice Date",
                     isRequired: true,
                     icon: Icons.calendar_today,
+                    isInput: false,
+                    keyboardType: TextInputType.none,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: SizeConfig.mediumVerticalSpacing,
+            ),
+            Visibility(
+              visible: eWayBill.isValidated == false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning_outlined,
+                    color: CommonColors.red,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.smallHorizontalSpacing,
+                  ),
+                  Text(
+                    'EWAY Bill not validated',
+                    style: TextStyle(
+                        color: CommonColors.red,
+                        fontSize: SizeConfig.mediumTextSize,
+                        fontWeight: FontWeight.w500),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(
+              height: SizeConfig.mediumVerticalSpacing,
             ),
             Row(
               children: [
@@ -540,6 +696,86 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     );
   }
 
+  bool checkEwayBillValidation() {
+    if (!_firstEwayBill.isValidated) {
+      failToast("EwayBill #1 not validated");
+      return false;
+    }
+    for (int i = 0; i < _ewayBillList.length; i++) {
+      if (!_ewayBillList[i].isValidated) {
+        failToast("EwayBill #${i + 2} not validated");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void validateForm() {
+    if (!_formKey.currentState!.validate()) {
+      failToast("Please fill all required fields");
+      return;
+    }
+    if (!checkEwayBillValidation()) {
+      return;
+    }
+    if (isNullOrEmpty(selectedImagePath)) {
+      failToast("Booking image is required");
+      return;
+    } else {
+      saveBooking();
+    }
+  }
+
+  void saveBooking() {
+    String ewaybillnostr = _firstEwayBill.ewaybillnoCtrl.text.toString(),
+        ewaybilldtstr = convert2SmallDateTime(
+            _firstEwayBill.ewaybilldateCtrl.text.toString()),
+        validuptostr =
+            convert2SmallDateTime(_firstEwayBill.validuptoCtrl.text.toString()),
+        invoicenostr = _firstEwayBill.invoicenoCtrl.text.toString(),
+        invoicevaluestr = _firstEwayBill.invoicevalueCtrl.text.toString(),
+        invoicedtstr = convert2SmallDateTime(
+            _firstEwayBill.invoicedateCtrl.text.toString());
+    for (int i = 0; i < _ewayBillList.length; i++) {
+      EwayBillModel bill = _ewayBillList[i];
+      ewaybillnostr += "${bill.ewaybillnoCtrl.text},";
+      ewaybilldtstr += "${convert2SmallDateTime(bill.ewaybilldateCtrl.text)},";
+      validuptostr += "${convert2SmallDateTime(bill.validuptoCtrl.text)},";
+      invoicenostr += "${bill.invoicenoCtrl.text},";
+      invoicevaluestr += "${bill.invoicevalueCtrl.text},";
+      invoicedtstr += "${convert2SmallDateTime(bill.invoicedateCtrl.text)},";
+    }
+    Map<String, String> params = {
+      'prmbookingdt': convert2SmallDateTime(_bookingDateController.text),
+      'prmbookingtime': formatTimeString(_bookingTimeController.text),
+      'prmgrno': autoGr ? '' : _grNoController.text,
+      'prmautogr': autoGr ? 'Y' : 'N',
+      'prmorgcode': _selectedOrigin!.stnCode.toString(),
+      'prmdestcode': _selectedDestination!.stnCode.toString(),
+      'prmcustcode': _selectedCustomer!.custCode.toString(),
+      'prmcngr': _selectedCngr!.code.toString(),
+      'prmcngrgst': _selectedCngr!.gstNo.toString(),
+      'prmcnge': _selectedCnge!.code.toString(),
+      'prmcngegst': _selectedCnge!.gstNo.toString(),
+      'prmebillno': ewaybillnostr,
+      'prmebilldt': ewaybilldtstr,
+      'prmebillvalidupto': validuptostr,
+      'prmebillinvoiceno': invoicenostr,
+      'prmebillinvoicevalue': invoicevaluestr,
+      'prmebillinvoicedt': invoicedtstr,
+      // 'prmservicetype': _selectedServiceType!.code.toString(),
+      // 'prmdlvtype': _selectedDeliveryType!.code.toString(),
+      'prmnoofpckgs': _noofpckgsController.text.toString(),
+      'prmgweight': _gweightController.text.toString(),
+      'prmvweight': _vweightController.text.toString(),
+      'prmcweight': _cweightController.text.toString(),
+      'prmremarks': _remarksController.text.toString(),
+      'prmimg': selectedImagePath,
+    };
+
+    debugPrint(params.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -564,6 +800,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
               }
             },
             child: Form(
+              key: _formKey,
               child: Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.horizontalPadding,
@@ -583,6 +820,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             isRequired: true,
                             icon: Icons.calendar_today,
                             isInput: false,
+                            keyboardType: TextInputType.none,
+                            textInputAction: TextInputAction.none,
                           ),
                         ),
                         SizedBox(
@@ -596,6 +835,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             isRequired: true,
                             icon: Icons.calendar_today,
                             isInput: false,
+                            keyboardType: TextInputType.none,
+                            textInputAction: TextInputAction.none,
                           ),
                         )
                       ],
@@ -632,13 +873,19 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             controller: _grNoController,
                             focusNode: _grNoFocusNode,
                             label: 'Consignment',
-                            isRequired: true,
+                            isRequired: autoGr ? false : true,
                             icon: Icons.code,
                             isInput: autoGr ? false : true,
                             keyboardType: TextInputType.text,
                             onSubmitted: () {
                               FocusScope.of(context)
                                   .requestFocus(_grNoFocusNode);
+                            },
+                            validator: (value) {
+                              if (isNullOrEmpty(value) && !autoGr) {
+                                return 'Consignment is required';
+                              }
+                              return null;
                             },
                           ),
                         )
@@ -654,6 +901,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       icon: Icons.location_on,
                       isInput: false,
+                      keyboardType: TextInputType.none,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<BranchModel>> commonList =
@@ -682,6 +930,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       icon: Icons.location_on,
                       isInput: false,
+                      keyboardType: TextInputType.none,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<BranchModel>> commonList =
@@ -711,6 +960,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       icon: Icons.person,
                       isInput: false,
+                      keyboardType: TextInputType.none,
                       onTap: () {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<CustomerModel>> commonList =
@@ -751,6 +1001,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               isRequired: true,
                               icon: Icons.person,
                               isInput: false,
+                              keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
                                 List<CommonDataModel<CngrCngeModel>>
@@ -771,6 +1022,12 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                   _cngrNameFocusNode.unfocus();
                                 }, commonList);
                               },
+                              validator: (value) {
+                                if (isNullOrEmpty(value)) {
+                                  return 'Consignor is required';
+                                }
+                                return null;
+                              },
                             ),
                             SizedBox(
                               height: SizeConfig.smallHorizontalSpacing,
@@ -781,6 +1038,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               label: 'GST',
                               isRequired: false,
                               icon: Icons.code,
+                              keyboardType: TextInputType.none,
+                              isInput: false,
+                              textInputAction: TextInputAction.none,
+                              validator: (value) {
+                                if (isNullOrEmpty(value)) {
+                                  return 'GST is required';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),
@@ -806,6 +1072,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               isRequired: true,
                               icon: Icons.person,
                               isInput: false,
+                              keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
                                 List<CommonDataModel<CngrCngeModel>>
@@ -818,13 +1085,19 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                               cnge,
                                             ))
                                         .toList();
-                                showCommonBottomSheet(context, 'Select Origin',
-                                    (data) {
+                                showCommonBottomSheet(
+                                    context, 'Select Consignee', (data) {
                                   _selectedCnge = data;
                                   _cngeNameController.text = data.name;
                                   _cngeGstController.text = data.gstNo;
                                   _cngeNameFocusNode.unfocus();
                                 }, commonList);
+                              },
+                              validator: (value) {
+                                if (isNullOrEmpty(value)) {
+                                  return 'Consignee is required';
+                                }
+                                return null;
                               },
                             ),
                             SizedBox(
@@ -836,6 +1109,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               label: 'GST',
                               isRequired: false,
                               icon: Icons.code,
+                              keyboardType: TextInputType.none,
+                              isInput: false,
+                              textInputAction: TextInputAction.none,
+                              validator: (value) {
+                                if (isNullOrEmpty(value)) {
+                                  return 'GST is required';
+                                }
+                                return null;
+                              },
                             ),
                           ],
                         ),
@@ -864,6 +1146,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       isInput: false,
                       icon: Icons.abc,
+                      keyboardType: TextInputType.none,
                       onTap: () async {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<ServiceTypeModel>> commonList =
@@ -893,6 +1176,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       isRequired: true,
                       isInput: false,
                       icon: Icons.abc,
+                      keyboardType: TextInputType.none,
                       onTap: () async {
                         FocusScope.of(context).unfocus();
                         List<CommonDataModel<DeliveryTypeModel>> commonList =
@@ -917,20 +1201,36 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       children: [
                         Expanded(
                           child: AppFormField(
-                              controller: _noofpckgsController,
-                              focusNode: _noofpckgsFocusNode,
-                              label: 'No of Pckgs',
-                              isRequired: true,
-                              icon: Icons.abc),
+                            controller: _noofpckgsController,
+                            focusNode: _noofpckgsFocusNode,
+                            label: 'No of Pckgs',
+                            isRequired: true,
+                            keyboardType: TextInputType.number,
+                            icon: Icons.abc,
+                            validator: (value) {
+                              if (isNullOrEmpty(value)) {
+                                return 'No of Pckgs is required';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                         SizedBox(width: SizeConfig.smallHorizontalSpacing),
                         Expanded(
                           child: AppFormField(
-                              controller: _gweightController,
-                              focusNode: _gweightFocusNode,
-                              label: 'Gross Weight',
-                              isRequired: true,
-                              icon: Icons.abc),
+                            controller: _gweightController,
+                            focusNode: _gweightFocusNode,
+                            label: 'Gross Weight',
+                            keyboardType: TextInputType.number,
+                            isRequired: true,
+                            icon: Icons.abc,
+                            validator: (value) {
+                              if (isNullOrEmpty(value)) {
+                                return 'Gross Weight is required';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -941,20 +1241,36 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       children: [
                         Expanded(
                           child: AppFormField(
-                              controller: _vweightController,
-                              focusNode: _vweightFocusNode,
-                              label: 'Vol Weight',
-                              isRequired: true,
-                              icon: Icons.abc),
+                            controller: _vweightController,
+                            focusNode: _vweightFocusNode,
+                            label: 'Vol Weight',
+                            keyboardType: TextInputType.number,
+                            isRequired: true,
+                            icon: Icons.abc,
+                            validator: (value) {
+                              if (isNullOrEmpty(value)) {
+                                return 'Vol Weight is required';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                         SizedBox(width: SizeConfig.smallHorizontalSpacing),
                         Expanded(
                           child: AppFormField(
-                              controller: _cweightController,
-                              focusNode: _cweightFocusNode,
-                              label: 'Chargeable Weight',
-                              isRequired: true,
-                              icon: Icons.abc),
+                            controller: _cweightController,
+                            focusNode: _cweightFocusNode,
+                            label: 'Chargeable Weight',
+                            isRequired: true,
+                            keyboardType: TextInputType.number,
+                            icon: Icons.abc,
+                            validator: (value) {
+                              if (isNullOrEmpty(value)) {
+                                return 'Chargeable Weight is required';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -966,6 +1282,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                         focusNode: _remarksFocusNode,
                         label: 'Remarks',
                         isRequired: false,
+                        keyboardType: TextInputType.text,
                         icon: Icons.text_fields),
                     SizedBox(
                       height: SizeConfig.mediumHorizontalSpacing,
@@ -1034,7 +1351,9 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             top: 0,
                             bottom: SizeConfig.verticalPadding),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            validateForm();
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: CommonColors.colorPrimary,
                             foregroundColor: CommonColors.White,
