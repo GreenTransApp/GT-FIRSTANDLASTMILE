@@ -86,6 +86,8 @@ dependencies:
   flutter_esc_pos_utils: ^1.0.1
   flutter_reactive_ble: ^5.4.0
   flutter_native_splash: ^2.4.7
+  flutter_local_notifications: ^19.5.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
