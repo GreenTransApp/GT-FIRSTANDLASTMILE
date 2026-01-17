@@ -860,7 +860,7 @@ class _HomeScreen extends State<HomeScreen>
                     child: GestureDetector(
                       onTap: () async {
                         // Bluetooth.printReceipt();
-                        Get.to(() => BookingWithEwayBill());
+                        Get.to(() => const BluetoothScreen());
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

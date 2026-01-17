@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Bluetooth access is required to connect to nearby printers and approved devices for attendance verification and operational printing.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth access is required to connect to nearby printers and approved devices for attendance verification and operational printing.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Need to access your camera to capture a picture</string>
 

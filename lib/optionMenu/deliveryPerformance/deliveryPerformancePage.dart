@@ -5,6 +5,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceViewModel.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
@@ -112,14 +113,15 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
           icon: Icon(
             Icons.arrow_back_ios,
             color: CommonColors.white,
+            size: SizeConfig.largeIconSize,
           ),
         ),
         title: Text(
           'Delivery Performance',
           style: TextStyle(
-            color: CommonColors.white,
-            fontWeight: FontWeight.w600,
-          ),
+              color: CommonColors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: SizeConfig.largeTextSize),
         ),
       ),
       body: SingleChildScrollView(
@@ -141,13 +143,13 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: SizeConfig.smallVerticalSpacing),
 
             /// USER NAME
             Text(
               savedUser.displayusername.toString(),
               style: TextStyle(
-                fontSize: 20,
+                fontSize: SizeConfig.largeTextSize,
                 fontWeight: FontWeight.w600,
                 color: CommonColors.textPrimary,
               ),
@@ -160,12 +162,14 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
               elevation: 4,
               shadowColor: CommonColors.shadow,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius:
+                    BorderRadius.circular(SizeConfig.extraLargeRadius),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
+                  borderRadius:
+                      BorderRadius.circular(SizeConfig.extraLargeRadius),
+                  gradient: const LinearGradient(
                     colors: [
                       CommonColors.primaryLight,
                       CommonColors.primaryLight,
@@ -174,8 +178,9 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                     end: Alignment.bottomRight,
                   ),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.largeHorizontalPadding,
+                    vertical: SizeConfig.largeVerticalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -183,41 +188,45 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                     Text(
                       'Consignment Summary',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: SizeConfig.mediumTextSize,
                         color: CommonColors.textSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
 
-                    const SizedBox(height: 15),
+                    SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                     /// TOTAL CONSIGNMENT
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
                           decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary?.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            color: CommonColors.colorPrimary
+                                ?.withAlpha((0.2 * 255).toInt()),
+                            borderRadius: BorderRadius.circular(
+                                SizeConfig.extraLargeRadius),
                           ),
                           child: Icon(
                             Icons.local_shipping_outlined,
                             color: CommonColors.colorPrimary,
-                            size: 26,
+                            size: SizeConfig.extraLargeIconSize,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Total Consignment',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: SizeConfig.mediumTextSize,
                                 color: CommonColors.textSecondary,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: SizeConfig.smallVerticalSpacing),
                             Text(
                               isNullOrEmpty(performanceData.noOfConsignments
                                       .toString())
@@ -225,7 +234,7 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                                   : performanceData.noOfConsignments
                                       .toString(), // You can bind this dynamically
                               style: TextStyle(
-                                fontSize: 22,
+                                fontSize: SizeConfig.largeTextSize,
                                 fontWeight: FontWeight.bold,
                                 color: CommonColors.textPrimary,
                               ),
@@ -235,31 +244,35 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       ],
                     ),
 
-                    const SizedBox(height: 15),
+                    SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
                     Divider(
                       thickness: 1,
                       color: CommonColors.testColor,
                     ),
 
-                    const SizedBox(height: 10),
+                    SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
                     /// PENDING CONSIGNMENT AS % WITH PROGRESS
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
                           decoration: BoxDecoration(
-                            color: CommonColors.orange!.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            color: CommonColors.orange!
+                                .withAlpha((255 * 0.2).toInt()),
+                            borderRadius: BorderRadius.circular(
+                                SizeConfig.extraLargeIconSize),
                           ),
                           child: Icon(
                             Icons.hourglass_bottom_rounded,
                             color: CommonColors.orange,
-                            size: 24,
+                            size: SizeConfig.extraLargeIconSize,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,11 +280,11 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                               Text(
                                 'Pending Consignment',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   color: CommonColors.textSecondary,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: SizeConfig.smallVerticalSpacing),
                               Text(
                                 isNullOrEmpty(performanceData.pendingPercent
                                         .toString())
@@ -279,14 +292,15 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                                     : performanceData.pendingPercent
                                         .toString(), // dynamically bind pending %
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: SizeConfig.largeTextSize,
                                   fontWeight: FontWeight.w600,
                                   color: CommonColors.orange,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(
+                                      SizeConfig.smallRadius),
                                   child: LinearProgressIndicator(
                                     value: ((double.tryParse(performanceData
                                                         .pendingPercent ??
@@ -295,8 +309,8 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                                             100)
                                         .clamp(0.0,
                                             1.0), // ensures the value is between 0 and 1
-                                    backgroundColor:
-                                        CommonColors.orange!.withOpacity(0.2),
+                                    backgroundColor: CommonColors.orange!
+                                        .withAlpha((0.2 * 255).toInt()),
                                     valueColor: AlwaysStoppedAnimation(
                                         CommonColors.orange),
                                     minHeight: 6,
@@ -311,7 +325,7 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
               ),
             ),
 
-            const SizedBox(height: 15),
+            SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
             /// ANALYTICS TITLE
             Align(
@@ -414,10 +428,12 @@ class AnalyticsBox extends StatelessWidget {
     double percentValue = (double.tryParse(percentage) ?? 0) / 100;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.largeHorizontalPadding,
+          vertical: SizeConfig.verticalPadding),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(SizeConfig.extraLargeRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,23 +444,28 @@ class AnalyticsBox extends StatelessWidget {
             children: [
               if (icon != null)
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   decoration: BoxDecoration(
-                    color: CommonColors.appBarColor!.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
+                    color: CommonColors.appBarColor!
+                        .withAlpha((255 * 0.2).toInt()),
+                    borderRadius:
+                        BorderRadius.circular(SizeConfig.extraLargeRadius),
                   ),
                   child: Icon(
                     icon,
-                    size: 20,
+                    size: SizeConfig.largeIconSize,
                     color: CommonColors.white,
                   ),
                 ),
-              if (icon != null) const SizedBox(width: 8),
+              if (icon != null)
+                SizedBox(width: SizeConfig.smallHorizontalSpacing),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: SizeConfig.mediumTextSize,
                     fontWeight: FontWeight.w600,
                     color: CommonColors.appBarColor,
                   ),
@@ -453,21 +474,21 @@ class AnalyticsBox extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
           // COUNT
           FittedBox(
             child: Text(
               count,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: SizeConfig.largeTextSize,
                 fontWeight: FontWeight.bold,
                 color: CommonColors.white,
               ),
             ),
           ),
 
-          const SizedBox(height: 4),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
           // PERCENTAGE + PROGRESS
           Expanded(
@@ -479,18 +500,19 @@ class AnalyticsBox extends StatelessWidget {
                   child: Text(
                     '$percentage%',
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: SizeConfig.largeTextSize,
                       fontWeight: FontWeight.w800,
-                      color: CommonColors.white!.withOpacity(0.8),
+                      color: CommonColors.white!.withAlpha((0.8 * 255).toInt()),
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: SizeConfig.smallVerticalSpacing),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: LinearProgressIndicator(
                     value: percentValue.clamp(0.0, 1.0),
-                    backgroundColor: CommonColors.white!.withOpacity(0.2),
+                    backgroundColor:
+                        CommonColors.white!.withAlpha((0.2 * 255).toInt()),
                     valueColor: AlwaysStoppedAnimation(CommonColors.white),
                     minHeight: 6,
                   ),
