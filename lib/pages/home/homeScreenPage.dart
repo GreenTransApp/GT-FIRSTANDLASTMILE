@@ -793,6 +793,8 @@ class _HomeScreen extends State<HomeScreen>
                 }
               });
             },
+            labelTextStyle: WidgetStatePropertyAll(
+                TextStyle(fontSize: SizeConfig.smallTextSize)),
             indicatorColor: CommonColors.colorPrimary!
                 .withAlpha((0.15 * 255).toInt()), // light background
             destinations: [
