@@ -368,7 +368,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           elevation: 2,
           color: CommonColors.grey300,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.symmetric(
+                horizontal: SizeConfig.horizontalPadding,
+                vertical: SizeConfig.verticalPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -394,8 +396,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                   children: [
                                     Icon(
                                       Icons.calendar_today_rounded,
-                                      size: SizeConfig.largeIconSize,
-                                      color: Colors.black54,
+                                      size: SizeConfig.smallIconSize,
+                                      color: CommonColors.appBarColor,
                                     ),
                                     SizedBox(
                                       width: SizeConfig.smallHorizontalSpacing,
@@ -403,8 +405,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                     Text(
                                       "DISPATCH DATE",
                                       style: TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: SizeConfig.mediumTextSize,
+                                          color: CommonColors.appBarColor,
+                                          fontSize: SizeConfig.smallTextSize,
                                           fontWeight: FontWeight.w400),
                                     )
                                   ],
@@ -422,7 +424,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           color: CommonColors.appBarColor,
-                                          fontSize: SizeConfig.mediumTextSize),
+                                          fontSize: SizeConfig.smallTextSize),
                                     )
                                   ],
                                 )
@@ -453,7 +455,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                   children: [
                                     Icon(
                                       Icons.calendar_today_rounded,
-                                      size: SizeConfig.largeIconSize,
+                                      size: SizeConfig.smallIconSize,
                                       color: CommonColors.appBarColor,
                                     ),
                                     SizedBox(
@@ -462,8 +464,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                     Text(
                                       "DISPATCH TIME",
                                       style: TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: SizeConfig.mediumTextSize,
+                                          color: CommonColors.appBarColor,
+                                          fontSize: SizeConfig.smallTextSize,
                                           fontWeight: FontWeight.w400),
                                     )
                                   ],
@@ -493,22 +495,25 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 16,
+                SizedBox(
+                  height: SizeConfig.mediumVerticalSpacing,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "START ODOMETER READING",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: SizeConfig.mediumTextSize),
                     ),
                     TextField(
                       enabled: false,
                       controller: _startReadingController,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(color: CommonColors.appBarColor),
+                      style: TextStyle(
+                          color: CommonColors.appBarColor,
+                          fontSize: SizeConfig.mediumTextSize),
                       decoration: const InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -522,15 +527,18 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: SizeConfig.smallVerticalSpacing),
                 Container(
                   height: 150,
                   width: MediaQuery.sizeOf(context).width,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(SizeConfig.largeRadius)),
                     border:
                         Border.all(width: 1, color: CommonColors.colorPrimary!),
                   ),
@@ -574,38 +582,41 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
         const Divider(
           height: 1,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
         Row(
           children: [
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(SizeConfig.largeRadius)),
                   border: Border.all(color: CommonColors.grey400!, width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(
                           Icons.calendar_today_rounded,
-                          size: 18,
+                          size: SizeConfig.smallIconSize,
                           color: Colors.black54,
                         ),
                         SizedBox(
-                          width: 8,
+                          width: SizeConfig.smallHorizontalSpacing,
                         ),
                         Text(
                           "CLOSE DATE",
                           style: TextStyle(
                               color: Colors.black87,
-                              fontSize: 12,
+                              fontSize: SizeConfig.smallTextSize,
                               fontWeight: FontWeight.w400),
                         )
                       ],
@@ -620,10 +631,10 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                         ),
                         Text(
                           _closeDateController.text,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: CommonColors.appBarColor,
-                              fontSize: 20),
+                              fontSize: SizeConfig.smallTextSize),
                         )
                       ],
                     )
@@ -631,32 +642,35 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: SizeConfig.mediumHorizontalSpacing),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(SizeConfig.largeIconSize)),
                   border: Border.all(color: CommonColors.grey400!, width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(
                           Icons.calendar_today_rounded,
-                          size: 18,
-                          color: Colors.black54,
+                          size: SizeConfig.smallIconSize,
+                          color: CommonColors.appBarColor,
                         ),
                         SizedBox(
-                          width: 8,
+                          width: SizeConfig.smallHorizontalSpacing,
                         ),
                         Text(
                           " CLOSE TIME",
                           style: TextStyle(
                               color: Colors.black87,
-                              fontSize: 12,
+                              fontSize: SizeConfig.smallTextSize,
                               fontWeight: FontWeight.w400),
                         )
                       ],
@@ -666,15 +680,15 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                     ),
                     Row(
                       children: [
-                        const SizedBox(
-                          width: 24,
+                        SizedBox(
+                          width: SizeConfig.mediumHorizontalSpacing,
                         ),
                         Text(
                           _closeTimeController.text,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: CommonColors.appBarColor,
-                              fontSize: 20),
+                              fontSize: SizeConfig.smallTextSize),
                         )
                       ],
                     )
@@ -684,34 +698,38 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 Icon(
                   Icons.speed_rounded,
-                  color: Colors.black54,
+                  color: CommonColors.appBarColor,
+                  size: SizeConfig.largeIconSize,
                 ),
                 SizedBox(
-                  width: 8,
+                  width: SizeConfig.smallHorizontalSpacing,
                 ),
                 Text(
                   "CLOSE ODOMETER READING",
-                  style: TextStyle(color: Colors.black54),
+                  style: TextStyle(
+                      color: CommonColors.appBarColor,
+                      fontSize: SizeConfig.mediumTextSize),
                 )
               ],
             ),
-            const SizedBox(
-              height: 8,
+            SizedBox(
+              height: SizeConfig.smallVerticalSpacing,
             ),
             Row(
               children: [
                 Expanded(
                     child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   child: TextField(
                     controller: _closeReadingController,
                     onChanged: changeCloseReading,
@@ -719,17 +737,19 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                     cursorColor: CommonColors.colorPrimary,
                     textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: SizeConfig.smallTextSize),
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.largeRadius)),
                         borderSide:
                             BorderSide(width: 1, color: CommonColors.grey400!),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.largeRadius)),
                         borderSide:
                             BorderSide(width: 1, color: CommonColors.grey400!),
                       ),
@@ -738,41 +758,46 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                 )),
                 const Text(
                   "km",
-                  style: TextStyle(color: Colors.black87),
+                  style: TextStyle(color: CommonColors.appBarColor),
                 )
               ],
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.symmetric(
+              vertical: SizeConfig.verticalPadding,
+              horizontal: SizeConfig.horizontalPadding),
           decoration: BoxDecoration(
               border: Border.all(color: CommonColors.grey400!, width: 1),
-              borderRadius: const BorderRadius.all(Radius.circular(12))),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.camera_alt_outlined,
-                    color: Colors.black54,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
                   ),
-                  const SizedBox(
-                    width: 16,
+                  SizedBox(
+                    width: SizeConfig.mediumHorizontalSpacing,
                   ),
                   const Text(
                     "CLOSE READING IMAGE",
-                    style: TextStyle(color: Colors.black87),
+                    style: TextStyle(color: CommonColors.appBarColor),
                   ),
                   Expanded(
                       child: Align(
                     alignment: AlignmentGeometry.centerRight,
                     child: InkWell(
-                      child: const Icon(
+                      child: Icon(
                         Icons.file_upload_outlined,
-                        color: Colors.black54,
+                        color: CommonColors.appBarColor,
+                        size: SizeConfig.largeIconSize,
                         // size: 24,
                       ),
                       onTap: () {
@@ -792,15 +817,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.symmetric(
+                    vertical: SizeConfig.verticalPadding,
+                    horizontal: SizeConfig.horizontalPadding),
                 child: SizedBox(
                   height: 200,
                   width: MediaQuery.sizeOf(context).width,
                   child: Container(
                     decoration: BoxDecoration(
                         color: CommonColors.grey300,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12))),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.largeRadius))),
                     child: isNullOrEmpty(_closeReadingImagePath)
                         ? InkWell(
                             child: const Column(
@@ -867,20 +894,20 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         //               fit: BoxFit.fill,
         //             )),
         // ),
-        const SizedBox(height: 10),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
         Row(
           children: [
             const Text("Total Time:",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 8),
-            Text("${totalTime.toString()}"),
+            SizedBox(width: SizeConfig.smallHorizontalSpacing),
+            Text(totalTime.toString()),
           ],
         ),
         Row(
           children: [
             const Text("Total KM:",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(width: 8),
+            SizedBox(width: SizeConfig.smallHorizontalSpacing),
             Text(totaldistance),
           ],
         )
