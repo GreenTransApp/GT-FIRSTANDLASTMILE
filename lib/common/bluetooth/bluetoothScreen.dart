@@ -167,6 +167,15 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   }
 
   Future<PermissionStatus> requestPermission() async {
+    if (Platform.isIOS) {
+      PermissionStatus status = await Permission.bluetooth.request();
+      if (status.isGranted) {
+        debugPrint("Bluetooth Permission Granted (iOS)");
+      } else {
+        debugPrint("Bluetooth Permission Status (iOS)");
+      }
+      return status;
+    }
     PermissionStatus status = await Permission.bluetoothScan.request();
     if (status.isDenied) {
       debugPrint('Bluetooth Scan Denied');
@@ -182,6 +191,9 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   }
 
   Future<PermissionStatus> requestConnectPermission() async {
+    if (Platform.isIOS) {
+      return PermissionStatus.granted;
+    }
     PermissionStatus status = await Permission.bluetoothConnect.request();
     if (status.isDenied) {
       debugPrint('Bluetooth Connect Denied');
