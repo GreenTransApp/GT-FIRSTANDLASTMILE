@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
@@ -39,6 +41,8 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
   AllotedRouteModel modelDetail = AllotedRouteModel();
   BaseRepository baseRepo = BaseRepository();
   bool showLoading = false;
+  List<StreamSubscription> _subscription = [];
+
   @override
   void initState() {
     super.initState();
@@ -76,19 +80,19 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
   }
 
   setObservers() {
-    viewModel.viewDialog.stream.listen((showLoading) {
+    _subscription.add(viewModel.viewDialog.stream.listen((showLoading) {
       if (showLoading) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
       }
-    });
+    }));
 
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
+    _subscription.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
-    });
+    }));
 
-    baseRepo.scannedCode.stream.listen((scannedCode) {
+    _subscription.add(baseRepo.scannedCode.stream.listen((scannedCode) {
       setState(() {
         for (var i = 0; i < _receivedLoadList.length; i++) {
           if (_receivedLoadList[i].grno == scannedCode) {
@@ -99,9 +103,9 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
         }
       });
       debugPrint("Scanned Code: $scannedCode");
-    });
+    }));
 
-    viewModel.routeAcceptLiveData.stream.listen((resp) {
+    _subscription.add(viewModel.routeAcceptLiveData.stream.listen((resp) {
       if (resp.commandstatus == 1) {
         setState(() {
           showSuccessAlert(context, "SUCCESSFULLY\n Route Accepted", "",
@@ -110,7 +114,7 @@ class _ReceivedLoadPageState extends State<ReceivedLoadPage> {
       } else {
         failToast(resp.commandmessage.toString());
       }
-    });
+    }));
   }
 
   void _acceptRoute() {

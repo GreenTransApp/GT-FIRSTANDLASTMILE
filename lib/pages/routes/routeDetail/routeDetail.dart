@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -38,11 +40,11 @@ class _RoutedetailState extends State<Routedetail> {
   bool showUpdateBtn = false;
   AllotedRouteModel modelDetail = AllotedRouteModel();
   MapConfigJsonModel mapConfig = MapConfigJsonModel();
-
   RouteUpdateModel acceptRouteModel = RouteUpdateModel();
   RouteUpdateModel rejectRouteModel = RouteUpdateModel();
   BaseRepository _baseRepo = BaseRepository();
   double totalDistance = 0;
+  List<StreamSubscription> _subscription = [];
 
   bool routeModifyAllowed = false;
   bool hasDeliveries = false;
@@ -79,6 +81,9 @@ class _RoutedetailState extends State<Routedetail> {
 
   @override
   void dispose() {
+    for (var sub in _subscription) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -107,7 +112,7 @@ class _RoutedetailState extends State<Routedetail> {
   }
 
   setObservers() {
-    viewModel.routeDetailLiveData.stream.listen((resp) {
+    _subscription.add(viewModel.routeDetailLiveData.stream.listen((resp) {
       if (resp.elementAt(0).commandstatus == 1) {
         setState(() {
           routeDetailList = resp;
@@ -134,8 +139,8 @@ class _RoutedetailState extends State<Routedetail> {
           //     "===========================AFTER===========================");
         });
       }
-    });
-    viewModel.routeDataLiveData.stream.listen((resp) {
+    }));
+    _subscription.add(viewModel.routeDataLiveData.stream.listen((resp) {
       if (resp.commandstatus == 1) {
         setState(() async {
           modelDetail = resp;
@@ -150,8 +155,8 @@ class _RoutedetailState extends State<Routedetail> {
           }
         });
       }
-    });
-    viewModel.routeAcceptLiveData.stream.listen((resp) {
+    }));
+    _subscription.add(viewModel.routeAcceptLiveData.stream.listen((resp) {
       if (resp.commandstatus == 1) {
         setState(() {
           acceptRouteModel = resp;
@@ -162,8 +167,8 @@ class _RoutedetailState extends State<Routedetail> {
       } else {
         failToast(resp.commandmessage.toString() ?? "Something went wrong");
       }
-    });
-    viewModel.routeRejectLiveData.stream.listen((resp) {
+    }));
+    _subscription.add(viewModel.routeRejectLiveData.stream.listen((resp) {
       if (resp.commandstatus == 1) {
         setState(() {
           rejectRouteModel = resp;
@@ -173,29 +178,30 @@ class _RoutedetailState extends State<Routedetail> {
       } else {
         failToast(resp.commandmessage.toString() ?? "Something went wrong");
       }
-    });
+    }));
 
-    viewModel.viewDialog.stream.listen((showLoading) {
+    _subscription.add(viewModel.viewDialog.stream.listen((showLoading) {
       if (showLoading) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
       }
-    });
+    }));
 
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
+    _subscription.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
-    });
+    }));
 
-    viewModel.updateRoutePlanning.stream.listen((updateRoute) {
+    _subscription
+        .add(viewModel.updateRoutePlanning.stream.listen((updateRoute) {
       if (updateRoute.commandstatus == 1) {
         routeDetailList = [];
         successToast("Route updated successfully");
         getRouteDetails();
       }
-    });
+    }));
 
-    _baseRepo.mapConfigDetail.stream.listen((resp) {
+    _subscription.add(_baseRepo.mapConfigDetail.stream.listen((resp) {
       if (resp.commandStatus == 1) {
         // Handle map config detail response
         debugPrint("Map Config Detail: ${resp.mapConfigData}");
@@ -203,20 +209,20 @@ class _RoutedetailState extends State<Routedetail> {
       } else {
         failToast(resp.commandMessage ?? "Failed to fetch map config details");
       }
-    });
+    }));
 
-    _baseRepo.accResp.stream.listen((resp) async {
+    _subscription.add(_baseRepo.accResp.stream.listen((resp) async {
       if (isNullOrEmpty(resp)) {
         failToast("Unable To Fetch Google Map Api key, plese Try Again.");
       } else {
         GOOGLE_MAPS_API_KEY = resp;
       }
-    });
+    }));
 
-    _baseRepo.compAccPara.stream.listen((resp) {
+    _subscription.add(_baseRepo.compAccPara.stream.listen((resp) {
       routeModifyAllowed = resp == 'Y';
       setState(() {});
-    });
+    }));
   }
 
   void okayCallBackForAlert() {

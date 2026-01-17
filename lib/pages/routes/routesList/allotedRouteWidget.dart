@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -33,6 +36,7 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
   String toDt = "";
   late DateTime todayDateTime;
   late String smallDateTime;
+  List<StreamSubscription> _subscriptions = [];
   @override
   void initState() {
     super.initState();
@@ -48,23 +52,22 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
   }
 
   setObservers() {
-    viewModel.viewDialog.stream.listen((show) {
+    _subscriptions.add(viewModel.viewDialog.stream.listen((show) {
       if (show) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
       }
-    });
-
-    viewModel.errorDialog.stream.listen((error) {
+    }));
+    _subscriptions.add(viewModel.errorDialog.stream.listen((error) {
       failToast(error);
-    });
+    }));
 
-    viewModel.routesList.stream.listen((list) {
+    _subscriptions.add(viewModel.routesList.stream.listen((list) {
       setState(() {
         _routeList = list;
       });
-    });
+    }));
   }
 
   void _getRoutesList() {
@@ -83,6 +86,14 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
 
   Future<void> onRefresh() async {
     _getRoutesList();
+  }
+
+  @override
+  void dispose() {
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   @override

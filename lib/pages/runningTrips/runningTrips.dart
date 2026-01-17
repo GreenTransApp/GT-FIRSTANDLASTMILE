@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -34,6 +36,8 @@ class RunningTripsState extends State<RunningTrips> {
   late AttendanceModel _attendanceModel = AttendanceModel();
   late LoadingAlertService loadingAlertService;
   RunningTripsViewModel viewModel = RunningTripsViewModel();
+  List<StreamSubscription> _subscription = [];
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +50,7 @@ class RunningTripsState extends State<RunningTrips> {
   }
 
   setObservers() {
-    viewModel.viewDialog.stream.listen((showLoading) async {
+    _subscription.add(viewModel.viewDialog.stream.listen((showLoading) async {
       if (showLoading) {
         setState(() {
           // isLoading = true;
@@ -58,17 +62,25 @@ class RunningTripsState extends State<RunningTrips> {
           loadingAlertService.hideLoading();
         });
       }
-    });
+    }));
 
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
+    _subscription.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
-    });
+    }));
 
-    viewModel.tripsListData.stream.listen((data) {
+    _subscription.add(viewModel.tripsListData.stream.listen((data) {
       setState(() {
         _tripList = data;
       });
-    });
+    }));
+  }
+
+  @override
+  void dispose() {
+    for (var sub in _subscription) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   void getTripList() {

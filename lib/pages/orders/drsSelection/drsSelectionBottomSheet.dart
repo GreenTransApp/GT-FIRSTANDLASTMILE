@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/main.dart';
@@ -56,6 +58,8 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   bool? allSelected = false;
   bool isLoading = false;
   OverlayEntry? _overlayEntry;
+  List<StreamSubscription> _subscription = [];
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +83,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   }
 
   setObservers() {
-    viewModel.drsListLiveData.stream.listen((list) {
+    _subscription.add(viewModel.drsListLiveData.stream.listen((list) {
       debugPrint('dashboard List Length: ${list.length}');
       // if (list.elementAt(0).commandstatus == 1) {
       setState(() {
@@ -88,9 +92,9 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
         allSelected = false;
       });
       // }
-    });
+    }));
 
-    viewModel.viewDialog.stream.listen((showLoading) async {
+    _subscription.add(viewModel.viewDialog.stream.listen((showLoading) async {
       if (showLoading) {
         // setState(() {
         //   isLoading = true;
@@ -103,13 +107,13 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
 
         loadingAlertService.hideLoading();
       }
-    });
+    }));
 
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
+    _subscription.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
-    });
+    }));
 
-    viewModel.upsertTripLiveData.stream.listen((data) {
+    _subscription.add(viewModel.upsertTripLiveData.stream.listen((data) {
       if (data.commandstatus == 1) {
         successToast(data.commandmessage!);
         if (widget.showTripInfoUpdate) {
@@ -119,7 +123,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       } else {
         failToast(data.commandmessage!);
       }
-    });
+    }));
   }
 
   navigateToUpdateTripInfo(UpsertTripResponseModel data) async {
@@ -160,6 +164,14 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     printParams(params);
     // _baseRepo.getDrsList(params);
     viewModel.getDrsList(params);
+  }
+
+  @override
+  void dispose() {
+    for (var sub in _subscription) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   @override

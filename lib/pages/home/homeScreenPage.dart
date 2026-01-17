@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -79,6 +80,7 @@ class _HomeScreen extends State<HomeScreen>
   GlobalKey<AllocatedRouteWidgetState> allotedRouteKey = GlobalKey();
   GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
+  final List<StreamSubscription> _subscriptions = [];
 
   @override
   void initState() {
@@ -115,7 +117,9 @@ class _HomeScreen extends State<HomeScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -145,15 +149,17 @@ class _HomeScreen extends State<HomeScreen>
   }
 
   setObservers() {
-    viewModel.routeDashboardLiveData.stream.listen((dashboard) {
+    _subscriptions
+        .add(viewModel.routeDashboardLiveData.stream.listen((dashboard) {
       debugPrint('dashboard List Length: ${dashboard.length}');
       if (dashboard.isNotEmpty && dashboard.elementAt(0).commandstatus == 1) {
         setState(() {
           routeList = dashboard;
         });
       }
-    });
-    viewModel.deliveryDashboardLiveData.stream.listen((dashboard) {
+    }));
+    _subscriptions
+        .add(viewModel.deliveryDashboardLiveData.stream.listen((dashboard) {
       debugPrint('dashboard List Length: ${dashboard.length}');
 
       if (dashboard.isNotEmpty && dashboard.elementAt(0).commandstatus == 1) {
@@ -161,8 +167,8 @@ class _HomeScreen extends State<HomeScreen>
           deliveryList = dashboard;
         });
       }
-    });
-    viewModel.attendanceLiveData.stream.listen((attendance) {
+    }));
+    _subscriptions.add(viewModel.attendanceLiveData.stream.listen((attendance) {
       debugPrint('dashboard List Length: ${attendance}');
 
       if (attendance.commandstatus == 1) {
@@ -174,16 +180,16 @@ class _HomeScreen extends State<HomeScreen>
               : CommonColors.dangerColor!;
         });
       }
-    });
-    viewModel.viewDialog.stream.listen((showLoading) {
+    }));
+    _subscriptions.add(viewModel.viewDialog.stream.listen((showLoading) {
       if (showLoading) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
       }
-    });
+    }));
 
-    viewModel.tripsListData.stream.listen((tripData) {
+    _subscriptions.add(viewModel.tripsListData.stream.listen((tripData) {
       if (tripData == null || tripData.isEmpty) {
         debugPrint('Trip data is empty, stopping location service...');
         locationService.stopService();
@@ -198,9 +204,10 @@ class _HomeScreen extends State<HomeScreen>
         }
       }
       // checkAuthenticatedUserForRunService(tripData);
-    });
+    }));
 
-    viewModel.validateDeviceLiveData.stream.listen((validate) {
+    _subscriptions
+        .add(viewModel.validateDeviceLiveData.stream.listen((validate) {
       setState(() {
         if (validate.validlogin == "N" || validate.singledevice == "N") {
           failToast(validate.commandmessage.toString());
@@ -217,13 +224,14 @@ class _HomeScreen extends State<HomeScreen>
           getDashboardDetails();
         }
       });
-    });
+    }));
 
-    viewModel.isErrorLiveData.stream.listen((errMsg) {
+    _subscriptions.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
-    });
+    }));
 
-    viewModel.drsDateTimeUpdateLiveData.stream.listen((drsUpdate) async {
+    _subscriptions.add(
+        viewModel.drsDateTimeUpdateLiveData.stream.listen((drsUpdate) async {
       if (drsUpdate.commandstatus == 1) {
         // if(drsUpdate.drsstatus == "O"){
         //     locationService.startService(activeDrsList,savedUser);
@@ -244,7 +252,7 @@ class _HomeScreen extends State<HomeScreen>
           failToast("Something went wrong");
         }
       }
-    });
+    }));
   }
 
   checkAuthenticatedUserForRunService(List<TripModel> tripData) {

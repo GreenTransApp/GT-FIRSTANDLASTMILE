@@ -114,7 +114,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
     fetchAllLov();
     setObserver();
-    getEwayBillCreds();
+    // getEwayBillCreds();
+    _ewaybillCreds = EwayBillCredentialsModel(
+        commandmessage: 'Success',
+        commandstatus: 1,
+        compGst: "27AJEPK3488M1ZN",
+        ewayEnabled: 'Y',
+        ewayPassword: "Abcd@1234",
+        ewayUserId: "8689835999",
+        stateGst: "27AJEPK3488M1ZN");
   }
 
   fetchAllLov() async {
@@ -126,7 +134,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       getCustomerList(),
       getCngrCngeList('R'),
       getCngrCngeList('E'),
-      getDepartmentList(),
+      // getDepartmentList(),
       // getEwayBillCreds(),
     ];
 
@@ -199,7 +207,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     Map<String, String> params = {
       "prmconnstring": savedUser.companyid.toString(),
       "prmcustcode": _selectedCustomer!.custCode.toString(),
-      "prmorgcode": _selectedOrigin!.stnCode.toString(),
+      "prmorgcode":
+          _selectedOrigin == null ? "" : _selectedOrigin!.stnCode.toString(),
     };
 
     return lovViewModel.getDepartmentList(params);
@@ -1059,11 +1068,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       },
                       isInput: false,
                       keyboardType: TextInputType.none,
-                      onTap: () {
+                      onTap: () async {
                         if (_selectedCustomer == null) {
                           failToast('Please select customer first');
                         } else {
                           FocusScope.of(context).unfocus();
+                          loadingAlertService.showLoading();
+                          _departmentList = await getDepartmentList();
+                          loadingAlertService.hideLoading();
                           List<CommonDataModel<DepartmentModel>> commonList =
                               _departmentList
                                   .map((department) =>
@@ -1121,8 +1133,12 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                 showCommonBottomSheet(
                                     context, 'Select Consignor', (data) {
                                   _selectedCngr = data;
-                                  _cngrNameController.text = data.name;
-                                  _cngrGstController.text = data.gstNo;
+                                  _cngrNameController.text =
+                                      isNullOrEmpty(data.name) ? '' : data.name;
+                                  _cngrGstController.text =
+                                      isNullOrEmpty(data.gstNo)
+                                          ? ''
+                                          : data.gstNo;
                                   _cngrNameFocusNode.unfocus();
                                 }, commonList);
                               },
@@ -1194,8 +1210,12 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                 showCommonBottomSheet(
                                     context, 'Select Consignee', (data) {
                                   _selectedCnge = data;
-                                  _cngeNameController.text = data.name;
-                                  _cngeGstController.text = data.gstNo;
+                                  _cngeNameController.text =
+                                      isNullOrEmpty(data.name) ? '' : data.name;
+                                  _cngeGstController.text =
+                                      isNullOrEmpty(data.gstNo)
+                                          ? ''
+                                          : data.gstNo;
                                   _cngeNameFocusNode.unfocus();
                                 }, commonList);
                               },

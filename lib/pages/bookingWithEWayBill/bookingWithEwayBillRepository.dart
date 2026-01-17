@@ -86,11 +86,11 @@ class BookingWithEwayBillRepository extends BaseRepository {
         if (body['status'] == 1) {
           final resp = body['response'];
           Map<String, String> completeLoginParams = {
-            'orgid': resp['orgs'][0]['orgid'],
+            'orgid': resp['orgs'][0]['orgId'].toString(),
             'token': resp['token']
           };
           completeEwayBillLogin(completeLoginParams, ewaybillno, compGst,
-              resp['orgs'][0]['orgid']);
+              resp['orgs'][0]['orgId'].toString());
         } else {
           isErrorLiveData.add(body['message']);
           return;
@@ -160,7 +160,7 @@ class BookingWithEwayBillRepository extends BaseRepository {
       try {
         viewDialog.add(true);
         final response = await http.post(
-          Uri.parse(URL.ewayBillCompleteLogin),
+          Uri.parse(URL.getDetailbyEwayBillNo),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
