@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -13,14 +14,19 @@ import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
 import 'package:gtlmd/service/locationService/locationRepository.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:io';
 
 class LocationService {
   static final LocationService _instance = LocationService._internal();
   factory LocationService() => _instance;
   LocationService._internal();
   StreamSubscription<Position>? _position;
-
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   Future<void> init() async {
+    await initNotifications();
+
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'location_channel',
@@ -43,33 +49,78 @@ class LocationService {
     );
   }
 
+  Future<void> initNotifications() async {
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings();
+
+    const InitializationSettings settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    await _notificationsPlugin.initialize(settings);
+  }
+
   Future<void> requestPermissions() async {
+    // Notification permission (optional)
     final notifGranted = await requestAppPermission(Permission.notification);
     if (!notifGranted) return;
-    // Check if location service is ON
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    // Location services ON?
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings();
       return;
     }
 
-    // Check location permission
     LocationPermission permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return; // User still denied
-      }
+    }
+    if (permission == LocationPermission.whileInUse) {
+      permission = await Geolocator
+          .requestPermission(); // should now show "Always" option
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openAppSettings(); // Ask user to enable manually
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
       return;
     }
 
-    // Permission granted
-    print('Location permission granted!');
+    await Geolocator.getCurrentPosition(
+      locationSettings: AppleSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 0,
+        pauseLocationUpdatesAutomatically: false,
+      ),
+    );
+
+    print('Location permission granted');
+  }
+
+  Future<void> _showIosTrackingNotification() async {
+    if (!Platform.isIOS) return;
+
+    // Use DarwinNotificationDetails instead of IOSNotificationDetails
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true, // Show alert banner
+      presentSound: true, // Play sound
+      presentBadge: true, // Update app badge
+    );
+
+    const notificationDetails = NotificationDetails(iOS: iosDetails);
+
+    await _notificationsPlugin.show(
+      0, // Notification ID
+      'Location Tracking Active', // Notification title
+      'Your location is being tracked for trips.', // Notification body
+      notificationDetails,
+    );
   }
 
   Future<void> startService(
@@ -105,7 +156,7 @@ class LocationService {
       notificationText: 'Your location is being tracked.',
       callback: startCallback,
     );
-
+    await _showIosTrackingNotification();
     // Send data to the isolate after service starts
     await Future.delayed(
         Duration(milliseconds: 500)); // Small delay to ensure service is ready
@@ -113,6 +164,9 @@ class LocationService {
   }
 
   Future<void> stopService() async {
+    if (Platform.isIOS) {
+      await _notificationsPlugin.cancel(0);
+    }
     if (await FlutterForegroundTask.isRunningService) {
       await _position?.cancel();
       _position = null;

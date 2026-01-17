@@ -9,6 +9,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripViewModel.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
@@ -378,30 +379,32 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(12)),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(SizeConfig.largeRadius)),
                                 border: Border.all(
                                     color: CommonColors.grey400!, width: 1)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
+                                Row(
                                   children: [
                                     Icon(
                                       Icons.calendar_today_rounded,
-                                      size: 18,
+                                      size: SizeConfig.largeIconSize,
                                       color: Colors.black54,
                                     ),
                                     SizedBox(
-                                      width: 8,
+                                      width: SizeConfig.smallHorizontalSpacing,
                                     ),
                                     Text(
                                       "DISPATCH DATE",
                                       style: TextStyle(
                                           color: Colors.black87,
-                                          fontSize: 12,
+                                          fontSize: SizeConfig.mediumTextSize,
                                           fontWeight: FontWeight.w400),
                                     )
                                   ],
@@ -411,15 +414,15 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                 ),
                                 Row(
                                   children: [
-                                    const SizedBox(
-                                      width: 24,
+                                    SizedBox(
+                                      width: SizeConfig.mediumHorizontalSpacing,
                                     ),
                                     Text(
                                       _dispatchDateController.text,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           color: CommonColors.appBarColor,
-                                          fontSize: 20),
+                                          fontSize: SizeConfig.mediumTextSize),
                                     )
                                   ],
                                 )
@@ -435,30 +438,32 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(12)),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(SizeConfig.largeRadius)),
                                 border: Border.all(
                                     color: CommonColors.grey400!, width: 1)),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
+                                Row(
                                   children: [
                                     Icon(
                                       Icons.calendar_today_rounded,
-                                      size: 18,
-                                      color: Colors.black54,
+                                      size: SizeConfig.largeIconSize,
+                                      color: CommonColors.appBarColor,
                                     ),
                                     SizedBox(
-                                      width: 8,
+                                      width: SizeConfig.smallHorizontalSpacing,
                                     ),
                                     Text(
                                       "DISPATCH TIME",
                                       style: TextStyle(
                                           color: Colors.black87,
-                                          fontSize: 12,
+                                          fontSize: SizeConfig.mediumTextSize,
                                           fontWeight: FontWeight.w400),
                                     )
                                   ],
@@ -468,15 +473,15 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                 ),
                                 Row(
                                   children: [
-                                    const SizedBox(
-                                      width: 24,
+                                    SizedBox(
+                                      width: SizeConfig.mediumHorizontalSpacing,
                                     ),
                                     Text(
                                       _dispatchTimeController.text,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           color: CommonColors.appBarColor,
-                                          fontSize: 20),
+                                          fontSize: SizeConfig.smallTextSize),
                                     )
                                   ],
                                 )
@@ -973,10 +978,13 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig.horizontalPadding,
+                                      vertical: SizeConfig.verticalPadding),
                                   decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(12)),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            SizeConfig.largeRadius)),
                                     border: Border.all(
                                         color: CommonColors.grey400!, width: 1),
                                   ),
@@ -984,21 +992,23 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Row(
+                                      Row(
                                         children: [
                                           Icon(
                                             Icons.calendar_today_rounded,
-                                            size: 18,
-                                            color: Colors.black54,
+                                            size: SizeConfig.largeIconSize,
+                                            color: CommonColors.appBarColor,
                                           ),
                                           SizedBox(
-                                            width: 8,
+                                            width: SizeConfig
+                                                .smallHorizontalSpacing,
                                           ),
                                           Text(
                                             "DISPATCH DATE",
                                             style: TextStyle(
                                                 color: Colors.black87,
-                                                fontSize: 12,
+                                                fontSize:
+                                                    SizeConfig.smallTextSize,
                                                 fontWeight: FontWeight.w400),
                                           )
                                         ],
@@ -1008,15 +1018,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                       ),
                                       Row(
                                         children: [
-                                          const SizedBox(
-                                            width: 24,
+                                          SizedBox(
+                                            width: SizeConfig
+                                                .mediumHorizontalSpacing,
                                           ),
                                           Text(
                                             _dispatchDateController.text,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 color: CommonColors.appBarColor,
-                                                fontSize: 20),
+                                                fontSize:
+                                                    SizeConfig.smallTextSize),
                                           )
                                         ],
                                       )
@@ -1026,16 +1038,19 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: SizeConfig.mediumHorizontalSpacing),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig.horizontalPadding,
+                                      vertical: SizeConfig.verticalPadding),
                                   decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(12)),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              SizeConfig.largeRadius)),
                                       border: Border.all(
                                           color: CommonColors.grey400!,
                                           width: 1)),
@@ -1043,22 +1058,25 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Row(
+                                      Row(
                                         children: [
                                           Icon(
                                             Icons.calendar_today_rounded,
-                                            size: 18,
-                                            color: Colors.black54,
+                                            size: SizeConfig.largeIconSize,
+                                            color: CommonColors.appBarColor,
                                           ),
                                           SizedBox(
-                                            width: 8,
+                                            width: SizeConfig
+                                                .smallHorizontalSpacing,
                                           ),
                                           Text(
                                             "DISPATCH TIME",
                                             style: TextStyle(
-                                                color: Colors.black87,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400),
+                                              color: CommonColors.appBarColor,
+                                              fontSize:
+                                                  SizeConfig.smallTextSize,
+                                              fontWeight: FontWeight.w400,
+                                            ),
                                           )
                                         ],
                                       ),
@@ -1067,15 +1085,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                       ),
                                       Row(
                                         children: [
-                                          const SizedBox(
-                                            width: 24,
+                                          SizedBox(
+                                            width: SizeConfig
+                                                .mediumHorizontalSpacing,
                                           ),
                                           Text(
                                             _dispatchTimeController.text,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 color: CommonColors.appBarColor,
-                                                fontSize: 20),
+                                                fontSize:
+                                                    SizeConfig.smallTextSize),
                                           )
                                         ],
                                       )
@@ -1087,60 +1107,70 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: SizeConfig.mediumVerticalSpacing),
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: CommonColors.grey400!, width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(12))),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(SizeConfig.largeRadius))),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
                                 Icon(
                                   Icons.speed_rounded,
-                                  color: Colors.black54,
+                                  color: CommonColors.appBarColor,
+                                  size: SizeConfig.largeIconSize,
                                 ),
-                                const SizedBox(
-                                  width: 8,
+                                SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing,
                                 ),
                                 Text(
                                   "ODOMETER READING",
-                                  style: TextStyle(color: Colors.black54),
+                                  style: TextStyle(
+                                      color: CommonColors.appBarColor,
+                                      fontSize: SizeConfig.smallTextSize),
                                 )
                               ],
                             ),
-                            const SizedBox(
-                              height: 8,
+                            SizedBox(
+                              height: SizeConfig.smallVerticalSpacing,
                             ),
                             Row(
                               children: [
                                 Expanded(
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24, vertical: 8),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding,
+                                        vertical: SizeConfig.verticalPadding),
                                     child: TextField(
                                       controller: _startReadingController,
                                       onChanged: changeStartReading,
                                       cursorColor: CommonColors.colorPrimary,
                                       textInputAction: TextInputAction.done,
                                       keyboardType: TextInputType.number,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w500),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: SizeConfig.smallTextSize),
                                       decoration: InputDecoration(
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(12)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(
+                                                  SizeConfig.largeRadius)),
                                           borderSide: BorderSide(
                                               width: 1,
                                               color: CommonColors.grey400!),
                                         ),
                                         enabledBorder: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            Radius.circular(12),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                                SizeConfig.largeRadius),
                                           ),
                                           borderSide: BorderSide(
                                               width: 1,
@@ -1152,44 +1182,51 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                 ),
                                 const Text(
                                   "km",
-                                  style: TextStyle(color: Colors.black87),
+                                  style: TextStyle(
+                                      color: CommonColors.appBarColor),
                                 )
                               ],
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: SizeConfig.mediumVerticalSpacing),
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: CommonColors.grey400!, width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(12))),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(SizeConfig.largeRadius))),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.camera_alt_outlined,
-                                  color: Colors.black54,
+                                  color: CommonColors.appBarColor,
+                                  size: SizeConfig.largeIconSize,
                                 ),
-                                const SizedBox(
-                                  width: 16,
+                                SizedBox(
+                                  width: SizeConfig.mediumHorizontalSpacing,
                                 ),
-                                const Text(
+                                Text(
                                   "START READING IMAGE",
-                                  style: TextStyle(color: Colors.black87),
+                                  style: TextStyle(
+                                      color: CommonColors.appBarColor,
+                                      fontSize: SizeConfig.smallTextSize),
                                 ),
                                 Expanded(
                                   child: Align(
                                     alignment: AlignmentGeometry.centerRight,
                                     child: InkWell(
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.file_upload_outlined,
-                                        color: Colors.black54,
+                                        color: CommonColors.appBarColor,
+                                        size: SizeConfig.largeIconSize,
                                         // size: 24,
                                       ),
                                       onTap: () {
@@ -1212,18 +1249,21 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                               ],
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
                               child: SizedBox(
                                 height: 200,
                                 width: MediaQuery.sizeOf(context).width,
                                 child: Container(
                                   decoration: BoxDecoration(
                                       color: CommonColors.grey300,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(12))),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              SizeConfig.largeRadius))),
                                   child: isNullOrEmpty(_startReadingImagePath)
                                       ? InkWell(
-                                          child: const Column(
+                                          child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             crossAxisAlignment:
@@ -1231,17 +1271,23 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             children: [
                                               Icon(
                                                 Icons.file_upload_outlined,
-                                                color: Colors.black54,
+                                                color: CommonColors.appBarColor,
+                                                size: SizeConfig
+                                                    .extraLargeIconSize,
                                               ),
                                               Text(
                                                 "Upload Image",
                                                 style: TextStyle(
-                                                    color: Colors.black87),
+                                                    color: Colors.black87,
+                                                    fontSize: SizeConfig
+                                                        .mediumTextSize),
                                               ),
                                               Text(
                                                 "Click the upload button above",
                                                 style: TextStyle(
-                                                    color: Colors.black87),
+                                                    color: Colors.black87,
+                                                    fontSize: SizeConfig
+                                                        .smallTextSize),
                                               )
                                             ],
                                           ),

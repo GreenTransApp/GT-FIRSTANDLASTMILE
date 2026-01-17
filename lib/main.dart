@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
@@ -32,6 +34,32 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+  if (Platform.isIOS) {
+    requestIosLocationPermission();
+  }
+}
+
+Future<void> requestIosLocationPermission() async {
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    await Geolocator.openLocationSettings();
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    await Geolocator.openAppSettings();
+  }
+
+  print('iOS Location Permission: $permission');
+  // Optional: Start tracking after permission
+  if (permission == LocationPermission.always ||
+      permission == LocationPermission.whileInUse) {
+    // call your LocationService().startService(...)
+  }
 }
 
 class MyApp extends StatelessWidget {

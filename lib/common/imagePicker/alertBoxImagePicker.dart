@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:image_picker/image_picker.dart';
 
 final ImagePicker _picker = ImagePicker();
@@ -30,7 +31,10 @@ Future<void> showImagePickerDialog(
     barrierDismissible: true, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Select Image'),
+        title: Text(
+          'Select Image',
+          style: TextStyle(fontSize: SizeConfig.largeTextSize),
+        ),
         content: SingleChildScrollView(
           child: Column(
             children: [
@@ -38,8 +42,8 @@ Future<void> showImagePickerDialog(
                 thickness: 0.5,
                 color: Colors.grey,
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: SizeConfig.mediumVerticalSpacing,
               ),
 
               InkWell(
@@ -49,16 +53,22 @@ Future<void> showImagePickerDialog(
                   onPressed.call(await chooseGalleryImg());
                   // chooseGalleryImg();
                 },
-                child: const Row(children: [
-                  Icon(Icons.image),
-                  SizedBox(
-                    width: 20,
+                child: Row(children: [
+                  Icon(
+                    Icons.image,
+                    size: SizeConfig.extraLargeIconSize,
                   ),
-                  Text("Select image from gallery")
+                  SizedBox(
+                    width: SizeConfig.mediumVerticalSpacing,
+                  ),
+                  Text(
+                    "Select image from gallery",
+                    style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                  )
                 ]),
               ),
-              const SizedBox(
-                height: 40,
+              SizedBox(
+                height: SizeConfig.largeVerticalSpacing,
               ),
 
               InkWell(
@@ -68,12 +78,18 @@ Future<void> showImagePickerDialog(
                   // chooseCameraImg();
                   Navigator.pop(context);
                 },
-                child: const Row(children: [
-                  Icon(Icons.camera_alt),
-                  SizedBox(
-                    width: 20,
+                child: Row(children: [
+                  Icon(
+                    Icons.camera_alt,
+                    size: SizeConfig.extraLargeIconSize,
                   ),
-                  Text("Click image from camera")
+                  SizedBox(
+                    width: SizeConfig.mediumVerticalSpacing,
+                  ),
+                  Text(
+                    "Click image from camera",
+                    style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                  )
                 ]),
               ),
               //   _image==null ?Container():Image.file(File(_image!.path))

@@ -174,8 +174,9 @@ class _DatePickerState extends State<DatePicker> {
                         child: Text.rich(
                           TextSpan(
                             text: 'FROM DATE',
-                            style: const TextStyle(
-                                color: CommonColors.appBarColor),
+                            style: TextStyle(
+                                color: CommonColors.appBarColor,
+                                fontSize: SizeConfig.smallTextSize),
                             children: <InlineSpan>[
                               TextSpan(
                                 text: ' *',
@@ -193,6 +194,7 @@ class _DatePickerState extends State<DatePicker> {
                         keyboardType: TextInputType.multiline,
                         cursorColor: Colors.black,
                         obscureText: false,
+                        style: TextStyle(fontSize: SizeConfig.smallTextSize),
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
                             borderRadius:
@@ -213,9 +215,10 @@ class _DatePickerState extends State<DatePicker> {
                                 width: 0.5, color: Colors.grey),
                           ),
                           suffixIcon: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.calendar_month,
                                 color: CommonColors.appBarColor,
+                                size: SizeConfig.extraLargeIconSize,
                               ),
                               onPressed: () async {
                                 openDatePicker(DatePickerType.fromDt);
@@ -245,13 +248,17 @@ class _DatePickerState extends State<DatePicker> {
                         padding: EdgeInsets.symmetric(
                             horizontal: SizeConfig.smallHorizontalPadding,
                             vertical: SizeConfig.smallVerticalPadding),
-                        child: Text.rich(
-                            TextSpan(text: 'TO DATE', children: <InlineSpan>[
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: CommonColors.dangerColor),
-                          )
-                        ])),
+                        child: Text.rich(TextSpan(
+                            text: 'TO DATE',
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallIconSize),
+                            children: <InlineSpan>[
+                              TextSpan(
+                                text: ' *',
+                                style:
+                                    TextStyle(color: CommonColors.dangerColor),
+                              )
+                            ])),
                       ),
                       TextField(
                         readOnly: true,
@@ -260,7 +267,10 @@ class _DatePickerState extends State<DatePicker> {
                         keyboardType: TextInputType.multiline,
                         cursorColor: Colors.black,
                         obscureText: false,
+                        style: TextStyle(fontSize: SizeConfig.smallTextSize),
                         decoration: InputDecoration(
+                          labelStyle:
+                              TextStyle(fontSize: SizeConfig.smallTextSize),
                           focusedBorder: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(SizeConfig.largeRadius),
@@ -280,9 +290,10 @@ class _DatePickerState extends State<DatePicker> {
                                 width: 0.5, color: Colors.grey),
                           ),
                           suffixIcon: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.calendar_month,
                                 color: CommonColors.appBarColor,
+                                size: SizeConfig.extraLargeIconSize,
                               ),
                               onPressed: () async {
                                 openDatePicker(DatePickerType.fromDt);
@@ -302,23 +313,58 @@ class _DatePickerState extends State<DatePicker> {
             ],
           ),
           SizedBox(height: SizeConfig.mediumVerticalSpacing),
+          // Container(
+          //   margin: EdgeInsets.symmetric(
+          //       horizontal: SizeConfig.screenWidth * 0.2),
+          //   height: ,
+          //   child: CommonButton(
+          //       title: "Submit",
+          //       color: CommonColors.colorPrimary!,
+          //       onTap: () {
+          //         //  successToast(fromDt);
+
+          //         widget.callBack.call(fromDt, toDt);
+          //         // Navigator.pop(context);
+          //         Get.back();
+
+          //         // successToast($dateFunction(fromDt,toDt))   ;
+          //         //  widget.callBack.call(dateFunction(fromDt,toDt));
+          //       }),
+          // ),
           Container(
-            margin: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.2),
-            height: 60,
-            child: CommonButton(
-                title: "Submit",
-                color: CommonColors.colorPrimary!,
-                onTap: () {
-                  //  successToast(fromDt);
-
-                  widget.callBack.call(fromDt, toDt);
-                  // Navigator.pop(context);
-                  Get.back();
-
-                  // successToast($dateFunction(fromDt,toDt))   ;
-                  //  widget.callBack.call(dateFunction(fromDt,toDt));
-                }),
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                bottomRight: Radius.circular(SizeConfig.largeRadius),
+              ),
+            ),
+            child: ElevatedButton(
+              onPressed: () {
+                widget.callBack.call(fromDt, toDt);
+                // Navigator.pop(context);
+                Get.back();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CommonColors.colorPrimary,
+                foregroundColor: CommonColors.White,
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                  fontSize: SizeConfig.smallTextSize,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ),
         ],
       ),
