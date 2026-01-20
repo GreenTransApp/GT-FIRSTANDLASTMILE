@@ -7,6 +7,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/common/debug.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
+import 'package:gtlmd/pages/pickup/model/savePickupRespModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,6 +17,8 @@ class BookingWithEwayBillRepository extends BaseRepository {
   StreamController<List<EwayBillCredentialsModel>> validateEwayBillList =
       StreamController();
   StreamController<Map<String, dynamic>> refreshEwbLiveData =
+      StreamController();
+  StreamController<SavePickupRespModel> saveBookingLiveData =
       StreamController();
 
   Future<void> getEwayBillCreds(Map<String, dynamic> params) async {
@@ -159,12 +162,12 @@ class BookingWithEwayBillRepository extends BaseRepository {
     if (hasInternet) {
       try {
         viewDialog.add(true);
-        final response = await http.post(
-          Uri.parse(URL.getDetailbyEwayBillNo),
+        final response = await http.get(
+          Uri.parse(URL.getDetailbyEwayBillNo).replace(queryParameters: params),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $ewaybilltoken'
           },
-          body: jsonEncode(params),
         );
         viewDialog.add(false);
         final Map<String, dynamic> body = jsonDecode(response.body);
@@ -201,12 +204,11 @@ class BookingWithEwayBillRepository extends BaseRepository {
     if (hasInternet) {
       try {
         viewDialog.add(true);
-        final response = await http.post(
-          Uri.parse(URL.getRefreshEwb),
+        final response = await http.get(
+          Uri.parse(URL.getRefreshEwb).replace(queryParameters: params),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(params),
         );
         viewDialog.add(false);
         final Map<String, dynamic> body = jsonDecode(response.body);
@@ -218,6 +220,43 @@ class BookingWithEwayBillRepository extends BaseRepository {
           isErrorLiveData.add(body['message']);
           return;
         }
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> saveBooking(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+
+        // CommonResponse resp = await apiGet("${bookingUrl}GetCngrCngeListV2", params);
+        CommonResponse resp = await apiPost("${lmdUrl}Pickup_Upsert", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          List<dynamic> list = table.values.first;
+          // SavePickupRespModel savePickupResponse =
+          //     SavePickupRespModel.fromJson(list[0]);
+
+          List<SavePickupRespModel> resultList = List.generate(list.length,
+              (index) => SavePickupRespModel.fromJson(list[index]));
+          saveBookingLiveData.add(resultList[0]);
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
       } on SocketException catch (_) {
         isErrorLiveData.add("No Internet");
         viewDialog.add(false);

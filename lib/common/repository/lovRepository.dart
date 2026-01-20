@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -79,11 +78,9 @@ class LovRepository extends BaseRepository {
         CommonResponse resp =
             await apiGet("${bookingUrl}GetBranchListWithSearchType", params);
 
-        if (resp.commandStatus == 1) {
-          List<dynamic> list =
-              await compute(parseListIsolate, resp.dataSet.toString());
-          List<BranchModel> resultList = List.generate(
-              list.length, (index) => BranchModel.fromJson(list[index]));
+        if (resp.commandStatus == 1 && resp.dataSet != null) {
+          List<BranchModel> resultList =
+              await compute(parseBranchListIsolate, resp.dataSet!);
           branchList.add(resultList);
           return resultList;
         } else {
@@ -119,11 +116,9 @@ class LovRepository extends BaseRepository {
         CommonResponse resp =
             await apiGet("${lmdUrl}GetViewAllCustomerList", params);
 
-        if (resp.commandStatus == 1) {
-          List<dynamic> list =
-              await compute(parseListIsolate, resp.dataSet.toString());
-          List<CustomerModel> resultList = List.generate(
-              list.length, (index) => CustomerModel.fromJson(list[index]));
+        if (resp.commandStatus == 1 && resp.dataSet != null) {
+          List<CustomerModel> resultList =
+              await compute(parseCustomerListIsolate, resp.dataSet!);
           customerList.add(resultList);
           return resultList;
         } else {
@@ -156,12 +151,10 @@ class LovRepository extends BaseRepository {
       try {
         CommonResponse resp = await apiGet("${lmdUrl}showcngrcnge", params);
 
-        if (resp.commandStatus == 1) {
+        if (resp.commandStatus == 1 && resp.dataSet != null) {
           viewDialog.add(false);
-          List<dynamic> list =
-              await compute(parseListIsolate, resp.dataSet.toString());
-          List<CngrCngeModel> resultList = List.generate(
-              list.length, (index) => CngrCngeModel.fromJson(list[index]));
+          List<CngrCngeModel> resultList =
+              await compute(parseCngrCngeListIsolate, resp.dataSet!);
           if (type == 'R') {
             cngrList.add(resultList);
           } else {
@@ -224,6 +217,42 @@ class LovRepository extends BaseRepository {
       viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
       return [];
+    }
+  }
+
+  Future<void> getBookingLovs(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        CommonResponse resp = await apiGet("${lmdUrl}getBookingLovs", params);
+
+        if (resp.commandStatus == 1 && resp.dataSet != null) {
+          Map<String, List<dynamic>> results =
+              await compute(parseBookingLovsIsolate, resp.dataSet!);
+
+          serviceTypeList
+              .add(results["service"]?.cast<ServiceTypeModel>() ?? []);
+          loadTypeList.add(results["load"]?.cast<LoadTypeModel>() ?? []);
+          deliveryTypeList
+              .add(results["delivery"]?.cast<DeliveryTypeModel>() ?? []);
+          bookingTypeList
+              .add(results["booking"]?.cast<BookingTypeModel>() ?? []);
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+          viewDialog.add(false);
+        }
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      // viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
     }
   }
 }

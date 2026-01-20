@@ -60,4 +60,8 @@ class LovViewModel extends BaseViewModel {
       Map<String, String> params) async {
     return repository.getDepartmentList(params);
   }
+
+  Future<void> getBookingLovs(Map<String, String> params) async {
+    return repository.getBookingLovs(params);
+  }
 }

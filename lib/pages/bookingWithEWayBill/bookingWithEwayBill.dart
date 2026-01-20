@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -9,11 +11,13 @@ import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/viewModel/lovViewModel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/bookingList/bookingListScreen.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/appFormField.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillViewModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
+import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:gtlmd/pages/pickup/model/customerModel.dart';
 import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
@@ -80,6 +84,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   CngrCngeModel? _selectedCnge;
   ServiceTypeModel? _selectedServiceType;
   DeliveryTypeModel? _selectedDeliveryType;
+  LoadTypeModel? _selectedLoadType;
   late EwayBillModel _firstEwayBill;
   late EwayBillCredentialsModel _ewaybillCreds;
   String selectedImagePath = "";
@@ -92,16 +97,29 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   List<DepartmentModel> _departmentList = [];
   bool _isLoadingLov = false;
 
-  final List<ServiceTypeModel> _serviceTypeList = [
-    ServiceTypeModel(prodName: 'SURFACE'),
-    ServiceTypeModel(prodName: 'AIR'),
-    ServiceTypeModel(prodName: 'TRAIN'),
-  ];
-  List<DeliveryTypeModel> _deliveryTypeList = [
-    DeliveryTypeModel(deliveryTypeName: 'GODOWN'),
-    DeliveryTypeModel(deliveryTypeName: 'DOOR'),
-    DeliveryTypeModel(deliveryTypeName: 'STATION'),
-  ];
+  final List<ServiceTypeModel> _serviceTypeList = [];
+  final List<StreamSubscription> _subscriptions = [];
+
+  //  [
+  //   ServiceTypeModel(prodName: 'SURFACE'),
+  //   ServiceTypeModel(prodName: 'AIR'),
+  //   ServiceTypeModel(prodName: 'TRAIN'),
+  // ];
+  List<DeliveryTypeModel> _deliveryTypeList = [];
+  // [
+  //   DeliveryTypeModel(deliveryTypeName: 'GODOWN'),
+  //   DeliveryTypeModel(deliveryTypeName: 'DOOR'),
+  //   DeliveryTypeModel(deliveryTypeName: 'STATION'),
+  // ];
+
+  @override
+  void dispose() {
+    for (var subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -109,12 +127,6 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     _firstEwayBill = EwayBillModel();
-    _bookingDateController.text =
-        DateFormat('dd-MM-yyyy').format(DateTime.now());
-    _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
-    fetchAllLov();
-    setObserver();
-    // getEwayBillCreds();
     _ewaybillCreds = EwayBillCredentialsModel(
         commandmessage: 'Success',
         commandstatus: 1,
@@ -123,6 +135,11 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
         ewayPassword: "Abcd@1234",
         ewayUserId: "8689835999",
         stateGst: "27AJEPK3488M1ZN");
+    _bookingDateController.text =
+        DateFormat('dd-MM-yyyy').format(DateTime.now());
+    _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
+    setObserver();
+    // fetchAllLov();
   }
 
   fetchAllLov() async {
@@ -134,8 +151,6 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       getCustomerList(),
       getCngrCngeList('R'),
       getCngrCngeList('E'),
-      // getDepartmentList(),
-      // getEwayBillCreds(),
     ];
 
     try {
@@ -147,9 +162,10 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
           _customerList = results[1] as List<CustomerModel>;
           _cngrList = results[2] as List<CngrCngeModel>;
           _cngeList = results[3] as List<CngrCngeModel>;
-          _departmentList = results[4] as List<DepartmentModel>;
           _isLoadingLov = false;
         });
+        getBookingLovs();
+        getEwayBillCreds();
         debugPrint('LOV DATA FETCHED SUCCESSFULLY');
       }
     } catch (e) {
@@ -226,16 +242,27 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     return viewModel.getEwayBillCreds(params);
   }
 
+  Future<void> getBookingLovs() async {
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    return lovViewModel.getBookingLovs(params);
+  }
+
   setObserver() {
-    viewModel.validateEwayBillList.stream.listen((data) {
+    _subscriptions.add(viewModel.validateEwayBillList.stream.listen((data) {
       // debugPrint(data.toString());
-      _ewaybillCreds = data.first;
+      // _ewaybillCreds = data.first;
       if (data.isNotEmpty && data.first.commandstatus == -1) {
         failToast(data.first.commandmessage.toString());
       }
-    });
+    }));
 
-    viewModel.refreshEwb.stream.listen((data) {
+    _subscriptions.add(viewModel.refreshEwb.stream.listen((data) {
       debugPrint(data.toString());
       if (data.containsKey('ewaybillno')) {
         String ewaybillno = data['ewaybillno'];
@@ -266,7 +293,39 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
           });
         }
       }
-    });
+    }));
+
+    _subscriptions.add(
+      lovViewModel.serviceTypeList.stream.listen((data) {
+        if (mounted) {
+          setState(() {
+            _serviceTypeList.clear();
+            _serviceTypeList.addAll(data);
+          });
+        }
+      }),
+    );
+
+    _subscriptions.add(
+      lovViewModel.deliveryTypeList.stream.listen((data) {
+        if (mounted) {
+          setState(() {
+            _deliveryTypeList.clear();
+            _deliveryTypeList.addAll(data);
+          });
+        }
+      }),
+    );
+
+    _subscriptions.add(viewModel.saveBookingLd.stream.listen((saveResponse) {
+      if (saveResponse.commandStatus == 1) {
+        successToast(
+            saveResponse.commandMessage ?? "Pickup saved successfully");
+        Get.back();
+      } else {
+        failToast(saveResponse.commandMessage ?? "Something went wrong");
+      }
+    }));
   }
 
   addNewEWayBill() {
@@ -770,34 +829,49 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       invoicedtstr += "${convert2SmallDateTime(bill.invoicedateCtrl.text)},";
     }
     Map<String, String> params = {
+      'prmtransactionid': '0',
+      'prmbranchcode': savedUser.loginbranchcode.toString(),
       'prmbookingdt': convert2SmallDateTime(_bookingDateController.text),
-      'prmbookingtime': formatTimeString(_bookingTimeController.text),
-      'prmgrno': autoGr ? '' : _grNoController.text,
-      'prmautogr': autoGr ? 'Y' : 'N',
-      'prmorgcode': _selectedOrigin!.stnCode.toString(),
-      'prmdestcode': _selectedDestination!.stnCode.toString(),
+      'prmtime': formatTimeString(_bookingTimeController.text),
+      'prmegrno': autoGr ? '' : _grNoController.text,
       'prmcustcode': _selectedCustomer!.custCode.toString(),
-      'prmcngr': _selectedCngr!.code.toString(),
-      'prmcngrgst': _selectedCngr!.gstNo.toString(),
-      'prmcnge': _selectedCnge!.code.toString(),
-      'prmcngegst': _selectedCnge!.gstNo.toString(),
-      'prmebillno': ewaybillnostr,
-      'prmebilldt': ewaybilldtstr,
-      'prmebillvalidupto': validuptostr,
-      'prmebillinvoiceno': invoicenostr,
-      'prmebillinvoicevalue': invoicevaluestr,
-      'prmebillinvoicedt': invoicedtstr,
-      // 'prmservicetype': _selectedServiceType!.code.toString(),
-      // 'prmdlvtype': _selectedDeliveryType!.code.toString(),
-      'prmnoofpckgs': _noofpckgsController.text.toString(),
-      'prmgweight': _gweightController.text.toString(),
+      'prmdestcode': _selectedDestination!.stnCode.toString(),
+      'prmproductcode': '',
+      'prmpckgs': _noofpckgsController.text.toString(),
+      'prmaweight': _gweightController.text.toString(),
       'prmvweight': _vweightController.text.toString(),
       'prmcweight': _cweightController.text.toString(),
+      'prmusercode': savedUser.usercode.toString(),
+      'prmcngr': _selectedCngr!.code.toString(),
+      'prmcngrgstno': _selectedCngr!.gstNo.toString(),
+      'prmcngrcode': _selectedCngr!.code.toString(),
+      'prmcnge': _selectedCnge!.code.toString(),
+      'prmcngegstno': _selectedCnge!.gstNo.toString(),
+      'prmcngecode': _selectedCnge!.code.toString(),
+      'prmewaybillnostr': ewaybillnostr,
+      'prmewaybilldtstr': ewaybilldtstr,
+      'prmewaybillvaliduptostr': validuptostr,
+      'prminvoicenostr': invoicenostr,
+      'prminvoicedtstr': invoicedtstr,
+      'prminvoicevaluestr': invoicevaluestr,
+      'prmautogr': autoGr ? 'Y' : 'N',
+      'prmpckglengthstr': '',
+      'prmpckgbreadthstr': '',
+      'prmpckgheightstr': '',
+      'prmpckgsstr': '',
+      'prmvweightstr': '',
+      'prmdeliverytype': _selectedDeliveryType!.deliveryType.toString(),
+      'prmloadtype': _selectedLoadType!.code.toString(),
+      'prmservicetype': _selectedServiceType!.deliveryType.toString(),
+      'prmvehicle': '',
+      'prmsessionid': savedUser.sessionid.toString(),
       'prmremarks': _remarksController.text.toString(),
-      'prmimg': selectedImagePath,
+      'prmmenucode': '',
+      'prmbookingimgpath': selectedImagePath,
     };
 
-    debugPrint(params.toString());
+    // debugPrint(params.toString());
+    viewModel.saveBooking(params);
   }
 
   void changeChargeableWeight(String value) {
@@ -827,6 +901,13 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
           "Booking With Eway-Bill",
           style: TextStyle(fontSize: SizeConfig.largeTextSize),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Get.to(() => const BookingListScreen());
+              },
+              icon: const Icon(Symbols.view_list))
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

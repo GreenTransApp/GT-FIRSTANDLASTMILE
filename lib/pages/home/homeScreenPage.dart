@@ -221,7 +221,7 @@ class _HomeScreen extends State<HomeScreen>
           failToast("Invalid User details");
           authService.logout(context);
         } else {
-          getDashboardDetails();
+          // getDashboardDetails();
         }
       });
     }));
