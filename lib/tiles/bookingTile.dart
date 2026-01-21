@@ -55,12 +55,28 @@ class BookingTile extends StatelessWidget {
 
             const SizedBox(height: 14),
 
-            /// Destination
-            _iconInfo(
-              icon: Icons.location_on,
-              label: 'Destination',
-              value: booking.destname.toString(),
-              maxLines: 2,
+            Row(
+              children: [
+                Expanded(
+                  child: _iconInfo(
+                    icon: Icons.location_on,
+                    label: 'Origin',
+                    value: booking.origin.toString(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child:
+
+                      /// Destination
+                      _iconInfo(
+                    icon: Icons.location_on,
+                    label: 'Destination',
+                    value: booking.destname.toString(),
+                    maxLines: 2,
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 14),

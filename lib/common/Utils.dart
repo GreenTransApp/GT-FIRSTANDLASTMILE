@@ -718,6 +718,15 @@ String convert2SmallDateTime(String inputDate) {
   }
 }
 
+String stringToDateTime(String date, String currentFormat) {
+  try {
+    DateTime dateTime = DateFormat(currentFormat).parseStrict(date);
+    return DateFormat('yyyy-MM-dd').format(dateTime);
+  } catch (e) {
+    return '';
+  }
+}
+
 Future<String> selectTime(BuildContext context) async {
   final TimeOfDay? picked = await showTimePicker(
       context: context,

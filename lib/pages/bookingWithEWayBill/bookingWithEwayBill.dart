@@ -320,7 +320,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     _subscriptions.add(viewModel.saveBookingLd.stream.listen((saveResponse) {
       if (saveResponse.commandStatus == 1) {
         successToast(
-            saveResponse.commandMessage ?? "Pickup saved successfully");
+            saveResponse.commandMessage ?? "Booking saved successfully");
         Get.back();
       } else {
         failToast(saveResponse.commandMessage ?? "Something went wrong");
@@ -848,10 +848,10 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
 
   void saveBooking() {
     String ewaybillnostr = _firstEwayBill.ewaybillnoCtrl.text.toString(),
-        ewaybilldtstr = convert2SmallDateTime(
-            _firstEwayBill.ewaybilldateCtrl.text.toString()),
-        validuptostr =
-            convert2SmallDateTime(_firstEwayBill.validuptoCtrl.text.toString()),
+        ewaybilldtstr = stringToDateTime('dd/MM/yyyy',
+            _firstEwayBill.ewaybilldateCtrl.text.toString().substring(0, 10)),
+        validuptostr = stringToDateTime(
+            'dd/MM/yyyy', _firstEwayBill.validuptoCtrl.text.toString()),
         invoicenostr = _firstEwayBill.invoicenoCtrl.text.toString(),
         invoicevaluestr = _firstEwayBill.invoicevalueCtrl.text.toString(),
         invoicedtstr = convert2SmallDateTime(
@@ -859,13 +859,17 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     for (int i = 0; i < _ewayBillList.length; i++) {
       EwayBillModel bill = _ewayBillList[i];
       ewaybillnostr += "${bill.ewaybillnoCtrl.text},";
-      ewaybilldtstr += "${convert2SmallDateTime(bill.ewaybilldateCtrl.text)},";
-      validuptostr += "${convert2SmallDateTime(bill.validuptoCtrl.text)},";
+      ewaybilldtstr +=
+          "${stringToDateTime('dd/MM/yyyy', bill.ewaybilldateCtrl.text)},";
+      validuptostr +=
+          "${stringToDateTime('dd/MM/yyyy', bill.validuptoCtrl.text)},";
       invoicenostr += "${bill.invoicenoCtrl.text},";
       invoicevaluestr += "${bill.invoicevalueCtrl.text},";
-      invoicedtstr += "${convert2SmallDateTime(bill.invoicedateCtrl.text)},";
+      invoicedtstr +=
+          "${stringToDateTime('dd/MM/yyyy', bill.invoicedateCtrl.text)},";
     }
     Map<String, String> params = {
+      'prmconnstring': savedUser.companyid.toString(),
       'prmtransactionid': '0',
       'prmbranchcode': savedUser.loginbranchcode.toString(),
       'prmbookingdt': convert2SmallDateTime(_bookingDateController.text),
@@ -873,18 +877,26 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       'prmegrno': autoGr ? '' : _grNoController.text,
       'prmcustcode': _selectedCustomer!.custCode.toString(),
       'prmdestcode': _selectedDestination!.stnCode.toString(),
-      'prmproductcode': '',
+      'prmdestname': _selectedDestination!.stnName.toString(),
+      'prmproductcode': _selectedServiceType!.prodCode.toString(),
       'prmpckgs': _noofpckgsController.text.toString(),
       'prmaweight': _gweightController.text.toString(),
-      'prmvweight': _vweightController.text.toString(),
       'prmcweight': _cweightController.text.toString(),
-      'prmusercode': savedUser.usercode.toString(),
-      'prmcngr': _selectedCngr!.code.toString(),
-      'prmcngrgstno': _selectedCngr!.gstNo.toString(),
+      'prmvweight': _vweightController.text.toString(),
+      'prmcngr': _selectedCngr!.name.toString(),
       'prmcngrcode': _selectedCngr!.code.toString(),
-      'prmcnge': _selectedCnge!.code.toString(),
-      'prmcngegstno': _selectedCnge!.gstNo.toString(),
+      'prmcngrgstno': _selectedCngr!.gstNo.toString(),
+      'prmcngrcountry': _selectedCngr!.country.toString(),
+      'prmcngrstate': _selectedCngr!.state.toString(),
+      'prmcngraddress': _selectedCngr!.address.toString(),
+      'prmcngrzipcode': _selectedCngr!.zipCode.toString(),
+      'prmcnge': _selectedCnge!.name.toString(),
       'prmcngecode': _selectedCnge!.code.toString(),
+      'prmcngegstno': _selectedCnge!.gstNo.toString(),
+      'prmcngecountry': _selectedCnge!.country.toString(),
+      'prmcngestate': _selectedCnge!.state.toString(),
+      'prmcngeaddress': _selectedCnge!.address.toString(),
+      'prmcngezipcode': _selectedCnge!.zipCode.toString(),
       'prmewaybillnostr': ewaybillnostr,
       'prmewaybilldtstr': ewaybilldtstr,
       'prmewaybillvaliduptostr': validuptostr,
@@ -899,12 +911,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       'prmvweightstr': '',
       'prmdeliverytype': _selectedDeliveryType!.deliveryType.toString(),
       'prmloadtype': _selectedLoadType!.code.toString(),
-      'prmservicetype': _selectedServiceType!.deliveryType.toString(),
-      'prmvehicle': '',
-      'prmsessionid': savedUser.sessionid.toString(),
+      'prmvehicle': _selectedVehicle!.vehicleCode.toString(),
       'prmremarks': _remarksController.text.toString(),
-      'prmmenucode': 'GTLMD_BOOKING',
+      'prmbranchname': savedUser.loginbranchname.toString(),
       'prmbookingimgpath': selectedImagePath,
+      'prmdrivercode': savedUser.drivercode.toString(),
+      'prmusercode': savedUser.usercode.toString(),
+      'prmmenucode': 'GTLMD_BOOKING',
+      'prmsessionid': savedUser.sessionid.toString(),
     };
 
     // debugPrint(params.toString());

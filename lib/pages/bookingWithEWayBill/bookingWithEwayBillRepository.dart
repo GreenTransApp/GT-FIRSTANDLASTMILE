@@ -245,7 +245,7 @@ class BookingWithEwayBillRepository extends BaseRepository {
         // viewDialog.add(true);
 
         // CommonResponse resp = await apiGet("${bookingUrl}GetCngrCngeListV2", params);
-        CommonResponse resp = await apiPost("${lmdUrl}Pickup_Upsert", params);
+        CommonResponse resp = await apiPost("${lmdUrl}Booking_Upsert", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());

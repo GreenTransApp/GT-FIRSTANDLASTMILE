@@ -4,6 +4,7 @@ class BookingListModel {
 
   String? grno;
   String? grdt;
+  String? origin;
   String? destname;
   double? tamount;
   String? createid;
@@ -23,6 +24,7 @@ class BookingListModel {
     this.commandmessage,
     this.grno,
     this.grdt,
+    this.origin,
     this.destname,
     this.tamount,
     this.createid,
@@ -42,6 +44,7 @@ class BookingListModel {
 
     grno = json['grno'];
     grdt = json['grdt'];
+    origin = json['origin'];
     destname = json['destname'];
     tamount = json['tamount'] != null
         ? double.tryParse(json['tamount'].toString())
@@ -67,6 +70,7 @@ class BookingListModel {
 
     data['grno'] = grno;
     data['grdt'] = grdt;
+    data['origin'] = origin;
     data['destname'] = destname;
     data['tamount'] = tamount;
     data['createid'] = createid;

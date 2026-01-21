@@ -65,6 +65,7 @@ class BookingListProvider extends ChangeNotifier {
   String _search = '';
 
   List<BookingListModel> get bookings {
+    if (_bookingListResp == null) return [];
     if (_search.isEmpty) return _bookingListResp!;
     return _bookingListResp!
         .where((b) =>
@@ -73,7 +74,8 @@ class BookingListProvider extends ChangeNotifier {
         .toList();
   }
 
-  double get totalAmount => bookings.fold(0, (sum, b) => sum + b.tamount!);
+  double get totalAmount =>
+      bookings.isEmpty ? 0 : bookings.fold(0, (sum, b) => sum + b.tamount!);
 
   void updateSearch(String value) {
     _search = value;

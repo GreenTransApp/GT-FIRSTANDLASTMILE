@@ -18,6 +18,8 @@ import 'firebase_options.dart';
 
 import 'package:provider/provider.dart';
 import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
+import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/bookingProvider.dart';
 
 final locationService = LocationService();
 Future<void> main() async {
@@ -30,6 +32,8 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ChangeNotifierProvider(create: (_) => BookingListProvider()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
       ],
       child: const MyApp(),
     ),

@@ -59,7 +59,7 @@ class _CommonBottomSheetWithApiState
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
         "prmcustcode": widget.custcode,
-        "prmorgcode": widget.orgcode,
+        "prmorgcode": '',
       };
       CommonResponse resp = await apiGet("${bookingUrl}GetDepartment", params);
 
