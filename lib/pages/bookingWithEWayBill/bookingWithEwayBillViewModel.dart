@@ -14,6 +14,8 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
       StreamController();
   StreamController<Map<String, dynamic>> refreshEwb = StreamController();
   StreamController<SavePickupRespModel> saveBookingLd = StreamController();
+  StreamController<Map<String, dynamic>> cngrCngeCodeLiveData =
+      StreamController();
 
   BookingWithEwayBillViewModel() {
     errorLiveData = repository.isErrorLiveData;
@@ -21,6 +23,7 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
     validateEwayBillList = repository.validateEwayBillList;
     refreshEwb = repository.refreshEwbLiveData;
     saveBookingLd = repository.saveBookingLiveData;
+    cngrCngeCodeLiveData = repository.cngrCngeCodeLiveData;
   }
 
   Future<void> getEwayBillCreds(Map<String, String> params) async {
@@ -30,6 +33,10 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
   Future<void> ewayBillLogin(
       Map<String, String> params, String ewaybillno, String compGst) {
     return repository.ewaybilllogin(params, ewaybillno, compGst);
+  }
+
+  Future<void> getCngrCngeCode(Map<String, String> params) {
+    return repository.getCngrCngeCode(params);
   }
 
   Future<void> saveBooking(Map<String, String> params) {

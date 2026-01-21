@@ -3,12 +3,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/selectionBottomSheets/cngrCngeSelectionBottomSheet.dart';
+import 'package:gtlmd/common/selectionBottomSheets/branchSelectionBottomSheet.dart';
+import 'package:gtlmd/common/selectionBottomSheets/customerSelectionBottomSheet.dart';
 import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
+import 'package:gtlmd/common/selectionBottomSheets/departmentSelectionBottomSheet.dart';
+import 'package:gtlmd/common/selectionBottomSheets/vehicleSelectionBottomSheet.dart';
 import 'package:gtlmd/common/viewModel/lovViewModel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/bookingList/bookingListScreen.dart';
@@ -16,6 +22,7 @@ import 'package:gtlmd/pages/bookingWithEWayBill/appFormField.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillViewModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/vehicleModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
@@ -59,6 +66,10 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   final FocusNode _cngeGstFocusNode = FocusNode();
   final TextEditingController _serviceTypeController = TextEditingController();
   final FocusNode _servieTypeFocusNode = FocusNode();
+  final TextEditingController _loadTypeController = TextEditingController();
+  final FocusNode _loadTypeFocusNode = FocusNode();
+  final TextEditingController _vehicleController = TextEditingController();
+  final FocusNode _vehicleFocusNode = FocusNode();
   final TextEditingController _deliveryTypeController = TextEditingController();
   final FocusNode _deliveryTypeFocusNode = FocusNode();
   final TextEditingController _noofpckgsController = TextEditingController();
@@ -85,6 +96,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   ServiceTypeModel? _selectedServiceType;
   DeliveryTypeModel? _selectedDeliveryType;
   LoadTypeModel? _selectedLoadType;
+  VehicleModel? _selectedVehicle;
   late EwayBillModel _firstEwayBill;
   late EwayBillCredentialsModel _ewaybillCreds;
   String selectedImagePath = "";
@@ -98,7 +110,10 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   bool _isLoadingLov = false;
 
   final List<ServiceTypeModel> _serviceTypeList = [];
+  final List<LoadTypeModel> _loadTypeList = [];
   final List<StreamSubscription> _subscriptions = [];
+  String cngrgstno = '';
+  String cngegstno = '';
 
   //  [
   //   ServiceTypeModel(prodName: 'SURFACE'),
@@ -139,43 +154,13 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
     setObserver();
-    // fetchAllLov();
+    fetchAllLov();
   }
 
   fetchAllLov() async {
-    setState(() {
-      _isLoadingLov = true;
-    });
-    final futures = [
-      getBranchList(),
-      getCustomerList(),
-      getCngrCngeList('R'),
-      getCngrCngeList('E'),
-    ];
-
-    try {
-      final results = await Future.wait(futures);
-
-      if (mounted) {
-        setState(() {
-          _branchList = results[0] as List<BranchModel>;
-          _customerList = results[1] as List<CustomerModel>;
-          _cngrList = results[2] as List<CngrCngeModel>;
-          _cngeList = results[3] as List<CngrCngeModel>;
-          _isLoadingLov = false;
-        });
-        getBookingLovs();
-        getEwayBillCreds();
-        debugPrint('LOV DATA FETCHED SUCCESSFULLY');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoadingLov = false;
-        });
-      }
-      debugPrint('API FAILED: $e');
-    }
+    getBookingLovs();
+    getEwayBillCreds();
+    debugPrint('LOV DATA FETCHED SUCCESSFULLY');
   }
 
   Future<List<BranchModel>> getBranchList() async {
@@ -264,8 +249,9 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
 
     _subscriptions.add(viewModel.refreshEwb.stream.listen((data) {
       debugPrint(data.toString());
-      if (data.containsKey('ewaybillno')) {
-        String ewaybillno = data['ewaybillno'];
+      if (data.containsKey('ewbNo')) {
+        String ewaybillno = data['ewbNo'];
+        successToast('Ewaybill $ewaybillno verified successfully');
         EwayBillModel? targetModel;
 
         if (_firstEwayBill.ewaybillnoCtrl.text == ewaybillno) {
@@ -283,6 +269,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
         if (targetModel != null) {
           final model = targetModel;
           setState(() {
+            cngrgstno = data['fromGstin'].toString();
+            cngegstno = data['toGstin'].toString();
             model.ewaybilldateCtrl.text = data['ewbDate'] ?? '';
             model.validuptoCtrl.text = data['validUpto'] ?? '';
             model.invoicenoCtrl.text = data['docNo'] ?? '';
@@ -291,6 +279,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
             model.isValidated = true;
             model.syncFromControllers();
           });
+          getCngrCngeCode(cngrgstno, cngegstno);
         }
       }
     }));
@@ -317,6 +306,17 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       }),
     );
 
+    _subscriptions.add(
+      lovViewModel.loadTypeList.stream.listen((data) {
+        if (mounted) {
+          setState(() {
+            _loadTypeList.clear();
+            _loadTypeList.addAll(data);
+          });
+        }
+      }),
+    );
+
     _subscriptions.add(viewModel.saveBookingLd.stream.listen((saveResponse) {
       if (saveResponse.commandStatus == 1) {
         successToast(
@@ -324,6 +324,34 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
         Get.back();
       } else {
         failToast(saveResponse.commandMessage ?? "Something went wrong");
+      }
+    }));
+
+    _subscriptions.add(viewModel.cngrCngeCodeLiveData.stream.listen((data) {
+      if (data['commandstatus' == 1]) {
+        _selectedCngr = CngrCngeModel(
+          code: data['cngrcode'],
+          name: data['cngrname'],
+          city: data['cngrcity'],
+          state: data['cngrstate'],
+          zipCode: data['cngrzipcode'],
+          telNo: data['cngrtelno'],
+          address: data['cngraddress'],
+          gstNo: cngrgstno,
+        );
+
+        _selectedCnge = CngrCngeModel(
+          code: data['cngrcode'],
+          name: data['cngrname'],
+          city: data['cngrcity'],
+          state: data['cngrstate'],
+          zipCode: data['cngrzipcode'],
+          telNo: data['cngrtelno'],
+          address: data['cngraddress'],
+          gstNo: cngegstno,
+        );
+
+        setState(() {});
       }
     }));
   }
@@ -359,6 +387,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       "password": credentials.ewayPassword.toString(),
     };
     viewModel.ewayBillLogin(params, ewaybillno, credentials.compGst!);
+  }
+
+  void getCngrCngeCode(String cngrgstno, String cngegstno) {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmcngrgstno": cngrgstno,
+      "prmcngegstno": cngegstno,
+    };
+    viewModel.getCngrCngeCode(params);
   }
 
   Widget defaultEWayBillCard() {
@@ -866,7 +903,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       'prmvehicle': '',
       'prmsessionid': savedUser.sessionid.toString(),
       'prmremarks': _remarksController.text.toString(),
-      'prmmenucode': '',
+      'prmmenucode': 'GTLMD_BOOKING',
       'prmbookingimgpath': selectedImagePath,
     };
 
@@ -1037,20 +1074,26 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       },
                       onTap: () {
                         FocusScope.of(context).unfocus();
-                        List<CommonDataModel<BranchModel>> commonList =
-                            _branchList
-                                .map((branch) => CommonDataModel<BranchModel>(
-                                      branch.stnName ??
-                                          branch.stnName ??
-                                          'Unknown',
-                                      branch,
-                                    ))
-                                .toList();
-                        showCommonBottomSheet(context, 'Select Origin', (data) {
+                        // List<CommonDataModel<BranchModel>> commonList =
+                        //     _branchList
+                        //         .map((branch) => CommonDataModel<BranchModel>(
+                        //               branch.stnName ??
+                        //                   branch.stnName ??
+                        //                   'Unknown',
+                        //               branch,
+                        //             ))
+                        //         .toList();
+                        // showCommonBottomSheet(context, 'Select Origin', (data) {
+                        //   _selectedOrigin = data;
+                        //   _originNameController.text = data.stnName;
+                        //   _originNameFocusNode.unfocus();
+                        // }, commonList);
+                        showBranchSelectionBottomSheet(context, 'Select Origin',
+                            (data) {
                           _selectedOrigin = data;
                           _originNameController.text = data.stnName;
                           _originNameFocusNode.unfocus();
-                        }, commonList);
+                        });
                       },
                     ),
                     SizedBox(
@@ -1074,21 +1117,27 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       },
                       onTap: () {
                         FocusScope.of(context).unfocus();
-                        List<CommonDataModel<BranchModel>> commonList =
-                            _branchList
-                                .map((branch) => CommonDataModel<BranchModel>(
-                                      branch.stnName ??
-                                          branch.stnName ??
-                                          'Unknown',
-                                      branch,
-                                    ))
-                                .toList();
-                        showCommonBottomSheet(context, 'Select Destination',
-                            (data) {
+                        // List<CommonDataModel<BranchModel>> commonList =
+                        //     _branchList
+                        //         .map((branch) => CommonDataModel<BranchModel>(
+                        //               branch.stnName ??
+                        //                   branch.stnName ??
+                        //                   'Unknown',
+                        //               branch,
+                        //             ))
+                        //         .toList();
+                        // showCommonBottomSheet(context, 'Select Destination',
+                        //     (data) {
+                        //   _selectedDestination = data;
+                        //   _destNameController.text = data.stnName;
+                        //   _destNameFocusNode.unfocus();
+                        // }, commonList);
+                        showBranchSelectionBottomSheet(
+                            context, 'Select Destination', (data) {
                           _selectedDestination = data;
                           _destNameController.text = data.stnName;
                           _destNameFocusNode.unfocus();
-                        }, commonList);
+                        });
                       },
                     ),
                     SizedBox(
@@ -1122,12 +1171,15 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                       customer,
                                     ))
                                 .toList();
-                        showCommonBottomSheet(context, 'Select Customer',
-                            (data) {
-                          _selectedCustomer = data;
-                          _custNameController.text = data.custName;
-                          _custNameFocusNode.unfocus();
-                        }, commonList);
+                        debugPrint('User ${savedUser.companyid.toString()}');
+                        showCustomerSelectionBottomSheet(
+                          context,
+                          (data) {
+                            _selectedCustomer = data;
+                            _custNameController.text = data.custName;
+                            _custNameFocusNode.unfocus();
+                          },
+                        );
                       },
                     ),
                     SizedBox(
@@ -1155,24 +1207,30 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                         } else {
                           FocusScope.of(context).unfocus();
                           loadingAlertService.showLoading();
-                          _departmentList = await getDepartmentList();
+                          // _departmentList = await getDepartmentList();
                           loadingAlertService.hideLoading();
-                          List<CommonDataModel<DepartmentModel>> commonList =
-                              _departmentList
-                                  .map((department) =>
-                                      CommonDataModel<DepartmentModel>(
-                                        department.custDeptName ??
-                                            department.custDeptName ??
-                                            'Unknown',
-                                        department,
-                                      ))
-                                  .toList();
-                          showCommonBottomSheet(context, 'Select Department',
-                              (data) {
+                          // List<CommonDataModel<DepartmentModel>> commonList =
+                          //     _departmentList
+                          //         .map((department) =>
+                          //             CommonDataModel<DepartmentModel>(
+                          //               department.custDeptName ??
+                          //                   department.custDeptName ??
+                          //                   'Unknown',
+                          //               department,
+                          //             ))
+                          //         .toList();
+                          // showCommonBottomSheet(context, 'Select Department',
+                          //     (data) {
+                          //   _selectedDept = data;
+                          //   _deptNameController.text = data.custDeptName;
+                          //   _deptNameFocusNode.unfocus();
+                          // }, commonList);
+                          showDepartmentSelectionBottomSheet(context, (data) {
                             _selectedDept = data;
                             _deptNameController.text = data.custDeptName;
                             _deptNameFocusNode.unfocus();
-                          }, commonList);
+                          }, _selectedCustomer!.custCode.toString(),
+                              _selectedOrigin!.stnCode.toString());
                         }
                       },
                     ),
@@ -1201,27 +1259,49 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
-                                List<CommonDataModel<CngrCngeModel>>
-                                    commonList = _cngrList
-                                        .map((cngr) =>
-                                            CommonDataModel<CngrCngeModel>(
-                                              cngr.name ??
-                                                  cngr.name ??
-                                                  'Unknown',
-                                              cngr,
-                                            ))
-                                        .toList();
-                                showCommonBottomSheet(
-                                    context, 'Select Consignor', (data) {
-                                  _selectedCngr = data;
-                                  _cngrNameController.text =
-                                      isNullOrEmpty(data.name) ? '' : data.name;
-                                  _cngrGstController.text =
-                                      isNullOrEmpty(data.gstNo)
-                                          ? ''
-                                          : data.gstNo;
-                                  _cngrNameFocusNode.unfocus();
-                                }, commonList);
+                                // List<CommonDataModel<CngrCngeModel>>
+                                //     commonList = _cngrList
+                                //         .map((cngr) =>
+                                //             CommonDataModel<CngrCngeModel>(
+                                //               cngr.name ??
+                                //                   cngr.name ??
+                                //                   'Unknown',
+                                //               cngr,
+                                //             ))
+                                //         .toList();
+                                // showCommonBottomSheet(
+                                //     context, 'Select Consignor', (data) {
+                                //   _selectedCngr = data;
+                                //   _cngrNameController.text =
+                                //       isNullOrEmpty(data.name) ? '' : data.name;
+                                //   _cngrGstController.text =
+                                //       isNullOrEmpty(data.gstNo)
+                                //           ? ''
+                                //           : data.gstNo;
+                                //   _cngrNameFocusNode.unfocus();
+                                // }, commonList);
+
+                                if (_selectedCustomer == null) {
+                                  failToast('Please select customer first');
+                                  return;
+                                }
+                                showCngeCngeSelectionBottomSheet(
+                                  context,
+                                  (data) {
+                                    _selectedCngr = data;
+                                    _cngrNameController.text =
+                                        isNullOrEmpty(data.name)
+                                            ? ''
+                                            : data.name;
+                                    _cngrGstController.text =
+                                        isNullOrEmpty(data.gstNo)
+                                            ? ''
+                                            : data.gstNo;
+                                    _cngrNameFocusNode.unfocus();
+                                  },
+                                  _selectedCustomer!.custCode.toString(),
+                                  'R',
+                                );
                               },
                               validator: (value) {
                                 if (isNullOrEmpty(value)) {
@@ -1278,27 +1358,49 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                               keyboardType: TextInputType.none,
                               onTap: () {
                                 FocusScope.of(context).unfocus();
-                                List<CommonDataModel<CngrCngeModel>>
-                                    commonList = _cngeList
-                                        .map((cnge) =>
-                                            CommonDataModel<CngrCngeModel>(
-                                              cnge.name ??
-                                                  cnge.name ??
-                                                  'Unknown',
-                                              cnge,
-                                            ))
-                                        .toList();
-                                showCommonBottomSheet(
-                                    context, 'Select Consignee', (data) {
-                                  _selectedCnge = data;
-                                  _cngeNameController.text =
-                                      isNullOrEmpty(data.name) ? '' : data.name;
-                                  _cngeGstController.text =
-                                      isNullOrEmpty(data.gstNo)
-                                          ? ''
-                                          : data.gstNo;
-                                  _cngeNameFocusNode.unfocus();
-                                }, commonList);
+                                // List<CommonDataModel<CngrCngeModel>>
+                                //     commonList = _cngeList
+                                //         .map((cnge) =>
+                                //             CommonDataModel<CngrCngeModel>(
+                                //               cnge.name ??
+                                //                   cnge.name ??
+                                //                   'Unknown',
+                                //               cnge,
+                                //             ))
+                                //         .toList();
+                                // showCommonBottomSheet(
+                                //     context, 'Select Consignee', (data) {
+                                //   _selectedCnge = data;
+                                //   _cngeNameController.text =
+                                //       isNullOrEmpty(data.name) ? '' : data.name;
+                                //   _cngeGstController.text =
+                                //       isNullOrEmpty(data.gstNo)
+                                //           ? ''
+                                //           : data.gstNo;
+                                //   _cngeNameFocusNode.unfocus();
+                                // }, commonList);
+
+                                if (_selectedDestination == null) {
+                                  failToast('Please select destination first');
+                                  return;
+                                }
+                                showCngeCngeSelectionBottomSheet(
+                                  context,
+                                  (data) {
+                                    _selectedCnge = data;
+                                    _cngeNameController.text =
+                                        isNullOrEmpty(data.name)
+                                            ? ''
+                                            : data.name;
+                                    _cngeGstController.text =
+                                        isNullOrEmpty(data.gstNo)
+                                            ? ''
+                                            : data.gstNo;
+                                    _cngeNameFocusNode.unfocus();
+                                  },
+                                  _selectedCustomer!.custCode.toString(),
+                                  'E',
+                                );
                               },
                               validator: (value) {
                                 if (isNullOrEmpty(value)) {
@@ -1381,6 +1483,76 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                         }, commonList);
                       },
                     ),
+                    SizedBox(
+                      height: SizeConfig.mediumHorizontalSpacing,
+                    ),
+                    AppFormField(
+                      controller: _loadTypeController,
+                      focusNode: _loadTypeFocusNode,
+                      label: 'Load Type',
+                      isRequired: true,
+                      isInput: false,
+                      icon: Icons.abc,
+                      endIcon: Icons.arrow_drop_down,
+                      endIconColor: CommonColors.grey400,
+                      keyboardType: TextInputType.none,
+                      validator: (value) {
+                        if (isNullOrEmpty(value)) {
+                          return 'Load Type is required';
+                        }
+                        return null;
+                      },
+                      onTap: () async {
+                        FocusScope.of(context).unfocus();
+                        List<CommonDataModel<LoadTypeModel>> commonList =
+                            _loadTypeList
+                                .map((load) => CommonDataModel<LoadTypeModel>(
+                                      load.name ?? load.name ?? 'Unknown',
+                                      load,
+                                    ))
+                                .toList();
+                        showCommonBottomSheet(context, 'Load Type', (data) {
+                          _selectedLoadType = data;
+                          _loadTypeController.text = data.name;
+                          _loadTypeFocusNode.unfocus();
+                        }, commonList);
+                      },
+                    ),
+                    Visibility(
+                        visible: _selectedLoadType != null &&
+                            _selectedLoadType!.code == 'F' &&
+                            _selectedServiceType != null &&
+                            _selectedServiceType!.modeType == 'S',
+                        child: Column(children: [
+                          SizedBox(
+                            height: SizeConfig.mediumHorizontalSpacing,
+                          ),
+                          AppFormField(
+                            controller: _vehicleController,
+                            focusNode: _vehicleFocusNode,
+                            label: 'Vehicle',
+                            isRequired: true,
+                            isInput: false,
+                            icon: Icons.abc,
+                            endIcon: Icons.arrow_drop_down,
+                            endIconColor: CommonColors.grey400,
+                            keyboardType: TextInputType.none,
+                            validator: (value) {
+                              if (isNullOrEmpty(value)) {
+                                return 'Vehicle is required';
+                              }
+                              return null;
+                            },
+                            onTap: () async {
+                              FocusScope.of(context).unfocus();
+                              showVehicleSelectionBottomSheet(context, (data) {
+                                _selectedVehicle = data;
+                                _vehicleController.text = data.vehicleCode;
+                                _vehicleFocusNode.unfocus();
+                              });
+                            },
+                          ),
+                        ])),
                     SizedBox(
                       height: SizeConfig.mediumHorizontalSpacing,
                     ),

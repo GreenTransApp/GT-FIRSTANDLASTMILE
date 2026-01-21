@@ -20,6 +20,8 @@ class BookingWithEwayBillRepository extends BaseRepository {
       StreamController();
   StreamController<SavePickupRespModel> saveBookingLiveData =
       StreamController();
+  StreamController<Map<String, dynamic>> cngrCngeCodeLiveData =
+      StreamController();
 
   Future<void> getEwayBillCreds(Map<String, dynamic> params) async {
     viewDialog.add(true);
@@ -162,27 +164,27 @@ class BookingWithEwayBillRepository extends BaseRepository {
     if (hasInternet) {
       try {
         viewDialog.add(true);
-        final response = await http.get(
-          Uri.parse(URL.getDetailbyEwayBillNo).replace(queryParameters: params),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $ewaybilltoken'
-          },
-        );
-        viewDialog.add(false);
-        final Map<String, dynamic> body = jsonDecode(response.body);
-        if (body['status'] == 1) {
-          final resp = body['response'];
-          final ewaybilltoken = resp['token'];
-          Map<String, String> getRefreshParams = {
-            'orgid': orgid,
-            'token': resp['token']
-          };
-          getRefreshEwb(getRefreshParams, ewaybillno, ewaybilltoken);
-        } else {
-          isErrorLiveData.add(body['message']);
-          return;
-        }
+        // final response = await http.get(
+        //   Uri.parse(URL.getDetailbyEwayBillNo).replace(queryParameters: params),
+        //   headers: <String, String>{
+        //     'Content-Type': 'application/json; charset=UTF-8',
+        //     'Authorization': 'Bearer $ewaybilltoken'
+        //   },
+        // );
+        // viewDialog.add(false);
+        // final Map<String, dynamic> body = jsonDecode(response.body);
+        // if (body['status'] == 1) {
+        //   final resp = body['response'];
+        //   final ewaybilltoken = resp['token'];
+        Map<String, String> getRefreshParams = {
+          'gstin': compGst,
+          'ewbNo': ewaybillno
+        };
+        getRefreshEwb(getRefreshParams, ewaybillno, ewaybilltoken);
+        // } else {
+        //   isErrorLiveData.add(body['message']);
+        //   return;
+        // }
       } on SocketException catch (_) {
         isErrorLiveData.add("No Internet");
         viewDialog.add(false);
@@ -208,13 +210,14 @@ class BookingWithEwayBillRepository extends BaseRepository {
           Uri.parse(URL.getRefreshEwb).replace(queryParameters: params),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $ewaybilltoken'
           },
         );
         viewDialog.add(false);
         final Map<String, dynamic> body = jsonDecode(response.body);
         if (body['status'] == 1) {
           Map<String, dynamic> response = body['response'];
-          response['ewaybillno'] = ewaybillno;
+          // response['ewaybillno'] = ewaybillno;
           refreshEwbLiveData.add(response);
         } else {
           isErrorLiveData.add(body['message']);
@@ -253,6 +256,37 @@ class BookingWithEwayBillRepository extends BaseRepository {
           List<SavePickupRespModel> resultList = List.generate(list.length,
               (index) => SavePickupRespModel.fromJson(list[index]));
           saveBookingLiveData.add(resultList[0]);
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> getCngrCngeCode(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+
+        CommonResponse resp =
+            await apiGet("${bookingUrl}getDetailsOnEWBGSTNo", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          cngrCngeCodeLiveData.add(table);
         } else {
           isErrorLiveData.add(resp.commandMessage!);
         }
