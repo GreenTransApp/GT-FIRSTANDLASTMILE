@@ -916,3 +916,5 @@ Future<String> getDeviceId() async {
   }
   return id;
 }
+
+enum ApiCallingStatus { initial, loading, success, error }
