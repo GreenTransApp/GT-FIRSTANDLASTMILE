@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gtlmd/pages/bookingList/bookingCard.dart';
+import 'package:gtlmd/tiles/bookingTile.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class BookingList extends StatelessWidget {
           itemCount: provider.bookings.length,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (_, index) {
-            return BookingCard(booking: provider.bookings[index]);
+            return BookingTile(booking: provider.bookings[index]);
           },
         );
       },
