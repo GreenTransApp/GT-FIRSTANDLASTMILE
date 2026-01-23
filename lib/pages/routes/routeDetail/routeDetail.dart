@@ -11,7 +11,7 @@ import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/grList/grList.dart';
+import 'package:gtlmd/pages/grList_old/grList_old.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigJsonModel.dart';

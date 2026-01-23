@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/optionMenu/stickerPrinting/model/StickerModel.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -13,7 +14,8 @@ import 'package:flutter/services.dart';
 final bluetoothChannel = MethodChannel('bluetooth_channel');
 
 class BluetoothScreen extends StatefulWidget {
-  const BluetoothScreen({super.key});
+  final List<StickerListModel> stickerList = [];
+  BluetoothScreen({super.key, required stickerList});
 
   @override
   State<BluetoothScreen> createState() => _BluetoothScreenState();
@@ -254,21 +256,21 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     });
   }
 
-  Future<List<int>> _generatePrintData() async {
+  Future<List<int>> _generatePrintData(StickerListModel m) async {
     List<int> bytes = [];
 
     // Mock Data
     const compName = "TEST COMPANY";
-    const m = {
-      "stickerno": "123456789012",
-      "grno": "GR123",
-      "grdt": "22/12/2025",
-      "originname": "NEW YORK",
-      "destinationname": "LONDON",
-      "packageid": "PKG001",
-      "pckgs": "10",
-      "weight": "500kg"
-    };
+    // const m = {
+    //   "stickerno": "123456789012",
+    //   "grno": "GR123",
+    //   "grdt": "22/12/2025",
+    //   "originname": "NEW YORK",
+    //   "destinationname": "LONDON",
+    //   "packageid": "PKG001",
+    //   "pckgs": "10",
+    //   "weight": "500kg"
+    // };
 
     String cmd = "";
     cmd += "SIZE 76 mm,75 mm\r\n";
@@ -291,19 +293,18 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
 
     // Barcode
     cmd +=
-        'BARCODE $X_LEFT,${184 + SHIFT},"128",90,1,0,3,6,"${m['stickerno']}"\r\n';
+        'BARCODE $X_LEFT,${184 + SHIFT},"128",90,1,0,3,6,"${m.stickerno}"\r\n';
 
     // Details
-    cmd += 'TEXT $X_LEFT,${310 + SHIFT},"2",0,1,1,"GR | ${m['grno']}"\r\n';
-    cmd += 'TEXT $X_LEFT,${350 + SHIFT},"2",0,1,1,"GR-DT | ${m['grdt']}"\r\n';
+    cmd += 'TEXT $X_LEFT,${310 + SHIFT},"2",0,1,1,"GR | ${m.grno}"\r\n';
+    cmd += 'TEXT $X_LEFT,${350 + SHIFT},"2",0,1,1,"GR-DT | ${m.grdt}"\r\n';
     cmd +=
-        'TEXT $X_LEFT,${390 + SHIFT},"2",0,1,1,"ORIGIN | ${m['originname']}"\r\n';
+        'TEXT $X_LEFT,${390 + SHIFT},"2",0,1,1,"ORIGIN | ${m.originname}"\r\n';
     cmd +=
-        'TEXT $X_LEFT,${430 + SHIFT},"2",0,1,1,"DESTINATION | ${m['destinationname']}"\r\n';
+        'TEXT $X_LEFT,${430 + SHIFT},"2",0,1,1,"DESTINATION | ${m.destinationname}"\r\n';
     cmd +=
-        'TEXT $X_LEFT,${470 + SHIFT},"2",0,1,1,"PCKGS | ${m['packageid']}/${m['pckgs']}"\r\n';
-    cmd +=
-        'TEXT $X_RIGHT,${470 + SHIFT},"2",0,1,1,"WEIGHT | ${m['weight']}"\r\n';
+        'TEXT $X_LEFT,${470 + SHIFT},"2",0,1,1,"PCKGS | ${m.packageid}/${m.pckgs}"\r\n';
+    cmd += 'TEXT $X_RIGHT,${470 + SHIFT},"2",0,1,1,"WEIGHT | ${m.weight}"\r\n';
 
     cmd += "PRINT 1\r\n";
 
@@ -316,14 +317,14 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     return bytes;
   }
 
-  void _printReceipt() async {
+  void _printReceipt(StickerListModel model) async {
     if (connectedDevice == null) {
       debugPrint('No device connected');
       return;
     }
 
     try {
-      final data = await _generatePrintData();
+      final data = await _generatePrintData(model);
       final services =
           await flutterReactiveBle.discoverServices(connectedDevice!.id);
 
@@ -451,12 +452,12 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         foregroundColor: CommonColors.White,
         title: const Text('Bluetooth Devices'),
         actions: [
-          if (connectedDevice != null)
-            IconButton(
-              icon: const Icon(Icons.print),
-              onPressed: _printReceipt,
-              tooltip: 'Print Test Receipt',
-            ),
+          // if (connectedDevice != null)
+          //   IconButton(
+          //     icon: const Icon(Icons.print),
+          //     onPressed: _printReceipt,
+          //     tooltip: 'Print Test Receipt',
+          //   ),
         ],
       ),
       body: Column(
@@ -571,7 +572,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.print),
                         label: const Text('Print Receipt'),
-                        onPressed: _printReceipt,
+                        onPressed: () {
+                          for (var sticker in widget.stickerList) {
+                            _printReceipt(sticker);
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: CommonColors.colorPrimary,
                           foregroundColor: Colors.white,

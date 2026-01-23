@@ -8,6 +8,7 @@ import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformancePage.dart';
+import 'package:gtlmd/optionMenu/stickerPrinting/grListPage.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
@@ -189,6 +190,15 @@ class SideMenu extends StatelessWidget {
                     press: () {
                       Navigator.pop(context);
                       Get.to(const DeliveryPerformancePage());
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Sticker Printing',
+                    leadingIcon: const Icon(Symbols.analytics),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(const GrListPage());
                     },
                   ),
                 ],

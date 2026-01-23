@@ -9,6 +9,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/optionMenu/stickerPrinting/stickerProvider.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/service/authenticationService.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (_) => BookingListProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
+        ChangeNotifierProvider(create: (_) => StickerPrintingProvider()),
       ],
       child: const MyApp(),
     ),
