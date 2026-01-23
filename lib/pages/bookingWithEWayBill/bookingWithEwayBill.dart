@@ -1052,6 +1052,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       'prmtime': formatTimeString(_bookingTimeController.text),
       'prmegrno': autoGr ? '' : _grNoController.text,
       'prmcustcode': _selectedCustomer!.custCode.toString(),
+      'prmcustdeptid': _selectedDept!.custDeptId.toString(),
       'prmdestcode': _selectedDestination!.stnCode.toString(),
       'prmdestname': _selectedDestination!.stnName.toString(),
       'prmproductcode': _selectedServiceType!.prodCode.toString(),
