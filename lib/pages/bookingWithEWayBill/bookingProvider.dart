@@ -100,6 +100,18 @@ class BookingProvider extends ChangeNotifier {
     return _lovRepository.getBranchList(params);
   }
 
+  // Future<void> getGrDetail(String grno) async {
+  //   Map<String, String> params = {
+  //     "prmcompanyid": savedUser.companyid.toString(),
+  //     "prmusercode": savedUser.usercode.toString(),
+  //     "prmbranchcode": savedUser.loginbranchcode.toString(),
+  //     "prmsessionid": savedUser.sessionid.toString(),
+  //     "prmgrno": grno,
+  //   };
+
+  //   return _repo.getGrDetail(params);
+  // }
+
   Future<List<CustomerModel>> getCustomerList() async {
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),

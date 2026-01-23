@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -22,6 +21,8 @@ import 'package:gtlmd/pages/bookingWithEWayBill/appFormField.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillViewModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/grDetailsResponse.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillRespModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/vehicleModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
@@ -34,7 +35,8 @@ import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class BookingWithEwayBill extends StatefulWidget {
-  const BookingWithEwayBill({super.key});
+  String? grno;
+  BookingWithEwayBill({super.key, this.grno});
 
   @override
   State<BookingWithEwayBill> createState() => _BookingWithEwayBillState();
@@ -155,6 +157,159 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
     setObserver();
     fetchAllLov();
+
+    if (!isNullOrEmpty(widget.grno)) {
+      getGrDetailToEdit(widget.grno.toString());
+    }
+  }
+
+  Future<void> getGrDetailToEdit(String grno) async {
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+      "prmgrno": grno,
+    };
+    List<dynamic> result = await viewModel.getGrDetail(params);
+    if (result.isNotEmpty) {
+      populateGrData(result);
+    }
+  }
+
+  void populateGrData(List<dynamic> dataList) {
+    if (dataList.isEmpty) return;
+
+    GrDetailsResponse? grData;
+    EwayBillModelResponse? ewbData;
+
+    for (var item in dataList) {
+      if (item is GrDetailsResponse) grData = item;
+      if (item is EwayBillModelResponse) ewbData = item;
+    }
+
+    final gr = grData;
+    if (gr != null) {
+      setState(() {
+        _grNoController.text = gr.grNo ?? '';
+        _bookingDateController.text = gr.grDate != null
+            ? DateFormat('dd-MM-yyyy').format(gr.grDate!)
+            : '';
+        _bookingTimeController.text = gr.pickTime ?? '';
+
+        // Update selected objects from lists if they are already fetched
+        if (_branchList.isNotEmpty) {
+          try {
+            _selectedDestination = _branchList.firstWhere(
+                (element) => element.stnCode == gr.destCode,
+                orElse: () => BranchModel());
+            _destNameController.text = _selectedDestination?.stnName ?? '';
+          } catch (e) {}
+        }
+
+        if (_customerList.isNotEmpty) {
+          try {
+            _selectedCustomer = _customerList.firstWhere(
+                (element) => element.custCode == gr.custCode,
+                orElse: () => CustomerModel());
+            _custNameController.text = _selectedCustomer?.custName ?? '';
+          } catch (e) {}
+        }
+
+        _selectedCngr = CngrCngeModel(
+          code: gr.consignorCode,
+          name: gr.consignor,
+          gstNo: gr.consignorGstNo,
+        );
+        _cngrNameController.text = gr.consignor ?? '';
+        _cngrGstController.text = gr.consignorGstNo ?? '';
+
+        _selectedCnge = CngrCngeModel(
+          code: gr.consigneeCode,
+          name: gr.consignee,
+          gstNo: gr.consigneeGstNo,
+        );
+        _cngeNameController.text = gr.consignee ?? '';
+        _cngeGstController.text = gr.consigneeGstNo ?? '';
+        _noofpckgsController.text = gr.totalPackages?.toString() ?? '';
+        _gweightController.text = gr.actualWeight?.toString() ?? '';
+        _vweightController.text = gr.volumetricWeight?.toString() ?? '';
+        _cweightController.text = gr.chargedWeight?.toString() ?? '';
+        _remarksController.text = gr.remarks ?? '';
+
+        if (_serviceTypeList.isNotEmpty) {
+          try {
+            _selectedServiceType = _serviceTypeList.firstWhere(
+                (element) => element.modeType == gr.productCode,
+                orElse: () => ServiceTypeModel());
+            _serviceTypeController.text = _selectedServiceType?.prodName ?? '';
+          } catch (e) {}
+        }
+
+        if (_loadTypeList.isNotEmpty) {
+          try {
+            _selectedLoadType = _loadTypeList.firstWhere(
+                (element) => element.code == gr.loadType,
+                orElse: () => LoadTypeModel());
+            _loadTypeController.text = _selectedLoadType?.name ?? '';
+          } catch (e) {}
+        }
+
+        _selectedOrigin = BranchModel();
+        _selectedDestination =
+            BranchModel(stnCode: gr.destCode, stnName: gr.destName);
+        _destNameController.text = gr.destName ?? '';
+        _selectedCustomer = CustomerModel(
+          custCode: gr.custCode,
+          custName: gr.custName,
+        );
+        _custNameController.text = gr.custName ?? '';
+
+        _selectedDept = DepartmentModel(
+          custDeptId: gr.custDeptId,
+        );
+      });
+      _selectedDeliveryType = DeliveryTypeModel();
+      if (_deliveryTypeList.isNotEmpty) {
+        try {
+          _selectedDeliveryType = _deliveryTypeList.firstWhere(
+              (element) => element.deliveryType == gr.dlvtype,
+              orElse: () => DeliveryTypeModel());
+          _deliveryTypeController.text =
+              _selectedDeliveryType?.deliveryTypeName ?? '';
+        } catch (e) {}
+      }
+
+      _selectedVehicle = VehicleModel(
+          commandStatus: 1,
+          commandMessage: '',
+          vehicleCode: gr.modeCode.toString(),
+          regNo: gr.regNo.toString(),
+          typeName: '',
+          capacity: 0,
+          modeType: '');
+      _vehicleController.text = _selectedVehicle!.vehicleCode;
+    }
+
+    final ewb = ewbData;
+    if (ewb != null) {
+      setState(() {
+        _firstEwayBill.ewaybillnoCtrl.text = ewb.ewayBill ?? '';
+        _firstEwayBill.ewaybilldateCtrl.text = ewb.ewayBillDate != null
+            ? DateFormat('dd-MM-yyyy').format(ewb.ewayBillDate!)
+            : '';
+        _firstEwayBill.validuptoCtrl.text = ewb.validUpto != null
+            ? DateFormat('dd-MM-yyyy').format(ewb.validUpto!)
+            : '';
+        _firstEwayBill.invoicenoCtrl.text = ewb.invoiceNo ?? '';
+        _firstEwayBill.invoicedateCtrl.text = ewb.invoiceDate != null
+            ? DateFormat('dd-MM-yyyy').format(ewb.invoiceDate!)
+            : '';
+        _firstEwayBill.invoicevalueCtrl.text =
+            ewb.invoiceValue?.toString() ?? '';
+        _firstEwayBill.isValidated = true;
+      });
+    }
   }
 
   fetchAllLov() async {
@@ -354,6 +509,26 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
         setState(() {});
       }
     }));
+
+    _subscriptions.add(viewModel.viewDialog.stream.listen((show) {
+      if (show) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    }));
+
+    _subscriptions.add(viewModel.errorLiveData.stream.listen((data) {
+      failToast(data);
+    }));
+
+    _subscriptions
+        .add(viewModel.ewayBillDetailLiveData.stream.listen((show) {}));
+
+    _subscriptions.add(viewModel.grDetailLiveData.stream.listen((show) {}));
+
+    _subscriptions
+        .add(viewModel.goodsDimensionDetailLiveData.stream.listen((show) {}));
   }
 
   addNewEWayBill() {
@@ -623,6 +798,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                         ? Colors.green
                         : CommonColors.primaryColorShade,
                     endIconOnTap: () {
+                      Focus.of(context).unfocus();
                       if (isNullOrEmpty(eWayBill.ewaybillnoCtrl.text)) {
                         failToast('EwayBill No requried');
                       } else {
@@ -911,7 +1087,9 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       'prmvweightstr': '',
       'prmdeliverytype': _selectedDeliveryType!.deliveryType.toString(),
       'prmloadtype': _selectedLoadType!.code.toString(),
-      'prmvehicle': _selectedVehicle!.vehicleCode.toString(),
+      'prmvehicle': _selectedVehicle == null
+          ? ''
+          : _selectedVehicle!.vehicleCode.toString(),
       'prmremarks': _remarksController.text.toString(),
       'prmbranchname': savedUser.loginbranchname.toString(),
       'prmbookingimgpath': selectedImagePath,
@@ -1203,16 +1381,10 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                       controller: _deptNameController,
                       focusNode: _deptNameFocusNode,
                       label: 'Department',
-                      isRequired: true,
+                      isRequired: false,
                       icon: Icons.person,
                       endIcon: Icons.arrow_drop_down,
                       endIconColor: CommonColors.grey400,
-                      validator: (value) {
-                        if (isNullOrEmpty(value)) {
-                          return 'Department is required';
-                        }
-                        return null;
-                      },
                       isInput: false,
                       keyboardType: TextInputType.none,
                       onTap: () async {
@@ -1552,7 +1724,9 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                             endIconColor: CommonColors.grey400,
                             keyboardType: TextInputType.none,
                             validator: (value) {
-                              if (isNullOrEmpty(value)) {
+                              if (_selectedServiceType!.modeType == 'S' &&
+                                  _selectedLoadType!.code == 'F' &&
+                                  isNullOrEmpty(value)) {
                                 return 'Vehicle is required';
                               }
                               return null;

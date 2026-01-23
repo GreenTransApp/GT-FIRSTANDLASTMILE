@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/pages/bookingList/bookingListRepository.dart';
 import 'package:gtlmd/pages/bookingList/model/bookingModel.dart';
 import 'package:gtlmd/pages/bookingList/model/BookingListModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
+import 'package:intl/intl.dart';
 
 class BookingListProvider extends ChangeNotifier {
   final BookingListRepository _repo = BookingListRepository();
 
   ApiCallingStatus _status = ApiCallingStatus.initial;
   ApiCallingStatus get status => _status;
+  String fromDate = DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      toDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -37,6 +43,23 @@ class BookingListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshList() async {
+    // _setStatus(ApiCallingStatus.loading);
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmusercode": savedUser.usercode.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmfromdt": fromDate,
+        "prmtodt": toDate,
+        "prmsessionid": savedUser.sessionid.toString()
+      };
+      getBookingList(params);
+    } catch (error) {
+      _setError(error.toString());
+    }
+  }
+
   Future<void> getBookingList(Map<String, String> params) async {
     _setStatus(ApiCallingStatus.loading);
     try {
@@ -45,6 +68,30 @@ class BookingListProvider extends ChangeNotifier {
     } catch (e) {
       _setError(e.toString().replaceAll('Exception: ', ''));
     }
+  }
+
+  Future<void> cancelBooking(String remarks, BookingListModel booking) async {
+    _setStatus(ApiCallingStatus.loading);
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        'prmgrdt': stringToDateTime(booking.grdt.toString(), 'dd/MM/yyyy'),
+        'prmgrno': booking.grno.toString(),
+        'prmremarks': remarks,
+        "prmusercode": savedUser.usercode.toString(),
+        "prmsessionid": savedUser.sessionid.toString()
+      };
+      await _repo.cancelBooking(params);
+      refreshList();
+      // _setStatus(ApiCallingStatus.success);
+    } catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  void navigateToBookingWithEwayBill(String grno) {
+    Get.off(() => BookingWithEwayBill(grno: grno));
   }
 
   // final List<BookingModel> _allBookings = [

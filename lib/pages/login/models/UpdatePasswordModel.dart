@@ -11,7 +11,7 @@ class CommonUpdateModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['CommandStatus'] = CommandStatus;
+    data['commandstatus'] = CommandStatus;
     data['commandmessage'] = CommandMessage;
     return data;
   }

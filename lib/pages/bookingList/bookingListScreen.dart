@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+import 'package:gtlmd/common/bottomSheet/dateTimePickerBottomSheet.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/tiles/bookingTile.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 
 class BookingListScreen extends StatefulWidget {
@@ -28,21 +31,20 @@ class _BookingListScreenState extends State<BookingListScreen> {
   }
 
   Future<void> _getBookingList() async {
-    String fromDate = DateFormat('yyyy-MM-dd')
-        .format(DateTime.now().subtract(const Duration(days: 30)));
-    String toDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // String fromDate = DateFormat('yyyy-MM-dd')
+    //     .format(DateTime.now().subtract(const Duration(days: 30)));
+    // String toDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-    Map<String, String> params = {
-      "prmconnstring": savedUser.companyid.toString(),
-      "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmfromdt": fromDate,
-      "prmtodt": toDate,
-      "prmsessionid": savedUser.sessionid.toString()
-    };
+    // Map<String, String> params = {
+    //   "prmconnstring": savedUser.companyid.toString(),
+    //   "prmusercode": savedUser.usercode.toString(),
+    //   "prmbranchcode": savedUser.loginbranchcode.toString(),
+    //   "prmfromdt": fromDate,
+    //   "prmtodt": toDate,
+    //   "prmsessionid": savedUser.sessionid.toString()
+    // };
 
-    Provider.of<BookingListProvider>(context, listen: false)
-        .getBookingList(params);
+    Provider.of<BookingListProvider>(context, listen: false).refreshList();
   }
 
   @override
@@ -72,6 +74,17 @@ class _BookingListScreenState extends State<BookingListScreen> {
             'Booking List',
             style: TextStyle(fontSize: SizeConfig.largeTextSize),
           ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  showDatePickerBottomSheet(context, (fromtDate, toDate) {
+                    provider.fromDate = fromtDate;
+                    provider.toDate = toDate;
+                    provider.refreshList();
+                  });
+                },
+                icon: const Icon(Symbols.calendar_today))
+          ],
         ),
         body: provider.bookings.isEmpty &&
                 provider.status == ApiCallingStatus.success

@@ -2,11 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/common/debug.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillRespModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/grDetailsResponse.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/grGoodsDimensionModel.dart';
 import 'package:gtlmd/pages/pickup/model/savePickupRespModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +26,11 @@ class BookingWithEwayBillRepository extends BaseRepository {
   StreamController<SavePickupRespModel> saveBookingLiveData =
       StreamController();
   StreamController<Map<String, dynamic>> cngrCngeCodeLiveData =
+      StreamController();
+  StreamController<GrDetailsResponse> grDetailLiveData = StreamController();
+  StreamController<EwayBillModelResponse> ewayBillDetailLiveData =
+      StreamController();
+  StreamController<GrGoodsDimensionModel> goodsDimensionDetailLiveData =
       StreamController();
 
   Future<void> getEwayBillCreds(Map<String, dynamic> params) async {
@@ -274,6 +284,42 @@ class BookingWithEwayBillRepository extends BaseRepository {
     }
   }
 
+  Future<List<dynamic>> getGrDetail(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+        // CommonResponse resp = await apiGet("${bookingUrl}GetCngrCngeListV2", params);
+        CommonResponse resp =
+            await apiGet("${bookingUrl}GetBookingDetailsForUpdate", params);
+
+        if (resp.commandStatus == 1) {
+          final returnList =
+              await compute(_parseGrDetails, resp.dataSet.toString());
+          return returnList;
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+        return [];
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+        return [];
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+        return [];
+      }
+      // viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+      return [];
+    }
+  }
+
   Future<void> getCngrCngeCode(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -304,4 +350,29 @@ class BookingWithEwayBillRepository extends BaseRepository {
       isErrorLiveData.add("No Internet available");
     }
   }
+}
+
+List<dynamic> _parseGrDetails(String dataSet) {
+  Map<String, dynamic> table = jsonDecode(dataSet);
+  List<dynamic> returnList = [];
+  Iterable<MapEntry<String, dynamic>> list = table.entries;
+  for (final entry in list) {
+    if (entry.key == 'Table') {
+      List<dynamic> l = entry.value;
+      if (l.isNotEmpty) {
+        returnList.add(GrDetailsResponse.fromJson(l[0]));
+      }
+    } else if (entry.key == 'Table1') {
+      List<dynamic> l = entry.value;
+      if (l.isNotEmpty) {
+        returnList.add(EwayBillModelResponse.fromJson(l[0]));
+      }
+    } else if (entry.key == 'Table2') {
+      List<dynamic> l = entry.value;
+      if (l.isNotEmpty) {
+        returnList.add(GrGoodsDimensionModel.fromJson(l[0]));
+      }
+    }
+  }
+  return returnList;
 }

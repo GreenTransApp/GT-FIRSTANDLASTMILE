@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/rendering.dart';
 import 'package:gtlmd/base/baseViewModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillRepository.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillRespModel.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/grDetailsResponse.dart';
+import 'package:gtlmd/pages/bookingWithEWayBill/models/grGoodsDimensionModel.dart';
 import 'package:gtlmd/pages/pickup/model/savePickupRespModel.dart';
 
 class BookingWithEwayBillViewModel extends BaseViewModel {
@@ -16,6 +20,11 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
   StreamController<SavePickupRespModel> saveBookingLd = StreamController();
   StreamController<Map<String, dynamic>> cngrCngeCodeLiveData =
       StreamController();
+  StreamController<GrDetailsResponse> grDetailLiveData = StreamController();
+  StreamController<EwayBillModelResponse> ewayBillDetailLiveData =
+      StreamController();
+  StreamController<GrGoodsDimensionModel> goodsDimensionDetailLiveData =
+      StreamController();
 
   BookingWithEwayBillViewModel() {
     errorLiveData = repository.isErrorLiveData;
@@ -24,6 +33,9 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
     refreshEwb = repository.refreshEwbLiveData;
     saveBookingLd = repository.saveBookingLiveData;
     cngrCngeCodeLiveData = repository.cngrCngeCodeLiveData;
+    grDetailLiveData = repository.grDetailLiveData;
+    ewayBillDetailLiveData = repository.ewayBillDetailLiveData;
+    goodsDimensionDetailLiveData = repository.goodsDimensionDetailLiveData;
   }
 
   Future<void> getEwayBillCreds(Map<String, String> params) async {
@@ -41,5 +53,9 @@ class BookingWithEwayBillViewModel extends BaseViewModel {
 
   Future<void> saveBooking(Map<String, String> params) {
     return repository.saveBooking(params);
+  }
+
+  Future<List<dynamic>> getGrDetail(Map<String, String> params) {
+    return repository.getGrDetail(params);
   }
 }
