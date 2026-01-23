@@ -14,8 +14,8 @@ import 'package:flutter/services.dart';
 final bluetoothChannel = MethodChannel('bluetooth_channel');
 
 class BluetoothScreen extends StatefulWidget {
-  final List<StickerListModel> stickerList = [];
-  BluetoothScreen({super.key, required stickerList});
+  List<StickerListModel> stickerList = [];
+  BluetoothScreen({super.key, required this.stickerList});
 
   @override
   State<BluetoothScreen> createState() => _BluetoothScreenState();
@@ -37,6 +37,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint('Sticker List: ${widget.stickerList.length}');
     flutterReactiveBle = FlutterReactiveBle();
     _subscribeToBluetoothStatus();
     scan();

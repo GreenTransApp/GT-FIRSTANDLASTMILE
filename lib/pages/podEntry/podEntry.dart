@@ -1605,8 +1605,8 @@ class _PodEntryState extends State<PodEntry> {
                             child: Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.largeHorizontalPadding,
-                                  vertical: SizeConfig.largeVerticalPadding),
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: BorderRadius.all(

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/bottomSheet/cancelBookingBottomSheet.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/pages/bookingList/model/BookingListModel.dart';
-import 'package:gtlmd/pages/bookingList/model/bookingModel.dart';
+import 'package:provider/provider.dart';
 
 class BookingTile extends StatelessWidget {
   final BookingListModel booking;
@@ -11,131 +12,148 @@ class BookingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
+    return Consumer<BookingListProvider>(builder: (_, provider, __) {
+      return Card(
+        elevation: 4,
+        shadowColor: Colors.black12,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: [
-              CommonColors.white!,
-              CommonColors.blue600!.withOpacity(0.4),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Header Row
-            Row(
-              children: [
-                Expanded(
-                  child: _iconInfo(
-                    icon: Icons.confirmation_number,
-                    label: 'GR#',
-                    value: booking.grno.toString(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _iconInfo(
-                    icon: Icons.calendar_today,
-                    label: 'GR Date',
-                    value: booking.grdt.toString(),
-                  ),
-                ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [
+                CommonColors.white!,
+                CommonColors.blue600!.withOpacity(0.4),
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-
-            const SizedBox(height: 14),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _iconInfo(
-                    icon: Icons.location_on,
-                    label: 'Origin',
-                    value: booking.origin.toString(),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header Row
+              Row(
+                children: [
+                  Expanded(
+                    child: _iconInfo(
+                      icon: Icons.confirmation_number,
+                      label: 'GR#',
+                      value: booking.grno.toString(),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child:
-
-                      /// Destination
-                      _iconInfo(
-                    icon: Icons.location_on,
-                    label: 'Destination',
-                    value: booking.destname.toString(),
-                    maxLines: 2,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _iconInfo(
+                      icon: Icons.calendar_today,
+                      label: 'GR Date',
+                      value: booking.grdt.toString(),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            const SizedBox(height: 14),
+              const SizedBox(height: 14),
 
-            /// Amount Highlight
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: CommonColors.green200,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Text(
-                  '₹ ${booking.tamount.toString()}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: CommonColors.successColor,
+              Row(
+                children: [
+                  Expanded(
+                    child: _iconInfo(
+                      icon: Icons.location_on,
+                      label: 'Origin',
+                      value: booking.origin.toString(),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child:
+
+                        /// Destination
+                        _iconInfo(
+                      icon: Icons.location_on,
+                      label: 'Destination',
+                      value: booking.destname.toString(),
+                      maxLines: 2,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 14),
+
+              /// Amount Highlight
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: CommonColors.green200,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    '₹ ${booking.tamount.toString()}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: CommonColors.successColor,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 16),
-            const Divider(height: 1),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            /// Action Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _actionButton(
-                  icon: Icons.picture_as_pdf,
-                  label: 'PDF',
-                  color: CommonColors.blue600!,
-                  onTap: () {},
-                ),
-                _actionButton(
-                  icon: Icons.edit,
-                  label: 'Edit',
-                  color: CommonColors.orange!,
-                  onTap: () {},
-                ),
-                _actionButton(
-                  icon: Icons.cancel,
-                  label: 'Cancel',
-                  color: CommonColors.dangerColor!,
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ],
+              /// Action Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _actionButton(
+                    icon: Icons.picture_as_pdf,
+                    label: 'PDF',
+                    color: CommonColors.blue600!,
+                    onTap: () {},
+                  ),
+                  _actionButton(
+                    icon: Icons.edit,
+                    label: 'Edit',
+                    color: Colors.orange,
+                    onTap: () {
+                      provider.navigateToBookingWithEwayBill(
+                          booking.grno.toString());
+                    },
+                  ),
+                  _actionButton(
+                    icon: Icons.cancel,
+                    label: 'Cancel',
+                    color: Colors.red,
+                    onTap: () {
+                      showCancelBookingBottomSheet(
+                        context,
+                        (remarks) {
+                          debugPrint(remarks);
+                          context
+                              .read<BookingListProvider>()
+                              .cancelBooking(remarks, booking);
+                        },
+                        () {},
+                        booking.grno.toString(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
 
     // Card(
     //   elevation: 2,

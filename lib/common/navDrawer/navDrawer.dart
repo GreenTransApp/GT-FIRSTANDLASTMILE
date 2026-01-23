@@ -162,7 +162,7 @@ class SideMenu extends StatelessWidget {
                     leadingIcon: const Icon(Symbols.analytics),
                     press: () {
                       Navigator.pop(context);
-                      Get.to(const BookingWithEwayBill());
+                      Get.to(BookingWithEwayBill());
                     },
                   ),
                   SideMenuItem(

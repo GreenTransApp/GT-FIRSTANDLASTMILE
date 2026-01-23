@@ -7,6 +7,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/bottomSheet/signatureBottomSheet.dart';
 import 'package:gtlmd/common/selectionBottomSheets/cngrCngeSelectionBottomSheet.dart';
 import 'package:gtlmd/common/selectionBottomSheets/branchSelectionBottomSheet.dart';
 import 'package:gtlmd/common/selectionBottomSheets/customerSelectionBottomSheet.dart';
@@ -110,6 +111,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   List<CngrCngeModel> _cngeList = [];
   List<DepartmentModel> _departmentList = [];
   bool _isLoadingLov = false;
+  String _selectedSignaturePath = '';
 
   final List<ServiceTypeModel> _serviceTypeList = [];
   final List<LoadTypeModel> _loadTypeList = [];
@@ -1093,7 +1095,8 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
           : _selectedVehicle!.vehicleCode.toString(),
       'prmremarks': _remarksController.text.toString(),
       'prmbranchname': savedUser.loginbranchname.toString(),
-      'prmbookingimgpath': selectedImagePath,
+      'prmbookingimgpath': convertFilePathToBase64(selectedImagePath),
+      'prmsignimgpath': convertFilePathToBase64(_selectedSignaturePath),
       'prmdrivercode': savedUser.drivercode.toString(),
       'prmusercode': savedUser.usercode.toString(),
       'prmmenucode': 'GTLMD_BOOKING',
@@ -1874,62 +1877,148 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                     SizedBox(
                       height: SizeConfig.mediumHorizontalSpacing,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        showImagePickerDialog(context, (file) async {
-                          if (file != null) {
-                            debugPrint('POD File data: ${file.path}');
-                            setState(() {
-                              selectedImagePath = file.path;
-                            });
-                          } else {
-                            // model!.stamp = 'N';
-                            failToast("File not selected");
-                          }
-                        });
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Symbols.attach_file,
-                            size: SizeConfig.largeIconSize,
-                            weight: 700,
-                          ),
-                          SizedBox(
-                            width: SizeConfig.extraSmallHorizontalSpacing,
-                          ),
-                          Text(
-                            'Attach File',
-                            style: TextStyle(
-                                fontSize: SizeConfig.largeTextSize,
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.underline,
-                                decorationStyle: TextDecorationStyle.dashed),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: SizeConfig.mediumHorizontalSpacing,
-                    ),
-                    selectedImagePath.isNotEmpty
-                        ? GestureDetector(
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
                             onTap: () {
                               FocusScope.of(context).unfocus();
-                              showDialogWithImage(context, selectedImagePath,
-                                  isLocal: true);
+                              showImagePickerDialog(context, (file) async {
+                                if (file != null) {
+                                  debugPrint('POD File data: ${file.path}');
+                                  setState(() {
+                                    selectedImagePath = file.path;
+                                  });
+                                } else {
+                                  // model!.stamp = 'N';
+                                  failToast("File not selected");
+                                }
+                              });
                             },
-                            child: SizedBox(
-                              height: SizeConfig.screenHeight * 0.2,
-                              width: SizeConfig.screenWidth,
-                              child: Image.file(
-                                File(selectedImagePath),
-                                fit: BoxFit.contain,
-                              ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Symbols.attach_file,
+                                  size: SizeConfig.largeIconSize,
+                                  weight: 700,
+                                ),
+                                SizedBox(
+                                  width: SizeConfig.extraSmallHorizontalSpacing,
+                                ),
+                                Text(
+                                  'Attach File',
+                                  style: TextStyle(
+                                      fontSize: SizeConfig.largeTextSize,
+                                      fontWeight: FontWeight.w500,
+                                      decoration: TextDecoration.underline,
+                                      decorationStyle:
+                                          TextDecorationStyle.dashed),
+                                ),
+                                // SizedBox(
+                                //   width: SizeConfig.mediumHorizontalSpacing,
+                                // ),
+                              ],
                             ),
-                          )
-                        : Container(),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                              // showImagePickerDialog(context, (file) async {
+                              //   if (file != null) {
+                              //     debugPrint('POD File data: ${file.path}');
+                              //     setState(() {
+                              //       selectedImagePath = file.path;
+                              //     });
+                              //   } else {
+                              //     // model!.stamp = 'N';
+                              //     failToast("File not selected");
+                              //   }
+                              // });
+
+                              showSignatureBottomSheet(context, (path, base64) {
+                                if (!isNullOrEmpty(path)) {
+                                  setState(() {
+                                    _selectedSignaturePath = path;
+                                  });
+                                } else {
+                                  failToast('Please input signature again.');
+                                }
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Symbols.attach_file,
+                                  size: SizeConfig.largeIconSize,
+                                  weight: 700,
+                                ),
+                                SizedBox(
+                                  width: SizeConfig.extraSmallHorizontalSpacing,
+                                ),
+                                Text(
+                                  'Signature',
+                                  style: TextStyle(
+                                      fontSize: SizeConfig.largeTextSize,
+                                      fontWeight: FontWeight.w500,
+                                      decoration: TextDecoration.underline,
+                                      decorationStyle:
+                                          TextDecorationStyle.dashed),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: SizeConfig.mediumVerticalSpacing,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: selectedImagePath.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    FocusScope.of(context).unfocus();
+                                    showDialogWithImage(
+                                        context, selectedImagePath,
+                                        isLocal: true);
+                                  },
+                                  child: SizedBox(
+                                    height: SizeConfig.screenHeight * 0.2,
+                                    width: SizeConfig.screenWidth,
+                                    child: Image.file(
+                                      File(selectedImagePath),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                        ),
+                        Expanded(
+                          child: _selectedSignaturePath.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    FocusScope.of(context).unfocus();
+                                    showDialogWithImage(
+                                        context, _selectedSignaturePath,
+                                        isLocal: true);
+                                  },
+                                  child: SizedBox(
+                                    height: SizeConfig.screenHeight * 0.2,
+                                    width: SizeConfig.screenWidth,
+                                    child: Image.file(
+                                      File(_selectedSignaturePath),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       height: SizeConfig.mediumVerticalSpacing,
                     ),
