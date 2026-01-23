@@ -318,7 +318,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     return bytes;
   }
 
-  void _printReceipt(StickerListModel model) async {
+  Future<void> _printReceipt(StickerListModel model) async {
     if (connectedDevice == null) {
       debugPrint('No device connected');
       return;
@@ -573,9 +573,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.print),
                         label: const Text('Print Receipt'),
-                        onPressed: () {
+                        onPressed: () async {
                           for (var sticker in widget.stickerList) {
-                            _printReceipt(sticker);
+                            await _printReceipt(sticker);
+                            await Future.delayed(
+                                const Duration(milliseconds: 500));
                           }
                         },
                         style: ElevatedButton.styleFrom(

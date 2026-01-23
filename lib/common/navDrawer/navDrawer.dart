@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
+import 'package:gtlmd/common/operations/operations.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
@@ -199,6 +200,15 @@ class SideMenu extends StatelessWidget {
                     press: () {
                       Navigator.pop(context);
                       Get.to(const GrListPage());
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Operations',
+                    leadingIcon: const Icon(Symbols.analytics),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(const Operations());
                     },
                   ),
                 ],

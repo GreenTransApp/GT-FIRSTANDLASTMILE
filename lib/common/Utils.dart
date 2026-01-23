@@ -927,3 +927,5 @@ Future<String> getDeviceId() async {
 }
 
 enum ApiCallingStatus { initial, loading, success, error }
+
+Map<String, String> unitTypeList = {'C': 'CM', 'I': 'INCH', 'M': 'CBM'};

@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingProvider.dart';
+import 'package:gtlmd/common/operations/operationsProvider.dart';
 
 final locationService = LocationService();
 Future<void> main() async {
@@ -36,6 +37,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => BookingListProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
         ChangeNotifierProvider(create: (_) => StickerPrintingProvider()),
+        ChangeNotifierProvider(create: (_) => OperationsProvider()),
       ],
       child: const MyApp(),
     ),

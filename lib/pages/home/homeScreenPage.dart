@@ -22,6 +22,7 @@ import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/bookingList/bookingListScreen.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
+import 'package:gtlmd/pages/dimensions/dimensions.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
@@ -861,7 +862,8 @@ class _HomeScreen extends State<HomeScreen>
                     child: GestureDetector(
                       onTap: () async {
                         // Bluetooth.printReceipt();
-                        Get.to(() => const BookingListScreen());
+                        // Get.to(() => const BookingListScreen());
+                        showDimensionsScreen(context);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
