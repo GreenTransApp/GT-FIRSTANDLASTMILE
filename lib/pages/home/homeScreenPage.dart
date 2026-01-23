@@ -575,7 +575,7 @@ class _HomeScreen extends State<HomeScreen>
                     visible: ENV.isDebugging,
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(const BluetoothScreen());
+                        // Get.to(const BluetoothScreen());
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

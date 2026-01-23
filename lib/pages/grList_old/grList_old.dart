@@ -5,8 +5,8 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/pages/grList/grListViewModel.dart';
-import 'package:gtlmd/pages/grList/model/grListModel.dart';
+import 'package:gtlmd/pages/grList_old/grListViewModel_old.dart';
+import 'package:gtlmd/pages/grList_old/model/grListModel_old.dart';
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 
@@ -20,164 +20,164 @@ class GrList extends StatefulWidget {
 class _GrListState extends State<GrList> {
   bool _isLoading = true;
   late LoadingAlertService loadingAlertService;
-  final GrListViewModel viewModel = GrListViewModel();
+  final GrListViewModel_old viewModel = GrListViewModel_old();
 
-  final List<GrListModel> tableData = [
-    GrListModel(
+  final List<GrListModel_old> tableData = [
+    GrListModel_old(
       documentNo: 'GR12345',
       date: '2023-10-26',
       origin: 'Mumbai',
       destination: 'Delhi',
       noOfPackages: '10',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR12345',
       date: '2023-10-26',
       origin: 'Mumbai',
       destination: 'Delhi',
       noOfPackages: '10',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR12345',
       date: '2023-10-26',
       origin: 'Mumbai',
       destination: 'Delhi',
       noOfPackages: '10',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
       destination: 'Chennai',
       noOfPackages: '5',
     ),
-    GrListModel(
+    GrListModel_old(
       documentNo: 'GR67890',
       date: '2023-10-27',
       origin: 'Bangalore',
@@ -187,8 +187,8 @@ class _GrListState extends State<GrList> {
   ];
 
   String _searchQuery = '';
-  List<GrListModel> _filteredData = [];
-  List<GrListModel> _grList = [];
+  List<GrListModel_old> _filteredData = [];
+  List<GrListModel_old> _grList = [];
 
   final List<String> columnHeaders = [
     'Sr No.',

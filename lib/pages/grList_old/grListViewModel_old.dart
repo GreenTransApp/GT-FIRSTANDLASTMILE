@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
-import 'package:gtlmd/pages/grList/grListRepository.dart';
-import 'package:gtlmd/pages/grList/model/grListModel.dart';
+import 'package:gtlmd/pages/grList_old/grListRepository_old.dart';
+import 'package:gtlmd/pages/grList_old/model/grListModel_old.dart';
 
-class GrListViewModel extends BaseViewModel {
-  final _repo = GrListRepository();
-  StreamController<List<GrListModel>> grListLiveData = StreamController();
+class GrListViewModel_old extends BaseViewModel {
+  final _repo = GrListRepository_old();
+  StreamController<List<GrListModel_old>> grListLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
 
-  GrListViewModel() {
+  GrListViewModel_old() {
     grListLiveData = _repo.grListLiveData;
     viewDialog = _repo.viewDialog;
     isErrorLiveData = _repo.isErrorLiveData;

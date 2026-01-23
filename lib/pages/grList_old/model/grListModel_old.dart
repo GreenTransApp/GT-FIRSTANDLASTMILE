@@ -1,4 +1,4 @@
-class GrListModel {
+class GrListModel_old {
   int? commandstatus;
   String? commandmessage;
   String? documentNo;
@@ -7,14 +7,14 @@ class GrListModel {
   String? destination;
   String? noOfPackages;
 
-  GrListModel(
+  GrListModel_old(
       {this.documentNo,
       this.date,
       this.origin,
       this.destination,
       this.noOfPackages});
 
-  GrListModel.fromJson(Map<String, dynamic> json) {
+  GrListModel_old.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
     commandmessage = json['commandmessage'];
     documentNo = json['documentno'];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/pages/bookingList/model/BookingListModel.dart';
 import 'package:gtlmd/pages/bookingList/model/bookingModel.dart';
@@ -21,8 +22,8 @@ class BookingTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
-              Colors.white,
-              Colors.blue.shade50.withOpacity(0.4),
+              CommonColors.white!,
+              CommonColors.blue600!.withOpacity(0.4),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -88,15 +89,15 @@ class BookingTile extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: CommonColors.green200,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
                   '₹ ${booking.tamount.toString()}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: CommonColors.successColor,
                   ),
                 ),
               ),
@@ -114,19 +115,19 @@ class BookingTile extends StatelessWidget {
                 _actionButton(
                   icon: Icons.picture_as_pdf,
                   label: 'PDF',
-                  color: Colors.blue,
+                  color: CommonColors.blue600!,
                   onTap: () {},
                 ),
                 _actionButton(
                   icon: Icons.edit,
                   label: 'Edit',
-                  color: Colors.orange,
+                  color: CommonColors.orange!,
                   onTap: () {},
                 ),
                 _actionButton(
                   icon: Icons.cancel,
                   label: 'Cancel',
-                  color: Colors.red,
+                  color: CommonColors.dangerColor!,
                   onTap: () {},
                 ),
               ],
@@ -196,7 +197,7 @@ class BookingTile extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: CommonColors.grey400,
                 ),
               ),
               const SizedBox(height: 4),

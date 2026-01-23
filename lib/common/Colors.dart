@@ -28,6 +28,7 @@ class CommonColors {
   static Color? testColor = Color.fromARGB(255, 229, 228, 226);
 
   static Color? primaryColorShade = const Color(0xFF4F46E5);
+  static Color? indigoshade50 = Colors.purple[50];
   static Color? whiteShade = const Color(0xFFF1F5F9);
   static Color? grey = Colors.grey;
   static Color? grey50 = Colors.grey[50];
@@ -35,6 +36,8 @@ class CommonColors {
   static Color? grey300 = Colors.grey[300];
   static Color? grey400 = Colors.grey[400];
   static Color? grey600 = Colors.grey[600];
+  static Color? blueGrey = Colors.blueGrey;
+  static Color? blueGrey600 = Colors.blueGrey[600];
   static Color? amber100 = Colors.amber[100];
   static Color? amber800 = Colors.amber[800];
   static Color? amber700 = Colors.amber[700];
@@ -55,6 +58,7 @@ class CommonColors {
   static Color? darkCyanBlue = const Color(0xFF334155);
   static Color? aliceBlue = const Color(0xFFE1E6EF);
   static Color? orange = const Color.fromARGB(255, 241, 137, 1);
+  static Color? blue50 = Colors.blue.shade50;
   static Color? blue600 = Colors.blue.shade600;
 
 // CHANGE all Color? to Color (non-nullable)
