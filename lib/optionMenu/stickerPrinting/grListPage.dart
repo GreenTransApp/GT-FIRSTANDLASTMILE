@@ -202,7 +202,10 @@ class _GrListPageState extends State<GrListPage> {
                   itemCount: provider.grSearch.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (_, index) {
-                    return GrListTile(grModel: provider.grSearch[index]);
+                    return GrListTile(
+                      grModel: provider.grSearch[index],
+                      onRefresh: onRefresh,
+                    );
                   },
                 ),
               ),

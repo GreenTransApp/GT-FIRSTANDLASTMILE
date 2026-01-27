@@ -77,7 +77,7 @@ class _TripMisState extends State<TripMis> {
     viewModel.tripsListData.stream.listen((data) {
       setState(() {
         _tripList = data;
-        filterList = data;
+        filterList = _tripList;
       });
     });
   }
@@ -99,7 +99,7 @@ class _TripMisState extends State<TripMis> {
 
     Map<String, dynamic> params = {
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
-      "prmlogindivisionid": "0",
+      "prmlogindivisionid": "1",
       "prmjsondatastr": jsonEncode(parameters.toJson()),
       "prmusercode": savedUser.usercode.toString(),
       "prmmenucode": "GTI_LMDLIVEDASHBOARD",

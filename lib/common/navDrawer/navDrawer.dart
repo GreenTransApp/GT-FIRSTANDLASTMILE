@@ -166,15 +166,15 @@ class SideMenu extends StatelessWidget {
                       Get.to(BookingWithEwayBill());
                     },
                   ),
-                  SideMenuItem(
-                    isSmallDevice: isSmallDevice,
-                    title: 'Closed Trips',
-                    leadingIcon: const Icon(Symbols.no_crash_rounded),
-                    press: () {
-                      Navigator.pop(context);
-                      Get.to(const CloseTrip());
-                    },
-                  ),
+                  // SideMenuItem(
+                  //   isSmallDevice: isSmallDevice,
+                  //   title: 'Closed Trips',
+                  //   leadingIcon: const Icon(Symbols.no_crash_rounded),
+                  //   press: () {
+                  //     Navigator.pop(context);
+                  //     Get.to(const CloseTrip());
+                  //   },
+                  // ),
                   SideMenuItem(
                     isSmallDevice: isSmallDevice,
                     title: 'Trip MIS',

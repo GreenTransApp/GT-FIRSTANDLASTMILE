@@ -41,8 +41,7 @@ class TripMisRepository extends BaseRepository {
                   isErrorLiveData
                       .add(resultList.first.commandmessage.toString());
                 }
-              }
-              if (entry.key == "Table4") {
+              } else if (entry.key == "Table4") {
                 List<dynamic> list2 = entry.value;
                 List<TripMisModel> resultList = List.generate(list2.length,
                     (index) => TripMisModel.fromJson(list2[index]));

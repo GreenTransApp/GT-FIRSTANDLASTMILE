@@ -70,6 +70,7 @@ class _PodEntryState extends State<PodEntry> {
   String? _podFilePath;
   String? _damageImg1FilePath;
   String? _damageImg2FilePath;
+  String? totpckgs;
   // List<String> _damageImages = [];
   List<String> _damageImages = List.empty(growable: true);
   bool isSignRequired = true;
@@ -164,6 +165,7 @@ class _PodEntryState extends State<PodEntry> {
 
     _deliverPckgsController.text = pod.deliverpckgs.toString() ?? "0";
     _damagedPckgsController.text = pod.damagepckgs.toString() ?? "0";
+    totpckgs = pod.pckgs.toString();
   }
 
   setObservers() {
@@ -1148,6 +1150,21 @@ class _PodEntryState extends State<PodEntry> {
                                   return 'Please enter delivery packages';
                                 }
                                 return null;
+                              },
+                              onChanged: (value) {
+                                if (int.parse(value) >
+                                    (int.parse(totpckgs.toString()) -
+                                        int.parse(_damagedPckgsController.text
+                                            .toString()))) {
+                                  failToast(
+                                      "Delivery Packages can't be greater than Total Packages - Damaged Packages");
+                                  _deliverPckgsController.text =
+                                      (int.parse(totpckgs.toString()) -
+                                              int.parse(_damagedPckgsController
+                                                  .text
+                                                  .toString()))
+                                          .toString();
+                                }
                               },
                             ),
                           ),

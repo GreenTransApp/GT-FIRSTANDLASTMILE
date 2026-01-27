@@ -261,7 +261,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     List<int> bytes = [];
 
     // Mock Data
-    const compName = "TEST COMPANY";
+    var compName = savedUser.compname.toString();
     // const m = {
     //   "stickerno": "123456789012",
     //   "grno": "GR123",
@@ -304,7 +304,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     cmd +=
         'TEXT $X_LEFT,${430 + SHIFT},"2",0,1,1,"DESTINATION | ${m.destinationname}"\r\n';
     cmd +=
-        'TEXT $X_LEFT,${470 + SHIFT},"2",0,1,1,"PCKGS | ${m.packageid}/${m.pckgs}"\r\n';
+        'TEXT $X_LEFT,${470 + SHIFT},"2",0,1,1,"PCKGS | ${m.packageid}/${(m.pckgs!.toInt()).toString()}"\r\n';
     cmd += 'TEXT $X_RIGHT,${470 + SHIFT},"2",0,1,1,"WEIGHT | ${m.weight}"\r\n';
 
     cmd += "PRINT 1\r\n";

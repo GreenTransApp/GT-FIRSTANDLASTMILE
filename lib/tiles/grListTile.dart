@@ -8,7 +8,8 @@ import 'package:gtlmd/pages/grList_old/grList_old.dart';
 
 class GrListTile extends StatelessWidget {
   final GrListModel grModel;
-  const GrListTile({super.key, required this.grModel});
+  final Future<void> Function() onRefresh;
+  const GrListTile({super.key, required this.grModel, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class GrListTile extends StatelessWidget {
       onTap: () {
         Get.to(StickerListPage(
           grModel: grModel,
-        ))?.then((_) => {});
+        ))?.then((_) => {onRefresh()});
       },
       child: Card(
         elevation: 6,
