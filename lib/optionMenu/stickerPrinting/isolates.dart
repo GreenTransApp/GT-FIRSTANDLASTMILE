@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:gtlmd/optionMenu/stickerPrinting/model/GrListModel.dart';
 import 'package:gtlmd/optionMenu/stickerPrinting/model/StickerModel.dart';
 import 'package:gtlmd/pages/bookingList/model/BookingListModel.dart';
-import 'package:gtlmd/pages/grList_old/model/grListModel_old.dart';
+
 
 List<GrListModel> parseGrListIsolate(String rawDataSet) {
   final Map<String, dynamic> table = jsonDecode(rawDataSet);

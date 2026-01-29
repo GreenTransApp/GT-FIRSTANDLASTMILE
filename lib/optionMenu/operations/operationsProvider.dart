@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/common/operations/models/operationsModel.dart';
-import 'package:gtlmd/common/operations/operationsRepo.dart';
+import 'package:gtlmd/optionMenu/operations/models/operationsModel.dart';
+
+import 'package:gtlmd/optionMenu/operations/operationsRepo.dart';
+import 'package:gtlmd/pages/home/Model/menuModel.dart';
 
 class OperationsProvider extends ChangeNotifier {
   final OperationsRepository _repo = OperationsRepository();
@@ -12,14 +15,17 @@ class OperationsProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  List<OperationsModel> _operationsList = [
-    OperationsModel(
-        menuname: 'Update Mid Mile Dispatch', menucode: 'GTI_MidMile'),
-    OperationsModel(
-        menuname: 'Update Mid Mile Arrival',
-        menucode: 'GTI_UpdateMidMileArrival'),
-  ];
-  List<OperationsModel> get operationsList => _operationsList;
+  // List<OperationsModel> _operationsList = [
+  //   OperationsModel(
+  //       menuname: 'Update Mid Mile Dispatch', menucode: 'GTI_MidMile'),
+  //   OperationsModel(
+  //       menuname: 'Update Mid Mile Arrival',
+  //       menucode: 'GTI_UpdateMidMileArrival'),
+  // ];
+  // List<OperationsModel> get operationsList => _operationsList;
+
+  List<MenuModel> _menuList = [];
+  List<MenuModel> get menuList => _menuList;
 
   OperationsModel? _singleOperation;
   OperationsModel? get singleOperation => _singleOperation;
@@ -42,6 +48,28 @@ class OperationsProvider extends ChangeNotifier {
     // API call disabled as per request
   }
 
+  Future<void> getMenuData() async {
+    _setStatus(ApiCallingStatus.loading);
+    try {
+      _menuList = await getMenuList();
+      _setStatus(ApiCallingStatus.success);
+    } catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  Future<List<MenuModel>> getMenuList() async {
+    Map<String, String> params = {
+      "prmconstring": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmapp": ENV.appName,
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    return _repo.getMenuList(params);
+  }
+
   Future<String?> getSingleOperationDetail(String menuCode) async {
     _setStatus(ApiCallingStatus.loading);
     try {
@@ -59,11 +87,12 @@ class OperationsProvider extends ChangeNotifier {
       if (_singleOperation != null && _singleOperation!.pageLink != null) {
         fetchedUrl = _singleOperation!.pageLink;
         // Update the item in the list
-        int index = _operationsList
-            .indexWhere((element) => element.menucode == menuCode);
-        if (index != -1) {
-          _operationsList[index] =
-              _operationsList[index].copyWith(pageLink: fetchedUrl);
+        int index =
+            _menuList.indexWhere((element) => element.menucode == menuCode);
+
+        if (index != -1 && fetchedUrl != null) {
+          _menuList[index] = _menuList[index].copyWith(page: fetchedUrl);
+          notifyListeners();
         }
       }
 

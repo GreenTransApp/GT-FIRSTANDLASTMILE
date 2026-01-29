@@ -4,27 +4,28 @@ import 'package:flutter/foundation.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/common/operations/isolates.dart';
-import 'package:gtlmd/common/operations/models/operationsModel.dart';
+import 'package:gtlmd/optionMenu/operations/isolates.dart';
+import 'package:gtlmd/optionMenu/operations/models/operationsModel.dart';
+import 'package:gtlmd/pages/home/Model/menuModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class OperationsRepository extends BaseRepository {
-  Future<List<OperationsModel>> getOperationsList(
-      Map<String, String> params) async {
+  Future<List<MenuModel>> getMenuList(Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (!hasInternet) {
       throw Exception("No Internet available");
     }
 
     try {
-      CommonResponse resp = await apiGet("${lmdUrl}OperationsMenu", params);
+      CommonResponse resp =
+          await apiGet("${homeBaseUrl}getInfinitiAppMenu", params);
       if (resp.commandStatus != 1) {
         throw Exception(resp.commandMessage ?? "Operations fetch failed");
       }
 
       if (resp.commandStatus == 1 && resp.dataSet != null) {
-        List<OperationsModel> resultList =
-            await compute(parseOperationsListIsolate, resp.dataSet!);
+        List<MenuModel> resultList =
+            await compute(parseMenuListIsolate, resp.dataSet!);
         return resultList;
       } else {
         return [];

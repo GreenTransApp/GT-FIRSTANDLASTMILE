@@ -4,7 +4,7 @@ import 'package:gtlmd/optionMenu/stickerPrinting/model/GrListModel.dart';
 
 import 'package:gtlmd/optionMenu/stickerPrinting/model/StickerModel.dart';
 import 'package:gtlmd/optionMenu/stickerPrinting/stickerPrintingRepository.dart';
-import 'package:gtlmd/pages/grList_old/model/grListModel_old.dart';
+
 
 class StickerPrintingProvider extends ChangeNotifier {
   StickerPrintingRepository _repo = StickerPrintingRepository();
