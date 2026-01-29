@@ -53,6 +53,29 @@ class MenuModel {
     sequenceid = json['sequenceid'];
   }
 
+  MenuModel copyWith({
+    String? page,
+  }) {
+    return MenuModel(
+      commandstatus: commandstatus,
+      modulename: modulename,
+      menutype: menutype,
+      page: page ?? this.page,
+      menucode: menucode,
+      menuname: menuname,
+      displayname: displayname,
+      rights: rights,
+      addrec: addrec,
+      updaterec: updaterec,
+      cancelrec: cancelrec,
+      deleterec: deleterec,
+      printrec: printrec,
+      exestr: exestr,
+      sequenceid: sequenceid,
+      parentcode: parentcode,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['commandstatus'] = this.commandstatus;

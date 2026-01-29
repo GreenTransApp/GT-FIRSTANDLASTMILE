@@ -4,7 +4,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/stickerPrinting/model/GrListModel.dart';
 import 'package:gtlmd/optionMenu/stickerPrinting/stickerListPage.dart';
-import 'package:gtlmd/pages/grList_old/grList_old.dart';
+
 
 class GrListTile extends StatelessWidget {
   final GrListModel grModel;

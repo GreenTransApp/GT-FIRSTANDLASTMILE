@@ -5,7 +5,7 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
-import 'package:gtlmd/common/operations/operationsProvider.dart';
+import 'package:gtlmd/optionMenu/operations/operationsProvider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Operations extends StatefulWidget {
@@ -23,12 +23,17 @@ class _OperationsState extends State<Operations> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadingAlertService = LoadingAlertService(context: context);
+      _getMenuList();
       _getOperations();
     });
   }
 
   Future<void> _getOperations() async {
     Provider.of<OperationsProvider>(context, listen: false).getOperationsList();
+  }
+
+  Future<void> _getMenuList() async {
+    Provider.of<OperationsProvider>(context, listen: false).getMenuData();
   }
 
   @override
@@ -61,7 +66,7 @@ class _OperationsState extends State<Operations> {
             ),
           ),
         ),
-        body: provider.operationsList.isEmpty &&
+        body: provider.menuList.isEmpty &&
                 provider.status == ApiCallingStatus.success
             ? Center(
                 child: Text(
@@ -74,9 +79,9 @@ class _OperationsState extends State<Operations> {
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(8),
-                itemCount: provider.operationsList.length,
+                itemCount: provider.menuList.length,
                 itemBuilder: (context, index) {
-                  final operation = provider.operationsList[index];
+                  final operation = provider.menuList[index];
                   return Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -109,9 +114,10 @@ class _OperationsState extends State<Operations> {
                         },
                       ),
                       onTap: () async {
-                        if (operation.pageLink != null &&
-                            operation.pageLink!.isNotEmpty) {
-                          final uri = Uri.parse(operation.pageLink!);
+                        if (provider.singleOperation!.pageLink != null &&
+                            provider.singleOperation!.pageLink!.isNotEmpty) {
+                          final uri =
+                              Uri.parse(provider.singleOperation!.pageLink!);
                           if (await canLaunchUrl(uri)) {
                             await launchUrl(uri);
                           } else {

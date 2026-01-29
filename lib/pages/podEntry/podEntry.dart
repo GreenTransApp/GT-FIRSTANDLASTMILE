@@ -1158,12 +1158,13 @@ class _PodEntryState extends State<PodEntry> {
                                             .toString()))) {
                                   failToast(
                                       "Delivery Packages can't be greater than Total Packages - Damaged Packages");
-                                  _deliverPckgsController.text =
-                                      (int.parse(totpckgs.toString()) -
-                                              int.parse(_damagedPckgsController
-                                                  .text
-                                                  .toString()))
-                                          .toString();
+                                  _deliverPckgsController.text = '0';
+                                  // _deliverPckgsController.text =
+                                  //     (int.parse(totpckgs.toString()) -
+                                  //             int.parse(_damagedPckgsController
+                                  //                 .text
+                                  //                 .toString()))
+                                  //         .toString();
                                 }
                               },
                             ),
