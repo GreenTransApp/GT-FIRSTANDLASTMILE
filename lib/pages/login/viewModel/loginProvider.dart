@@ -4,6 +4,7 @@ import 'package:gtlmd/pages/login/models/ValidateLoginWithOtpModel.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:gtlmd/pages/login/repository/loginRepository.dart';
+import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 
 enum LoginStatus { initial, loading, success, error }
 
@@ -22,6 +23,9 @@ class LoginProvider extends ChangeNotifier {
   UserModel? _userResponse;
   UserModel? get userResponse => _userResponse;
 
+  UpsertTripResponseModel? _divisionResponse;
+  UpsertTripResponseModel? get divisionResponse => _divisionResponse;
+
   ValidateLoginwithOtpModel? _otpResponse;
   ValidateLoginwithOtpModel? get otpResponse => _otpResponse;
 
@@ -31,12 +35,15 @@ class LoginProvider extends ChangeNotifier {
   int? _updatePasswordResponse;
   int? get updatePasswordResponse => _updatePasswordResponse;
 
+  dynamic selectedDivision;
+
   void _clearResults() {
     _loginResponse = null;
     _userResponse = null;
     _otpResponse = null;
     _userCredsResponse = null;
     _updatePasswordResponse = null;
+    _divisionResponse = null;
   }
 
   void _setStatus(LoginStatus status) {
@@ -106,6 +113,16 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> validateDivision(Map<String, String> params) async {
+    _setStatus(LoginStatus.loading);
+    try {
+      _divisionResponse = await _repo.validateDivision(params);
+      _setStatus(LoginStatus.success);
+    } catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     if (_status == LoginStatus.error) {
@@ -118,6 +135,26 @@ class LoginProvider extends ChangeNotifier {
     _clearResults();
     _errorMessage = null;
     _status = LoginStatus.initial;
+    notifyListeners();
+  }
+
+  void clearUserResponse() {
+    _userResponse = null;
+    notifyListeners();
+  }
+
+  void clearDivisionResponse() {
+    _divisionResponse = null;
+    notifyListeners();
+  }
+
+  void clearLoginResponse() {
+    _loginResponse = null;
+    notifyListeners();
+  }
+
+  void clearUserCredsResponse() {
+    _userCredsResponse = null;
     notifyListeners();
   }
 }

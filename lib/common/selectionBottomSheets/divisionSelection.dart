@@ -5,40 +5,37 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/common/repository/lovIsolate.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
-import 'package:gtlmd/pages/pickup/model/customerModel.dart';
+import 'package:gtlmd/pages/login/isolates/loginIsolates.dart';
+import 'package:gtlmd/pages/login/models/divisionModel.dart';
 
-class CngrCngeSelectionBottomSheet extends StatefulWidget {
+class DivisionSelectionBottomSheet extends StatefulWidget {
   void Function(dynamic) callback;
   String title;
-  String custcode;
-  String type;
-  CngrCngeSelectionBottomSheet({
+  Map<String, String> params;
+  DivisionSelectionBottomSheet({
     super.key,
     required this.callback,
     required this.title,
-    required this.custcode,
-    required this.type,
+    required this.params,
   });
 
   @override
-  State<CngrCngeSelectionBottomSheet> createState() =>
-      _CommonBottomSheetWithApiState();
+  State<DivisionSelectionBottomSheet> createState() =>
+      _DivisionSelectionBottomSheet();
 }
 
-class _CommonBottomSheetWithApiState
-    extends State<CngrCngeSelectionBottomSheet> {
+class _DivisionSelectionBottomSheet
+    extends State<DivisionSelectionBottomSheet> {
   late LoadingAlertService loadingAlertService;
   TextEditingController searchController = TextEditingController();
   FocusNode searchFocus = FocusNode();
-  List<CngrCngeModel> filteredList = [];
+  List<DivisionModel> filteredList = [];
   String query = '';
   bool isLoading = false;
   Map<String, String> params = {};
@@ -48,6 +45,7 @@ class _CommonBottomSheetWithApiState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadingAlertService = LoadingAlertService(context: context);
     });
+    callApi();
   }
 
   void callApi() async {
@@ -56,20 +54,18 @@ class _CommonBottomSheetWithApiState
       isLoading = true;
     });
     try {
-      Map<String, String> params = {
-        "prmconnstring": savedUser.companyid.toString(),
-        "prmbranchcode": savedUser.loginbranchcode.toString(),
-        "prmgrtype": 'R',
-        "prmcngrcnge": widget.type,
-        "prmcustcode": widget.custcode,
-        'prmcharstr': query
-      };
+      // Map<String, String> params = {
+      //   "prmcompanyid": savedUser.companyid.toString(),
+      //   "prmbranchcode": savedUser.loginbranchcode.toString(),
+      //   "prmusercode": savedUser.usercode.toString(),
+
+      // };
       CommonResponse resp =
-          await apiGet('${bookingUrl}GetCngrCngeListV2', params);
+          await apiGet("${loginBaseUrl}GetDivisionList", widget.params);
 
       if (resp.commandStatus == 1) {
-        List<CngrCngeModel> resultList =
-            await compute(parseCngrCngeListIsolate, resp.dataSet!);
+        List<DivisionModel> resultList =
+            await compute(parseDivisionListIsolate, resp.dataSet!);
         filteredList = resultList;
       } else {}
       // loadingAlertService.hideLoading();
@@ -111,7 +107,7 @@ class _CommonBottomSheetWithApiState
       onSubmitted: (value) {
         query = value;
         if (!isNullOrEmpty(value)) {
-          callApi();
+          // callApi();
         } else {
           filteredList = [];
         }
@@ -173,7 +169,9 @@ class _CommonBottomSheetWithApiState
                                   Navigator.pop(context);
                                 },
                                 title: Text(
-                                  filteredList[index].name.toString(),
+                                  filteredList[index]
+                                      .accdivisionname
+                                      .toString(),
                                   textAlign: TextAlign.center,
                                 ),
                               );
@@ -187,12 +185,11 @@ class _CommonBottomSheetWithApiState
   }
 }
 
-Future<void> showCngeCngeSelectionBottomSheet<T>(
+Future<void> showDivisionSelectionBottomSheet<T>(
   BuildContext context,
   String title,
   void Function(dynamic) callback,
-  String custcode,
-  String type,
+  Map<String, String> params,
 ) async {
   return showModalBottomSheet<void>(
       isScrollControlled: true,
@@ -209,11 +206,10 @@ Future<void> showCngeCngeSelectionBottomSheet<T>(
           child: Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: CngrCngeSelectionBottomSheet(
-                callback: callback,
+              child: DivisionSelectionBottomSheet(
                 title: title,
-                custcode: custcode,
-                type: type,
+                callback: callback,
+                params: params,
               )),
         );
       });

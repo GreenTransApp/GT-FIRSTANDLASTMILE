@@ -7,11 +7,14 @@ import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/login/isolates/loginIsolates.dart';
 // import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/pages/login/models/UserCredsModel.dart';
 import 'package:gtlmd/pages/login/models/ValidateLoginWithOtpModel.dart';
+import 'package:gtlmd/pages/login/models/divisionModel.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
+import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
@@ -194,6 +197,70 @@ class Loginrepository {
       throw Exception("No Internet");
     } catch (err) {
       debugPrint('Error in updatePassword: $err');
+      rethrow;
+    }
+  }
+
+  Future<UpsertTripResponseModel> validateDivision(
+      Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp =
+          await apiPost("${loginBaseUrl}ValidateDivision", params);
+
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Division validation failed");
+      }
+
+      Map<String, dynamic> table =
+          await compute<String, dynamic>(jsonDecode, resp.dataSet.toString());
+      List<dynamic> list = table.values.first;
+
+      if (list.isEmpty) {
+        throw Exception("Invalid response from server");
+      }
+
+      UpsertTripResponseModel result =
+          UpsertTripResponseModel.fromJson(list[0]);
+      return result;
+    } on SocketException {
+      throw Exception("No Internet");
+    } catch (err) {
+      debugPrint('Error in updatePassword: $err');
+      rethrow;
+    }
+  }
+
+  Future<List<DivisionModel>> getDivisionList(
+      Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp =
+          await apiGet("${loginBaseUrl}GetDivisionList", params);
+
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "List failed");
+      }
+
+      if (resp.commandStatus == 1 && resp.dataSet != null) {
+        List<DivisionModel> resultList =
+            await compute(parseDivisionListIsolate, resp.dataSet!);
+        return resultList;
+      } else {
+        return [];
+      }
+    } on SocketException {
+      throw Exception("No Internet");
+    } catch (err) {
+      debugPrint('Error in validateLoginWithOtp: $err');
       rethrow;
     }
   }

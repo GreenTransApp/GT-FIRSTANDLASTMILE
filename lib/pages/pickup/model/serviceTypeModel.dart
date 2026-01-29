@@ -3,7 +3,7 @@ import 'package:gtlmd/common/jsonConverters.dart';
 class ServiceTypeModel extends JsonConverters<ServiceTypeModel> {
   final int? commandStatus;
   final String? commandMessage;
-  final String? isCft;
+  final bool? isCft;
   final String? deliveryType;
   final String? prodCode;
   final String? prodName;
@@ -30,7 +30,7 @@ class ServiceTypeModel extends JsonConverters<ServiceTypeModel> {
     return ServiceTypeModel(
       commandStatus: json['commandstatus'],
       commandMessage: json['commandmessage'],
-      isCft: json['iscft'],
+      isCft: json['iscft'] == 'Y' ? true : false,
       deliveryType: json['deliverytype'],
       prodCode: json['ProdCode'],
       prodName: json['ProdName'],
@@ -46,7 +46,7 @@ class ServiceTypeModel extends JsonConverters<ServiceTypeModel> {
     return ServiceTypeModel(
       commandStatus: json['commandstatus'],
       commandMessage: json['commandmessage'],
-      isCft: json['iscft'],
+      isCft: json['iscft'] == 'Y' ? true : false,
       deliveryType: json['deliverytype'],
       prodCode: json['ProdCode'],
       prodName: json['ProdName'],

@@ -292,7 +292,7 @@ class BookingWithEwayBillRepository extends BaseRepository {
         // viewDialog.add(true);
         // CommonResponse resp = await apiGet("${bookingUrl}GetCngrCngeListV2", params);
         CommonResponse resp =
-            await apiGet("${bookingUrl}GetBookingDetailsForUpdate", params);
+            await apiGet("${lmdUrl}GetBookingDetailsForUpdate", params);
 
         if (resp.commandStatus == 1) {
           final returnList =
@@ -364,14 +364,12 @@ List<dynamic> _parseGrDetails(String dataSet) {
       }
     } else if (entry.key == 'Table1') {
       List<dynamic> l = entry.value;
-      if (l.isNotEmpty) {
-        returnList.add(EwayBillModelResponse.fromJson(l[0]));
-      }
+      returnList.addAll(
+          l.map((item) => EwayBillModelResponse.fromJson(item)).toList());
     } else if (entry.key == 'Table2') {
       List<dynamic> l = entry.value;
-      if (l.isNotEmpty) {
-        returnList.add(GrGoodsDimensionModel.fromJson(l[0]));
-      }
+      returnList.addAll(
+          l.map((item) => GrGoodsDimensionModel.fromJson(item)).toList());
     }
   }
   return returnList;

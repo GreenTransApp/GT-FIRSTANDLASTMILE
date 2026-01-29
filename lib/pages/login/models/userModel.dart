@@ -41,7 +41,8 @@ class UserModel {
   String? emailid;
   String? displayusername;
   String? drivercode;
-
+  String? logindivisionname;
+  int? logindivisionid;
   UserModel({
     this.commandstatus,
     this.commandmessage,
@@ -84,6 +85,8 @@ class UserModel {
     this.emailid,
     this.displayusername,
     this.drivercode,
+    this.logindivisionid,
+    this.logindivisionname,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -128,6 +131,8 @@ class UserModel {
     emailid = json['emailid'];
     displayusername = json['displayusername'];
     drivercode = json['drivercode'];
+    logindivisionid = json['logindivisionid'];
+    logindivisionname = json['logindivisionname'];
   }
 
   Map<String, dynamic> toJson() {
@@ -173,6 +178,8 @@ class UserModel {
     data['emailid'] = emailid;
     data['displayusername'] = displayusername;
     data['drivercode'] = drivercode;
+    data['logindivisionid'] = logindivisionid;
+    data['logindivisionname'] = logindivisionname;
     return data;
   }
 }

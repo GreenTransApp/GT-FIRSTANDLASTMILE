@@ -7,6 +7,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
+import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/login/forgotPassword.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
@@ -50,7 +51,7 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
     debugPrint("_getLoginOtp called");
     Map<String, String> params = {
       "prmcompanyid": userCredsModel.companyid.toString(),
-      "prmmobileno": userCredsModel.username.toString()
+      "prmmobileno": widget.usermobileno
     };
     context.read<LoginProvider>().validateLoginWithOtp(params);
   }
@@ -98,6 +99,19 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
     context.read<LoginProvider>().validateUserForLogin(params);
   }
 
+  Future<void> _validateDivision(String companyId, String usercode,
+      String branchcode, String divisionid, String sessionid) async {
+    Map<String, String> params = {
+      "connstring": companyId,
+      "prmusercode": usercode,
+      "prmbranchcode": branchcode,
+      "prmdivisionid": divisionid,
+      // "prmdeviceid": getUuid()
+      "prmsessionid": sessionid
+    };
+    context.read<LoginProvider>().validateDivision(params);
+  }
+
   void _handleStateChange(
       LoginStatus status, String? error, LoginProvider provider) {
     if (status == LoginStatus.loading) {
@@ -124,7 +138,45 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
         _validateUserLogin();
       } else if (provider.userResponse != null) {
         if (provider.userResponse!.commandstatus == 1) {
+          final userResp = provider.userResponse!;
+          // Stop timer after successful validation
+          _timer?.cancel();
+          _timer = null;
+
+          // _navigate();
+          Map<String, String> params = {
+            "prmcompanyid": savedLogin.companyid.toString(),
+            "prmbranchcode": userResp.loginbranchcode.toString(),
+            "prmusername": userResp.username.toString(),
+          };
+          provider
+              .clearUserResponse(); // Clear to prevent repeated bottom sheet
+          showDivisionSelectionBottomSheet(context, "Select Division",
+              (division) {
+            // authService.login(context);
+            _validateDivision(
+                savedLogin.companyid.toString(),
+                userResp.usercode.toString(),
+                userResp.loginbranchcode.toString(),
+                division.accdivisionid.toString(),
+                userResp.sessionid.toString());
+            provider.selectedDivision = division;
+          }, params);
+        }
+      } else if (provider.divisionResponse != null) {
+        if (provider.divisionResponse!.commandstatus == 1) {
+          authService.storagePush(
+              ENV.divisionPrefTag, jsonEncode(provider.selectedDivision));
+          savedUser.logindivisionid = provider.selectedDivision!.accdivisionid;
+          savedUser.logindivisionname =
+              provider.selectedDivision!.accdivisionname;
+          // authService.login(context);
+          provider
+              .clearDivisionResponse(); // Clear to prevent repeated navigation
           _navigate();
+        } else {
+          failToast(provider.divisionResponse!.commandmessage ??
+              "Division validation failed");
         }
       }
     }

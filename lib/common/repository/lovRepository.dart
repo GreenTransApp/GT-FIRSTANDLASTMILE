@@ -225,7 +225,9 @@ class LovRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp = await apiGet("${lmdUrl}getBookingLovs", params);
+        // CommonResponse resp = await apiGet("${lmdUrl}getBookingLovs", params);
+        CommonResponse resp =
+            await apiGet("${bookingUrl}GetPickupDataForBooking", params);
 
         if (resp.commandStatus == 1 && resp.dataSet != null) {
           Map<String, List<dynamic>> results =
@@ -236,8 +238,8 @@ class LovRepository extends BaseRepository {
           loadTypeList.add(results["load"]?.cast<LoadTypeModel>() ?? []);
           deliveryTypeList
               .add(results["delivery"]?.cast<DeliveryTypeModel>() ?? []);
-          bookingTypeList
-              .add(results["booking"]?.cast<BookingTypeModel>() ?? []);
+          // bookingTypeList
+          //     .add(results["booking"]?.cast<BookingTypeModel>() ?? []);
         } else {
           isErrorLiveData.add(resp.commandMessage!);
           viewDialog.add(false);

@@ -34,7 +34,10 @@ class GrDetailsResponse {
   final String? regNo;
   final String? dlvtype;
   final String? modecode;
-  final String? imagepath;
+  final String? bookingimg;
+  final String? signimg;
+  final String? orgcode;
+  final String? orgname;
 
   GrDetailsResponse(
       {required this.commandStatus,
@@ -72,7 +75,10 @@ class GrDetailsResponse {
       this.regNo,
       this.dlvtype,
       this.modecode,
-      this.imagepath});
+      this.bookingimg,
+      this.signimg,
+      this.orgcode,
+      this.orgname});
 
   factory GrDetailsResponse.fromJson(Map<String, dynamic> json) {
     return GrDetailsResponse(
@@ -110,7 +116,10 @@ class GrDetailsResponse {
         custName: json['custname'],
         regNo: json['regno'],
         dlvtype: json['dlvtype'],
-        imagepath: json['imagepath']);
+        bookingimg: json['bookingimg'],
+        signimg: json['signimg'],
+        orgcode: json['orgcode'],
+        orgname: json['orgname']);
   }
 
   Map<String, dynamic> toJson() {
@@ -149,7 +158,10 @@ class GrDetailsResponse {
       'custname': custName,
       'regno': regNo,
       'dlvtype': dlvtype,
-      'imagepath': imagepath
+      'bookingimg': bookingimg,
+      'signimg': signimg,
+      'orgcode': orgcode,
+      'orgname': orgname
     };
   }
 }

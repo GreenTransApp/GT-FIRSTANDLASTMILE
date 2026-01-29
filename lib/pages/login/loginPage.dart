@@ -6,14 +6,14 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
+import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
-import 'package:gtlmd/pages/offlineView/offlinePassword.dart';
-
-import 'package:provider/provider.dart';
 import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
+import 'package:gtlmd/pages/offlineView/offlinePassword.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       passwordController.text = ENV.debuggingPassword.toUpperCase();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       loadingAlertService = LoadingAlertService(context: context);
 
       // Clear any previous errors or state if needed
@@ -60,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     String deviceId = await getDeviceId();
+    if (!mounted) return;
 
     Map<String, String> params = {
       "prmusername": usermobileController.text,
@@ -89,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _handleStateChange(
       LoginStatus status, String? error, LoginProvider provider) {
+    if (!mounted) return;
     if (status == LoginStatus.loading) {
       loadingAlertService.showLoading();
     } else {
@@ -108,20 +111,54 @@ class _LoginPageState extends State<LoginPage> {
             LoginModel(username: resp.username, password: resp.password);
         authService.storagePush(
             ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
+        provider.clearLoginResponse();
 
         // Following original logic: validateUserLogin after successful login
         _validateUserLogin(resp.companyid.toString(), resp.username.toString());
       } else if (provider.userResponse != null) {
         if (provider.userResponse!.commandstatus == 1) {
-          authService.login(context);
+          final userResp = provider.userResponse!;
+          // authService.login(context);
+          Map<String, String> params = {
+            "prmcompanyid": savedLogin.companyid.toString(),
+            "prmbranchcode": userResp.loginbranchcode.toString(),
+            "prmusername": userResp.username.toString(),
+          };
+          provider.clearUserResponse();
+
+          showDivisionSelectionBottomSheet(context, "Select Division",
+              (division) {
+            // authService.login(context);
+            _validateDivision(
+                savedLogin.companyid.toString(),
+                userResp.usercode.toString(),
+                userResp.loginbranchcode.toString(),
+                division.accdivisionid.toString(),
+                userResp.sessionid.toString());
+            provider.selectedDivision = division;
+          }, params);
         }
       } else if (provider.userCredsResponse != null) {
         if (provider.userCredsResponse!.commandstatus == 1) {
-          userCredsModel = provider.userCredsResponse!;
+          userCredsModel = provider.userCredsResponse ?? userCredsModel;
+          provider.clearUserCredsResponse();
           Get.to(() => LoginWithOtp(usermobileno: usermobileController.text));
         } else {
           failToast(provider.userCredsResponse!.commandmessage ??
               "Something went wrong");
+        }
+      } else if (provider.divisionResponse != null) {
+        if (provider.divisionResponse!.commandstatus == 1) {
+          authService.storagePush(
+              ENV.divisionPrefTag, jsonEncode(provider.selectedDivision));
+          savedUser.logindivisionid = provider.selectedDivision!.accdivisionid;
+          savedUser.logindivisionname =
+              provider.selectedDivision!.accdivisionname;
+          provider.clearDivisionResponse();
+          authService.login(context);
+        } else {
+          failToast(provider.divisionResponse!.commandmessage ??
+              "Division validation failed");
         }
       }
     }
@@ -130,6 +167,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _validateUserLogin(
       String companyIdVal, String usernameVal) async {
     String deviceId = await getDeviceId();
+    if (!mounted) return;
     Map<String, String> params = {
       "prmconstring": companyIdVal,
       "prmusername": usernameVal,
@@ -139,6 +177,19 @@ class _LoginPageState extends State<LoginPage> {
       "prmdeviceid": deviceId
     };
     context.read<LoginProvider>().validateUserForLogin(params);
+  }
+
+  Future<void> _validateDivision(String companyId, String usercode,
+      String branchcode, String divisionid, String sessionid) async {
+    Map<String, String> params = {
+      "connstring": companyId,
+      "prmusercode": usercode,
+      "prmbranchcode": branchcode,
+      "prmdivisionid": divisionid,
+      // "prmdeviceid": getUuid()
+      "prmsessionid": sessionid
+    };
+    context.read<LoginProvider>().validateDivision(params);
   }
 
   @override

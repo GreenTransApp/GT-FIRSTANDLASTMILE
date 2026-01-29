@@ -18,6 +18,7 @@ class ENV {
   static String basePrefTag = appName;
   static String userPrefTag = "${basePrefTag}_USER";
   static String loginPrefTag = "${basePrefTag}_LOGIN";
+  static String divisionPrefTag = "${basePrefTag}_DIVISION";
   static String loginCredsPrefTag = "${basePrefTag}_LOGINCREDS";
   static String offlineLoginCredsTag = "${basePrefTag}_OFFLINELOGINCREDS";
   static String offlineLoginIdTag = "${basePrefTag}_OFFLINELOGINID";

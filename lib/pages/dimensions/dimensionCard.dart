@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/utils.dart';
 import 'package:gtlmd/design_system/device_type.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/dimensions/models/dimensionModel.dart';
 
 class DimensionCard extends StatelessWidget {
-  final int index;
+  final DimensionModel dimension;
   final VoidCallback onAdd;
   final VoidCallback? onRemove;
+  final VoidCallback? onTotalChange;
+  final int index;
 
   const DimensionCard({
     super.key,
-    required this.index,
+    required this.dimension,
     required this.onAdd,
     this.onRemove,
+    required this.onTotalChange,
+    required this.index,
   });
 
   @override
@@ -59,8 +65,11 @@ class DimensionCard extends StatelessWidget {
                 /// ---------- PIECES + LENGTH ----------
                 _responsiveRow(
                   children: [
-                    _field("Pieces"),
-                    _field("Length (C)"),
+                    _field(
+                      "Pieces",
+                      dimension.piecesController,
+                    ),
+                    _field("Length (C)", dimension.lengthController),
                   ],
                 ),
 
@@ -69,8 +78,8 @@ class DimensionCard extends StatelessWidget {
                 /// ---------- BREADTH + HEIGHT ----------
                 _responsiveRow(
                   children: [
-                    _field("Breadth (C)"),
-                    _field("Height (C)"),
+                    _field("Breadth (C)", dimension.breadthController),
+                    _field("Height (C)", dimension.heightController),
                   ],
                 ),
 
@@ -79,8 +88,8 @@ class DimensionCard extends StatelessWidget {
                 /// ---------- CFT + VOLUMETRIC WEIGHT ----------
                 _responsiveRow(
                   children: [
-                    _field("CFT", initialValue: "10"),
-                    _field("Volumetric Weight"),
+                    _field("CFT", dimension.cftController, initialValue: "10"),
+                    _field("Volumetric Weight", dimension.vWeightController),
                   ],
                 ),
 
@@ -107,24 +116,43 @@ class DimensionCard extends StatelessWidget {
   }
 
   Widget _unitTypeDropdown() {
+    List<DropdownMenuItem<String>> list = [];
+    for (var entry in unitTypeList.entries) {
+      list.add(DropdownMenuItem(value: entry.value, child: Text(entry.value)));
+    }
     return DropdownButtonFormField<String>(
-      value: "CM",
+      value: list.first.value,
       decoration: _inputDecoration(),
-      items: const [
-        DropdownMenuItem(value: "CM", child: Text("CM")),
-        DropdownMenuItem(value: "INCH", child: Text("INCH")),
-      ],
-      onChanged: (v) {},
+      items: list,
+      onChanged: (v) {
+        switch (v) {
+          case "CM":
+            dimension.unitType = "C";
+            break;
+          case "INCH":
+            dimension.unitType = "I";
+            break;
+          case 'CBM':
+            dimension.unitType = 'M';
+          default:
+            dimension.unitType = "C";
+        }
+      },
     );
   }
 
-  Widget _field(String label, {String? initialValue}) {
+  Widget _field(
+    String label,
+    TextEditingController controller, {
+    String? initialValue,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _label(label),
         SizedBox(height: SizeConfig.smallVerticalSpacing),
         TextFormField(
+          controller: controller,
           initialValue: initialValue ?? "0",
           keyboardType: TextInputType.number,
           decoration: _inputDecoration(),
@@ -166,42 +194,37 @@ class DimensionCard extends StatelessWidget {
   }
 
   Widget _buttonsRow() {
-    final addBtn = Expanded(
-      child: ElevatedButton(
-        onPressed: onAdd,
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(SizeConfig.largeRadius)),
-        ),
-        child: const Text("Add More"),
+    final addBtn = ElevatedButton(
+      onPressed: onAdd,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.largeRadius)),
       ),
+      child: const Text("Add More"),
     );
 
     final removeBtn = onRemove == null
         ? const SizedBox()
-        : Expanded(
-            child: ElevatedButton(
-              onPressed: onRemove,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding:
-                    EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding),
-                shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(SizeConfig.largeRadius)),
-              ),
-              child: const Text("Remove"),
+        : ElevatedButton(
+            onPressed: onRemove,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding:
+                  EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(SizeConfig.largeRadius)),
             ),
+            child: const Text("Remove"),
           );
 
     if (SizeConfig.deviceType == DeviceType.smallPhone) {
       return Column(
         children: [
-          addBtn,
+          SizedBox(width: double.infinity, child: addBtn),
           if (onRemove != null) ...[
             SizedBox(height: SizeConfig.mediumVerticalSpacing),
-            removeBtn,
+            SizedBox(width: double.infinity, child: removeBtn),
           ]
         ],
       );
@@ -209,10 +232,10 @@ class DimensionCard extends StatelessWidget {
 
     return Row(
       children: [
-        addBtn,
+        Expanded(child: addBtn),
         if (onRemove != null) ...[
           SizedBox(width: SizeConfig.mediumVerticalSpacing),
-          removeBtn,
+          Expanded(child: removeBtn),
         ]
       ],
     );

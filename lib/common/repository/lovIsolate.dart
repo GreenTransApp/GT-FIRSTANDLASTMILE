@@ -42,25 +42,47 @@ Map<String, List<dynamic>> parseBookingLovsIsolate(String rawDataSet) {
   final Map<String, dynamic> table = jsonDecode(rawDataSet);
   Map<String, List<dynamic>> result = {};
 
+  // if (table.containsKey("Table")) {
+  //   List<dynamic> list = table["Table"];
+  //   result["service"] = List.generate(
+  //       list.length, (index) => ServiceTypeModel.fromJson(list[index]));
+  // }
+  // if (table.containsKey("Table1")) {
+  //   List<dynamic> list = table["Table1"];
+  //   result["load"] = List.generate(
+  //       list.length, (index) => LoadTypeModel.fromJson(list[index]));
+  // }
+  // if (table.containsKey("Table2")) {
+  //   List<dynamic> list = table["Table2"];
+  //   result["delivery"] = List.generate(
+  //       list.length, (index) => DeliveryTypeModel.fromJson(list[index]));
+  // }
+  // if (table.containsKey("Table3")) {
+  //   List<dynamic> list = table["Table3"];
+  //   result["booking"] = List.generate(
+  //       list.length, (index) => BookingTypeModel.fromJson(list[index]));
+  // }
+
   if (table.containsKey("Table")) {
     List<dynamic> list = table["Table"];
     result["service"] = List.generate(
         list.length, (index) => ServiceTypeModel.fromJson(list[index]));
   }
-  if (table.containsKey("Table1")) {
-    List<dynamic> list = table["Table1"];
+  if (table.containsKey("Table3")) {
+    List<dynamic> list = table["Table3"];
     result["load"] = List.generate(
         list.length, (index) => LoadTypeModel.fromJson(list[index]));
   }
-  if (table.containsKey("Table2")) {
-    List<dynamic> list = table["Table2"];
+  if (table.containsKey("Table4")) {
+    List<dynamic> list = table["Table4"];
     result["delivery"] = List.generate(
         list.length, (index) => DeliveryTypeModel.fromJson(list[index]));
   }
-  if (table.containsKey("Table3")) {
-    List<dynamic> list = table["Table3"];
-    result["booking"] = List.generate(
-        list.length, (index) => BookingTypeModel.fromJson(list[index]));
-  }
+  // if (table.containsKey("Table3")) {
+  //   List<dynamic> list = table["Table3"];
+  //   result["booking"] = List.generate(
+  //       list.length, (index) => BookingTypeModel.fromJson(list[index]));
+  // }
+
   return result;
 }

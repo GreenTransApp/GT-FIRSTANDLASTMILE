@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ import 'package:gtlmd/pages/runningTrips/runningTrips.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/updateVersionScreen/updateVersionScreen.dart';
+import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
@@ -863,7 +865,7 @@ class _HomeScreen extends State<HomeScreen>
                       onTap: () async {
                         // Bluetooth.printReceipt();
                         // Get.to(() => const BookingListScreen());
-                        showDimensionsScreen(context);
+                        // showDimensionsScreen(context);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
