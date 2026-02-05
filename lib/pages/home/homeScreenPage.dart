@@ -202,8 +202,8 @@ class _HomeScreen extends State<HomeScreen>
       } else {
         if (tripData.elementAt(0).commandstatus == 1) {
           setState(() {
-            // tripsList = tripData;
-            // checkAuthenticatedUserForRunService(tripData);
+            tripsList = tripData;
+            checkAuthenticatedUserForRunService(tripData);
           });
         }
       }
