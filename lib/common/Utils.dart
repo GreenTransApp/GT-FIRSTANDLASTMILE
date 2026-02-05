@@ -272,14 +272,12 @@ getUuid() {
 }
 
 Future<String?> getIpAddress() async {
-  Permission.location.request();
   final networkInfo = await NetworkInfo();
   var ipAddress = await networkInfo.getWifiIP();
   return ipAddress;
 }
 
 Future<String?> getDeviceIp() async {
-  Permission.location.request();
   var deviceIp = IpAddress(type: RequestType.text);
   dynamic data = await deviceIp.getIpAddress();
   debugPrint("device ip---" + data);
@@ -287,7 +285,6 @@ Future<String?> getDeviceIp() async {
 }
 
 Future<String?> getIp() async {
-  Permission.location.request();
   final deviceIpAddress = await Ipify.ipv4(format: Format.TEXT);
   return deviceIpAddress;
 }

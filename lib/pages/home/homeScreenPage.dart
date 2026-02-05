@@ -203,7 +203,7 @@ class _HomeScreen extends State<HomeScreen>
         if (tripData.elementAt(0).commandstatus == 1) {
           setState(() {
             // tripsList = tripData;
-            checkAuthenticatedUserForRunService(tripData);
+            // checkAuthenticatedUserForRunService(tripData);
           });
         }
       }
@@ -259,104 +259,171 @@ class _HomeScreen extends State<HomeScreen>
     }));
   }
 
-  checkAuthenticatedUserForRunService(List<TripModel> tripData) {
+  // checkAuthenticatedUserForRunService(List<TripModel> tripData) {
+  //   try {
+  //     if (tripData == null || tripData.isEmpty) {
+  //       debugPrint('Trip data is empty, stopping location service...');
+  //       locationService.stopService();
+  //       // return Future.value();
+  //       return;
+  //     }
+
+  //     if (tripData.elementAt(0).commandstatus == 1) {
+  //       setState(() {
+  //         tripsList = tripData;
+  //       });
+
+  //       bool hasDispatchedTrip = tripsList.any(
+  //         (trip) =>
+  //             trip.tripdispatchdatetime != null &&
+  //             trip.tripdispatchdatetime.toString().isNotEmpty,
+  //       );
+
+  //       if (hasDispatchedTrip) {
+  //         debugPrint(authService.isAuthenticated.value.toString());
+
+  //         authService.isAuthenticated
+  //             .where((val) => val != null)
+  //             .take(1)
+  //             .listen((isAuthenticated) async {
+  //           try {
+  //             if (isAuthenticated == true) {
+  //               if (tripsList.isNotEmpty) {
+  //                 if (savedUser.employeeid != null &&
+  //                     savedUser.employeeid! > 0) {
+  //                   if (attendanceModel.intime != null &&
+  //                       attendanceModel.intime!.isNotEmpty &&
+  //                       (attendanceModel.outtime != null ||
+  //                           attendanceModel.outtime!.isNotEmpty)) {
+  //                     final tripList = tripsList
+  //                         .map((trip) => trip.tripid.toString())
+  //                         .toList();
+  //                     final dataToPass = {
+  //                       'tripList': tripList,
+  //                       'userData': savedUser.toJson(),
+  //                     };
+  //                     bool isRunnig =
+  //                         await FlutterForegroundTask.isRunningService;
+  //                     if (!isRunnig) {
+  //                       locationService.startService(tripData, savedUser);
+  //                     } else {
+  //                       FlutterForegroundTask.sendDataToTask(dataToPass);
+  //                     }
+  //                   }
+  //                 } else {
+  //                   final tripList = tripsList
+  //                       .map((trip) => trip.tripid.toString())
+  //                       .toList();
+  //                   final dataToPass = {
+  //                     'tripList': tripList,
+  //                     'userData': savedUser.toJson(),
+  //                   };
+  //                   bool isRunnig =
+  //                       await FlutterForegroundTask.isRunningService;
+  //                   if (!isRunnig) {
+  //                     locationService.startService(tripData, savedUser);
+  //                   } else {
+  //                     FlutterForegroundTask.sendDataToTask(dataToPass);
+  //                   }
+  //                 }
+  //               } else {
+  //                 debugPrint(' No trips found, service not started.');
+  //                 locationService.stopService();
+  //               }
+  //             } else {
+  //               debugPrint('User logged out, stopping location service...');
+  //               locationService.stopService();
+  //             }
+  //           } catch (innerError, innerStack) {
+  //             debugPrint('Error in authentication listener: $innerError');
+  //             debugPrint(innerStack.toString());
+  //             try {
+  //               locationService.stopService();
+  //             } catch (_) {}
+  //           }
+  //         });
+  //       } else {
+  //         debugPrint(
+  //             ' No dispatched trips found, stopping location service...');
+  //         locationService.stopService();
+  //       }
+  //     } else {
+  //       debugPrint(' Command status not valid, stopping location service...');
+  //       locationService.stopService();
+  //     }
+  //   } catch (error, stackTrace) {
+  //     debugPrint(' Error in handleTripDataUpdate: $error');
+  //     debugPrint(stackTrace.toString());
+  //     try {
+  //       locationService.stopService();
+  //     } catch (_) {}
+  //   }
+  // }
+
+  Future<void> checkAuthenticatedUserForRunService(
+      List<TripModel> tripData) async {
     try {
-      if (tripData == null || tripData.isEmpty) {
-        debugPrint('Trip data is empty, stopping location service...');
-        locationService.stopService();
-        // return Future.value();
+      final bool isRunning = await FlutterForegroundTask.isRunningService;
+
+      // Stop if not authenticated
+      if (authService.isAuthenticated.value != true) {
+        debugPrint('[Service] User not authenticated → stop');
+        if (isRunning) await locationService.stopService();
         return;
       }
 
-      if (tripData.elementAt(0).commandstatus == 1) {
-        setState(() {
-          tripsList = tripData;
-        });
+      // Stop if no trips
+      if (tripData.isEmpty) {
+        debugPrint('[Service] Trip list empty → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
 
-        bool hasDispatchedTrip = tripsList.any(
-          (trip) =>
-              trip.tripdispatchdatetime != null &&
-              trip.tripdispatchdatetime.toString().isNotEmpty,
+      // Stop if command status invalid
+      if (tripData.first.commandstatus != 1) {
+        debugPrint('[Service] Invalid command status → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Stop if no dispatched trips
+      final hasDispatchedTrip = tripData.any(
+        (trip) =>
+            trip.tripdispatchdatetime != null &&
+            trip.tripdispatchdatetime.toString().isNotEmpty,
+      );
+      if (!hasDispatchedTrip) {
+        debugPrint('[Service] No dispatched trips → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Prepare data to send
+      final tripList = tripData.map((trip) => trip.tripid.toString()).toList();
+      final dataToPass = {
+        'tripList': tripList,
+        'userData': savedUser.toJson(),
+      };
+
+      if (!isRunning) {
+        debugPrint('[Service] Starting foreground service');
+        await FlutterForegroundTask.startService(
+          notificationTitle: 'Location Tracking Active',
+          notificationText: 'Your location is being tracked.',
+          callback: startCallback,
         );
 
-        if (hasDispatchedTrip) {
-          debugPrint(authService.isAuthenticated.value.toString());
-
-          authService.isAuthenticated
-              .where((val) => val != null)
-              .take(1)
-              .listen((isAuthenticated) async {
-            try {
-              if (isAuthenticated == true) {
-                if (tripsList.isNotEmpty) {
-                  if (savedUser.employeeid != null &&
-                      savedUser.employeeid! > 0) {
-                    if (attendanceModel.intime != null &&
-                        attendanceModel.intime!.isNotEmpty &&
-                        (attendanceModel.outtime != null ||
-                            attendanceModel.outtime!.isNotEmpty)) {
-                      final tripList = tripsList
-                          .map((trip) => trip.tripid.toString())
-                          .toList();
-                      final dataToPass = {
-                        'tripList': tripList,
-                        'userData': savedUser.toJson(),
-                      };
-                      bool isRunnig =
-                          await FlutterForegroundTask.isRunningService;
-                      if (!isRunnig) {
-                        locationService.startService(tripData, savedUser);
-                      } else {
-                        FlutterForegroundTask.sendDataToTask(dataToPass);
-                      }
-                    }
-                  } else {
-                    final tripList = tripsList
-                        .map((trip) => trip.tripid.toString())
-                        .toList();
-                    final dataToPass = {
-                      'tripList': tripList,
-                      'userData': savedUser.toJson(),
-                    };
-                    bool isRunnig =
-                        await FlutterForegroundTask.isRunningService;
-                    if (!isRunnig) {
-                      locationService.startService(tripData, savedUser);
-                    } else {
-                      FlutterForegroundTask.sendDataToTask(dataToPass);
-                    }
-                  }
-                } else {
-                  debugPrint(' No trips found, service not started.');
-                  locationService.stopService();
-                }
-              } else {
-                debugPrint('User logged out, stopping location service...');
-                locationService.stopService();
-              }
-            } catch (innerError, innerStack) {
-              debugPrint('Error in authentication listener: $innerError');
-              debugPrint(innerStack.toString());
-              try {
-                locationService.stopService();
-              } catch (_) {}
-            }
-          });
-        } else {
-          debugPrint(
-              ' No dispatched trips found, stopping location service...');
-          locationService.stopService();
-        }
+        // Send data after service starts
+        Future.delayed(const Duration(milliseconds: 300), () {
+          FlutterForegroundTask.sendDataToTask(dataToPass);
+        });
       } else {
-        debugPrint(' Command status not valid, stopping location service...');
-        locationService.stopService();
+        debugPrint('[Service] Updating foreground service data');
+        FlutterForegroundTask.sendDataToTask(dataToPass);
       }
-    } catch (error, stackTrace) {
-      debugPrint(' Error in handleTripDataUpdate: $error');
-      debugPrint(stackTrace.toString());
-      try {
-        locationService.stopService();
-      } catch (_) {}
+    } catch (e, stack) {
+      debugPrint('[Service] Error: $e');
+      debugPrint(stack.toString());
     }
   }
 

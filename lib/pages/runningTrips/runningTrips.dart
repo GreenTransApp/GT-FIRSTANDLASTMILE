@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
@@ -9,6 +10,7 @@ import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/runningTripTile.dart';
@@ -37,6 +39,7 @@ class RunningTripsState extends State<RunningTrips> {
   late LoadingAlertService loadingAlertService;
   RunningTripsViewModel viewModel = RunningTripsViewModel();
   List<StreamSubscription> _subscription = [];
+  final locationService = LocationService();
 
   @override
   void initState() {
@@ -71,8 +74,76 @@ class RunningTripsState extends State<RunningTrips> {
     _subscription.add(viewModel.tripsListData.stream.listen((data) {
       setState(() {
         _tripList = data;
+        checkAuthenticatedUserForRunService(_tripList);
       });
     }));
+  }
+
+  Future<void> checkAuthenticatedUserForRunService(
+      List<TripModel> tripData) async {
+    try {
+      final bool isRunning = await FlutterForegroundTask.isRunningService;
+
+      // Stop if not authenticated
+      if (authService.isAuthenticated.value != true) {
+        debugPrint('[Service] User not authenticated → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Stop if no trips
+      if (tripData.isEmpty) {
+        debugPrint('[Service] Trip list empty → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Stop if command status invalid
+      if (tripData.first.commandstatus != 1) {
+        debugPrint('[Service] Invalid command status → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Stop if no dispatched trips
+      final hasDispatchedTrip = tripData.any(
+        (trip) =>
+            trip.tripdispatchdatetime != null &&
+            trip.tripdispatchdatetime.toString().isNotEmpty,
+      );
+      if (!hasDispatchedTrip) {
+        debugPrint('[Service] No dispatched trips → stop');
+        if (isRunning) await locationService.stopService();
+        return;
+      }
+
+      // Prepare data to send
+      final tripList = tripData.map((trip) => trip.tripid.toString()).toList();
+      final dataToPass = {
+        'tripList': tripList,
+        'userData': savedUser.toJson(),
+      };
+      if (!isRunning) {
+        debugPrint('[Service] Starting foreground service');
+        locationService.requestPermissions();
+        await FlutterForegroundTask.startService(
+          notificationTitle: 'Location Tracking Active',
+          notificationText: 'Your location is being tracked.',
+          callback: startCallback,
+        );
+
+        // Send data after service starts
+        Future.delayed(const Duration(milliseconds: 300), () {
+          FlutterForegroundTask.sendDataToTask(dataToPass);
+        });
+      } else {
+        debugPrint('[Service] Updating foreground service data');
+        FlutterForegroundTask.sendDataToTask(dataToPass);
+      }
+    } catch (e, stack) {
+      debugPrint('[Service] Error: $e');
+      debugPrint(stack.toString());
+    }
   }
 
   @override
