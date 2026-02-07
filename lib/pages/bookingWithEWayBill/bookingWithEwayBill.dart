@@ -33,6 +33,7 @@ import 'package:gtlmd/pages/pickup/model/customerModel.dart';
 import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -125,6 +126,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
   String piecesStr = '';
   String vWeightStr = '';
   String cftStr = '';
+  String currentAddress = '';
   // bool isCft = false;
 
   //  [
@@ -1122,7 +1124,21 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
       failToast("Booking image is required");
       return;
     } else {
+      fetchLocationAndSubmit();
+    }
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
       saveBooking();
+    } else {
+      failToast("Could not get your location.");
     }
   }
 

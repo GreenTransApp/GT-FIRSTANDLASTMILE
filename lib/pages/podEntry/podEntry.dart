@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
@@ -21,6 +24,8 @@ import 'package:gtlmd/pages/podEntry/podEntryViewModel.dart';
 import 'package:gtlmd/pages/podEntry/podRelationModel.dart';
 import 'package:gtlmd/pages/podEntry/scanAndDeliver.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -81,12 +86,13 @@ class _PodEntryState extends State<PodEntry> {
   List<PodRelationsModel> _relations = List.empty(growable: true);
   List<ReasonModel> _damageReason = List.empty(growable: true);
   List<PodStickerModel> _stickerList = List.empty(growable: true);
-
+  BaseRepository _baseRepo = BaseRepository();
   late FocusNode receivedByFocus;
   late FocusNode receiverMobileNumFocus;
   late FocusNode dlvPckgsFocus;
   late FocusNode dmgPckgsFocus;
   late FocusNode remarksFocus;
+  String currentAddress = '';
 
   @override
   void initState() {
@@ -111,6 +117,20 @@ class _PodEntryState extends State<PodEntry> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     getLoginPrefs();
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      submitPodForm();
+    } else {
+      failToast("Could not get your location.");
+    }
   }
 
   getLoginPrefs() {
@@ -169,6 +189,13 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   setObservers() {
+    _baseRepo.viewDialog.stream.listen((showDialog) {
+      if (showDialog) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    });
     viewModel.podEntryLiveData.stream.listen((pod) {
       if (pod.commandstatus == 1) {
         setState(() {
@@ -275,7 +302,7 @@ class _PodEntryState extends State<PodEntry> {
     viewModel.getPodEntry(params);
   }
 
-  validatePod() {
+  validatePod() async {
     if (_grNoController.text.isEmpty) {
       failToast("Please fill GR number");
       return;
@@ -335,7 +362,7 @@ class _PodEntryState extends State<PodEntry> {
       failToast("Please select damage images");
       return;
     } else {
-      submitPodForm();
+      fetchLocationAndSubmit();
     }
   }
 
@@ -376,18 +403,8 @@ class _PodEntryState extends State<PodEntry> {
       "prmdamagereasonid": _selectedDamageReason == null
           ? '0'
           : _selectedDamageReason!.reasoncode,
-      "prmdamageimgstr": damageImageList
-      // "prmdamageimg1": isNullOrEmpty(_damageImg1FilePath)
-      //     ? ''
-      //     : convertFilePathToBase64(_damageImg1FilePath),
-      // "prmdamageimg2": isNullOrEmpty(_damageImg2FilePath)
-      //     ? ''
-      //     : convertFilePathToBase64(_damageImg2FilePath),
-      // "prmsign": isSignRequired == true ? "Y" : "N",
-      // "prmstamp": isStampRequired == true ? "Y" : "N",
-      // "prmpckgs": this.pckgs,
-      // "prmpckgstr": enteredQtyStr,
-      // "prmdataidstr": dataIdStr
+      "prmdamageimgstr": damageImageList,
+      "prmentrylocation": currentAddress
     };
 
     // loadingAlertService.showLoading();

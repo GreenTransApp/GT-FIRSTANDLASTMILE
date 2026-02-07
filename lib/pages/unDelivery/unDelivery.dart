@@ -13,6 +13,7 @@ import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDeliveryViewModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:intl/intl.dart';
 
 class UnDelivery extends StatefulWidget {
@@ -56,6 +57,7 @@ class _UnDeliveryState extends State<UnDelivery> {
   late DateTime todayDateTime;
   late String smallDateTime;
   late FocusNode remarksFocus;
+  String currentAddress = '';
   @override
   void initState() {
     super.initState();
@@ -140,24 +142,12 @@ class _UnDeliveryState extends State<UnDelivery> {
   }
 
   void validateUnDeliveryForm() {
-    // if (_selectedReason == null) {
-    //   failToast('Please select reason');
-    // } else if (isNullOrEmpty(_selectedAction!.reasoncode)) {
-    //   failToast('Please select action');
-    // } else if (isNullOrEmpty(_imageFilePath)) {
-    //   failToast("Please select an image");
-    //   return;
-    // } else {
-    //   // everything is okay
-    //   saveUndelivery();
-    // }
-
     if (_formKey.currentState!.validate()) {
       if (isNullOrEmpty(_imageFilePath)) {
         failToast("Please select an image");
         return;
       }
-      saveUndelivery();
+      fetchLocationAndSubmit();
     }
   }
 
@@ -345,7 +335,7 @@ class _UnDeliveryState extends State<UnDelivery> {
   }
 
   Future<void> _pickTime(TextEditingController controller) async {
-    final TimeOfDay? selectedTime = await showTimePicker(
+    await showTimePicker(
       initialTime: TimeOfDay.now(),
       context: context,
     );
@@ -357,65 +347,6 @@ class _UnDeliveryState extends State<UnDelivery> {
     };
     viewModel.getReasons(params);
   }
-
-/* 
-  void _showReasonDialog(
-      BuildContext context, List<ReasonModel> _reasonList) async {
-    String? _selectionResult;
-
-    String? result = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Relation'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: _reasonList.map((reason) {
-                    return RadioListTile<ReasonModel>(
-                      title: Text(reason.reasonname.toString()),
-                      value: reason,
-                      groupValue: _selectedReason,
-                      onChanged: (ReasonModel? value) {
-                        setState(() {
-                          _selectedReason = value;
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    // Navigator.of(context).pop(_selectedRelation);
-                    Get.back(result: _selectedReason!.reasonname);
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        _reasonController.text = result.toString();
-      });
-    }
-  }
-
- */
 
   void saveUndelivery() {
     Map<String, String> params = {
@@ -433,11 +364,26 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmmenucode": 'GTAPP_DRS',
       "prmremarks": _remarksController.text.toUpperCase(),
       "prmdrno": "",
-      "prmimagepath": _imageFilePathBase64.toString()
+      "prmimagepath": _imageFilePathBase64.toString(),
+      'prmentrylocation': currentAddress,
     };
 
     debugPrint("Test");
     viewModel.saveUnDelivery(params);
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      saveUndelivery();
+    } else {
+      failToast("Could not get your location.");
+    }
   }
 
   Widget _buildFieldLabel(String label, bool isRequired) {

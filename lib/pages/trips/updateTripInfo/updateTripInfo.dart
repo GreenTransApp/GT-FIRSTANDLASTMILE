@@ -13,6 +13,7 @@ import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripViewModel.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
 
@@ -47,6 +48,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   String? _closeReadingImagePath;
   String totalTime = "";
   String totaldistance = "";
+  String currentAddress = '';
 
   UpdateTripInfoViewModel viewModel = UpdateTripInfoViewModel();
   late LoadingAlertService loadingAlertService;
@@ -245,12 +247,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.endtriptime = _closeTimeController.text;
       widget.model.endreadingkm = int.tryParse(_closeReadingController.text);
       widget.model.endreadingimg = _closeReadingImagePath;
-
-      updateCloseTrip();
-      // Get.back();
-      // if (widget.onUpdate != null) {
-      //   widget.onUpdate!(widget.model, widget.status);
-      // }
+      // updateCloseTrip();
     } else {
       if (isNullOrEmpty(_dispatchDateController.text)) {
         failToast("Please Select Dispatch Data.");
@@ -261,10 +258,6 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       } else if (isNullOrEmpty(_startReadingController.text)) {
         failToast("Please Enter Odometer Value");
         return;
-        // } else if (int.tryParse(_autoMeterController.text)! > 0 &&
-        //     isNullOrEmpty(_autoMeterPath)) {
-        //   failToast("Reading meter image path is required");
-        //   return;
       } else if (int.tryParse(_startReadingController.text)! <= 0) {
         failToast("Odometer Value Can't be Zero");
         return;
@@ -276,17 +269,27 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.tripdispatchdatetime = _dispatchTimeController.text;
       widget.model.startreadingkm = int.tryParse(_startReadingController.text);
       widget.model.startreadingimg = _startReadingImagePath;
-
-      updateStartTrip();
-
-      // Get.back();
-      // if (widget.onUpdate != null) {
-      //   widget.onUpdate!(widget.model, widget.status);
-      //   // widget.onUpdate!(
-      //   //     selectedDate, selectedTime, widget.model.drsno);
-      // }
+      // updateStartTrip();
     }
-    // updateTripInfo();
+    fetchLocationAndSubmit();
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      if (widget.status == TripStatus.close) {
+        updateCloseTrip();
+      } else {
+        updateStartTrip();
+      }
+    } else {
+      failToast("Could not get your location.");
+    }
   }
 
   void updateStartTrip() {
@@ -304,7 +307,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           : isNullOrEmpty(widget.model.startreadingimg)
               ? ""
               : widget.model.startreadingimg!,
-      "prmsessionid": savedUser.sessionid.toString()
+      "prmsessionid": savedUser.sessionid.toString(),
+      'prmentrylocation': currentAddress,
     };
 
     viewModel.updateStartTrip(params);
@@ -323,7 +327,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmendreadimgpath": widget.status == TripStatus.open
           ? ""
           : convertFilePathToBase64(widget.model.endreadingimg),
-      "prmsessionid": savedUser.sessionid.toString()
+      "prmsessionid": savedUser.sessionid.toString(),
+      'prmentrylocation': currentAddress,
     };
 
     viewModel.updateCloseTrip(params);

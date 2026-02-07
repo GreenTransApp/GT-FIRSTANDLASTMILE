@@ -21,6 +21,10 @@ import 'package:gtlmd/pages/attendance/models/attendanceRadiusModel.dart';
 import 'package:gtlmd/pages/attendance/viewAttendanceScreen.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 import 'package:gtlmd/tiles/attendanceTile.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -217,36 +221,22 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
-      servicestatus = await Geolocator.isLocationServiceEnabled();
-      if (servicestatus) {
-        loadingAlertService.showLoading();
-        try {
-          permission = await Geolocator.checkPermission();
-        } on Exception catch (err) {
-          failToast(err.toString());
-          loadingAlertService.hideLoading();
-          return;
-        }
+      loadingAlertService.showLoading();
+      String? address = await AppLocationService().getCurrentAddress();
 
-        if (permission == LocationPermission.denied) {
-          permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.denied) {
-            failToast('Denied');
-          } else if (permission == LocationPermission.deniedForever) {
-            failToast('Denied Forever');
-          } else {
-            hasPermission = true;
-          }
-        } else {
-          hasPermission = true;
-        }
-        if (hasPermission) {
-          setState(() {
-            getLocation(alertType);
-          });
-        }
+      if (address != null) {
+        _currentAddress = address;
+        // We still need the position for radius check,
+        // AppLocationService doesn't expose position directly yet,
+        // but it does capture it. Let's get it.
+        _currentPosition = await Geolocator.getCurrentPosition();
+        lat = _currentPosition!.latitude.toString();
+        long = _currentPosition!.longitude.toString();
+
+        getLocation(alertType);
       } else {
-        failToast('GPS is not enabled. Turn on GPS');
+        loadingAlertService.hideLoading();
+        failToast("Could not get your location.");
       }
     } else {
       failToast("No Internet available");
@@ -294,82 +284,17 @@ class _AttendanceScreenState extends State<AttendanceScreen>
       if (isUserInRange(currentLocation, toCheckLocation,
           attendanceRadius.attendanceradius!.toDouble())) {
         debugPrint('user in range');
-        _getAddressFromLatLng(
-            _currentPosition!, alertType, PUNCH_GEOFENCE_TYPE.ON);
+        loadingAlertService.hideLoading();
+        showConfirmationAlert(alertType);
       } else {
         failToast(attendanceRadius.errmsg ?? "Out of office");
-        // hideProgressBar();
         loadingAlertService.hideLoading();
       }
     } else {
       debugPrint("Not Going to check Radius");
-      _getAddressFromLatLng(
-          _currentPosition!, alertType, PUNCH_GEOFENCE_TYPE.OFF);
-    }
-  }
-
-  _getAddressFromLatLng(Position position, ALERT_TYPE alert_type,
-      PUNCH_GEOFENCE_TYPE geoFenceType) async {
-    debugPrint('_getAddressFromLatLng');
-    await placemarkFromCoordinates(position!.latitude, position!.longitude)
-        .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
-      setState(() {
-        _currentAddress =
-            '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
-        loadingAlertService.hideLoading();
-        showConfirmationAlert(alert_type);
-      });
-    }).catchError((err) {
-      if (GOOGLE_MAPS_API_KEY == "") {
-        loadingAlertService.hideLoading();
-        if ((attendanceRadius.defaultaddress == null ||
-                attendanceRadius.defaultaddress == "") &&
-            geoFenceType == PUNCH_GEOFENCE_TYPE.ON) {
-          failToast(
-              "Error: Could not get address from this location. Please try to use the app with other Wifi or Network.");
-        } else {
-          _currentAddress =
-              "DEFAULT ADDRESS: ${attendanceRadius.defaultaddress}";
-          showConfirmationAlert(alert_type);
-        }
-        // hideProgressBar();
-      } else {
-        getAddressFromLatLng(context, _currentPosition!.latitude,
-            _currentPosition!.longitude, alert_type);
-      }
-    });
-  }
-
-  void getAddressFromLatLng(
-      context, double lat, double lng, ALERT_TYPE alert_type) async {
-    if (GOOGLE_MAPS_API_KEY == "") {
       loadingAlertService.hideLoading();
-      return null;
+      showConfirmationAlert(alertType);
     }
-    debugPrint("Getting Location from GOOGLE API CALL $GOOGLE_MAPS_API_KEY");
-    String _host = 'https://maps.google.com/maps/api/geocode/json';
-    final url = '$_host?key=$GOOGLE_MAPS_API_KEY&language=en&latlng=$lat,$lng';
-    if (lat != null && lng != null) {
-      var response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        Map data = jsonDecode(response.body);
-        debugPrint("$data");
-        String formattedAddress = data["results"][0]["formatted_address"];
-        debugPrint("response ==== $formattedAddress");
-        _currentAddress = formattedAddress;
-        showConfirmationAlert(alert_type);
-
-        return;
-      } else {
-        failToast("Could not get your location.");
-      }
-    } else {
-      failToast("Could not get your location.");
-    }
-    _currentAddress = "LOCATION NOT CAPTURED";
-    loadingAlertService.hideLoading();
-    showConfirmationAlert(alert_type);
   }
 
   showConfirmationAlert(ALERT_TYPE punchType) {

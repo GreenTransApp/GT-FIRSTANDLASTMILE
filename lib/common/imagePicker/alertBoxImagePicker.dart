@@ -32,8 +32,9 @@ Future<void> showImagePickerDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
-          'Select Image',
+          'SELECT IMAGE',
           style: TextStyle(fontSize: SizeConfig.largeTextSize),
+          textAlign: TextAlign.center,
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -46,52 +47,60 @@ Future<void> showImagePickerDialog(
                 height: SizeConfig.mediumVerticalSpacing,
               ),
 
-              InkWell(
-                onTap: () async {
-                  // onPressed.call("Other Testing");
-                  Navigator.pop(context);
-                  onPressed.call(await chooseGalleryImg());
-                  // chooseGalleryImg();
-                },
-                child: Row(children: [
-                  Icon(
-                    Icons.image,
-                    size: SizeConfig.extraLargeIconSize,
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        // onPressed.call("Other Testing");
+                        Navigator.pop(context);
+                        onPressed.call(await chooseGalleryImg());
+                        // chooseGalleryImg();
+                      },
+                      child: Column(children: [
+                        Icon(
+                          Icons.photo_library,
+                          size: SizeConfig.extraLargeIconSize,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.mediumVerticalSpacing,
+                        ),
+                        Text(
+                          "GALLERY",
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                        )
+                      ]),
+                    ),
                   ),
                   SizedBox(
-                    width: SizeConfig.mediumVerticalSpacing,
+                    width: SizeConfig.largeVerticalSpacing,
                   ),
-                  Text(
-                    "Select image from gallery",
-                    style: TextStyle(fontSize: SizeConfig.smallTextSize),
-                  )
-                ]),
-              ),
-              SizedBox(
-                height: SizeConfig.largeVerticalSpacing,
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        // onPressed.call("Testing");
+                        onPressed.call(await chooseCameraImg());
+                        // chooseCameraImg();
+                        Navigator.pop(context);
+                      },
+                      child: Column(children: [
+                        Icon(
+                          Icons.camera_alt,
+                          size: SizeConfig.extraLargeIconSize,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.mediumVerticalSpacing,
+                        ),
+                        Text(
+                          "CAMERA",
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                        )
+                      ]),
+                    ),
+                  ),
+                ],
               ),
 
-              InkWell(
-                onTap: () async {
-                  // onPressed.call("Testing");
-                  onPressed.call(await chooseCameraImg());
-                  // chooseCameraImg();
-                  Navigator.pop(context);
-                },
-                child: Row(children: [
-                  Icon(
-                    Icons.camera_alt,
-                    size: SizeConfig.extraLargeIconSize,
-                  ),
-                  SizedBox(
-                    width: SizeConfig.mediumVerticalSpacing,
-                  ),
-                  Text(
-                    "Click image from camera",
-                    style: TextStyle(fontSize: SizeConfig.smallTextSize),
-                  )
-                ]),
-              ),
               //   _image==null ?Container():Image.file(File(_image!.path))
               //
             ],

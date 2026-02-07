@@ -26,6 +26,7 @@ import 'package:gtlmd/pages/pickup/model/pickupDetailModel.dart';
 import 'package:gtlmd/pages/pickup/model/pinCodeModel.dart';
 import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 import 'package:gtlmd/pages/pickup/pickupViewModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:intl/intl.dart';
 
 class Pickup extends StatefulWidget {
@@ -117,6 +118,7 @@ class _PickupState extends State<Pickup> {
   DepartmentModel? _selectedDept;
   CngrCngeModel? _selectedCngr;
   CngrCngeModel? _selectedCnge;
+  String currentAddress = '';
 
   // LoadTypeModel? _selectedLoadType;
   String? selected;
@@ -530,7 +532,7 @@ class _PickupState extends State<Pickup> {
       failToast("Document Image Required");
       return;
     } else {
-      saveBooking();
+      fetchLocationAndSubmit();
     }
   }
 
@@ -1828,6 +1830,20 @@ class _PickupState extends State<Pickup> {
     }
   }
 
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      saveBooking();
+    } else {
+      failToast("Could not get your location.");
+    }
+  }
+
   void saveBooking() {
     String invoicenostr = "${firstInvoiceModel.invoiceNoController.text},";
     String invoicedtstr =
@@ -1894,6 +1910,7 @@ class _PickupState extends State<Pickup> {
       "prmsessionid": savedUser.sessionid.toString(),
       "prmmenucode": "GTLMD_PICKUP",
       "prmbookingimgpath": convertFilePathToBase64(_itemImagePath),
+      'prmentrylocation': currentAddress,
     };
 
     debugPrint(params.toString());
