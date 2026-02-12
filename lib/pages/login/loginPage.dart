@@ -117,26 +117,34 @@ class _LoginPageState extends State<LoginPage> {
         _validateUserLogin(resp.companyid.toString(), resp.username.toString());
       } else if (provider.userResponse != null) {
         if (provider.userResponse!.commandstatus == 1) {
-          final userResp = provider.userResponse!;
-          // authService.login(context);
-          Map<String, String> params = {
-            "prmcompanyid": savedLogin.companyid.toString(),
-            "prmbranchcode": userResp.loginbranchcode.toString(),
-            "prmusername": userResp.username.toString(),
-          };
-          provider.clearUserResponse();
-
-          showDivisionSelectionBottomSheet(context, "Select Division",
-              (division) {
+          if (savedLogin.divisionlogin != null &&
+              savedLogin.divisionlogin == 'Y') {
+            final userResp = provider.userResponse!;
             // authService.login(context);
-            _validateDivision(
-                savedLogin.companyid.toString(),
-                userResp.usercode.toString(),
-                userResp.loginbranchcode.toString(),
-                division.accdivisionid.toString(),
-                userResp.sessionid.toString());
-            provider.selectedDivision = division;
-          }, params);
+            Map<String, String> params = {
+              "prmcompanyid": savedLogin.companyid.toString(),
+              "prmbranchcode": userResp.loginbranchcode.toString(),
+              "prmusername": userResp.username.toString(),
+            };
+            provider.clearUserResponse();
+
+            showDivisionSelectionBottomSheet(context, "Select Division",
+                (division) {
+              // authService.login(context);
+              _validateDivision(
+                  savedLogin.companyid.toString(),
+                  userResp.usercode.toString(),
+                  userResp.loginbranchcode.toString(),
+                  division.accdivisionid.toString(),
+                  userResp.sessionid.toString());
+              provider.selectedDivision = division;
+            }, params);
+          } else {
+            authService.storagePush(ENV.divisionPrefTag, jsonEncode(""));
+            savedUser.logindivisionid = 0;
+            savedUser.logindivisionname = "";
+            authService.login(context);
+          }
         }
       } else if (provider.userCredsResponse != null) {
         if (provider.userCredsResponse!.commandstatus == 1) {

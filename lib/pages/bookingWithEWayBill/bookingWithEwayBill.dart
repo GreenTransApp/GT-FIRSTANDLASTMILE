@@ -2098,7 +2098,7 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
                                   width: SizeConfig.extraSmallHorizontalSpacing,
                                 ),
                                 Text(
-                                  'Attach File',
+                                  'Attach Document',
                                   style: TextStyle(
                                       fontSize: SizeConfig.largeTextSize,
                                       fontWeight: FontWeight.w500,

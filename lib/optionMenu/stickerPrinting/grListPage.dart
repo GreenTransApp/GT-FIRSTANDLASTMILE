@@ -111,7 +111,7 @@ class _GrListPageState extends State<GrListPage> {
                   ));
             }),
             title: Text(
-              'GR List',
+              'Consignment List',
               style: TextStyle(
                 color: CommonColors.white,
               ),

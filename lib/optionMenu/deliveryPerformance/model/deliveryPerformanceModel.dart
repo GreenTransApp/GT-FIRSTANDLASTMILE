@@ -37,7 +37,7 @@ class DeliveryPerformanceModel {
       title: json['Title']?.toString(),
       executiveId: json['executiveid']?.toString(),
       executiveName: json['executivename']?.toString(),
-      noOfConsignments: json['No Of Consignments']?.toString(),
+      noOfConsignments: json['No Of Consignemts']?.toString(),
       within4Hours: json['WithIn 4 hours']?.toString(),
       within4HoursPercent: json['WithIn 4 hours %']?.toString(),
       within6Hours: json['WithIn 6 hours']?.toString(),

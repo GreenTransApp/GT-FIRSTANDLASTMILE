@@ -96,35 +96,51 @@ class _OperationsState extends State<Operations> {
                       trailing: IconButton(
                         icon: const Icon(Symbols.arrow_forward),
                         onPressed: () async {
-                          final url = await provider.getSingleOperationDetail(
-                              operation.menucode ?? '');
-                          if (url != null && url.isNotEmpty) {
-                            final uri = Uri.parse(url);
-                            if (await canLaunchUrl(uri)) {
-                              await launchUrl(uri);
-                            } else {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Could not launch URL')),
-                                );
-                              }
-                            }
-                          }
+                          // final url = await provider.getSingleOperationDetail(
+                          //     operation.menucode ?? '');
+                          // if (url != null && url.isNotEmpty) {
+                          //   final uri = Uri.parse(url);
+                          //   if (await canLaunchUrl(uri)) {
+                          //     await launchUrl(uri);
+                          //   } else {
+                          //     if (context.mounted) {
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         const SnackBar(
+                          //             content: Text('Could not launch URL')),
+                          //       );
+                          //     }
+                          //   }
+                          // }
                         },
                       ),
                       onTap: () async {
-                        if (provider.singleOperation!.pageLink != null &&
-                            provider.singleOperation!.pageLink!.isNotEmpty) {
-                          final uri =
-                              Uri.parse(provider.singleOperation!.pageLink!);
+                        // if (provider.singleOperation!.pageLink != null &&
+                        //     provider.singleOperation!.pageLink!.isNotEmpty) {
+                        //   final uri =
+                        //       Uri.parse(provider.singleOperation!.pageLink!);
+                        //   if (await canLaunchUrl(uri)) {
+                        //     await launchUrl(uri);
+                        //   } else {
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //       const SnackBar(
+                        //           content: Text('Could not launch URL')),
+                        //     );
+                        //   }
+                        // }
+
+                        final url = await provider
+                            .getSingleOperationDetail(operation.menucode ?? '');
+                        if (url != null && url.isNotEmpty) {
+                          final uri = Uri.parse(url);
                           if (await canLaunchUrl(uri)) {
                             await launchUrl(uri);
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Could not launch URL')),
-                            );
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Could not launch URL')),
+                              );
+                            }
                           }
                         }
                       },

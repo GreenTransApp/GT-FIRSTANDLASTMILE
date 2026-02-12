@@ -5,6 +5,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceViewModel.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
@@ -100,6 +101,16 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
     viewModel.getPerformanceData(params);
   }
 
+  void _dateChanged(String fromDt, String toDt) {
+    this.fromDt = fromDt;
+    this.toDt = toDt;
+    DateTime fromdt = DateTime.parse(this.fromDt);
+    DateTime todt = DateTime.parse(this.toDt);
+    viewFromDt = DateFormat('dd-MM-yyyy').format(fromdt);
+    viewToDt = DateFormat('dd-MM-yyyy').format(todt);
+    getDeliveryPerformanceData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +134,18 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
               fontWeight: FontWeight.w600,
               fontSize: SizeConfig.largeTextSize),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDatePickerBottomSheet(context, _dateChanged);
+            },
+            icon: Icon(
+              Icons.calendar_month,
+              color: CommonColors.white,
+              size: SizeConfig.extraLargeIconSize,
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10),
