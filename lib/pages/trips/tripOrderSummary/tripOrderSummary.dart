@@ -106,8 +106,12 @@ class _TripORdersSummaryState extends State<TripORdersSummary> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmemployeeid": savedUser.employeeid.toString(),
-      "prmtripid": widget.tripModel.tripid.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
+      "prmtripid": widget.tripModel.tripid.toString(),
+      "prmlogindivisionid": savedUser.logindivisionid.toString(),
+      "prmmenucode": "",
+      "prmplanningid": widget.tripModel.planningid.toString(),
+      "prmmanifestno": widget.tripModel.manifestno.toString()
     };
     viewModel.getOrdersList(params);
   }

@@ -29,6 +29,7 @@ class TripModel {
   String? manifestdate;
   String? manifesttime;
   String? manifestdatetime;
+  String? manifestno;
 
   TripModel({
     this.commandstatus,
@@ -54,6 +55,7 @@ class TripModel {
     this.manifestdate,
     this.manifesttime,
     this.manifestdatetime,
+    this.manifestno,
   });
 
   TripModel.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,7 @@ class TripModel {
     manifestdate = json['manifestdate']?.toString();
     manifesttime = json['manifesttime']?.toString();
     manifestdatetime = json['manifestdatetime']?.toString();
+    manifestno = json['manifestno']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -114,6 +117,7 @@ class TripModel {
       'manifestdate': manifestdate ?? '',
       'manifesttime': manifesttime ?? '',
       'manifestdatetime': manifestdatetime ?? '',
+      'manifestno': manifestno ?? '',
     };
   }
 }

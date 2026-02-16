@@ -28,38 +28,39 @@ class TripMisModel {
   double? lng;
   String? executiveName;
   String? timestamp;
+  String? planningid;
 
-  TripMisModel({
-    this.sNo,
-    this.title,
-    this.branchName,
-    this.rider,
-    this.riderCode,
-    this.tripNo,
-    this.startDate,
-    this.startReading,
-    this.noOfConsignments,
-    this.delivered,
-    this.undelivered,
-    this.pending,
-    this.closeDate,
-    this.closeReading,
-    this.mapDistance,
-    this.kmRun,
-    this.removeColumns,
-    this.vehicleNo,
-    this.driverName,
-    this.driverMobileNo,
-    this.tripId,
-    this.startReadingKm,
-    this.startDateRaw,
-    this.totGr,
-    this.tripKm,
-    this.lat,
-    this.lng,
-    this.executiveName,
-    this.timestamp,
-  });
+  TripMisModel(
+      {this.sNo,
+      this.title,
+      this.branchName,
+      this.rider,
+      this.riderCode,
+      this.tripNo,
+      this.startDate,
+      this.startReading,
+      this.noOfConsignments,
+      this.delivered,
+      this.undelivered,
+      this.pending,
+      this.closeDate,
+      this.closeReading,
+      this.mapDistance,
+      this.kmRun,
+      this.removeColumns,
+      this.vehicleNo,
+      this.driverName,
+      this.driverMobileNo,
+      this.tripId,
+      this.startReadingKm,
+      this.startDateRaw,
+      this.totGr,
+      this.tripKm,
+      this.lat,
+      this.lng,
+      this.executiveName,
+      this.timestamp,
+      this.planningid});
 
   factory TripMisModel.fromJson(Map<String, dynamic> json) {
     return TripMisModel(
@@ -93,6 +94,7 @@ class TripMisModel {
       lng: double.tryParse(json['lng']?.toString() ?? ''),
       executiveName: json['executivename'],
       timestamp: json['timestamp'],
+      planningid: json['planningid']?.toString(),
     );
   }
 
@@ -127,6 +129,7 @@ class TripMisModel {
       'lng': lng,
       'executivename': executiveName,
       'timestamp': timestamp,
+      'planningid': planningid,
     };
   }
 }

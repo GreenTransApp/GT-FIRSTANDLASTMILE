@@ -437,6 +437,13 @@ Future<UserModel> getUserData() async {
   if (rawStorageUser != null) {
     savedUser = _getUserDataInBackground(rawStorageUser);
   }
+  String? divisionData =
+      await AuthenticationService().storageGet(ENV.divisionPrefTag);
+  if (divisionData != null) {
+    final Map<String, dynamic> jsonMap = jsonDecode(divisionData);
+    savedUser.logindivisionid = jsonMap['accdivisionid'];
+    savedUser.logindivisionname = jsonMap['accdivisionname'];
+  }
   return savedUser;
 }
 

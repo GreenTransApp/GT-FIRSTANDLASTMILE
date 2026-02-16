@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
+import 'package:gtlmd/pages/manifestEnquiry/manifestEnquiry.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
 
 class TripMisTile extends StatelessWidget {
   final TripMisModel model;
@@ -24,7 +29,14 @@ class TripMisTile extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias, // Ensures ripples don't overflow
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          // Get.to(() => ManifestEnquiry(tripModel: model));
+          TripModel tripModel = TripModel(
+            tripid: int.tryParse(model.tripId.toString()),
+            planningid: int.tryParse(model.planningid.toString()),
+          );
+          // Get.to(() => TripORdersSummary(tripModel: model));
+        },
         child: Padding(
           padding: EdgeInsets.all(isSmallDevice ? 12 : 20),
           child: Column(
