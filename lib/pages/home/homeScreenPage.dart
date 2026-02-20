@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
@@ -85,7 +86,7 @@ class _HomeScreen extends State<HomeScreen>
   GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
   final List<StreamSubscription> _subscriptions = [];
-
+  final BaseRepository _baseRepo = BaseRepository();
   @override
   void initState() {
     super.initState();
@@ -110,6 +111,7 @@ class _HomeScreen extends State<HomeScreen>
     viewFromDt = DateFormat('dd-MM-yyyy').format(fromdt);
     viewToDt = DateFormat('dd-MM-yyyy').format(todt);
     fetchOfflineDrsCounts();
+    // fetchLocationStartTimeInterval(); // Moved to getLoginPrefs
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         refreshScreen();
@@ -136,6 +138,16 @@ class _HomeScreen extends State<HomeScreen>
     // Fluttertoast.showToast(msg: 'Refreshing');
     getDashboardDetails();
     fetchOfflineDrsCounts();
+  }
+
+  fetchLocationStartTimeInterval() {
+    Map<String, String> params = {
+      "prmvarname": "GLMDLIVETRACKINGREFRESHRATE   ",
+      "prmcompanyid": savedLogin.companyid.toString(),
+    };
+
+    printParams(params);
+    _baseRepo.getValueFromCompAccPara(params);
   }
 
   fetchOfflineDrsCounts() async {
@@ -254,6 +266,24 @@ class _HomeScreen extends State<HomeScreen>
           failToast(drsUpdate.commandmessage!);
         } else {
           failToast("Something went wrong");
+        }
+      }
+    }));
+
+    _subscriptions.add(_baseRepo.compAccPara.stream.listen((value) async {
+      if (!isNullOrEmpty(value)) {
+        int newInterval = int.parse(value) * 1000;
+        if (locationUpdateInterval != newInterval) {
+          debugPrint(
+              '[Service] Location interval changed: $locationUpdateInterval -> $newInterval');
+          locationUpdateInterval = newInterval;
+
+          // Re-initialize and restart if running
+          await locationService.init();
+          if (await FlutterForegroundTask.isRunningService) {
+            debugPrint('[Service] Restarting service to apply new interval');
+            checkAuthenticatedUserForRunService(tripsList);
+          }
         }
       }
     }));
@@ -406,7 +436,9 @@ class _HomeScreen extends State<HomeScreen>
       };
 
       if (!isRunning) {
-        debugPrint('[Service] Starting foreground service');
+        debugPrint(
+            '[Service] Starting foreground service with interval: $locationUpdateInterval');
+        await locationService.init(); // Ensure latest interval is used
         await FlutterForegroundTask.startService(
           notificationTitle: 'Location Tracking Active',
           notificationText: 'Your location is being tracked.',
@@ -443,7 +475,8 @@ class _HomeScreen extends State<HomeScreen>
                         {
                           setObservers(),
                           validateDevice(),
-                          getDashboardDetails()
+                          getDashboardDetails(),
+                          fetchLocationStartTimeInterval()
                         }
                     })
               }

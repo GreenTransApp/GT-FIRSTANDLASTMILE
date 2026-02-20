@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -29,6 +30,7 @@ class LocationService {
   Future<void> init() async {
     await _initNotifications();
 
+    debugPrint('Location Interval $locationUpdateInterval');
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'location_channel',
@@ -40,7 +42,8 @@ class LocationService {
       iosNotificationOptions:
           const IOSNotificationOptions(showNotification: true),
       foregroundTaskOptions: ForegroundTaskOptions(
-        eventAction: ForegroundTaskEventAction.repeat(30000),
+        eventAction: ForegroundTaskEventAction.repeat(locationUpdateInterval),
+        // eventAction: ForegroundTaskEventAction.repeat(30000),
         allowWakeLock: true,
         allowWifiLock: true,
       ),
@@ -221,12 +224,18 @@ class LocationTaskHandler extends TaskHandler {
     }
 
     try {
-      final position = await Geolocator.getCurrentPosition();
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      );
       final time = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
       final firebaseData = FireBase(
         timeStamp: time,
         latitude: position.latitude.toString(),
         longitude: position.longitude.toString(),
+        headingNorth: position.heading.toString(),
       );
 
       await FirebaseLocationUpload()
@@ -243,6 +252,20 @@ class LocationTaskHandler extends TaskHandler {
   void _updateDriverLocation(
       UserModel userData, List<String> trips, FireBase firebase) {
     final tripStr = trips.join(",") + ",";
+
+    // Map<String, dynamic> params = {
+    //   "prmcompanyid": userData.companyid.toString(),
+    //   "prmusercode": userData.usercode.toString(),
+    //   "prmbranchcode": userData.loginbranchcode.toString(),
+    //   "prmboyid": userData.executiveid.toString(),
+    //   "prmtripidstr": tripStr,
+    //   "prmlatposition": firebase.latitude,
+    //   "prmlongposition": firebase.longitude,
+    //   "prmtimestamp": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+    //   "prmheadingnorth": firebase.headingNorth,
+    //   "prmsessionid": userData.sessionid.toString()
+    // };
+
     final params = {
       "prmcompanyid": userData.companyid.toString(),
       "prmusercode": userData.usercode.toString(),
@@ -252,6 +275,8 @@ class LocationTaskHandler extends TaskHandler {
       "prmlatitude": firebase.latitude,
       "prmlongitude": firebase.longitude,
       "prmsessionid": userData.sessionid.toString(),
+      "prmtimestamp": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+      "prmheadingnorth": firebase.headingNorth
     };
     _repo.upsertDriverLocation(params);
   }

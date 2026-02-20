@@ -63,6 +63,7 @@ class ScreenDimension {
 final authService = AuthenticationService();
 DateTime dashboardFromDt = DateTime.now();
 DateTime dashboardToDt = DateTime.now();
+int locationUpdateInterval = 30000; // default 30 seconds
 
 // String getDateDifferenceFromNow(DateTime date1) {
 //   Duration diff = DateTime.now().difference(date1);

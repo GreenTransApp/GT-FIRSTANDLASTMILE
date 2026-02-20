@@ -34,8 +34,9 @@ class TripMisTile extends StatelessWidget {
           TripModel tripModel = TripModel(
             tripid: int.tryParse(model.tripId.toString()),
             planningid: int.tryParse(model.planningid.toString()),
+            manifestno: model.manifestno.toString(),
           );
-          // Get.to(() => TripORdersSummary(tripModel: model));
+          Get.to(() => TripORdersSummary(tripModel: tripModel));
         },
         child: Padding(
           padding: EdgeInsets.all(isSmallDevice ? 12 : 20),

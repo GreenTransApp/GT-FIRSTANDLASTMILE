@@ -5,13 +5,16 @@ import 'dart:io';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummaryModel.dart';
+import 'package:gtlmd/pages/trips/tripOrderSummary/model/consignmentModel.dart';
+import 'package:gtlmd/pages/trips/tripOrderSummary/model/manifestModel.dart';
+import 'package:gtlmd/pages/trips/tripOrderSummary/model/tripOrderSummaryModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
+import 'package:retrofit/retrofit.dart';
 
 class TripOrderSummaryRepository extends BaseRepository {
   StreamController<bool> viewDialog = StreamController();
   StreamController<String> errorDialog = StreamController();
-  StreamController<List<TripOrderSummaryModel>> ordersList = StreamController();
+  StreamController<TripOrderSummaryModel> tripOrderSummary = StreamController();
 
   Future<void> getOrdersList(Map<String, String> params) async {
     viewDialog.add(true);
@@ -22,13 +25,28 @@ class TripOrderSummaryRepository extends BaseRepository {
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Iterable<MapEntry<String, dynamic>> entries = table.entries;
           List<dynamic> list = table.values.first;
-          List<TripOrderSummaryModel> resultList = List.generate(list.length,
-              (index) => TripOrderSummaryModel.fromJson(list[index]));
-          TripOrderSummaryModel tripOrdersList = resultList[0];
-          if (tripOrdersList.commandstatus == 1) {
-            ordersList.add(resultList);
+          TripOrderSummaryModel tripOrderSummaryModel = TripOrderSummaryModel();
+          for (final entry in entries) {
+            if (entry.key == 'Table') {
+              List<dynamic> list = entry.value;
+              List<ConsignmentModel> resultList = List.generate(list.length,
+                  (index) => ConsignmentModel.fromJson(list[index]));
+              tripOrderSummaryModel.consignments = resultList;
+            } else if (entry.key == 'Table1') {
+              List<dynamic> list = entry.value;
+              List<ManifestModel> resultList = List.generate(
+                  list.length, (index) => ManifestModel.fromJson(list[index]));
+              tripOrderSummaryModel.manifests = resultList;
+            }
           }
+
+          // ConsignmentModel tripOrdersList = resultList[0];
+
+          // if () {
+          tripOrderSummary.add(tripOrderSummaryModel);
+          // }
         } else {
           errorDialog.add(resp.commandMessage!);
         }

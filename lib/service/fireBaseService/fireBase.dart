@@ -2,11 +2,13 @@ class FireBase {
   String timeStamp;
   String latitude;
   String longitude;
+  String headingNorth;
 
   FireBase({
     required this.timeStamp,
     required this.latitude,
     required this.longitude,
+    required this.headingNorth,
   });
 
   // Convert JSON to model
@@ -15,6 +17,7 @@ class FireBase {
       timeStamp: json['timeStamp'] ?? '',
       latitude: json['latitude'] ?? '',
       longitude: json['longitude'] ?? '',
+      headingNorth: json['headingNorth'] ?? '',
     );
   }
 
@@ -24,6 +27,7 @@ class FireBase {
       'timeStamp': timeStamp,
       'latitude': latitude,
       'longitude': longitude,
+      'headingNorth': headingNorth,
     };
   }
 }

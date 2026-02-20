@@ -1,4 +1,4 @@
-class TripOrderSummaryModel {
+class ConsignmentModel {
   int? commandstatus;
   String? commandmessage;
   String? grno;
@@ -16,8 +16,14 @@ class TripOrderSummaryModel {
   int? transactionid;
   String? dispatchdt;
   String? dispatchtime;
+  String? weight;
+  String? address;
+  String? startreadingimage;
+  String? closereadingimage;
+  String? podimage;
+  String? signimage;
 
-  TripOrderSummaryModel({
+  ConsignmentModel({
     this.commandstatus,
     this.commandmessage,
     this.grno,
@@ -35,10 +41,16 @@ class TripOrderSummaryModel {
     this.transactionid,
     this.dispatchdt,
     this.dispatchtime,
+    this.weight,
+    this.address,
+    this.startreadingimage,
+    this.closereadingimage,
+    this.podimage,
+    this.signimage,
   });
 
-  factory TripOrderSummaryModel.fromJson(Map<String, dynamic> json) {
-    return TripOrderSummaryModel(
+  factory ConsignmentModel.fromJson(Map<String, dynamic> json) {
+    return ConsignmentModel(
       commandstatus: json['commandstatus'],
       commandmessage: json['commandmessage'],
       grno: json['grno'],
@@ -56,6 +68,12 @@ class TripOrderSummaryModel {
       transactionid: json['transactionid'],
       dispatchdt: json['dispatchdt'],
       dispatchtime: json['dispatchtime'],
+      weight: json['weight']?.toString(),
+      address: json['address'],
+      startreadingimage: json['startreadingimage'],
+      closereadingimage: json['closereadingimage'],
+      podimage: json['podimage'],
+      signimage: json['signimage'],
     );
   }
 
@@ -78,6 +96,12 @@ class TripOrderSummaryModel {
       'transactionid': transactionid,
       'dispatchdt': dispatchdt,
       'dispatchtime': dispatchtime,
+      'weight': weight,
+      'address': address,
+      'startreadingimage': startreadingimage,
+      'closereadingimage': closereadingimage,
+      'podimage': podimage,
+      'signimage': signimage,
     };
   }
 }

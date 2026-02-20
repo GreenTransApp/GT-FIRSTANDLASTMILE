@@ -1,4 +1,4 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:gtlmd/api/HttpCalls.dart';
@@ -10,14 +10,16 @@ import 'package:gtlmd/pages/login/models/UpdatePasswordModel.dart';
 class LocationRepository extends BaseRepository {
   StreamController<String> isErrorLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
- StreamController<CommonUpdateModel> updatedLocationLiveData =
+  StreamController<CommonUpdateModel> updatedLocationLiveData =
       StreamController();
 
-  Future<void> upsertDriverLocation(Map<String, String> params) async {
+  Future<void> upsertDriverLocation(Map<String, dynamic> params) async {
     viewDialog.add(true);
     try {
       CommonResponse response =
           await apiPost("${lmdUrl}UpdateDriverLiveLocation", params);
+      // CommonResponse response =
+      //     await apiPostWithModel("${lmdUrl}UpdateDriverLiveLocation", params);
       viewDialog.add(false);
       if (response.commandStatus != 1) {
         isErrorLiveData.add(isNullOrEmpty(response.commandMessage)
@@ -30,9 +32,9 @@ class LocationRepository extends BaseRepository {
       try {
         Map<String, dynamic> table = jsonDecode(response.dataSet.toString());
         List<dynamic> list = table.values.first;
-        List<CommonUpdateModel> resultList = List.generate(list.length,
-            (index) => CommonUpdateModel.fromJson(list[index]));
-         updatedLocationLiveData.add(resultList[0]);
+        List<CommonUpdateModel> resultList = List.generate(
+            list.length, (index) => CommonUpdateModel.fromJson(list[index]));
+        updatedLocationLiveData.add(resultList[0]);
       } catch (error) {
         isErrorLiveData.add(error.toString());
       }
@@ -40,5 +42,4 @@ class LocationRepository extends BaseRepository {
       isErrorLiveData.add(error.toString());
     }
   }
-
- }
+}

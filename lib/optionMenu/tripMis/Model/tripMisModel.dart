@@ -29,6 +29,7 @@ class TripMisModel {
   String? executiveName;
   String? timestamp;
   String? planningid;
+  String? manifestno;
 
   TripMisModel(
       {this.sNo,
@@ -60,7 +61,8 @@ class TripMisModel {
       this.lng,
       this.executiveName,
       this.timestamp,
-      this.planningid});
+      this.planningid,
+      this.manifestno});
 
   factory TripMisModel.fromJson(Map<String, dynamic> json) {
     return TripMisModel(
@@ -95,6 +97,7 @@ class TripMisModel {
       executiveName: json['executivename'],
       timestamp: json['timestamp'],
       planningid: json['planningid']?.toString(),
+      manifestno: json['manifestno']?.toString(),
     );
   }
 
@@ -130,6 +133,7 @@ class TripMisModel {
       'executivename': executiveName,
       'timestamp': timestamp,
       'planningid': planningid,
+      'manifestno': manifestno,
     };
   }
 }
