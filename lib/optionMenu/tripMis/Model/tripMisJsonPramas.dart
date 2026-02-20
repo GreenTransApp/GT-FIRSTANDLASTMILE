@@ -7,6 +7,7 @@ class LiveDataJsonParams {
   String? ridercode;
   String? drsno;
   String? cnno;
+  String? hourtype;
 
   LiveDataJsonParams({
     this.fromdt,
@@ -17,6 +18,7 @@ class LiveDataJsonParams {
     this.ridercode,
     this.drsno,
     this.cnno,
+    this.hourtype,
   });
 
   LiveDataJsonParams.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class LiveDataJsonParams {
     ridercode = json['ridercode'];
     drsno = json['drsno'];
     cnno = json['cnno'];
+    cnno = json['hourtype'];
   }
 
   Map<String, dynamic> toJson() {
@@ -40,6 +43,7 @@ class LiveDataJsonParams {
     data['ridercode'] = ridercode;
     data['drsno'] = drsno;
     data['cnno'] = cnno;
+    data['hourtype'] = hourtype;
     return data;
   }
 }

@@ -6,6 +6,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
+import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceSummaryModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
@@ -14,6 +15,8 @@ import '../../api/HttpCalls.dart';
 class DeliveryPerformanceRepository extends BaseRepository {
   StreamController<DeliveryPerformanceModel> performanceLiveData =
       StreamController();
+  StreamController<List<DeliveryPerformanceSummaryModel>>
+      performanceSummaryLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
 
   Future<void> getDeliveryPerformanceData(Map<String, dynamic> params) async {
@@ -48,6 +51,17 @@ class DeliveryPerformanceRepository extends BaseRepository {
 
               if (resultList.isNotEmpty) {
                 performanceLiveData.add(resultList[0]);
+              }
+            }
+            if (entry.key == "Table8") {
+              List<dynamic> list2 = entry.value;
+              List<DeliveryPerformanceSummaryModel> resultList = List.generate(
+                  list2.length,
+                  (index) =>
+                      DeliveryPerformanceSummaryModel.fromJson(list2[index]));
+
+              if (resultList.isNotEmpty) {
+                performanceSummaryLiveData.add(resultList);
               }
             }
           }

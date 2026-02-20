@@ -7,6 +7,7 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceSummary.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceViewModel.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceModel.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
@@ -91,7 +92,7 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
 
     Map<String, dynamic> params = {
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
-      "prmlogindivisionid": "0",
+      "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmjsondatastr": jsonEncode(parameters.toJson()),
       "prmusercode": savedUser.usercode.toString(),
       "prmmenucode": "GTI_LMDLIVEDASHBOARD",
@@ -383,6 +384,18 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       : performanceData.within4HoursPercent.toString(),
                   color: CommonColors.analytics4H,
                   icon: Icons.access_time, // clock icon
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DeliveryPerformanceSummary(
+                          title: 'WITHIN4',
+                          fromDt: fromDt,//
+                          toDt: toDt,// pass title
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 AnalyticsBox(
                   title: 'Within 6Hours',
@@ -395,6 +408,18 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       : performanceData.within4HoursPercent.toString(),
                   color: CommonColors.analytics6H,
                   icon: Icons.timelapse, // alternative clock icon
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DeliveryPerformanceSummary(
+                          title: 'WITHIN6',
+                          fromDt: fromDt,//
+                          toDt: toDt,// pass title// pass title
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 AnalyticsBox(
                   title: 'Within 24Hours',
@@ -407,6 +432,18 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       : performanceData.within24HoursPercent.toString(),
                   color: CommonColors.analytics24H,
                   icon: Icons.schedule, // schedule icon
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DeliveryPerformanceSummary(
+                          title: 'WITHIN24',
+                          fromDt: fromDt,//
+                          toDt: toDt,// pass title/ pass title
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 AnalyticsBox(
                   title: 'Post 24Hours',
@@ -419,6 +456,18 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       : performanceData.post24HoursPercent.toString(),
                   color: CommonColors.analyticsPost,
                   icon: Icons.history, // history icon
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>  DeliveryPerformanceSummary(
+                          title: 'POST24',
+                          fromDt: fromDt,//
+                          toDt: toDt,// pass title// pass title
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             )
@@ -436,6 +485,7 @@ class AnalyticsBox extends StatelessWidget {
   final String percentage;
   final Color color;
   final IconData? icon;
+  final VoidCallback? onTap;
 
   const AnalyticsBox({
     super.key,
@@ -444,106 +494,111 @@ class AnalyticsBox extends StatelessWidget {
     required this.percentage,
     required this.color,
     this.icon,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     double percentValue = (double.tryParse(percentage) ?? 0) / 100;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.largeHorizontalPadding,
-          vertical: SizeConfig.verticalPadding),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(SizeConfig.extraLargeRadius),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ICON + TITLE
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (icon != null)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.horizontalPadding,
-                      vertical: SizeConfig.verticalPadding),
-                  decoration: BoxDecoration(
-                    color: CommonColors.appBarColor!
-                        .withAlpha((255 * 0.2).toInt()),
-                    borderRadius:
-                        BorderRadius.circular(SizeConfig.extraLargeRadius),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: SizeConfig.largeIconSize,
-                    color: CommonColors.white,
-                  ),
-                ),
-              if (icon != null)
-                SizedBox(width: SizeConfig.smallHorizontalSpacing),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: SizeConfig.mediumTextSize,
-                    fontWeight: FontWeight.w600,
-                    color: CommonColors.appBarColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: SizeConfig.mediumVerticalSpacing),
-
-          // COUNT
-          FittedBox(
-            child: Text(
-              count,
-              style: TextStyle(
-                fontSize: SizeConfig.largeTextSize,
-                fontWeight: FontWeight.bold,
-                color: CommonColors.white,
-              ),
-            ),
-          ),
-
-          SizedBox(height: SizeConfig.mediumVerticalSpacing),
-
-          // PERCENTAGE + PROGRESS
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.largeHorizontalPadding,
+            vertical: SizeConfig.verticalPadding),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(SizeConfig.extraLargeRadius),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ICON + TITLE
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                FittedBox(
-                  child: Text(
-                    '$percentage%',
-                    style: TextStyle(
-                      fontSize: SizeConfig.largeTextSize,
-                      fontWeight: FontWeight.w800,
-                      color: CommonColors.white!.withAlpha((0.8 * 255).toInt()),
+                if (icon != null)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
+                    decoration: BoxDecoration(
+                      color: CommonColors.appBarColor!
+                          .withAlpha((255 * 0.2).toInt()),
+                      borderRadius:
+                          BorderRadius.circular(SizeConfig.extraLargeRadius),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: SizeConfig.largeIconSize,
+                      color: CommonColors.white,
                     ),
                   ),
-                ),
-                SizedBox(height: SizeConfig.smallVerticalSpacing),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(
-                    value: percentValue.clamp(0.0, 1.0),
-                    backgroundColor:
-                        CommonColors.white!.withAlpha((0.2 * 255).toInt()),
-                    valueColor: AlwaysStoppedAnimation(CommonColors.white),
-                    minHeight: 6,
+                if (icon != null)
+                  SizedBox(width: SizeConfig.smallHorizontalSpacing),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: SizeConfig.mediumTextSize,
+                      fontWeight: FontWeight.w600,
+                      color: CommonColors.appBarColor,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+
+            SizedBox(height: SizeConfig.mediumVerticalSpacing),
+
+            // COUNT
+            FittedBox(
+              child: Text(
+                count,
+                style: TextStyle(
+                  fontSize: SizeConfig.largeTextSize,
+                  fontWeight: FontWeight.bold,
+                  color: CommonColors.white,
+                ),
+              ),
+            ),
+
+            SizedBox(height: SizeConfig.mediumVerticalSpacing),
+
+            // PERCENTAGE + PROGRESS
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    child: Text(
+                      '$percentage%',
+                      style: TextStyle(
+                        fontSize: SizeConfig.largeTextSize,
+                        fontWeight: FontWeight.w800,
+                        color:
+                            CommonColors.white!.withAlpha((0.8 * 255).toInt()),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: SizeConfig.smallVerticalSpacing),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: percentValue.clamp(0.0, 1.0),
+                      backgroundColor:
+                          CommonColors.white!.withAlpha((0.2 * 255).toInt()),
+                      valueColor: AlwaysStoppedAnimation(CommonColors.white),
+                      minHeight: 6,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
