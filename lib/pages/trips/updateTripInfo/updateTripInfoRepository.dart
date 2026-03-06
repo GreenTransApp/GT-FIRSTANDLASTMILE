@@ -9,6 +9,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class UpdateTripInfoRepository extends BaseRepository {
@@ -18,6 +19,7 @@ class UpdateTripInfoRepository extends BaseRepository {
       StreamController();
   StreamController<UpsertTripResponseModel> updateCloseTripLiveData =
       StreamController();
+  StreamController<TripModel> lastTripInfo = StreamController();
 
   void updateTripInfo(Map<String, String> params) async {
     viewDialog.add(true);
@@ -62,14 +64,12 @@ class UpdateTripInfoRepository extends BaseRepository {
     }
   }
 
-
   void updateStartTrip(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp =
-            await apiPost("${lmdUrl}UpdateTripStart", params);
+        CommonResponse resp = await apiPost("${lmdUrl}UpdateTripStart", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -105,8 +105,7 @@ class UpdateTripInfoRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp =
-            await apiPost("${lmdUrl}UpdateTripClose", params);
+        CommonResponse resp = await apiPost("${lmdUrl}UpdateTripClose", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -115,6 +114,42 @@ class UpdateTripInfoRepository extends BaseRepository {
               UpsertTripResponseModel.fromJson(list[0]);
           if (validateResponse.commandstatus == 1) {
             updateCloseTripLiveData.add(validateResponse);
+          } else {
+            isErrorLiveData.add(validateResponse.commandmessage!);
+          }
+        } else {
+          isErrorLiveData.add(resp.commandMessage.toString());
+        }
+        viewDialog.add(false);
+      } on SocketException catch (error) {
+        debugPrint(error.toString());
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  void getLastTripInfo(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        CommonResponse resp =
+            await apiGet("${lmdUrl}GetLastBookingDetails", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          List<dynamic> list = table.values.first;
+          TripModel validateResponse = TripModel.fromJson(list[0]);
+          if (validateResponse.commandstatus == 1) {
+            lastTripInfo.add(validateResponse);
           } else {
             isErrorLiveData.add(validateResponse.commandmessage!);
           }

@@ -63,19 +63,31 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       bool enabled = await _ensureBluetoothEnabled();
       if (!enabled) {
         debugPrint('Bluetooth not enabled, cannot scan');
-        return;
+        // return;
       }
       // If we just enabled it, status might take a moment to update to ready
       if (_currentStatus != BleStatus.ready) {
         _isScanningWaitingForReady = true;
-        return;
+        // return;
       }
     }
 
-    PermissionStatus status = await requestPermission();
-    if (status.isGranted || status.isLimited) {
-      PermissionStatus connectStatus = await requestConnectPermission();
-      if (connectStatus.isGranted || connectStatus.isLimited) {
+    if (Platform.isAndroid) {
+      // Request permissions based on Android version
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.location,
+        Permission.bluetoothScan,
+        Permission.bluetoothConnect,
+      ].request();
+
+      bool hasLocation = statuses[Permission.location]?.isGranted == true;
+      bool hasScan = statuses[Permission.bluetoothScan]?.isGranted == true ||
+          statuses[Permission.bluetoothScan] == null;
+      bool hasConnect =
+          statuses[Permission.bluetoothConnect]?.isGranted == true ||
+              statuses[Permission.bluetoothConnect] == null;
+
+      if (hasLocation && hasScan && hasConnect) {
         setState(() {
           _isScanning = true;
           devices = [];
@@ -105,6 +117,34 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         Future.delayed(const Duration(seconds: 20), () {
           stopScan();
           debugPrint('Bluetooth scan stopped after 20 seconds');
+        });
+      } else {
+        Get.snackbar(
+          'Permission Required',
+          'Location and Bluetooth permissions are required for scanning',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } else {
+      // iOS
+      PermissionStatus status = await Permission.bluetooth.request();
+      if (status.isGranted) {
+        setState(() {
+          _isScanning = true;
+          devices = [];
+        });
+        _scanSubscription = flutterReactiveBle.scanForDevices(
+            withServices: [],
+            scanMode: ScanMode.balanced,
+            requireLocationServicesEnabled: false).listen((device) {
+          if (!devices.any((d) => d.id == device.id) &&
+              device.name.isNotEmpty) {
+            debugPrint('Bluetooth LE Device: ${device.name}');
+            devices.add(device);
+            setState(() {});
+          }
         });
       }
     }
@@ -206,6 +246,17 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       debugPrint('Bluetooth Connect Permanently Denied');
     } else if (status.isLimited) {
       debugPrint('Bluetooth Connect Limited');
+    }
+
+    status = await Permission.bluetooth.request();
+    if (status.isDenied) {
+      debugPrint('Bluetooth Denied');
+    } else if (status.isGranted) {
+      debugPrint('Bluetooth Granted');
+    } else if (status.isPermanentlyDenied) {
+      debugPrint('Bluetooth Permanently Denied');
+    } else if (status.isLimited) {
+      debugPrint('Bluetooth Limited');
     }
 
     return status;
@@ -464,6 +515,13 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       body: Column(
         children: [
           _buildStatusHeader(),
+          if (_isScanning)
+            LinearProgressIndicator(
+              minHeight: 2,
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  CommonColors.colorPrimary ?? Colors.blue),
+            ),
           Expanded(
             child: sortedDevices.isEmpty && !_isScanning
                 ? Center(

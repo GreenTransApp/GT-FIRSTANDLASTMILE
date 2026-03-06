@@ -6,9 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:gtlmd/optionMenu/tripMis/Model/tripMisJsonPramas.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/firebase_options.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
@@ -16,6 +13,8 @@ import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/service/fireBaseService/fireBase.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
 import 'package:gtlmd/service/locationService/locationRepository.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LocationService {
   static final LocationService _instance = LocationService._internal();

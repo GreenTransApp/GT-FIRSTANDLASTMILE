@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,8 +10,6 @@ import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/bluetooth/bluetooth.dart';
-import 'package:gtlmd/common/bluetooth/bluetoothScreen.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
@@ -22,9 +19,6 @@ import 'package:gtlmd/navigateRoutes/Routes.dart';
 import 'package:gtlmd/navigateRoutes/RoutesName.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
-import 'package:gtlmd/pages/bookingList/bookingListScreen.dart';
-import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
-import 'package:gtlmd/pages/dimensions/dimensions.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
@@ -37,9 +31,7 @@ import 'package:gtlmd/pages/runningTrips/runningTrips.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/updateVersionScreen/updateVersionScreen.dart';
-import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
-import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 

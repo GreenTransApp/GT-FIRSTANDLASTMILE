@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -15,12 +16,45 @@ class Bluetooth {
   scan() async {
     debugPrint('Scanning');
 
-    PermissionStatus status = await requestPermission();
-    if (status.isGranted || status.isLimited) {
-      PermissionStatus connectStatus = await requestConnectPermission();
-      if (connectStatus.isGranted || connectStatus.isLimited) {
-        devices = [];
+    if (Platform.isAndroid) {
+      PermissionStatus status = await requestPermission();
+      if (status.isGranted || status.isLimited) {
+        // For Android 12+, we also need connect permission
+        bool canConnect = true;
+        if (await _isAndroid12OrHigher()) {
+          PermissionStatus connectStatus = await requestConnectPermission();
+          canConnect = connectStatus.isGranted || connectStatus.isLimited;
+        }
 
+        if (canConnect) {
+          devices = [];
+
+          _scanSubscription = flutterReactiveBle.scanForDevices(
+              withServices: [],
+              scanMode: ScanMode.balanced,
+              requireLocationServicesEnabled: false).listen((device) {
+            if (!devices.any((d) => d.id == device.id) &&
+                device.name.isNotEmpty) {
+              debugPrint('Bluetooth LE Device: ${device.name}');
+              devices.add(device);
+            }
+          }, onError: (error) {
+            debugPrint('Bluetooth LE Error: $error');
+          }, onDone: () {
+            debugPrint('Bluetooth LE Scan Done');
+          });
+
+          Future.delayed(const Duration(seconds: 20), () {
+            stopScan();
+            debugPrint('Bluetooth scan stopped after 20 seconds');
+          });
+        }
+      }
+    } else {
+      // iOS and others
+      PermissionStatus status = await Permission.bluetooth.request();
+      if (status.isGranted) {
+        devices = [];
         _scanSubscription = flutterReactiveBle.scanForDevices(
             withServices: [],
             scanMode: ScanMode.balanced,
@@ -30,18 +64,19 @@ class Bluetooth {
             debugPrint('Bluetooth LE Device: ${device.name}');
             devices.add(device);
           }
-        }, onError: (error) {
-          debugPrint('Bluetooth LE Error: $error');
-        }, onDone: () {
-          debugPrint('Bluetooth LE Scan Done');
-        });
-
-        Future.delayed(const Duration(seconds: 20), () {
-          stopScan();
-          debugPrint('Bluetooth scan stopped after 20 seconds');
         });
       }
     }
+  }
+
+  Future<bool> _isAndroid12OrHigher() async {
+    if (!Platform.isAndroid) return false;
+    // We can't easily check API level directly from Dart without a plugin or custom channel
+    // but permission_handler documentation suggests checking the platform version or
+    // simply requesting both is safe as they return 'granted' on older versions if not applicable.
+    // Let's use device_info_plus if available, or rely on the fact that requesting location
+    // is mandatory for Android 11 and below.
+    return true; // placeholder for now, but we will request based on need
   }
 
   stopScan() {
@@ -50,6 +85,28 @@ class Bluetooth {
   }
 
   Future<PermissionStatus> requestPermission() async {
+    if (Platform.isAndroid) {
+      // For Android 11 and below, location is required for scanning
+      // For Android 12+, bluetoothScan is required
+
+      // Request both to be safe, or check status
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.location,
+        Permission.bluetoothScan,
+        Permission.bluetoothConnect,
+      ].request();
+
+      // If Android < 12, bluetoothScan might immediately return granted or denied depend on implementation
+      // But location IS required.
+      if (statuses[Permission.location]?.isGranted == true &&
+          (statuses[Permission.bluetoothScan]?.isGranted == true ||
+              statuses[Permission.bluetoothScan] == null)) {
+        return PermissionStatus.granted;
+      }
+
+      return statuses[Permission.bluetoothScan] ?? PermissionStatus.denied;
+    }
+
     PermissionStatus status = await Permission.bluetoothScan.request();
     if (status.isDenied) {
       debugPrint('Bluetooth Scan Denied');

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/model/deliveryPerformanceSummaryModel.dart';
 
@@ -22,15 +23,13 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
         bottom: SizeConfig.smallVerticalSpacing,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.circular(SizeConfig.mediumRadius),
+        borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
       ),
       child: Padding(
         padding: EdgeInsets.all(SizeConfig.smallHorizontalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             /// DATE + STATUS
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,14 +95,18 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
 
             /// IMAGE SECTION
             isUndelivered
-                ? _smallImage(model.undelImg,"UnDelivered Image")
+                ? _smallImage(model.undelImg, "UnDelivered Image", context)
                 : Row(
-              children: [
-                Expanded(child: _smallImage(model.imagePath,"POD Image")),
-                SizedBox(width: SizeConfig.smallHorizontalSpacing),
-                Expanded(child: _smallImage(model.signImagePath,"Signature Image")),
-              ],
-            ),
+                    children: [
+                      Expanded(
+                          child: _smallImage(
+                              model.imagePath, "POD Image", context)),
+                      SizedBox(width: SizeConfig.smallHorizontalSpacing),
+                      Expanded(
+                          child: _smallImage(
+                              model.signImagePath, "Signature Image", context)),
+                    ],
+                  ),
           ],
         ),
       ),
@@ -149,8 +152,7 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: SizeConfig.smallTextSize,
-              fontWeight:
-              isPrimary ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
               color: isPrimary
                   ? CommonColors.colorPrimary
                   : CommonColors.textPrimary,
@@ -173,8 +175,7 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
         color: isDelivered
             ? CommonColors.successColor?.withOpacity(0.15)
             : CommonColors.dangerColor?.withOpacity(0.15),
-        borderRadius:
-        BorderRadius.circular(SizeConfig.largeRadius),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
       ),
       child: Text(
         status.isEmpty ? "-" : status,
@@ -189,7 +190,7 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
     );
   }
 
-  Widget _smallImage(String? url, String? title) {
+  Widget _smallImage(String? url, String? title, BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
@@ -209,34 +210,35 @@ class DeliveryPerformanceSummaryTile extends StatelessWidget {
             SizedBox(height: SizeConfig.extraSmallVerticalSpacing),
 
             // IMAGE
-            Container(
-              width: double.infinity, // take max width
-              height: SizeConfig.scale(50),
-              decoration: BoxDecoration(
-                borderRadius:
-                BorderRadius.circular(SizeConfig.mediumRadius),
-                color: CommonColors.grey?.withOpacity(0.08),
-                border: Border.all(
-                  color: CommonColors.grey ?? const Color(0xFFE0E0E0),
+            GestureDetector(
+              onTap: () {
+                showDialogWithImage(context, url, isLocal: false);
+              },
+              child: Container(
+                width: double.infinity, // take max width
+                height: SizeConfig.scale(50),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                  color: CommonColors.grey?.withOpacity(0.08),
+                  border: Border.all(
+                    color: CommonColors.grey ?? const Color(0xFFE0E0E0),
+                  ),
                 ),
-              ),
-              child: ClipRRect(
-                borderRadius:
-                BorderRadius.circular(SizeConfig.mediumRadius),
-                child: url == null || url.isEmpty
-                    ? _imagePlaceholder()
-                    : Image.network(
-                  url,
-                  fit: BoxFit.cover,
-                  loadingBuilder:
-                      (context, child, progress) {
-                    if (progress == null) return child;
-                    return _imagePlaceholder();
-                  },
-                  errorBuilder:
-                      (context, error, stackTrace) {
-                    return _imagePlaceholder();
-                  },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                  child: url == null || url.isEmpty
+                      ? _imagePlaceholder()
+                      : Image.network(
+                          url,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return _imagePlaceholder();
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return _imagePlaceholder();
+                          },
+                        ),
                 ),
               ),
             ),
