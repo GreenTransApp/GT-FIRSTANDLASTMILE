@@ -7,6 +7,7 @@ import 'package:gtlmd/pages/bookingList/model/bookingModel.dart';
 import 'package:gtlmd/pages/bookingList/model/BookingListModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingListProvider extends ChangeNotifier {
   final BookingListRepository _repo = BookingListRepository();
@@ -15,6 +16,9 @@ class BookingListProvider extends ChangeNotifier {
   ApiCallingStatus get status => _status;
   String fromDate = DateFormat('yyyy-MM-dd').format(DateTime.now()),
       toDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  String _pdfUrl = "";
+  String get pdfUrl => _pdfUrl;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -92,6 +96,28 @@ class BookingListProvider extends ChangeNotifier {
 
   void navigateToBookingWithEwayBill(String grno) {
     Get.off(() => BookingWithEwayBill(grno: grno));
+  }
+
+  Future<void> generatePdf(String grno) async {
+    _setStatus(ApiCallingStatus.loading);
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmusercode": savedUser.usercode.toString(),
+        "prmmenucode": "GTLMD_BOOKING",
+        'prmgrno': grno,
+        "prmsessionid": savedUser.sessionid.toString()
+      };
+      _pdfUrl = await _repo.generatePdf(params);
+      _setStatus(ApiCallingStatus.success);
+      if (_pdfUrl.isNotEmpty) {
+        launchUrl(Uri.parse(_pdfUrl));
+      }
+      // refreshList();
+      // _setStatus(ApiCallingStatus.success);
+    } catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+    }
   }
 
   // final List<BookingModel> _allBookings = [

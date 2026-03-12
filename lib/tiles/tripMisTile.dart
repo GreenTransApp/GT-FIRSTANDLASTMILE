@@ -4,7 +4,10 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
+<<<<<<< HEAD
 // import 'package:gtlmd/pages/manifestEnquiry/manifestEnquiry.dart';
+=======
+>>>>>>> 53a5f0a4334c0f2df316d516c5c576f32b8559ac
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
 

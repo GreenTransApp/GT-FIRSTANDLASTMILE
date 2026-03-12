@@ -49,9 +49,11 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   String totalTime = "";
   String totaldistance = "";
   String currentAddress = '';
+  String? _startReadingError;
 
   UpdateTripInfoViewModel viewModel = UpdateTripInfoViewModel();
   late LoadingAlertService loadingAlertService;
+  TripModel? lastTripInfo;
   @override
   void initState() {
     super.initState();
@@ -79,6 +81,17 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
+    getLastTripInfo();
+  }
+
+  void getLastTripInfo() {
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+    viewModel.getLastTripInfo(params);
   }
 
   void setObservers() {
@@ -138,6 +151,14 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         }
       } else {
         failToast(model.commandmessage!);
+      }
+    });
+
+    viewModel.lastTripInfo.stream.listen((data) {
+      if (data.commandstatus == 1) {
+        setState(() {
+          lastTripInfo = data;
+        });
       }
     });
   }
@@ -215,7 +236,18 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   void changeStartReading(String value) {
     setState(() {
       if (value.isNotEmpty) {
+        if (lastTripInfo != null &&
+            int.parse(value) <=
+                int.parse(lastTripInfo!.endreadingkm.toString())) {
+          _startReadingError =
+              "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.endreadingkm}";
+          debugPrint(_startReadingError);
+        } else {
+          _startReadingError = null;
+        }
         _startReadingImagePath = null;
+      } else {
+        _startReadingError = null;
       }
     });
   }
@@ -260,6 +292,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         return;
       } else if (int.tryParse(_startReadingController.text)! <= 0) {
         failToast("Odometer Value Can't be Zero");
+        return;
+      } else if (_startReadingError != null) {
+        failToast(_startReadingError!);
         return;
       } else if (isNullOrEmpty(_startReadingImagePath)) {
         failToast("Reading meter image path is required");
@@ -1191,6 +1226,14 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                           fontWeight: FontWeight.w500,
                                           fontSize: SizeConfig.smallTextSize),
                                       decoration: InputDecoration(
+                                        errorText: _startReadingError,
+                                        errorStyle:
+                                            const TextStyle(color: Colors.red),
+                                        helperText: lastTripInfo != null
+                                            ? "Must be > last trip reading (${lastTripInfo!.endreadingkm})"
+                                            : "Enter start reading",
+                                        helperStyle: TextStyle(
+                                            color: CommonColors.grey600),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(

@@ -10,7 +10,6 @@ import 'package:gtlmd/pages/trips/tripOrderSummary/model/consignmentModel.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/model/tripOrderSummaryModel.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummaryViewModel.dart';
 import 'package:material_symbols_icons/symbols.dart';
-
 import 'package:timeline_tile/timeline_tile.dart';
 
 // ignore: must_be_immutable
