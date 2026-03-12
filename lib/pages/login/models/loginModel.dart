@@ -27,6 +27,7 @@ class LoginModel {
   String? divisionlogin;
   String? logilockeruserid;
   String? logilockerpassword;
+  String? faceid;
 
   LoginModel(
       {this.commandstatus,
@@ -56,7 +57,8 @@ class LoginModel {
       this.ewayurl,
       this.divisionlogin,
       this.logilockeruserid,
-      this.logilockerpassword});
+      this.logilockerpassword,
+      this.faceid});
 
   LoginModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -87,6 +89,7 @@ class LoginModel {
     divisionlogin = json['divisionlogin'];
     logilockeruserid = json['logilockeruserid'];
     logilockerpassword = json['logilockerpassword'];
+    logilockerpassword = json['faceid'];
   }
 
   Map<String, dynamic> toJson() {
@@ -119,6 +122,7 @@ class LoginModel {
     data['divisionlogin'] = this.divisionlogin;
     data['logilockeruserid'] = this.logilockeruserid;
     data['logilockerpassword'] = this.logilockerpassword;
+    data['faceid'] = this.faceid;
     return data;
   }
 }

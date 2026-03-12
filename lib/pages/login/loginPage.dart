@@ -8,6 +8,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/pages/faceRecognition/faceLogin.dart';
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
@@ -28,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
+  bool isFaceLogin = false;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Clear any previous errors or state if needed
       context.read<LoginProvider>().resetState();
+      checkFaceLogin();
     });
   }
 
@@ -200,6 +203,20 @@ class _LoginPageState extends State<LoginPage> {
     context.read<LoginProvider>().validateDivision(params);
   }
 
+  void checkFaceLogin() async {
+    String? faceID = await authService.storageGet(ENV.faceLoginPrefTag);
+
+    if (faceID == null || faceID == "" || faceID.toLowerCase() == "null") {
+      setState(() {
+        isFaceLogin = false;
+      });
+    } else {
+      setState(() {
+        isFaceLogin = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Listen to provider changes for navigation and toasts
@@ -281,6 +298,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
                 // Main content
                 Column(
                   children: [
@@ -460,6 +478,31 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 30),
+                            // SizedBox(
+                            //   width: double.infinity,
+                            //   height: 56,
+                            //   child: ElevatedButton(
+                            //     style: ElevatedButton.styleFrom(
+                            //       backgroundColor: CommonColors.colorPrimary!,
+                            //       shape: RoundedRectangleBorder(
+                            //         borderRadius: BorderRadius.circular(12),
+                            //       ),
+                            //       elevation: 0,
+                            //     ),
+                            //     onPressed: () {
+                            //       Get.to(() => FaceLogin());
+                            //     },
+                            //     child: const Text(
+                            //       'Login With Face',
+                            //       style: TextStyle(
+                            //         color: Colors.white,
+                            //         fontSize: 16,
+                            //         fontWeight: FontWeight.w600,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 30),
                             // Login with OTP and Offline Mode buttons in a row
                             Row(
                               children: [
@@ -544,6 +587,22 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ],
+                ),
+                Visibility(
+                  visible: isFaceLogin,
+                  child: Positioned(
+                    top: 20,
+                    right: 20,
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(() => FaceLogin());
+                      },
+                      child: Image.asset(
+                        'assets/images/face-scan.png',
+                        height: 40,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
