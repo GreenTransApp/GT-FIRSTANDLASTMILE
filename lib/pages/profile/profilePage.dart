@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/faceRecognition/faceRegistration.dart';
 import 'package:gtlmd/pages/profile/widgets/contactInfoCard.dart';
 import 'package:gtlmd/pages/profile/widgets/profileCard.dart';
 
@@ -101,6 +102,42 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
                   height: SizeConfig.mediumVerticalSpacing,
                 ),
                 ContactInfoCard(context, isSmallDevice),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => FaceRegistration());
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(isSmallDevice ? 8.0 : 12.0),
+                    margin: EdgeInsets.symmetric(
+                        horizontal: isSmallDevice ? 8 : 12),
+                    decoration: BoxDecoration(
+                        color: CommonColors.white,
+                        border: Border.all(
+                            color: CommonColors.colorPrimary!
+                                .withAlpha((0.2 * 255).round())),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.logout_rounded,
+                          color: CommonColors.colorPrimary,
+                          size: isSmallDevice ? 20 : 24,
+                        ),
+                        SizedBox(
+                          width: isSmallDevice ? 6 : 8,
+                        ),
+                        Text(
+                          "Face Registration",
+                          style: TextStyle(
+                              color: CommonColors.colorPrimary,
+                              fontSize: isSmallDevice ? 15 : 18),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

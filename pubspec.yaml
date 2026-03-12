@@ -87,6 +87,13 @@ dependencies:
   flutter_reactive_ble: ^5.4.0
   flutter_native_splash: ^2.4.7
   flutter_local_notifications: ^19.5.0
+  google_mlkit_face_detection: ^0.13.2
+  flutter_secure_storage: ^8.1.0
+  image: ^4.1.3
+  tflite_flutter: ^0.12.1
+  google_mlkit_object_detection: ^0.15.1
+  google_mlkit_commons: ^0.11.1
+  face_verification: ^0.3.6
   
 dev_dependencies:
   flutter_test:

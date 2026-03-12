@@ -129,7 +129,7 @@ class _OperationsState extends State<Operations> {
                         // }
 
                         final url = await provider
-                            .getSingleOperationDetail(operation.menucode ?? '');
+                            .getSingleOperationDetail(operation.menucode!);
                         if (url != null && url.isNotEmpty) {
                           final uri = Uri.parse(url);
                           if (await canLaunchUrl(uri)) {

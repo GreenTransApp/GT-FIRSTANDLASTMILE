@@ -4,7 +4,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/optionMenu/tripMis/Model/tripMisModel.dart';
-import 'package:gtlmd/pages/manifestEnquiry/manifestEnquiry.dart';
+// import 'package:gtlmd/pages/manifestEnquiry/manifestEnquiry.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
 

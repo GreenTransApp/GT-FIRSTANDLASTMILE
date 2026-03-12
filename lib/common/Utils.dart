@@ -401,6 +401,19 @@ Future<LoginCredsModel> getLoginCreds() async {
   return loginCredsModel;
 }
 
+Future<LoginCredsModel> getFaceLoginCreds() async {
+  String? rawStorageLoginCreds =
+      await AuthenticationService().storageGet(ENV.faceLoginPrefTag);
+  LoginCredsModel loginCredsModel = LoginCredsModel();
+
+  if (rawStorageLoginCreds != null) {
+    Map<String, dynamic> te = jsonDecode(rawStorageLoginCreds);
+    loginCredsModel = LoginCredsModel.fromJson(te);
+  }
+
+  return loginCredsModel;
+}
+
 Future<LoginModel> getLoginData() async {
   final String? rawStorageUser =
       await AuthenticationService().storageGet(ENV.loginPrefTag);
