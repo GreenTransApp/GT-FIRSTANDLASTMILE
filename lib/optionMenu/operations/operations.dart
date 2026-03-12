@@ -127,14 +127,34 @@ class _OperationsState extends State<Operations> {
                         //     );
                         //   }
                         // }
-
+////////////////////////////////////////////////////
+                        // final url = await provider
+                        //     .getSingleOperationDetail(operation.menucode ?? '');
+                        // if (url != null && url.isNotEmpty) {
+                        //   final uri = Uri.parse(url);
+                        //   if (await canLaunchUrl(uri)) {
+                        //     await launchUrl(uri);
+                        //   } else {
+                        //     if (context.mounted) {
+                        //       ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //             content: Text('Could not launch URL')),
+                        //       );
+                        //     }
+                        //   }
+                        // }
                         final url = await provider
                             .getSingleOperationDetail(operation.menucode ?? '');
+
                         if (url != null && url.isNotEmpty) {
                           final uri = Uri.parse(url);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri);
-                          } else {
+
+                          try {
+                            await launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } catch (_) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
