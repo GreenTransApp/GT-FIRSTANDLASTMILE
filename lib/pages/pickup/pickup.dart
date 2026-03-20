@@ -3104,6 +3104,31 @@ class _PickupState extends State<Pickup> {
                                     ),
                                   ),
                                   SizedBox(
+                                    height: SizeConfig.mediumVerticalSpacing,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical:
+                                              SizeConfig.mediumVerticalSpacing),
+                                      child: CommonButton(
+                                        color: CommonColors.colorPrimary!,
+                                        onTap: () {
+                                          if (!isNullOrEmpty(
+                                              pickupDetail!.invoiceimage)) {
+                                            showDialogWithImage(context,
+                                                pickupDetail!.invoiceimage!,
+                                                isLocal: false);
+                                          } else {
+                                            failToast("No Invoice Available");
+                                          }
+                                        },
+                                        title: "View Invoice",
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
                                       height: SizeConfig.mediumVerticalSpacing),
                                   Container(
                                     padding: EdgeInsets.symmetric(
@@ -3235,7 +3260,7 @@ class _PickupState extends State<Pickup> {
                                                     ),
                                             ),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),

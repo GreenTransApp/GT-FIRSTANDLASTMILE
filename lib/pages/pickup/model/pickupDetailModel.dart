@@ -41,6 +41,7 @@ class PickupDetailModel {
   final String? pickupOrDelivery;
   final String? productCode;
   final String? ordernumber;
+  final String? invoiceimage;
 
   PickupDetailModel(
       {this.commandStatus,
@@ -84,7 +85,8 @@ class PickupDetailModel {
       this.remarks,
       this.pickupOrDelivery,
       this.productCode,
-      this.ordernumber});
+      this.ordernumber,
+      this.invoiceimage});
 
   factory PickupDetailModel.fromJson(Map<String, dynamic> json) {
     return PickupDetailModel(
@@ -130,6 +132,7 @@ class PickupDetailModel {
       pickupOrDelivery: json['pickupordelivery'].toString(),
       productCode: json['productcode'].toString(),
       ordernumber: json['ordernumber'].toString(),
+      invoiceimage: json['invoiceimage'].toString(),
     );
   }
 
@@ -177,6 +180,7 @@ class PickupDetailModel {
       'pickupordelivery': pickupOrDelivery,
       'productcode': productCode,
       'ordernumber': ordernumber,
+      'invoiceimage': invoiceimage,
     };
   }
 
