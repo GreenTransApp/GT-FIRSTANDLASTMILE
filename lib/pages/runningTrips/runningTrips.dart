@@ -35,12 +35,14 @@ class RunningTrips extends StatefulWidget {
 
 class RunningTripsState extends State<RunningTrips> {
   List<TripModel> _tripList = List.empty(growable: true);
+  List<TripModel> filterList = List.empty(growable: true);
   late AttendanceModel _attendanceModel = AttendanceModel();
   late LoadingAlertService loadingAlertService;
   RunningTripsViewModel viewModel = RunningTripsViewModel();
   List<StreamSubscription> _subscription = [];
   final locationService = LocationService();
-
+  TextEditingController _searchController = TextEditingController();
+  late String query = "";
   @override
   void initState() {
     super.initState();
@@ -74,6 +76,7 @@ class RunningTripsState extends State<RunningTrips> {
     _subscription.add(viewModel.tripsListData.stream.listen((data) {
       setState(() {
         _tripList = data;
+        filterList = _tripList;
         checkAuthenticatedUserForRunService(_tripList);
       });
     }));
@@ -173,6 +176,36 @@ class RunningTripsState extends State<RunningTrips> {
     getTripList();
   }
 
+  void updateSearch(String newQuery) {
+    List<TripModel> newMatchQuery = [];
+
+    if (newQuery.isEmpty) {
+      setState(() {
+        query = '';
+        filterList = _tripList;
+      });
+    } else {
+      for (var trip in _tripList) {
+        if (trip.tripid
+                .toString()
+                .toLowerCase()
+                .contains(newQuery.toLowerCase())
+            //     ||
+            // trip.manifestno
+            //     .toString()
+            //     .toLowerCase()
+            //     .contains(newQuery.toLowerCase())
+            ) {
+          newMatchQuery.add(trip);
+        }
+      }
+      setState(() {
+        query = newQuery;
+        filterList = newMatchQuery;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -181,42 +214,116 @@ class RunningTripsState extends State<RunningTrips> {
       onRefresh: onRefresh,
       child: Scaffold(
         body: Container(
-          child: (_tripList.isEmpty) == true
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Lottie.asset("assets/emptyDelivery.json",
-                              height: 150),
-                          Text(
-                            "No Trips",
-                            style: TextStyle(
-                                fontSize: SizeConfig.mediumTextSize,
-                                color: CommonColors.appBarColor),
-                          )
-                        ],
+          color: CommonColors.blueGrey?.withOpacity(0.1),
+          child: Column(
+            children: [
+              Container(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
+                  child: TextField(
+                    controller: _searchController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    cursorColor: CommonColors.appBarColor,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: CommonColors.appBarColor,
+                        size: SizeConfig.largeIconSize,
                       ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchController.clear();
+                            updateSearch('');
+                          });
+                        },
+                        icon: _searchController.text.isNotEmpty
+                            ? const Icon(Icons.clear)
+                            : const Icon(
+                                Icons.clear,
+                                color: Colors.transparent,
+                              ),
+                      ),
+                      hintText: 'Search',
+                      filled: true,
+                      fillColor: CommonColors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Set the desired radius
+                        borderSide: BorderSide.none,
+                      ),
+                      // border: OutlineInputBorder(
+                      //   borderRadius: BorderRadius.all(
+                      //       Radius.circular(SizeConfig.extraLargeRadius)),
+                      //   // borderSide:
+                      //   //     const BorderSide(color: CommonColors.appBarColor)
+                      // ),
+                      // enabledBorder: OutlineInputBorder(
+                      //     borderRadius:
+                      //         BorderRadius.circular(SizeConfig.extraLargeRadius),
+                      //     borderSide:
+                      //         const BorderSide(color: CommonColors.appBarColor)),
+                      // focusedBorder: OutlineInputBorder(
+                      //     borderRadius:
+                      //         BorderRadius.circular(SizeConfig.extraLargeRadius),
+                      //     borderSide:
+                      //         const BorderSide(color: CommonColors.appBarColor)),
                     ),
-                  ],
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  // physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: _tripList.length,
-                  itemBuilder: (context, index) {
-                    var currentData = _tripList[index];
-                    return RunningTripTile(
-                      model: currentData,
-                      attendanceModel: _attendanceModel,
-                      // onUpdate: onUpdate,
-                      onRefresh: onRefresh,
-                    );
-                  },
+                    // onChanged: provider.grSearch,
+                    onChanged: updateSearch,
+                  ),
                 ),
+              ),
+              Expanded(
+                child: Container(
+                  // child: (_tripList.isEmpty) == true
+                  child: (filterList.isEmpty) == true
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Lottie.asset("assets/emptyDelivery.json",
+                                      height: 150),
+                                  Text(
+                                    "No Trips",
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize,
+                                        color: CommonColors.appBarColor),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          // physics: const AlwaysScrollableScrollPhysics(),
+                          // itemCount: _tripList.length,
+                          itemCount: filterList.length,
+                          itemBuilder: (context, index) {
+                            // var currentData = _tripList[index];
+                            var currentData = filterList[index];
+                            return RunningTripTile(
+                              model: currentData,
+                              attendanceModel: _attendanceModel,
+                              // onUpdate: onUpdate,
+                              onRefresh: onRefresh,
+                            );
+                          },
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

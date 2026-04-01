@@ -45,6 +45,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   DrsSelectionRepository repository = DrsSelectionRepository();
 
   List<DrsListModel> _deliveryList = List.empty(growable: true);
+  List<DrsListModel> filterList = List.empty(growable: true);
   final List<DrsListModel> _selectedDrsList = List.empty(growable: true);
   late LoadingAlertService loadingAlertService;
   final BaseRepository _baseRepo = BaseRepository();
@@ -59,6 +60,8 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
   bool isLoading = false;
   OverlayEntry? _overlayEntry;
   List<StreamSubscription> _subscription = [];
+  TextEditingController _searchController = TextEditingController();
+  late String query = "";
 
   @override
   void initState() {
@@ -88,6 +91,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       // if (list.elementAt(0).commandstatus == 1) {
       setState(() {
         _deliveryList = list;
+        filterList = _deliveryList;
         _selectedDrsList.clear();
         allSelected = false;
       });
@@ -174,6 +178,36 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
     super.dispose();
   }
 
+  void updateSearch(String newQuery) {
+    List<DrsListModel> newMatchQuery = [];
+
+    if (newQuery.isEmpty) {
+      setState(() {
+        query = '';
+        filterList = _deliveryList;
+      });
+    } else {
+      for (var trip in _deliveryList) {
+        if (trip.manifestno
+                .toString()
+                .toLowerCase()
+                .contains(newQuery.toLowerCase())
+            //     ||
+            // trip.manifestno
+            //     .toString()
+            //     .toLowerCase()
+            //     .contains(newQuery.toLowerCase())
+            ) {
+          newMatchQuery.add(trip);
+        }
+      }
+      setState(() {
+        query = newQuery;
+        filterList = newMatchQuery;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -184,117 +218,167 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: refreshScreen,
       child: Scaffold(
-        body: (_deliveryList.isEmpty) == true
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Lottie.asset("assets/emptyDelivery.json",
-                                  height: 150),
-                              const Text(
-                                "No Assigned DRS/PRS",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: CommonColors.appBarColor),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : Column(
-                children: [
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  Visibility(
-                      visible: isLoading,
-                      child: const CupertinoActivityIndicator(
-                        radius: 12,
-                      )),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+        body: Container(
+          color: CommonColors.blueGrey?.withOpacity(0.1),
+          child: (_deliveryList.isEmpty) == true
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: SizeConfig.horizontalPadding),
-                            child: Text(
-                              "Total: ${_deliveryList.length}",
-                              style: TextStyle(
-                                  fontSize: SizeConfig.mediumTextSize),
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Lottie.asset("assets/emptyDelivery.json",
+                                    height: 150),
+                                const Text(
+                                  "No Assigned DRS/PRS",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: CommonColors.appBarColor),
+                                )
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: SizeConfig.mediumHorizontalSpacing,
-                          ),
-                          AppTooltip(
-                            items: [
-                              TooltipItem(CommonColors.green200!, "Delivery"),
-                              TooltipItem(CommonColors.amber200!, "Pickup"),
-                            ],
-                            child: const Icon(Icons.info_outline),
-                          )
                         ],
-                      )),
-                      Expanded(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("Select All",
-                              style: TextStyle(
-                                  fontSize: SizeConfig.mediumTextSize)),
-                          SizedBox(
-                            width: SizeConfig.smallHorizontalSpacing,
-                          ),
-                          Checkbox(
-                              activeColor: CommonColors.colorPrimary,
-                              value: allSelected,
-                              onChanged: (checked) {
-                                allSelected = checked;
-                                _selectedDrsList.clear();
-                                if (checked == true) {
-                                  for (DrsListModel model in _deliveryList) {
-                                    // model.tripconfirm = true;
-                                    _selectedDrsList.add(model);
-                                  }
-                                } else {
-                                  for (DrsListModel model in _deliveryList) {
-                                    // model.tripconfirm = false;
-                                    _selectedDrsList.clear();
-                                  }
-                                }
-                                setState(() {});
-                              }),
-                        ],
-                      ))
-                    ],
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      // physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: _deliveryList.length,
-                      itemBuilder: (context, index) {
-                        return manifestCard(_deliveryList[index]);
-                      },
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    const SizedBox(
+                      height: 18,
+                    ),
+                    Visibility(
+                        visible: isLoading,
+                        child: const CupertinoActivityIndicator(
+                          radius: 12,
+                        )),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: SizeConfig.horizontalPadding),
+                              child: Text(
+                                "Total: ${_deliveryList.length}",
+                                style: TextStyle(
+                                    fontSize: SizeConfig.mediumTextSize),
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.mediumHorizontalSpacing,
+                            ),
+                            AppTooltip(
+                              items: [
+                                TooltipItem(CommonColors.green200!, "Delivery"),
+                                TooltipItem(CommonColors.amber200!, "Pickup"),
+                              ],
+                              child: const Icon(Icons.info_outline),
+                            )
+                          ],
+                        )),
+                        Expanded(
+                            child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text("Select All",
+                                style: TextStyle(
+                                    fontSize: SizeConfig.mediumTextSize)),
+                            SizedBox(
+                              width: SizeConfig.smallHorizontalSpacing,
+                            ),
+                            Checkbox(
+                                activeColor: CommonColors.colorPrimary,
+                                value: allSelected,
+                                onChanged: (checked) {
+                                  allSelected = checked;
+                                  _selectedDrsList.clear();
+                                  if (checked == true) {
+                                    for (DrsListModel model in _deliveryList) {
+                                      // model.tripconfirm = true;
+                                      _selectedDrsList.add(model);
+                                    }
+                                  } else {
+                                    for (DrsListModel model in _deliveryList) {
+                                      // model.tripconfirm = false;
+                                      _selectedDrsList.clear();
+                                    }
+                                  }
+                                  setState(() {});
+                                }),
+                          ],
+                        ))
+                      ],
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
+                        child: TextField(
+                          controller: _searchController,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          cursorColor: CommonColors.appBarColor,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: CommonColors.appBarColor,
+                              size: SizeConfig.largeIconSize,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchController.clear();
+                                  updateSearch('');
+                                });
+                              },
+                              icon: _searchController.text.isNotEmpty
+                                  ? const Icon(Icons.clear)
+                                  : const Icon(
+                                      Icons.clear,
+                                      color: Colors.transparent,
+                                    ),
+                            ),
+                            hintText: 'Search',
+                            filled: true,
+                            fillColor: CommonColors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10.0), // Set the desired radius
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          onChanged: updateSearch,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        // physics: const AlwaysScrollableScrollPhysics(),
+                        // itemCount: _deliveryList.length,
+                        itemCount: filterList.length,
+                        itemBuilder: (context, index) {
+                          // return manifestCard(_deliveryList[index]);
+                          return manifestCard(filterList[index]);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+        ),
         persistentFooterButtons: [
           Visibility(
             visible: _selectedDrsList.isNotEmpty,

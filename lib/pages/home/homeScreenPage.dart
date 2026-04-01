@@ -944,95 +944,98 @@ class _HomeScreen extends State<HomeScreen>
             ],
           ),
           drawer: const SideMenu(),
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: [
-              Column(
-                children: [
-                  attendanceInfo(),
-                  const SizedBox(height: 16),
-                  Visibility(
-                    visible: ENV.isDebugging,
-                    child: GestureDetector(
-                      onTap: () async {
-                        // Bluetooth.printReceipt();
-                        // Get.to(() => const BookingListScreen());
-                        // showDimensionsScreen(context);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: isSmallDevice ? 8 : 16,
-                            vertical: isSmallDevice ? 8 : 12),
-                        margin: EdgeInsets.only(
-                            top: 16,
-                            bottom: 4,
-                            left: isSmallDevice ? 8 : 16,
-                            right: isSmallDevice ? 8 : 16),
-                        decoration: BoxDecoration(
-                          color: CommonColors.colorPrimary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
+          body: Container(
+            color: CommonColors.blueGrey?.withOpacity(0.1),
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                Column(
+                  children: [
+                    attendanceInfo(),
+                    const SizedBox(height: 16),
+                    Visibility(
+                      visible: ENV.isDebugging,
+                      child: GestureDetector(
+                        onTap: () async {
+                          // Bluetooth.printReceipt();
+                          // Get.to(() => const BookingListScreen());
+                          // showDimensionsScreen(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: isSmallDevice ? 8 : 16,
+                              vertical: isSmallDevice ? 8 : 12),
+                          margin: EdgeInsets.only(
+                              top: 16,
+                              bottom: 4,
+                              left: isSmallDevice ? 8 : 16,
+                              right: isSmallDevice ? 8 : 16),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'Test',
+                            style: TextStyle(
+                              fontSize: isSmallDevice ? 12 : 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
                             ),
-                          ],
-                        ),
-                        child: Text(
-                          'Test',
-                          style: TextStyle(
-                            fontSize: isSmallDevice ? 12 : 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: AllocatedRouteWidget(
-                      key: allotedRouteKey,
-                      attendanceModel: attendanceModel,
-                      // routeList: routeList,
-                      // onRefresh: refreshScreen,
+                    Expanded(
+                      child: AllocatedRouteWidget(
+                        key: allotedRouteKey,
+                        attendanceModel: attendanceModel,
+                        // routeList: routeList,
+                        // onRefresh: refreshScreen,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  attendanceInfo(),
-                  Expanded(
-                    child: DrsselectionBottomSheet(
-                      key: drsSelectionKey,
-                      tripId: 0,
-                      showTripInfoUpdate: true,
-                      onRefresh: refreshScreen,
+                  ],
+                ),
+                Column(
+                  children: [
+                    attendanceInfo(),
+                    Expanded(
+                      child: DrsselectionBottomSheet(
+                        key: drsSelectionKey,
+                        tripId: 0,
+                        showTripInfoUpdate: true,
+                        onRefresh: refreshScreen,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  attendanceInfo(),
-                  Expanded(
-                    child: RunningTrips(
-                      key: runningTripsKey,
-                      // deliveryList: tripsList,
-                      attendanceModel: attendanceModel,
-                      // onRefresh: refreshScreen
+                  ],
+                ),
+                Column(
+                  children: [
+                    attendanceInfo(),
+                    Expanded(
+                      child: RunningTrips(
+                        key: runningTripsKey,
+                        // deliveryList: tripsList,
+                        attendanceModel: attendanceModel,
+                        // onRefresh: refreshScreen
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  // attendanceInfo(),
-                  Expanded(child: const ProfileScreen()),
-                ],
-              )
-            ],
+                  ],
+                ),
+                Column(
+                  children: [
+                    // attendanceInfo(),
+                    Expanded(child: const ProfileScreen()),
+                  ],
+                )
+              ],
+            ),
           )
           // PageView(
           //   physics: const NeverScrollableScrollPhysics(),
