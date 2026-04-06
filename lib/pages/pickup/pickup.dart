@@ -1911,6 +1911,8 @@ class _PickupState extends State<Pickup> {
       "prmmenucode": "GTLMD_PICKUP",
       "prmbookingimgpath": convertFilePathToBase64(_itemImagePath),
       'prmentrylocation': currentAddress,
+      'prmmanifestno': widget.details.manifestno!,
+      'prmrefgrno': widget.details.grno!,
     };
 
     debugPrint(params.toString());
