@@ -58,7 +58,7 @@ class BookingProvider extends ChangeNotifier {
       getCngrCngeList('R'),
       getCngrCngeList('E'),
       getDepartmentList(),
-      // getEwayBillCreds(),
+      getEwayBillCreds(),
     ];
 
     try {
@@ -71,6 +71,8 @@ class BookingProvider extends ChangeNotifier {
       _cngrList = results[2] as List<CngrCngeModel>;
       _cngeList = results[3] as List<CngrCngeModel>;
       _departmentList = results[4] as List<DepartmentModel>;
+      _ewaybillCreds = results[5] as EwayBillCredentialsModel;
+
       _isLoadingLov = false;
       // });
       debugPrint('LOV DATA FETCHED SUCCESSFULLY');

@@ -156,14 +156,14 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     _firstEwayBill = EwayBillModel();
-    _ewaybillCreds = EwayBillCredentialsModel(
-        commandmessage: 'Success',
-        commandstatus: 1,
-        compGst: "27AJEPK3488M1ZN",
-        ewayEnabled: 'Y',
-        ewayPassword: "Abcd@1234",
-        ewayUserId: "8689835999",
-        stateGst: "27AJEPK3488M1ZN");
+    // _ewaybillCreds = EwayBillCredentialsModel(
+    //     commandmessage: 'Success',
+    //     commandstatus: 1,
+    //     compGst: "27AJEPK3488M1ZN",
+    //     ewayEnabled: 'Y',
+    //     ewayPassword: "Abcd@1234",
+    //     ewayUserId: "8689835999",
+    //     stateGst: "27AJEPK3488M1ZN");
     _bookingDateController.text =
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     _bookingTimeController.text = DateFormat('HH:mm a').format(DateTime.now());
@@ -471,10 +471,11 @@ class _BookingWithEwayBillState extends State<BookingWithEwayBill> {
 
   setObserver() {
     _subscriptions.add(viewModel.validateEwayBillList.stream.listen((data) {
-      // debugPrint(data.toString());
-      // _ewaybillCreds = data.first;
+      debugPrint(data.toString());
       if (data.isNotEmpty && data.first.commandstatus == -1) {
         failToast(data.first.commandmessage.toString());
+      } else {
+        _ewaybillCreds = data.first;
       }
     }));
 

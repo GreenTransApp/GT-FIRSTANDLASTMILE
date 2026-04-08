@@ -140,9 +140,9 @@ class _PickupState extends State<Pickup> {
   bool _deptLoaded = false;
   bool _pickupLoaded = false;
   bool _bookingLoaded = false;
-
   double screenWidth = 0;
   bool isSmallDevice = false;
+  bool enableAutoGr = false;
 
   @override
   initState() {
@@ -487,6 +487,14 @@ class _PickupState extends State<Pickup> {
 
     _noofpckgsController.text = pickupDetail!.pckgs.toString();
     _orderNumberController.text = pickupDetail!.ordernumber.toString();
+
+    enableAutoGr = (pickupDetail?.autogenerategr) == "Y";
+    autoGr = enableAutoGr ? true : autoGr;
+    // if (enableAutoGr) {
+    //   autoGr = true;
+    // } else {
+    //   autoGr = false;
+    // }
     setState(() {});
     // loadingAlertService.hideLoading();
   }
@@ -1911,8 +1919,7 @@ class _PickupState extends State<Pickup> {
       "prmmenucode": "GTLMD_PICKUP",
       "prmbookingimgpath": convertFilePathToBase64(_itemImagePath),
       'prmentrylocation': currentAddress,
-      'prmmanifestno': widget.details.manifestno!,
-      'prmrefgrno': widget.details.grno!,
+      'prmmanifestno': widget.details.manifestno ?? "",
     };
 
     debugPrint(params.toString());
@@ -1990,71 +1997,114 @@ class _PickupState extends State<Pickup> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: _buildFormField(
-                                label: "Consignment#",
-                                isRequired: true,
-                                icon: Icons.label_outline,
-                                child: TextFormField(
-                                  enabled: !autoGr,
-                                  focusNode: skuFocus,
-                                  onTapOutside: (event) {},
-                                  autofocus: false,
-                                  onEditingComplete: () {
-                                    setState(() {});
-
-                                    // verifySku();
-                                  },
-                                  textInputAction: TextInputAction.done,
-                                  controller: _grController,
-                                  keyboardType: TextInputType.text,
-                                  style: TextStyle(
-                                      color: CommonColors.appBarColor,
-                                      fontSize: SizeConfig.mediumTextSize),
-                                  decoration: autoGr
-                                      ? _inputDecoration(
-                                          autoGrLabel,
-                                        )
-                                      : _inputDecoration(
-                                          "Enter Consignment#",
-                                        ),
-                                  validator: (value) {
-                                    if (autoGr) {
-                                      return null;
-                                    } else {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter Consignment#';
-                                      }
-                                      return null;
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: SizeConfig.mediumVerticalSpacing),
-                            Row(
+                        Visibility(
+                            visible: enableAutoGr,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                  "Auto ",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: SizeConfig.mediumTextSize),
+                                Expanded(
+                                  child: Text(
+                                    "Consignment is generated automatically by the system",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: CommonColors.grey,
+                                    ),
+                                  ),
                                 ),
-                                Checkbox(
-                                  value: autoGr,
-                                  activeColor: CommonColors.colorPrimary,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      autoGr = value!;
-                                    });
-                                  },
+                                SizedBox(
+                                    width: SizeConfig.mediumVerticalSpacing),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Auto ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeConfig.mediumTextSize,
+                                      ),
+                                    ),
+                                    Checkbox(
+                                      value: autoGr,
+                                      activeColor: CommonColors.colorPrimary,
+                                      onChanged: enableAutoGr
+                                          ? null // disable
+                                          : (bool? value) {
+                                              setState(() {
+                                                autoGr = value!;
+                                              });
+                                            },
+                                    )
+                                  ],
                                 )
                               ],
-                            )
-                          ],
+                            )),
+                        Visibility(
+                          visible: !enableAutoGr,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: _buildFormField(
+                                  label: "Consignment#",
+                                  isRequired: true,
+                                  icon: Icons.label_outline,
+                                  child: TextFormField(
+                                    enabled: !autoGr,
+                                    focusNode: skuFocus,
+                                    onTapOutside: (event) {},
+                                    autofocus: false,
+                                    onEditingComplete: () {
+                                      setState(() {});
+
+                                      // verifySku();
+                                    },
+                                    textInputAction: TextInputAction.done,
+                                    controller: _grController,
+                                    keyboardType: TextInputType.text,
+                                    style: TextStyle(
+                                        color: CommonColors.appBarColor,
+                                        fontSize: SizeConfig.mediumTextSize),
+                                    decoration: autoGr
+                                        ? _inputDecoration(
+                                            autoGrLabel,
+                                          )
+                                        : _inputDecoration(
+                                            "Enter Consignment#",
+                                          ),
+                                    validator: (value) {
+                                      if (autoGr) {
+                                        return null;
+                                      } else {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter Consignment#';
+                                        }
+                                        return null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: SizeConfig.mediumVerticalSpacing),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Auto ",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: SizeConfig.mediumTextSize),
+                                  ),
+                                  Checkbox(
+                                    value: autoGr,
+                                    activeColor: CommonColors.colorPrimary,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        autoGr = value!;
+                                      });
+                                    },
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                         SizedBox(height: SizeConfig.mediumVerticalSpacing),
                         Column(
