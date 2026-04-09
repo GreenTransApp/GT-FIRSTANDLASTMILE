@@ -351,7 +351,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                                       color: Colors.transparent,
                                     ),
                             ),
-                            hintText: 'Search',
+                            hintText: 'DRS/PRS',
                             filled: true,
                             fillColor: CommonColors.white,
                             border: OutlineInputBorder(

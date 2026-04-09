@@ -270,10 +270,11 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           int.parse(widget.model!.startreadingkm.toString())) {
         failToast("Close Reading Value Can't be less than Start Reading Value");
         return;
-      } else if (isNullOrEmpty(_closeReadingImagePath)) {
-        failToast("Close Reading meter image is required");
-        return;
       }
+      // else if (isNullOrEmpty(_closeReadingImagePath)) {
+      //   failToast("Close Reading meter image is required");
+      //   return;
+      // }
 
       widget.model.endtripdate = _closeDateController.text;
       widget.model.endtriptime = _closeTimeController.text;
@@ -296,10 +297,11 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       } else if (_startReadingError != null) {
         failToast(_startReadingError!);
         return;
-      } else if (isNullOrEmpty(_startReadingImagePath)) {
-        failToast("Reading meter image path is required");
-        return;
       }
+      // else if (isNullOrEmpty(_startReadingImagePath)) {
+      //   failToast("Reading meter image path is required");
+      //   return;
+      // }
       widget.model.tripdispatchdate = _dispatchDateController.text;
       widget.model.tripdispatchdatetime = _dispatchTimeController.text;
       widget.model.startreadingkm = int.tryParse(_startReadingController.text);
@@ -338,7 +340,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
       "prmstartreading": widget.model.startreadingkm.toString(),
       "prmstartreadimgpath": widget.status == TripStatus.open
-          ? convertFilePathToBase64(widget.model.startreadingimg)
+          ? isNullOrEmpty(widget.model.startreadingimg)
+              ? ""
+              : convertFilePathToBase64(widget.model.startreadingimg)
           : isNullOrEmpty(widget.model.startreadingimg)
               ? ""
               : widget.model.startreadingimg!,
@@ -361,7 +365,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmclosetripreading": widget.model.endreadingkm.toString(),
       "prmendreadimgpath": widget.status == TripStatus.open
           ? ""
-          : convertFilePathToBase64(widget.model.endreadingimg),
+          : isNullOrEmpty(widget.model.endreadingimg)
+              ? ""
+              : convertFilePathToBase64(widget.model.endreadingimg),
       "prmsessionid": savedUser.sessionid.toString(),
       'prmentrylocation': currentAddress,
     };

@@ -172,7 +172,7 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
                             color: Colors.transparent,
                           ),
                   ),
-                  hintText: 'Search',
+                  hintText: 'Route ID',
                   filled: true,
                   fillColor: CommonColors.white,
                   border: OutlineInputBorder(
