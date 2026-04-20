@@ -1239,7 +1239,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             ? "Must be > last trip reading (${lastTripInfo!.endreadingkm})"
                                             : "Enter start reading",
                                         helperStyle: TextStyle(
-                                            color: CommonColors.grey600),
+                                            color: CommonColors.dangerColor),
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(
