@@ -54,10 +54,11 @@ class BookingWithEwayBillRepository extends BaseRepository {
                     list.length,
                     (index) => EwayBillCredentialsModel.fromJson(list[index]));
                 if (resultList.isNotEmpty &&
-                    resultList.first.commandstatus == -1) {
+                    resultList.first.commandstatus != -1) {
+                  validateEwayBillList.add(resultList);
+                } else {
                   isErrorLiveData
                       .add(resultList.first.commandmessage.toString());
-                  validateEwayBillList.add(resultList);
                 }
               }
             }

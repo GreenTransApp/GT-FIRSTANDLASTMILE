@@ -7,7 +7,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-
+import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
@@ -29,6 +29,7 @@ import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 import 'package:gtlmd/pages/pickup/pickupViewModel.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class Pickup extends StatefulWidget {
   DeliveryDetailModel details;
@@ -124,6 +125,7 @@ class _PickupState extends State<Pickup> {
   // LoadTypeModel? _selectedLoadType;
   String? selected;
   String? _itemImagePath = "";
+  String _selectedSignaturePath = '';
 
   // String? _itemImagePath;
   bool skuVerified = false;
@@ -539,6 +541,9 @@ class _PickupState extends State<Pickup> {
     }
     if (isNullOrEmpty(_itemImagePath)) {
       failToast("Document Image Required");
+      return;
+    } else if (isNullOrEmpty(_selectedSignaturePath)) {
+      failToast("Signature Required");
       return;
     } else {
       fetchLocationAndSubmit();
@@ -1919,6 +1924,7 @@ class _PickupState extends State<Pickup> {
       "prmsessionid": savedUser.sessionid.toString(),
       "prmmenucode": "GTLMD_PICKUP",
       "prmbookingimgpath": convertFilePathToBase64(_itemImagePath),
+      'prmsignimgpath': convertFilePathToBase64(_selectedSignaturePath),
       'prmentrylocation': currentAddress,
       'prmmanifestno': widget.details.manifestno ?? "",
     };
@@ -3309,6 +3315,141 @@ class _PickupState extends State<Pickup> {
                                                     )
                                                   : Image.file(
                                                       File(_itemImagePath!),
+                                                      fit: BoxFit.contain,
+                                                    ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: SizeConfig.mediumVerticalSpacing,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: SizeConfig.verticalPadding,
+                                        horizontal:
+                                            SizeConfig.horizontalPadding),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: CommonColors.grey400!,
+                                            width: 1),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                                SizeConfig.largeRadius))),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Symbols.signature_rounded,
+                                              color: Colors.black54,
+                                            ),
+                                            SizedBox(
+                                              width: SizeConfig
+                                                  .mediumHorizontalSpacing,
+                                            ),
+                                            const Text(
+                                              "SIGNATURE UPLOAD",
+                                              style: TextStyle(
+                                                  color: Colors.black87),
+                                            ),
+                                            Expanded(
+                                                child: Align(
+                                              alignment:
+                                                  AlignmentGeometry.centerRight,
+                                              child: InkWell(
+                                                child: const Icon(
+                                                  Symbols.signature_rounded,
+                                                  color: Colors.black54,
+                                                  // size: 24,
+                                                ),
+                                                onTap: () {
+                                                  showSignatureBottomSheet(
+                                                      context, (path, base64) {
+                                                    if (!isNullOrEmpty(path)) {
+                                                      setState(() {
+                                                        _selectedSignaturePath =
+                                                            path;
+                                                      });
+                                                    } else {
+                                                      failToast(
+                                                          'Please input signature again.');
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                            ))
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(
+                                              SizeConfig.mediumVerticalSpacing),
+                                          child: SizedBox(
+                                            height: 200,
+                                            width: MediaQuery.sizeOf(context)
+                                                .width,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: CommonColors.grey300,
+                                                  borderRadius: BorderRadius
+                                                      .all(Radius.circular(
+                                                          SizeConfig
+                                                              .largeIconSize))),
+                                              child: isNullOrEmpty(
+                                                      _selectedSignaturePath)
+                                                  ? InkWell(
+                                                      child: const Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .file_upload_outlined,
+                                                            color:
+                                                                Colors.black54,
+                                                          ),
+                                                          Text(
+                                                            "Click to Sign",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black87),
+                                                          ),
+                                                          Text(
+                                                            "Click the signature button above",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black87),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      onTap: () {
+                                                        showSignatureBottomSheet(
+                                                            context,
+                                                            (path, base64) {
+                                                          if (!isNullOrEmpty(
+                                                              path)) {
+                                                            setState(() {
+                                                              _selectedSignaturePath =
+                                                                  path;
+                                                            });
+                                                          } else {
+                                                            failToast(
+                                                                'Please input signature again.');
+                                                          }
+                                                        });
+                                                      },
+                                                    )
+                                                  : Image.file(
+                                                      File(
+                                                          _selectedSignaturePath!),
                                                       fit: BoxFit.contain,
                                                     ),
                                             ),

@@ -9,6 +9,7 @@ import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
 
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
+import 'package:gtlmd/pages/rejectPickup/rejectPickup.dart';
 import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
@@ -603,6 +604,34 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   vertical:
                                       SizeConfig.extraSmallVerticalSpacing),
                               backgroundColor: CommonColors.colorPrimary,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: SizeConfig.smallHorizontalPadding,
+                        ),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Get.to(RejectPickup(details: widget.model))
+                                  ?.then((_) {
+                                widget.onRefresh();
+                              });
+                            },
+                            icon: Icon(Icons.close,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Reject',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.dangerColor,
                               foregroundColor: CommonColors.White,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
