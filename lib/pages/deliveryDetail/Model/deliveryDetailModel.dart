@@ -20,6 +20,8 @@ class DeliveryDetailModel {
   int? transactionid;
   String? useracceptancestatus;
   String? userallocationstatus;
+  String? isOtpRequired;
+  String? isVerified;
 
   DeliveryDetailModel({
     this.commandstatus,
@@ -40,6 +42,8 @@ class DeliveryDetailModel {
     this.reversepickupstatus,
     this.consignmenttypeview,
     this.transactionid,
+    this.isOtpRequired,
+    this.isVerified,
   });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +66,8 @@ class DeliveryDetailModel {
       reversepickupstatus: json['reversepickupstatus'],
       consignmenttypeview: json['consignmenttypeview'],
       transactionid: json['transactionid'],
+      isOtpRequired: json['isotprequired'],
+      isVerified: json['isverified'],
     );
   }
 
@@ -85,6 +91,8 @@ class DeliveryDetailModel {
       'reversepickupstatus': reversepickupstatus,
       'consignmenttypeview': consignmenttypeview,
       'transactionid': transactionid,
+      'isotprequired': isOtpRequired,
+      'isverified': isVerified,
     };
   }
 }

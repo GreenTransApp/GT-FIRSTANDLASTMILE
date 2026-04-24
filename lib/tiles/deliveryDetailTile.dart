@@ -8,6 +8,7 @@ import 'package:gtlmd/design_system/app_sizes.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
+import 'package:gtlmd/pages/pickupOtp/pickupOtp.dart';
 
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/rejectPickup/rejectPickup.dart';
@@ -15,6 +16,7 @@ import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -485,7 +487,73 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           ],
                         ),
                       ),
-                      Expanded(child: Container()),
+                      Visibility(
+                        visible: modelDetail.consignmenttype == 'P' &&
+                            modelDetail.isOtpRequired == 'Y' &&
+                            modelDetail.isVerified == 'N' &&
+                            modelDetail.pickupstatus == 'P',
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(const PickupOtp());
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    SizeConfig.extraLargeHorizontalPadding,
+                                vertical: SizeConfig.extraSmallVerticalPadding),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(SizeConfig.smallRadius),
+                              border:
+                                  Border.all(color: CommonColors.dangerColor!),
+                            ),
+                            child: Text(
+                              'VERIFY',
+                              style: TextStyle(
+                                  color: CommonColors.dangerColor,
+                                  fontSize: SizeConfig.smallTextSize,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: modelDetail.consignmenttype == 'P' &&
+                            modelDetail.isOtpRequired == 'Y' &&
+                            modelDetail.isVerified == 'Y' &&
+                            modelDetail.pickupstatus == 'P',
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.smallHorizontalPadding,
+                              vertical: SizeConfig.extraSmallVerticalPadding),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(SizeConfig.smallRadius),
+                              border:
+                                  Border.all(color: CommonColors.successColor!),
+                              color: CommonColors.successColor),
+                          child: Row(
+                            children: [
+                              Text(
+                                'VERIFIED',
+                                style: TextStyle(
+                                    color: CommonColors.White,
+                                    fontSize: SizeConfig.smallTextSize,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(
+                                width: SizeConfig.extraSmallHorizontalPadding,
+                              ),
+                              Icon(
+                                Symbols.check_circle_filled,
+                                color: CommonColors.White,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
 
