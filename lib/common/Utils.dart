@@ -13,9 +13,10 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart'
 import 'package:get/get.dart';
 import 'package:get_ip_address/get_ip_address.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gtlmd/bottomSheet/commonBottomSheets.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Environment.dart';
-import 'package:gtlmd/common/bottomSheet/commonBottomSheets.dart';
+
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
 import 'package:gtlmd/pages/login/models/LoginCredsModel.dart';
