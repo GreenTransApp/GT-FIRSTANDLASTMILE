@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gtlmd/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/Colors.dart';
-import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceSummary.dart';
 import 'package:gtlmd/optionMenu/deliveryPerformance/deliveryPerformanceViewModel.dart';
@@ -390,8 +391,8 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       MaterialPageRoute(
                         builder: (_) => DeliveryPerformanceSummary(
                           title: 'WITHIN4',
-                          fromDt: fromDt,//
-                          toDt: toDt,// pass title
+                          fromDt: fromDt, //
+                          toDt: toDt, // pass title
                         ),
                       ),
                     );
@@ -414,8 +415,8 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       MaterialPageRoute(
                         builder: (_) => DeliveryPerformanceSummary(
                           title: 'WITHIN6',
-                          fromDt: fromDt,//
-                          toDt: toDt,// pass title// pass title
+                          fromDt: fromDt, //
+                          toDt: toDt, // pass title// pass title
                         ),
                       ),
                     );
@@ -438,8 +439,8 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                       MaterialPageRoute(
                         builder: (_) => DeliveryPerformanceSummary(
                           title: 'WITHIN24',
-                          fromDt: fromDt,//
-                          toDt: toDt,// pass title/ pass title
+                          fromDt: fromDt, //
+                          toDt: toDt, // pass title/ pass title
                         ),
                       ),
                     );
@@ -460,10 +461,10 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>  DeliveryPerformanceSummary(
+                        builder: (_) => DeliveryPerformanceSummary(
                           title: 'POST24',
-                          fromDt: fromDt,//
-                          toDt: toDt,// pass title// pass title
+                          fromDt: fromDt, //
+                          toDt: toDt, // pass title// pass title
                         ),
                       ),
                     );

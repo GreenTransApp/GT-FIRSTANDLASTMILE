@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/bottomSheet/signatureBottomSheet.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
-import 'package:gtlmd/common/bottomSheet/signatureBottomSheet.dart';
+
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';

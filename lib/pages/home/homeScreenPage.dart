@@ -6,11 +6,13 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
+import 'package:gtlmd/bottomSheet/NotificationOptionBottomSheet/notificationOptionBottomSheet.dart';
+import 'package:gtlmd/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
@@ -872,6 +874,33 @@ class _HomeScreen extends State<HomeScreen>
                   },
                   icon: Icon(
                     Symbols.autorenew_rounded,
+                    size: SizeConfig.largeIconSize,
+                    color: CommonColors.white,
+                  ),
+                ),
+              ),
+              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+              Badge(
+                backgroundColor: CommonColors.orange,
+                label: Text('${offlinePodCount + offlineUndeliveryCount}'),
+                offset: const Offset(-3, 5),
+                child: IconButton.outlined(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        CommonColors.White!.withAlpha((255 * 0.2).toInt())),
+                    side: WidgetStatePropertyAll(
+                      BorderSide(
+                          color: CommonColors.White!.withAlpha((255 * 0.2)
+                              .toInt())), // <-- Outline color and width
+                    ),
+                  ),
+                  color: CommonColors.white,
+                  onPressed: () async {
+                    await notificationOptionBottomSheet(context);
+                    refreshScreen();
+                  },
+                  icon: Icon(
+                    Symbols.notifications,
                     size: SizeConfig.largeIconSize,
                     color: CommonColors.white,
                   ),
