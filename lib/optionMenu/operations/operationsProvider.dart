@@ -80,6 +80,8 @@ class OperationsProvider extends ChangeNotifier {
         "prmusercode": savedUser.usercode.toString(),
         'prmmenucode': 'GTAPP_PAGELINKS',
         "prmsessionid": savedUser.sessionid.toString(),
+        "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+        "prmloginbranchtype": savedUser.loginbranchtype.toString(),
       };
       _singleOperation = await _repo.getSingleOperation(params);
 

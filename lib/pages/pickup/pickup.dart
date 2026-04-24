@@ -3114,36 +3114,42 @@ class _PickupState extends State<Pickup> {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: _buildFormField(
-                                          label: "Freight",
-                                          labelColor: CommonColors.appBarColor!,
-                                          isRequired: true,
-                                          icon: Icons.label_outline,
-                                          child: TextFormField(
-                                            enabled: true,
-                                            controller: _freightController,
-                                            keyboardType: TextInputType.number,
-                                            decoration:
-                                                _inputDecoration("Freight"),
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.allow(
-                                                  RegExp(
-                                                      r'^\d+\.?\d{0,2}$')), // ✅ allows only 0–9 and decimals
-                                            ],
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please Enter Freight';
-                                              }
-                                              return null;
-                                            },
+                                  Visibility(
+                                    visible: savedUser.hidefreight == 'N',
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildFormField(
+                                            label: "Freight",
+                                            labelColor:
+                                                CommonColors.appBarColor!,
+                                            isRequired:
+                                                savedUser.hidefreight == 'N',
+                                            icon: Icons.label_outline,
+                                            child: TextFormField(
+                                              enabled: true,
+                                              controller: _freightController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration:
+                                                  _inputDecoration("Freight"),
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp(
+                                                        r'^\d+\.?\d{0,2}$')), // ✅ allows only 0–9 and decimals
+                                              ],
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Please Enter Freight';
+                                                }
+                                                return null;
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(
                                       height: SizeConfig.mediumVerticalSpacing),

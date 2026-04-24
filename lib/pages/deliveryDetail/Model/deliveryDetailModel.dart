@@ -18,6 +18,8 @@ class DeliveryDetailModel {
   String? reversepickupstatus;
   String? consignmenttypeview;
   int? transactionid;
+  String? useracceptancestatus;
+  String? userallocationstatus;
 
   DeliveryDetailModel({
     this.commandstatus,

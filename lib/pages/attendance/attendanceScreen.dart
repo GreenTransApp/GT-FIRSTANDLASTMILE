@@ -11,8 +11,8 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/bottomSheet/datePicker.dart';
+import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/attendanceViewModel.dart';
 import 'package:gtlmd/pages/attendance/imageCapture.dart';
@@ -20,12 +20,8 @@ import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceRadiusModel.dart';
 import 'package:gtlmd/pages/attendance/viewAttendanceScreen.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
-import 'package:gtlmd/tiles/attendanceTile.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:http/http.dart' as http;
+import 'package:gtlmd/tiles/attendanceTile.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -101,7 +97,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
   Future<void> refreshScreen() async {
     setState(() {
-      print('refreshing ...');
+      // print('refreshing ...');
       _getAttendanceRadius();
       _getAttendance();
     });
@@ -112,37 +108,22 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     debugPrint("Status: ${status.isGranted}");
   }
 
-  // void convertUserImageToBase64(imgPath) {
-  //   setState(() async {
-  //     // // imagePath = imgPath!.path;
-  //     // final bytes = File(imgPath).readAsBytesSync();
-  //     // String base64Image = "data:image/png;base64," + base64Encode(bytes);
-  //     // debugPrint("img_path : $base64Image");
-
-  //     File imagefile = File(imgPath); //convert Path to File
-  //     Uint8List imagebytes = await imagefile.readAsBytes(); //convert to bytes
-  //     imagePath = base64.encode(imagebytes); //convert bytes to base64 string
-  //     print(imagePath);
-  //     _punchIn();
-  //   });
-  // }
-
   void convertUserImageToBase64(String imgPath) async {
     try {
       File imageFile = File(imgPath);
 
       if (!await imageFile.exists()) {
-        print("Error: File does not exist at path $imgPath");
+        // print("Error: File does not exist at path $imgPath");
         return;
       }
 
       Uint8List imageBytes = await imageFile.readAsBytes();
       imagePath = base64.encode(imageBytes);
 
-      print("Attendance Base64 Image: $imagePath");
+      // print("Attendance Base64 Image: $imagePath");
       _punchIn();
     } catch (e) {
-      print("Error converting image to Base64: $e");
+      // print("Error converting image to Base64: $e");
       failToast("Error While Capture Image Please Try Again");
     }
   }
@@ -167,7 +148,7 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
-        print('No camera found');
+        // print('No camera found');
         return;
       }
       final firstCamera = cameras.last; // Use first available camera
@@ -188,25 +169,6 @@ class _AttendanceScreenState extends State<AttendanceScreen>
       debugPrint('Error accessing camera: $e');
     }
   }
-
-  // void getUserImage() async {
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   final cameras = await availableCameras();
-  //   final firstCamera = cameras.last;
-
-  //   final path = /*await Navigator.push(
-  //       context,
-  //        MaterialPageRoute(
-  //           builder: (BuildContext context) => Imagecapture(
-  //                 camera: firstCamera,
-  //               ))); */
-  //       await Get.to(Imagecapture(camera: firstCamera));
-
-  //   debugPrint("Image Captured Screen 1: ${path}");
-  //   if (path != null && path != '') {
-  //     convertUserImageToBase64(path);
-  //   }
-  // }
 
   void showNotification(String type) {
     var punchType = "";
@@ -246,7 +208,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
   void getLocation(ALERT_TYPE alertType) async {
     debugPrint('getLocation');
     _currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.best));
     lat = _currentPosition!.latitude.toString();
     debugPrint('getLocation');
     long = _currentPosition!.longitude.toString();
@@ -558,71 +521,6 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           ),
         ],
       ),
-/* 
-       AppBar(
-        foregroundColor: CommonColors.White,
-        elevation: 0,
-        systemOverlayStyle: CommonColors.systemUiOverlayStyle,
-        leading: IconButton(
-            onPressed: () {
-              Get.back();
-            },
-            icon: const Icon(Icons.arrow_back)),
-        // centerTitle:true,
-        backgroundColor: CommonColors.colorPrimary,
-        title: const Text(
-          "ATTENDANCE",
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          // Icon (Icons.calendar_month_rounded, size: 30,),
-          // Icon (Icons.menu,size: 30,),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    showDatePickerBottomSheet(context, _dateChanged);
-                    // showNotification();
-                  },
-                  icon: const Icon(
-                    Icons.calendar_month_rounded,
-                    size: 25,
-                  ),
-                  tooltip: 'Period Selection',
-                ),
-                // IconButton(
-                //   onPressed: () {
-                //     Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => viewAttendanceScreen()));
-                //   },
-                // icon: const Icon(
-                //   Icons.menu,
-                //   size: 30,
-                // ),
-                InkWell(
-                  onTap: () {
-                    Get.to(viewAttendanceScreen());
-                  },
-                  child: Image.asset(
-                    "assets/images/menu.png",
-                    height: 25,
-                    color: CommonColors.White,
-                  ),
-                ),
-                // tooltip: 'View Attendance',
-                // ),
-              ],
-            ),
-          )
-        ],
-      ),
-
- */
       body: RefreshIndicator(
         color: Colors.white,
         backgroundColor: CommonColors.colorPrimary,
@@ -639,24 +537,22 @@ class _AttendanceScreenState extends State<AttendanceScreen>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Container(
-              child: Column(
-                children: [
-                  Expanded(
-                      child: ListView.builder(
-                    itemCount: attendanceList.length,
-                    itemBuilder: (context, index) {
-                      var currentAttendance = attendanceList[index];
-                      debugPrint(currentAttendance.toString());
-                      return AttendanceTile(
-                        attendanceModel: currentAttendance,
-                      );
-                      //  showProgressBar?CircularProgressIndicator(): AttendanceTile(attendaceModel: currentAttendance);
-                    },
-                  ))
-                  // AttendanceTile()
-                ],
-              ),
+            Column(
+              children: [
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: attendanceList.length,
+                  itemBuilder: (context, index) {
+                    var currentAttendance = attendanceList[index];
+                    debugPrint(currentAttendance.toString());
+                    return AttendanceTile(
+                      attendanceModel: currentAttendance,
+                    );
+                    //  showProgressBar?CircularProgressIndicator(): AttendanceTile(attendaceModel: currentAttendance);
+                  },
+                ))
+                // AttendanceTile()
+              ],
             ),
             Visibility(
                 visible: isProgressBarShowing,
@@ -667,43 +563,6 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           ],
         ),
       ),
-      // floatingActionButton: SpeedDial(
-      //   buttonSize: const Size.square(40),
-      //   // icon: Icons.expand_less_outlined,
-      //   // childPadding: EdgeInsets.all(40),
-      //   // childMargin: EdgeInsets.fromLTRB(0, 0, 0, 40),
-      //   childrenButtonSize: const Size.square(70),
-      //   spacing: 12,
-      //   spaceBetweenChildren: 20,
-      //   overlayColor: Colors.black,
-      //   overlayOpacity: 0.8,
-      //   animatedIcon: AnimatedIcons.menu_close,
-      //   activeBackgroundColor: CommonColors.colorPrimary,
-      //   backgroundColor: CommonColors.colorSecondary,
-      //   children: [
-      //     SpeedDialChild(
-      //         labelBackgroundColor: Colors.grey,
-      //         labelStyle: const TextStyle(color: Colors.black, fontSize: 20),
-      //         backgroundColor: CommonColors.danger,
-      //         child: const Icon(Icons.open_in_new_off),
-      //         // onTap: () => _buttonPressed(context, 1),
-      //         onTap: () {
-      //           setState(() {
-      //             _buttonPressed(context, 1);
-      //             showProgressBar();
-      //           });
-      //         },
-      //         label: 'Punch-Out'),
-      //     SpeedDialChild(
-      //         labelBackgroundColor: Colors.grey,
-      //         labelStyle: const TextStyle(color: Colors.black, fontSize: 20),
-      //         backgroundColor: CommonColors.success,
-      //         child: const Icon(Icons.open_in_new),
-      //         onTap: () => _buttonPressed(context, 2),
-      //         label: 'Punch-In')
-      //   ],
-      // ),
-
       persistentFooterButtons: [
         Row(
           children: [

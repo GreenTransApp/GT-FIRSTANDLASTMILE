@@ -43,51 +43,52 @@ class UserModel {
   String? drivercode;
   String? logindivisionname;
   int? logindivisionid;
-  UserModel({
-    this.commandstatus,
-    this.commandmessage,
-    this.compcode,
-    this.usercode,
-    this.username,
-    this.defaultbranchcode,
-    this.defaultbranchname,
-    this.usergroupcode,
-    this.sessionid,
-    this.ledcode,
-    this.ledname,
-    this.logindatetime,
-    this.stncode,
-    this.stnname,
-    this.custcode,
-    this.companytype,
-    this.companyid,
-    this.empdob,
-    this.empname,
-    this.empdepartment,
-    this.empdeignation,
-    this.custname,
-    this.unapprovedstrs,
-    this.controlcode,
-    this.password,
-    this.currency,
-    this.cscode,
-    this.genablemodegroup,
-    this.loginbranchtype,
-    this.loginbranchcode,
-    this.loginbranchname,
-    this.appactivedate,
-    this.employeeid,
-    this.executiveid,
-    this.dashboardnewdt,
-    this.companyid1,
-    this.compname,
-    this.mobileno,
-    this.emailid,
-    this.displayusername,
-    this.drivercode,
-    this.logindivisionid,
-    this.logindivisionname,
-  });
+  String? hidefreight;
+  UserModel(
+      {this.commandstatus,
+      this.commandmessage,
+      this.compcode,
+      this.usercode,
+      this.username,
+      this.defaultbranchcode,
+      this.defaultbranchname,
+      this.usergroupcode,
+      this.sessionid,
+      this.ledcode,
+      this.ledname,
+      this.logindatetime,
+      this.stncode,
+      this.stnname,
+      this.custcode,
+      this.companytype,
+      this.companyid,
+      this.empdob,
+      this.empname,
+      this.empdepartment,
+      this.empdeignation,
+      this.custname,
+      this.unapprovedstrs,
+      this.controlcode,
+      this.password,
+      this.currency,
+      this.cscode,
+      this.genablemodegroup,
+      this.loginbranchtype,
+      this.loginbranchcode,
+      this.loginbranchname,
+      this.appactivedate,
+      this.employeeid,
+      this.executiveid,
+      this.dashboardnewdt,
+      this.companyid1,
+      this.compname,
+      this.mobileno,
+      this.emailid,
+      this.displayusername,
+      this.drivercode,
+      this.logindivisionid,
+      this.logindivisionname,
+      this.hidefreight});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -133,6 +134,7 @@ class UserModel {
     drivercode = json['drivercode'];
     logindivisionid = json['logindivisionid'];
     logindivisionname = json['logindivisionname'];
+    hidefreight = json['hidefreight'];
   }
 
   Map<String, dynamic> toJson() {
@@ -180,6 +182,7 @@ class UserModel {
     data['drivercode'] = drivercode;
     data['logindivisionid'] = logindivisionid;
     data['logindivisionname'] = logindivisionname;
+    data['hidefreight'] = hidefreight;
     return data;
   }
 }

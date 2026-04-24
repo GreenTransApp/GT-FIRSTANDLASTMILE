@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/app_sizes.dart';
@@ -154,14 +155,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       }
     } else {
       switch (modelDetail.pickupstatus) {
-        // case "U":
-        //   status = "Undelivered";
-        //   dotColor = CommonColors.red500!;
-        //   cardBorderColor = CommonColors.red500!;
-        //   cardBgColor = CommonColors.red50!;
-        //   statusIcon = Icons.cancel;
-        //   statusIconColor = CommonColors.red500!;
-        //   break;
+        case "U":
+          status = "Rejected";
+          dotColor = CommonColors.red500!;
+          // cardBorderColor = CommonColors.red500!;
+          cardBgColor = CommonColors.red50!;
+          statusIcon = Icons.cancel;
+          statusIconColor = CommonColors.red500!;
+          break;
         case "D":
           status = "Picked";
           dotColor = CommonColors.green500!;
@@ -288,8 +289,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
@@ -320,12 +321,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               ),
                             ],
                           ),
-                          // Text('${modelDetail.consignmenttypeview}',
-                          //     style: TextStyle(
-                          //       fontSize: 12,
-                          //       fontWeight: FontWeight.w800,
-                          //       color: CommonColors.colorPrimary,
-                          //     )),
+                          isNullOrEmpty(modelDetail.undeliverreason)
+                              ? const SizedBox.shrink()
+                              : Text('Reason: ${modelDetail.undeliverreason}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: CommonColors.colorPrimary,
+                                  )),
                         ],
                       ),
                     ],
@@ -583,7 +586,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ),
                   ],
                   if (modelDetail.consignmenttype == "P" &&
-                      modelDetail.pickupstatus == "U") ...[
+                      (modelDetail.pickupstatus == "P")) ...[
                     const SizedBox(height: 16),
                     Row(
                       children: [

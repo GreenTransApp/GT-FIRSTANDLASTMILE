@@ -11,22 +11,14 @@ import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
-
-import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/runningTripTile.dart';
 import 'package:lottie/lottie.dart';
 
 class RunningTrips extends StatefulWidget {
-  // final List<TripModel> deliveryList;
   final AttendanceModel attendanceModel;
-  // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
-  // final Future<void> Function() onRefresh;
-  RunningTrips({
+  const RunningTrips({
     super.key,
-    // required this.deliveryList,
     required this.attendanceModel,
-    // this.onUpdate,
-    // required this.onRefresh
   });
 
   @override
@@ -39,9 +31,9 @@ class RunningTripsState extends State<RunningTrips> {
   late AttendanceModel _attendanceModel = AttendanceModel();
   late LoadingAlertService loadingAlertService;
   RunningTripsViewModel viewModel = RunningTripsViewModel();
-  List<StreamSubscription> _subscription = [];
+  final List<StreamSubscription> _subscription = [];
   final locationService = LocationService();
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   late String query = "";
   @override
   void initState() {
@@ -51,19 +43,16 @@ class RunningTripsState extends State<RunningTrips> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
-    // getTripList();
   }
 
   setObservers() {
     _subscription.add(viewModel.viewDialog.stream.listen((showLoading) async {
       if (showLoading) {
         setState(() {
-          // isLoading = true;
           loadingAlertService.showLoading();
         });
       } else {
         setState(() {
-          // isLoading = false;
           loadingAlertService.hideLoading();
         });
       }
@@ -187,15 +176,9 @@ class RunningTripsState extends State<RunningTrips> {
     } else {
       for (var trip in _tripList) {
         if (trip.tripid
-                .toString()
-                .toLowerCase()
-                .contains(newQuery.toLowerCase())
-            //     ||
-            // trip.manifestno
-            //     .toString()
-            //     .toLowerCase()
-            //     .contains(newQuery.toLowerCase())
-            ) {
+            .toString()
+            .toLowerCase()
+            .contains(newQuery.toLowerCase())) {
           newMatchQuery.add(trip);
         }
       }
@@ -214,74 +197,54 @@ class RunningTripsState extends State<RunningTrips> {
       onRefresh: onRefresh,
       child: Scaffold(
         body: Container(
-          color: CommonColors.blueGrey?.withOpacity(0.1),
+          color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
           child: Column(
             children: [
-              Container(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: SizeConfig.horizontalPadding,
-                      vertical: SizeConfig.verticalPadding),
-                  child: TextField(
-                    controller: _searchController,
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    cursorColor: CommonColors.appBarColor,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: CommonColors.appBarColor,
-                        size: SizeConfig.largeIconSize,
-                      ),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _searchController.clear();
-                            updateSearch('');
-                          });
-                        },
-                        icon: _searchController.text.isNotEmpty
-                            ? const Icon(Icons.clear)
-                            : const Icon(
-                                Icons.clear,
-                                color: Colors.transparent,
-                              ),
-                      ),
-                      hintText: 'Search',
-                      filled: true,
-                      fillColor: CommonColors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            10.0), // Set the desired radius
-                        borderSide: BorderSide.none,
-                      ),
-                      // border: OutlineInputBorder(
-                      //   borderRadius: BorderRadius.all(
-                      //       Radius.circular(SizeConfig.extraLargeRadius)),
-                      //   // borderSide:
-                      //   //     const BorderSide(color: CommonColors.appBarColor)
-                      // ),
-                      // enabledBorder: OutlineInputBorder(
-                      //     borderRadius:
-                      //         BorderRadius.circular(SizeConfig.extraLargeRadius),
-                      //     borderSide:
-                      //         const BorderSide(color: CommonColors.appBarColor)),
-                      // focusedBorder: OutlineInputBorder(
-                      //     borderRadius:
-                      //         BorderRadius.circular(SizeConfig.extraLargeRadius),
-                      //     borderSide:
-                      //         const BorderSide(color: CommonColors.appBarColor)),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                child: TextField(
+                  controller: _searchController,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.done,
+                  cursorColor: CommonColors.appBarColor,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: CommonColors.appBarColor,
+                      size: SizeConfig.largeIconSize,
                     ),
-                    // onChanged: provider.grSearch,
-                    onChanged: updateSearch,
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchController.clear();
+                          updateSearch('');
+                        });
+                      },
+                      icon: _searchController.text.isNotEmpty
+                          ? const Icon(Icons.clear)
+                          : const Icon(
+                              Icons.clear,
+                              color: Colors.transparent,
+                            ),
+                    ),
+                    hintText: 'Search',
+                    filled: true,
+                    fillColor: CommonColors.white,
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(10.0), // Set the desired radius
+                      borderSide: BorderSide.none,
+                    ),
                   ),
+                  onChanged: updateSearch,
                 ),
               ),
               Expanded(
                 child: Container(
-                  // child: (_tripList.isEmpty) == true
                   child: (filterList.isEmpty) == true
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -306,16 +269,13 @@ class RunningTripsState extends State<RunningTrips> {
                         )
                       : ListView.builder(
                           shrinkWrap: true,
-                          // physics: const AlwaysScrollableScrollPhysics(),
-                          // itemCount: _tripList.length,
+                          physics: const BouncingScrollPhysics(),
                           itemCount: filterList.length,
                           itemBuilder: (context, index) {
-                            // var currentData = _tripList[index];
                             var currentData = filterList[index];
                             return RunningTripTile(
                               model: currentData,
                               attendanceModel: _attendanceModel,
-                              // onUpdate: onUpdate,
                               onRefresh: onRefresh,
                             );
                           },
