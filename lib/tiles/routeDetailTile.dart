@@ -251,20 +251,30 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                   Visibility(
                     visible: isPickUp,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Starting location',
+                          'Starting location:',
                           style: TextStyle(
                             color: CommonColors.appBarColor,
                             fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
-                        Text(
-                          '${modelDetail.address}',
-                          style: TextStyle(
-                            color: CommonColors.appBarColor,
-                            fontSize: SizeConfig.smallTextSize,
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: isPickUp,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${modelDetail.address}',
+                            style: TextStyle(
+                              color: CommonColors.appBarColor,
+                              fontSize: SizeConfig.smallTextSize,
+                            ),
                           ),
                         ),
                       ],
@@ -282,11 +292,21 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                             fontSize: SizeConfig.smallTextSize,
                           ),
                         ),
-                        Text(
-                          '${modelDetail.address}',
-                          style: TextStyle(
-                            color: CommonColors.black54,
-                            fontSize: SizeConfig.smallTextSize,
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: isDesitnation,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${modelDetail.address}',
+                            style: TextStyle(
+                              color: CommonColors.black54,
+                              fontSize: SizeConfig.smallTextSize,
+                            ),
                           ),
                         ),
                       ],
