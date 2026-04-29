@@ -34,6 +34,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import 'commonModel/allFormLoadModel.dart';
+
 const METHOD_CHANNEL = MethodChannel('com.map_api_key.flutter');
 //  String GOOGLE_MAPS_API_KEY = "AIzaSyBAVL3a5xqVrQOnkvQbs8cgJ-V2tLnpb3E"; //jeena biker  api key
 String GOOGLE_MAPS_API_KEY = "";
@@ -54,7 +56,7 @@ AttendanceModel todayAttendance = AttendanceModel();
 int? executiveid = null;
 int? employeeid = null;
 DiscoveredDevice? connectedDevice;
-
+Map<String, AllFormLoadModel> fieldMap = {};
 // List<CurrentDeliveryModel> activeDrsList = List.empty(growable: true);
 class ScreenDimension {
   static double width = 0.0;
@@ -948,3 +950,69 @@ Future<String> getDeviceId() async {
 enum ApiCallingStatus { initial, loading, success, error }
 
 Map<String, String> unitTypeList = {'C': 'CM', 'I': 'INCH', 'M': 'CBM'};
+
+
+void createFieldMap(List<AllFormLoadModel> pageLoadData) {
+  fieldMap.clear();
+
+  for (var item in pageLoadData) {
+    final key = item.Column_Name;
+
+    if (key != null && key.isNotEmpty) {
+      fieldMap[key.toLowerCase()] = item ;
+    }
+    debugPrint(fieldMap.toString());
+  }
+
+
+}
+
+enum RETURN_TYPE {LabelName,FieldInfo,PlaceHolder,DisableColumn,IsRequired,IsDefaultDisable,DisableInEditMode}
+String? getFormStringValue(String key,RETURN_TYPE returnType) {
+  final item =   fieldMap[key.toLowerCase()];
+  if(item == null) return  null;
+  String? value;
+  switch(returnType) {
+    case RETURN_TYPE.LabelName:
+      value = item.LabelName;
+      break;
+
+    case RETURN_TYPE.FieldInfo:
+      value  = item.FieldInfo;
+      break;
+
+    case RETURN_TYPE.PlaceHolder:
+      value = item.PlaceHolder;
+      break;
+    default:
+      return null;
+  }
+  if (value == null || value.trim().isEmpty) {
+    return null;
+  }
+  return value;
+
+}
+
+bool? getFormBoolValue(String key,RETURN_TYPE returnType) {
+  final item =   fieldMap[key.toLowerCase()];
+  if(item == null) return  null;
+  switch(returnType) {
+    case RETURN_TYPE.DisableColumn:
+      return item.DisableColumn;
+
+    case RETURN_TYPE.DisableInEditMode:
+      return item.DisableInEditMode;
+
+    case RETURN_TYPE.IsDefaultDisable:
+      return item.IsDefaultDisable;
+
+    case RETURN_TYPE.IsRequired:
+      return item.IsRequired;
+    default:
+      return null;
+  }
+  // return fieldMap[key.toLowerCase()]?.LabelName;
+}
+
+

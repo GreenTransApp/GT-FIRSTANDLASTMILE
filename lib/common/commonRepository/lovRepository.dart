@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
-import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/common/repository/lovIsolate.dart';
+import 'package:gtlmd/common/commonModel/allFormLoadModel.dart';
+
+import 'package:gtlmd/common/commonRepository/lovIsolate.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/validateEwayBillModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
@@ -17,6 +18,8 @@ import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/pinCodeModel.dart';
 import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
+
+import '../commonResponse.dart';
 
 class LovRepository extends BaseRepository {
   StreamController<String> isErrorLiveData = StreamController();
@@ -33,6 +36,7 @@ class LovRepository extends BaseRepository {
   StreamController<List<CngrCngeModel>> cngrList = StreamController();
   StreamController<List<CngrCngeModel>> cngeList = StreamController();
   StreamController<List<DepartmentModel>> departmentList = StreamController();
+  StreamController<List<AllFormLoadModel>> allFormLoadList = StreamController();
 
   Future<void> getPincodeList(Map<String, String> params) async {
     viewDialog.add(true);
@@ -255,6 +259,44 @@ class LovRepository extends BaseRepository {
     } else {
       viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<List<AllFormLoadModel>> getAllFormLoad(
+      Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        CommonResponse resp =
+            await apiGet("${lmdUrl}GetAllFormLoad", params);
+
+        if (resp.commandStatus == 1) {
+          List<dynamic> list =
+              await compute(parseListIsolate, resp.dataSet.toString());
+          List<AllFormLoadModel> resultList = List.generate(
+              list.length, (index) => AllFormLoadModel.fromJson(list[index]));
+          allFormLoadList.add(resultList);
+          return resultList;
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+        return [];
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+        return [];
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+        return [];
+      }
+      // viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+      return [];
     }
   }
 }

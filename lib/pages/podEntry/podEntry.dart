@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -12,11 +13,14 @@ import 'package:gtlmd/bottomSheet/multiImageBottomSheet.dart';
 import 'package:gtlmd/bottomSheet/signatureBottomSheet.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/commonModel/allFormLoadModel.dart';
+import 'package:gtlmd/common/commonViewModel/lovViewModel.dart';
 
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
-import 'package:gtlmd/common/utils.dart';
+
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/podEntry/Model/podEntryModel.dart';
@@ -94,6 +98,9 @@ class _PodEntryState extends State<PodEntry> {
   late FocusNode dmgPckgsFocus;
   late FocusNode remarksFocus;
   String currentAddress = '';
+  final LovViewModel lovViewModel = LovViewModel();
+  List<AllFormLoadModel> _formLoadDataList = List.empty(growable: true);
+  // Map<String, AllFormLoadModel> fieldMap = {};
 
   @override
   void initState() {
@@ -118,6 +125,20 @@ class _PodEntryState extends State<PodEntry> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     getLoginPrefs();
+  }
+
+  Future<List<AllFormLoadModel>> getFormLoadData() async {
+    Map<String, String> params = {
+      "prmlogincompanyid": savedUser.companyid.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmlogindivisionid": savedUser.logindivisionid.toString(),
+      "prmtablename": "grpod",
+      "prmusercode": savedUser.usercode.toString(),
+      "prmmenucode": "GTAPP_PODENTRY",
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    return lovViewModel.getFormLoadData(params);
   }
 
   Future<void> fetchLocationAndSubmit() async {
@@ -147,7 +168,12 @@ class _PodEntryState extends State<PodEntry> {
                           user.commandstatus == -1)
                         throw Exception("")
                       else
-                        {setObservers(), getGrDetail(), getPodLovs()}
+                        {
+                          setObservers(),
+                          getFormLoadData(),
+                          getGrDetail(),
+                          getPodLovs()
+                        }
                     })
               }
           });
@@ -177,6 +203,7 @@ class _PodEntryState extends State<PodEntry> {
         : pod.receivetime.toString();
     _destinationNameController.text = pod.destname.toString();
     _receivedByController.text = pod.cnge.toString();
+    _receiverMobileByController.text = pod.cngetelno.toString();
 
     isSignRequired = pod.sign == "Y" ? true : false;
     isStampRequired = pod.stamp == "Y" ? true : false;
@@ -210,6 +237,22 @@ class _PodEntryState extends State<PodEntry> {
           failToast("Something went wrong");
         }
         Get.back();
+      }
+    });
+    lovViewModel.allFormLoadList.stream.listen((data) {
+      if (data[0].CommandStatus == 1) {
+        setState(() {
+          _formLoadDataList = data;
+          createFieldMap(_formLoadDataList);
+          debugPrint(model.toString());
+        });
+      } else {
+        if (data[0].CommandMessage != null) {
+          failToast(data[0].CommandMessage!);
+        } else {
+          failToast("Something went wrong");
+        }
+        // Get.back();
       }
     });
 
@@ -914,7 +957,10 @@ class _PodEntryState extends State<PodEntry> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildFormField(
-                            label: "Consignment Number",
+                            // label: "Consignment Number",
+                            label: getFormStringValue(
+                                    "grno", RETURN_TYPE.LabelName) ??
+                                "Consignment Number",
                             isRequired: false,
                             icon: Icons.inventory_2_outlined,
                             child: TextFormField(
@@ -924,7 +970,9 @@ class _PodEntryState extends State<PodEntry> {
                                   color: CommonColors.appBarColor,
                                   fontSize: SizeConfig.mediumTextSize),
                               decoration: _inputDecoration(
-                                "Consignment Number",
+                                getFormStringValue(
+                                        "grno", RETURN_TYPE.PlaceHolder) ??
+                                    "Consignment Number",
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -936,7 +984,10 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           const SizedBox(height: 20),
                           _buildFormField(
-                            label: "Total Weight",
+                            // label: "Total Weight",
+                            label: getFormStringValue(
+                                    "cweight", RETURN_TYPE.LabelName) ??
+                                "Total Weight",
                             isRequired: false,
                             icon: Icons.inventory_2_outlined,
                             child: TextFormField(
@@ -960,7 +1011,10 @@ class _PodEntryState extends State<PodEntry> {
                             children: [
                               Expanded(
                                 child: _buildFormField(
-                                    label: "Delivery Date",
+                                    // label: "Delivery Date",
+                                    label: getFormStringValue(
+                                            "dlvdt", RETURN_TYPE.LabelName) ??
+                                        "Delivery Date",
                                     isRequired: true,
                                     icon: Icons.calendar_today,
                                     child: Container(
@@ -996,7 +1050,10 @@ class _PodEntryState extends State<PodEntry> {
                                   width: SizeConfig.mediumHorizontalSpacing),
                               Expanded(
                                 child: _buildFormField(
-                                  label: 'Delivery Time',
+                                  // label: 'Delivery Time',
+                                  label: getFormStringValue(
+                                          "dlvtime", RETURN_TYPE.LabelName) ??
+                                      "Delivery Time",
                                   isRequired: true,
                                   icon: Icons.access_time,
                                   child: Container(
@@ -1033,7 +1090,10 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           _buildFormField(
-                            label: 'Received By',
+                            // label: 'Received By',
+                            label: getFormStringValue(
+                                    "name", RETURN_TYPE.LabelName) ??
+                                "Received By",
                             isRequired: true,
                             icon: Icons.person_outline,
                             child: TextFormField(
@@ -1056,7 +1116,10 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           _buildFormField(
-                            label: 'Receiver Mobile Number',
+                            // label: 'Receiver Mobile Number',
+                            label: getFormStringValue(
+                                    "phno", RETURN_TYPE.LabelName) ??
+                                "Receiver Mobile Number",
                             isRequired: true,
                             icon: Icons.phone_android_outlined,
                             child: TextFormField(
@@ -1101,7 +1164,10 @@ class _PodEntryState extends State<PodEntry> {
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           // Relation
                           _buildFormField(
-                            label: 'Relation',
+                            // label: 'Relation',
+                            label: getFormStringValue(
+                                    "relation", RETURN_TYPE.LabelName) ??
+                                "Relation",
                             isRequired: true,
                             icon: Icons.people_outline,
                             child: DropdownButtonFormField<String>(
@@ -1147,7 +1213,10 @@ class _PodEntryState extends State<PodEntry> {
                           // const SizedBox(height: 20),
                           // Delivery Packages
                           _buildFormField(
-                            label: "Deliver Pckgs",
+                            // label: "Deliver Pckgs",
+                            label: getFormStringValue(
+                                    "pckgs", RETURN_TYPE.LabelName) ??
+                                "Deliver Pckgs",
                             isRequired: true,
                             icon: Icons.delivery_dining_outlined,
                             child: TextFormField(
@@ -1192,7 +1261,10 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           // Damage Packages
                           _buildFormField(
-                            label: "Damaged Pckgs",
+                            // label: "Damaged Pckgs",
+                            label: getFormStringValue(
+                                    "damage", RETURN_TYPE.LabelName) ??
+                                "Damaged Pckgs",
                             isRequired: true,
                             icon: Icons.delivery_dining_outlined,
                             child: TextFormField(
@@ -1570,7 +1642,10 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                           // Remarks
                           _buildFormField(
-                            label: 'Remarks',
+                            // label: 'Remarks',
+                            label: getFormStringValue(
+                                    "remarks", RETURN_TYPE.LabelName) ??
+                                "Remarks",
                             isRequired: false,
                             icon: Icons.comment_outlined,
                             child: TextFormField(

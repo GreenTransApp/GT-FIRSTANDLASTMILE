@@ -16,7 +16,7 @@ import 'package:gtlmd/common/selectionBottomSheets/customerSelectionBottomSheet.
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/selectionBottomSheets/departmentSelectionBottomSheet.dart';
 import 'package:gtlmd/common/selectionBottomSheets/vehicleSelectionBottomSheet.dart';
-import 'package:gtlmd/common/viewModel/lovViewModel.dart';
+import 'package:gtlmd/common/commonViewModel/lovViewModel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/bookingList/bookingListScreen.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/appFormField.dart';

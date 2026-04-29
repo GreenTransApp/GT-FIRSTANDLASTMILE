@@ -33,6 +33,8 @@ class PodEntryModel {
   String? drsno;
   String? dlvboyname;
   String? poddate;
+  String? cngrtelno;
+  String? cngetelno;
 
   PodEntryModel({
     this.commandstatus,
@@ -69,6 +71,8 @@ class PodEntryModel {
     this.drsno,
     this.dlvboyname,
     this.poddate,
+    this.cngrtelno,
+    this.cngetelno,
   });
 
   PodEntryModel.fromJson(Map<String, dynamic> json) {
@@ -106,6 +110,8 @@ class PodEntryModel {
     drsno = json['drsno'];
     dlvboyname = json['dlvboyname'];
     poddate = json['poddate'];
+    cngrtelno = json['cngrtelno'];
+    cngetelno = json['cngetelno'];
   }
 
   Map<String, dynamic> toJson() {
@@ -144,6 +150,8 @@ class PodEntryModel {
     data['drsno'] = drsno;
     data['dlvboyname'] = dlvboyname;
     data['poddate'] = poddate;
+    data['cngetelno'] = cngetelno;
+    data['cngrtelno'] = cngrtelno;
     return data;
   }
 }

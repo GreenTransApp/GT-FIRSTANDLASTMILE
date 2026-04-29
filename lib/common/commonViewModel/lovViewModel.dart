@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
-import 'package:gtlmd/common/repository/lovRepository.dart';
+import 'package:gtlmd/common/commonModel/allFormLoadModel.dart';
+import 'package:gtlmd/common/commonRepository/lovRepository.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/validateEwayBillModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/LoadTypeModel.dart';
@@ -27,6 +28,7 @@ class LovViewModel extends BaseViewModel {
   StreamController<List<CngrCngeModel>> cngrList = StreamController();
   StreamController<List<CngrCngeModel>> cngeList = StreamController();
   StreamController<List<DepartmentModel>> deptList = StreamController();
+  StreamController<List<AllFormLoadModel>> allFormLoadList = StreamController();
 
   LovViewModel() {
     viewDialog = repository.viewDialog;
@@ -40,6 +42,7 @@ class LovViewModel extends BaseViewModel {
     cngrList = repository.cngrList;
     cngeList = repository.cngeList;
     deptList = repository.departmentList;
+    allFormLoadList = repository.allFormLoadList;
   }
 
   Future<List<BranchModel>> getBranchList(Map<String, String> params) async {
@@ -63,5 +66,10 @@ class LovViewModel extends BaseViewModel {
 
   Future<void> getBookingLovs(Map<String, String> params) async {
     return repository.getBookingLovs(params);
+  }
+
+  Future<List<AllFormLoadModel>> getFormLoadData(
+      Map<String, String> params) async {
+    return repository.getAllFormLoad(params);
   }
 }

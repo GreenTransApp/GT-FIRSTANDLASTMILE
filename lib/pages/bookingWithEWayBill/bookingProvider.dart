@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/common/repository/lovRepository.dart';
-import 'package:gtlmd/common/viewModel/lovViewModel.dart';
+import 'package:gtlmd/common/commonRepository/lovRepository.dart';
+import 'package:gtlmd/common/commonViewModel/lovViewModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBillRepository.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/EwayBillCredentialsModel.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/models/ewayBillModel.dart';

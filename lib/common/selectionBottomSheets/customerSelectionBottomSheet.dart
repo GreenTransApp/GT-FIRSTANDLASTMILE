@@ -8,7 +8,7 @@ import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/common/repository/lovIsolate.dart';
+import 'package:gtlmd/common/commonRepository/lovIsolate.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/design_system/size_config.dart';
