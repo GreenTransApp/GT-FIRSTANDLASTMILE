@@ -60,6 +60,7 @@ class CommonColors {
   static Color? orange = const Color.fromARGB(255, 241, 137, 1);
   static Color? blue50 = Colors.blue.shade50;
   static Color? blue600 = Colors.blue.shade600;
+  static Color? transparent = Colors.transparent;
 
 // CHANGE all Color? to Color (non-nullable)
   static const Color pageBackground = Color.fromARGB(255, 246, 246, 246);

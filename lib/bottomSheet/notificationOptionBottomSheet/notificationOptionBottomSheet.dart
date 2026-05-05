@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/bottomSheet/notificationOptionBottomSheet/model/notificationOptionModel.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Toast.dart';
+import 'package:gtlmd/pages/reminderList/reminderList.dart';
 
 class NotificationOptionBottomSheet extends StatefulWidget {
   const NotificationOptionBottomSheet({super.key});
@@ -15,7 +17,7 @@ class _NotificationOptionBottomSheetState
     extends State<NotificationOptionBottomSheet> {
   static List<NotificationOptionModel> optionList = [
     NotificationOptionModel(
-        title: "Reminder", key: "R", pageName: "ReminderList", count: 0),
+        title: "Reminder", key: "R", pageName: "ReminderListPage", count: 0),
     NotificationOptionModel(
         title: "Jinni Approval",
         key: "J",
@@ -46,7 +48,19 @@ class _NotificationOptionBottomSheetState
   }
 
   void navigateToPage(NotificationOptionModel model) {
-    Get.to(() => model.pageName);
+      switch(model.key){
+        case "R":
+        Get.to(() => ReminderListPage());
+          break;
+        case "J":
+        Get.to(() => ReminderListPage());
+          break;
+        default:
+
+      }
+    // Get.to(() => model.pageName);
+
+
   }
 
   @override
@@ -88,65 +102,69 @@ class _NotificationOptionBottomSheetState
             itemBuilder: (context, index) {
               final item = optionList[index];
 
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: CommonColors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CommonColors.grey200!,
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    )
-                  ],
-                ),
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: getColor(item.key!).withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      getIcon(item.key!),
-                      color: getColor(item.key!),
-                    ),
+              return InkWell(
+                onTap: () {
+                  navigateToPage(item);
+                 // failToast("test");
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: CommonColors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: CommonColors.grey200!,
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      )
+                    ],
                   ),
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title ?? "",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
-                        ),
+                  child: ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: getColor(item.key!).withOpacity(0.15),
+                        shape: BoxShape.circle,
                       ),
-                      if ((item.count ?? 0) >= 0)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: getColor(item.key!),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                      child: Icon(
+                        getIcon(item.key!),
+                        color: getColor(item.key!),
+                      ),
+                    ),
+                    title: Row(
+                      children: [
+                        Expanded(
                           child: Text(
-                            item.count.toString(),
-                            style: TextStyle(
-                              color: CommonColors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                            item.title ?? "",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
                             ),
                           ),
                         ),
-                    ],
+                        if ((item.count ?? 0) >= 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: getColor(item.key!),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              item.count.toString(),
+                              style: TextStyle(
+                                color: CommonColors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    navigateToPage(item);
-                  },
                 ),
               );
             },
