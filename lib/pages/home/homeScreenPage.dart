@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
@@ -23,6 +24,7 @@ import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
+import 'package:gtlmd/pages/home/Model/notificationCountModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
@@ -81,6 +83,7 @@ class _HomeScreen extends State<HomeScreen>
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
+  NotificationCountModel countModel = NotificationCountModel();
   @override
   void initState() {
     super.initState();
@@ -132,6 +135,7 @@ class _HomeScreen extends State<HomeScreen>
     // Fluttertoast.showToast(msg: 'Refreshing');
     getDashboardDetails();
     fetchOfflineDrsCounts();
+    getNotifiocaionCount();
   }
 
   fetchLocationStartTimeInterval() {
@@ -230,7 +234,8 @@ class _HomeScreen extends State<HomeScreen>
         } else if (validate.executiveid == null) {
           failToast("Invalid User details");
           authService.logout(context);
-        } else {
+        } else if (validate.executiveid! > 0) {
+          getNotifiocaionCount();
           // getDashboardDetails();
         }
       });
@@ -278,6 +283,22 @@ class _HomeScreen extends State<HomeScreen>
             debugPrint('[Service] Restarting service to apply new interval');
             checkAuthenticatedUserForRunService(tripsList);
           }
+        }
+      }
+    }));
+
+    _subscriptions
+        .add(viewModel.notificationCountLiveData.stream.listen((value) {
+      if (value.commandstatus == 1) {
+        setState(() {
+          countModel = value;
+          notificationCountModel = countModel;
+        });
+      } else {
+        if (value.commandmessage != null) {
+          failToast(value.commandmessage!);
+        } else {
+          failToast("Something went wrong");
         }
       }
     }));
@@ -559,6 +580,21 @@ class _HomeScreen extends State<HomeScreen>
 
     printParams(params);
     viewModel.callDashboardDetail(params);
+  }
+
+  void getNotifiocaionCount() {
+    Map<String, String> params = {
+      "prmcompanyid": savedLogin.companyid.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmloginbranchtype": savedUser.loginbranchtype.toString(),
+      "prmlogindt": convert2SmallDateTime(savedUser.logindatetime.toString()),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmdivisionid": savedUser.logindivisionid.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    printParams(params);
+    viewModel.getNotificationCount(params);
   }
 
   void _dateChanged(String fromDt, String toDt) {
@@ -882,7 +918,7 @@ class _HomeScreen extends State<HomeScreen>
               SizedBox(width: SizeConfig.mediumHorizontalSpacing),
               Badge(
                 backgroundColor: CommonColors.orange,
-                label: Text('${offlinePodCount + offlineUndeliveryCount}'),
+                label: Text('${countModel.totalcount ?? 0}'),
                 offset: const Offset(-3, 5),
                 child: IconButton.outlined(
                   style: ButtonStyle(
@@ -896,8 +932,9 @@ class _HomeScreen extends State<HomeScreen>
                   ),
                   color: CommonColors.white,
                   onPressed: () async {
-                    await notificationOptionBottomSheet(context);
-                    refreshScreen();
+                    await notificationOptionBottomSheet(context).then((value) {
+                      refreshScreen();
+                    });
                   },
                   icon: Icon(
                     Symbols.notifications,

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/pages/home/Model/notificationCountModel.dart';
 import 'package:gtlmd/pages/home/isolates.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
@@ -28,6 +29,8 @@ class HomeRepository extends BaseRepository {
       StreamController();
   StreamController<AttendanceModel> attendanceList = StreamController();
   StreamController<ValidateDeviceModel> validateDeviceList = StreamController();
+  StreamController<NotificationCountModel> notificationCountLiveData =
+      StreamController();
   StreamController<DrsDateTimeUpdateModel> drsDateTimeUpdate =
       StreamController();
   StreamController<List<TripModel>> tripsLiveData = StreamController();
@@ -137,6 +140,37 @@ class HomeRepository extends BaseRepository {
       } catch (err) {
         isErrorLiveData.add(err.toString());
         viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> getNotificationCount(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+
+    if (hasInternet) {
+      CommonResponse resp =
+          await apiGet("${lmdUrl}GetNotificationUnreadCount", params);
+      viewDialog.add(false);
+
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        Iterable<MapEntry<String, dynamic>> entries = table.entries;
+        for (final entry in entries) {
+          if (entry.key == "Table") {
+            List<dynamic> list1 = entry.value;
+            List<NotificationCountModel> resultList = List.generate(
+                list1.length,
+                (index) => NotificationCountModel.fromJson(list1[index]));
+            notificationCountLiveData.add(resultList[0]);
+          }
+        }
+      } else {
+        isErrorLiveData.add(resp.commandMessage!);
       }
       viewDialog.add(false);
     } else {

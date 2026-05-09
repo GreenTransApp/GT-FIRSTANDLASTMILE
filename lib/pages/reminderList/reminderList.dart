@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/reminderList/models/reminderLIstModel.dart';
@@ -60,6 +62,23 @@ class _ReminderListPageState extends State<ReminderListPage> {
         _filterList = _reminderList;
       });
     }));
+
+    _subscription.add(viewModel.archieveLiveData.stream.listen((data) {
+      if (data.CommandStatus == 1) {
+        if (data.CommandMessage != null) {
+          successToast(data.CommandMessage!);
+        } else {
+          successToast("sent");
+        }
+        getReminderList();
+      } else {
+        if (data.CommandMessage != null) {
+          failToast(data.CommandMessage!);
+        } else {
+          failToast("Something went wrong");
+        }
+      }
+    }));
   }
 
   void getReminderList() {
@@ -102,113 +121,139 @@ class _ReminderListPageState extends State<ReminderListPage> {
     }
   }
 
+  okayCallBack(ReminderListModel model) {
+    archiveReminder(model);
+  }
+
+  void cancelPopup() {
+    Get.back();
+  }
+
+  alertBeforeArchive(ReminderListModel model) {
+    commonAlertDialog(
+        context,
+        "ALERT!",
+        "Are you sure you want to archive ${model.subject}?",
+        "",
+        const Icon(Icons.archive),
+        () => okayCallBack(model),
+        cancelCallBack: cancelPopup);
+  }
+
+  archiveReminder(ReminderListModel model) {
+    Map<String, String> params = {
+      "prmcompanyid": savedUser.companyid.toString(),
+      "prmalertid": model.alertid.toString(),
+    };
+
+    viewModel.archieveReminder(params);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      color: Colors.white,
-      backgroundColor: CommonColors.colorPrimary,
-      onRefresh: onRefresh,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 4,
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  CommonColors.colorPrimary!,
-                  CommonColors.primaryColorShade!,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 4,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                CommonColors.colorPrimary!,
+                CommonColors.primaryColorShade!,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          ),
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(
-                Icons.arrow_back_ios_new,
-                color: CommonColors.white,
-                size: 18,
-              ),
-            ),
-          ),
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Reminders',
-                style: TextStyle(
-                  color: CommonColors.White,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              Text(
-                'Your notifications',
-                style: TextStyle(
-                  color: CommonColors.white!.withOpacity(0.8),
-                  fontSize: 11,
-                ),
-              ),
-            ],
           ),
         ),
-        body: Container(
-          color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.horizontalPadding,
-                    vertical: SizeConfig.verticalPadding),
-                child: TextField(
-                  controller: _searchController,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.done,
-                  cursorColor: CommonColors.appBarColor,
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: CommonColors.appBarColor,
-                      size: SizeConfig.largeIconSize,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchController.clear();
-                          updateSearch('');
-                        });
-                      },
-                      icon: _searchController.text.isNotEmpty
-                          ? const Icon(Icons.clear)
-                          : Icon(
-                              Icons.clear,
-                              color: CommonColors.transparent,
-                            ),
-                    ),
-                    hintText: 'Search',
-                    filled: true,
-                    fillColor: CommonColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(10.0), // Set the desired radius
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  onChanged: updateSearch,
-                ),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              color: CommonColors.white,
+              size: 18,
+            ),
+          ),
+        ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Reminders',
+              style: TextStyle(
+                color: CommonColors.White,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
-              Expanded(
+            ),
+            Text(
+              'Your notifications',
+              style: TextStyle(
+                color: CommonColors.white!.withOpacity(0.8),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
+              child: TextField(
+                controller: _searchController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                cursorColor: CommonColors.appBarColor,
+                obscureText: false,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchController.clear();
+                        updateSearch('');
+                      });
+                    },
+                    icon: _searchController.text.isNotEmpty
+                        ? const Icon(Icons.clear)
+                        : Icon(
+                            Icons.clear,
+                            color: CommonColors.transparent,
+                          ),
+                  ),
+                  hintText: 'Search',
+                  filled: true,
+                  fillColor: CommonColors.white,
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Set the desired radius
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: updateSearch,
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: onRefresh,
                 child: Container(
                   child: (_filterList.isEmpty) == true
                       ? ListView(
@@ -234,19 +279,20 @@ class _ReminderListPageState extends State<ReminderListPage> {
                         )
                       : ListView.builder(
                           shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
                           itemCount: _filterList.length,
                           itemBuilder: (context, index) {
                             var currentData = _filterList[index];
                             return ReminderTile(
                               model: currentData,
+                              onRefresh: onRefresh,
+                              onArchive: () => alertBeforeArchive(currentData),
                             );
                           },
                         ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

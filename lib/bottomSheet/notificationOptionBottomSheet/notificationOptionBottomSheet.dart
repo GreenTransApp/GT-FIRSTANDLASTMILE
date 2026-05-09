@@ -5,6 +5,8 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/pages/reminderList/reminderList.dart';
 
+import '../../common/Utils.dart';
+
 class NotificationOptionBottomSheet extends StatefulWidget {
   const NotificationOptionBottomSheet({super.key});
 
@@ -15,14 +17,17 @@ class NotificationOptionBottomSheet extends StatefulWidget {
 
 class _NotificationOptionBottomSheetState
     extends State<NotificationOptionBottomSheet> {
-  static List<NotificationOptionModel> optionList = [
+  List<NotificationOptionModel> optionList = [
     NotificationOptionModel(
-        title: "Reminder", key: "R", pageName: "ReminderListPage", count: 0),
+        title: "Reminder",
+        key: "R",
+        pageName: "ReminderListPage",
+        count: int.parse(notificationCountModel.remindercount!)),
     NotificationOptionModel(
         title: "Jinni Approval",
         key: "J",
         pageName: "JinniApprovalList",
-        count: 0),
+        count: int.parse(notificationCountModel.approvalcount!)),
   ];
 
   IconData getIcon(String key) {
@@ -48,19 +53,17 @@ class _NotificationOptionBottomSheetState
   }
 
   void navigateToPage(NotificationOptionModel model) {
-      switch(model.key){
-        case "R":
+    Get.back();
+    switch (model.key) {
+      case "R":
         Get.to(() => ReminderListPage());
-          break;
-        case "J":
+        break;
+      case "J":
         Get.to(() => ReminderListPage());
-          break;
-        default:
-
-      }
-    // Get.to(() => model.pageName);
-
-
+        break;
+      default:
+    }
+    // Get.to(() => models.pageName);
   }
 
   @override
@@ -105,7 +108,7 @@ class _NotificationOptionBottomSheetState
               return InkWell(
                 onTap: () {
                   navigateToPage(item);
-                 // failToast("test");
+                  // failToast("test");
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 12),
@@ -143,7 +146,7 @@ class _NotificationOptionBottomSheetState
                             ),
                           ),
                         ),
-                        if ((item.count ?? 0) >= 0)
+                        if ((item.count ?? 0) > 0)
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
@@ -163,7 +166,6 @@ class _NotificationOptionBottomSheetState
                       ],
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-
                   ),
                 ),
               );

@@ -34,6 +34,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../pages/home/Model/notificationCountModel.dart';
 import 'commonModel/allFormLoadModel.dart';
 
 const METHOD_CHANNEL = MethodChannel('com.map_api_key.flutter');
@@ -67,7 +68,7 @@ final authService = AuthenticationService();
 DateTime dashboardFromDt = DateTime.now();
 DateTime dashboardToDt = DateTime.now();
 int locationUpdateInterval = 30000; // default 30 seconds
-
+NotificationCountModel notificationCountModel = NotificationCountModel();
 // String getDateDifferenceFromNow(DateTime date1) {
 //   Duration diff = DateTime.now().difference(date1);
 //   int rawMinutes = diff.inMinutes;

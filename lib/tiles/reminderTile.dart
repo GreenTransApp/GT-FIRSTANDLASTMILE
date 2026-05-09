@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/pages/createAlert/createAlert.dart';
 import 'package:gtlmd/pages/reminderList/models/reminderLIstModel.dart';
 
 class ReminderTile extends StatelessWidget {
   final ReminderListModel model;
-  const ReminderTile({super.key, required this.model});
+  final Future<void> Function() onRefresh;
+  final void Function() onArchive;
+  const ReminderTile(
+      {super.key,
+      required this.model,
+      required this.onRefresh,
+      required this.onArchive});
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +122,11 @@ class ReminderTile extends StatelessWidget {
                           icon: Icons.reply,
                           label: "Reply",
                           color: CommonColors.colorPrimary!,
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(CreateAlert(
+                              model: model,
+                            ))?.then((_) => {onRefresh()});
+                          },
                           isSmallDevice: isSmallDevice,
                         ),
                       ),
@@ -124,7 +136,7 @@ class ReminderTile extends StatelessWidget {
                           icon: Icons.archive_outlined,
                           label: "Archive",
                           color: CommonColors.orange!,
-                          onTap: () {},
+                          onTap: onArchive,
                           isSmallDevice: isSmallDevice,
                         ),
                       ),

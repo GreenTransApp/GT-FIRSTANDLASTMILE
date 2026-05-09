@@ -7,6 +7,7 @@ import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/home/Model/menuModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
+import 'package:gtlmd/pages/home/Model/notificationCountModel.dart';
 import 'package:gtlmd/pages/home/Model/validateDeviceModel.dart';
 import 'package:gtlmd/pages/home/homeRepository.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
@@ -28,6 +29,8 @@ class HomeViewModel extends BaseViewModel {
 
   StreamController<ValidateDeviceModel> validateDeviceLiveData =
       StreamController();
+  StreamController<NotificationCountModel> notificationCountLiveData =
+      StreamController();
   StreamController<bool> viewDialog = StreamController();
   StreamController<DrsDateTimeUpdateModel> drsDateTimeUpdateLiveData =
       StreamController();
@@ -42,6 +45,7 @@ class HomeViewModel extends BaseViewModel {
     viewDialog = _repo.viewDialog;
     isErrorLiveData = _repo.isErrorLiveData;
     tripsListData = _repo.tripsLiveData;
+    notificationCountLiveData = _repo.notificationCountLiveData;
   }
 
   callDashboardDetail(Map<String, String> params) {
@@ -50,6 +54,10 @@ class HomeViewModel extends BaseViewModel {
 
   callValidateDeviceData(Map<String, String> params) {
     _repo.getValidateDevice(params);
+  }
+
+  getNotificationCount(Map<String, String> params) {
+    _repo.getNotificationCount(params);
   }
 
   callDrsDateTimeUpdate(Map<String, String> params) {
