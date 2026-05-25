@@ -143,7 +143,14 @@ class _LoginPageState extends State<LoginPage> {
               provider.selectedDivision = division;
             }, params);
           } else {
-            authService.storagePush(ENV.divisionPrefTag, jsonEncode(""));
+            Map<String, dynamic> divisiondata = {
+              "accdivisionid": 0,
+              "accdivisionname": "",
+              "commandstatus": "1",
+              "commandmessage": null
+            };
+            authService.storagePush(
+                ENV.divisionPrefTag, jsonEncode(divisiondata));
             savedUser.logindivisionid = 0;
             savedUser.logindivisionname = "";
             authService.login(context);

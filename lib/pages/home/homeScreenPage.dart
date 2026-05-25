@@ -36,8 +36,12 @@ import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/updateVersionScreen/updateVersionScreen.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
+import 'package:gtlmd/pages/imageEditor/data/image_editing_repository_impl.dart';
+import 'package:gtlmd/pages/imageEditor/presentation/image_editor_controller.dart';
+import 'package:gtlmd/pages/imageEditor/presentation/image_editor_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
 
 enum DashboardTabs { ALLOTEDROUTES, CURRENTDELIVERY }
 
@@ -1023,9 +1027,13 @@ class _HomeScreen extends State<HomeScreen>
                       visible: ENV.isDebugging,
                       child: GestureDetector(
                         onTap: () async {
-                          // Bluetooth.printReceipt();
-                          // Get.to(() => const BookingListScreen());
-                          // showDimensionsScreen(context);
+                          ImageEditorController ctrl = ImageEditorController(
+                              repository: ImageEditingRepositoryImpl());
+                          Get.to(
+                            () => ImageEditorScreen(
+                              controller: ctrl,
+                            ),
+                          );
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(

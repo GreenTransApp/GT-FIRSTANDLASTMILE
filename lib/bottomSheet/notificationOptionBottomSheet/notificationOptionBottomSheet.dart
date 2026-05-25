@@ -59,7 +59,8 @@ class _NotificationOptionBottomSheetState
         Get.to(() => ReminderListPage());
         break;
       case "J":
-        Get.to(() => ReminderListPage());
+        // Get.to(() => ReminderListPage());
+        failToast("Not yet implemented");
         break;
       default:
     }
