@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/imageEditor/data/image_editing_repository_impl.dart';
+import 'package:gtlmd/pages/imageEditor/presentation/image_editor_controller.dart';
+import 'package:gtlmd/pages/imageEditor/presentation/image_editor_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 final ImagePicker _picker = ImagePicker();
 XFile? _image;
@@ -29,7 +34,7 @@ Future<void> showImagePickerDialog(
   showDialog<void>(
     context: context,
     barrierDismissible: true, // user must tap button!
-    builder: (BuildContext context) {
+    builder: (BuildContext dialogContext) {
       return AlertDialog(
         title: Text(
           'SELECT IMAGE',
@@ -46,15 +51,14 @@ Future<void> showImagePickerDialog(
               SizedBox(
                 height: SizeConfig.mediumVerticalSpacing,
               ),
-
               Row(
                 children: [
                   Expanded(
                     child: InkWell(
                       onTap: () async {
                         // onPressed.call("Other Testing");
-                        Navigator.pop(context);
-                        onPressed.call(await chooseGalleryImg());
+                        Navigator.pop(dialogContext);
+                        onPressed.call(await chooseGalleryImg(context));
                         // chooseGalleryImg();
                       },
                       child: Column(children: [
@@ -79,9 +83,9 @@ Future<void> showImagePickerDialog(
                     child: InkWell(
                       onTap: () async {
                         // onPressed.call("Testing");
-                        onPressed.call(await chooseCameraImg());
+                        Navigator.pop(dialogContext);
+                        onPressed.call(await chooseCameraImg(context));
                         // chooseCameraImg();
-                        Navigator.pop(context);
                       },
                       child: Column(children: [
                         Icon(
@@ -111,14 +115,61 @@ Future<void> showImagePickerDialog(
   );
 }
 
-Future<XFile?> chooseGalleryImg() async {
+Future<XFile?> chooseGalleryImg(BuildContext context) async {
   var galleryImg = await _picker.pickImage(source: ImageSource.gallery);
   _image = galleryImg;
-  return _image;
+  return askForEdit(context, _image);
 }
 
-Future<XFile?> chooseCameraImg() async {
+Future<XFile?> askForEdit(BuildContext context, XFile? path) async {
+  if (path == null) return null;
+
+  XFile? result = await showDialog<XFile?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Do you want to edit image?"),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end, // Better alignment
+              children: [
+                TextButton(
+                  child: const Text("Yes"),
+                  onPressed: () async {
+                    final ImageEditorController ctrl = ImageEditorController(
+                        repository: ImageEditingRepositoryImpl(),
+                        initialImage: File(path.path));
+                    final File? editedFile =
+                        await Get.to(() => ChangeNotifierProvider.value(
+                              value: ctrl,
+                              child: ImageEditorScreen(controller: ctrl),
+                            ));
+
+                    if (context.mounted) {
+                      Navigator.pop(context,
+                          editedFile != null ? XFile(editedFile.path) : path);
+                    }
+                  },
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                TextButton(
+                  child: const Text("No"),
+                  onPressed: () {
+                    Navigator.pop(context, path);
+                  },
+                )
+              ],
+            )
+          ],
+        );
+      });
+  return result ?? path;
+}
+
+Future<XFile?> chooseCameraImg(BuildContext context) async {
   var cameraImg = await _picker.pickImage(source: ImageSource.camera);
   _image = cameraImg;
-  return _image;
+  return askForEdit(context, _image);
 }

@@ -59,8 +59,8 @@ class _NotificationOptionBottomSheetState
       case "R":
         Get.to(() => ReminderListPage());
         break;
-      case "D":
-        Get.to(() => DocumentApproval());
+      case "J":
+        Get.to(() => ReminderListPage());
         break;
       default:
     }

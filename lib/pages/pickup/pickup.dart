@@ -468,7 +468,10 @@ class _PickupState extends State<Pickup> {
     _orgController.text = pickupDetail!.cngrCity.toString();
     _destController.text = pickupDetail!.cngeCity.toString();
 
-    _custController.text = _selectedCustomer!.custName.toString();
+    if (_selectedCustomer != null) {
+      _custController.text = _selectedCustomer!.custName.toString();
+    }
+
     _deptController.text = isNullOrEmpty(pickupDetail!.custDeptId.toString())
         ? ""
         : pickupDetail!.custDeptId.toString();

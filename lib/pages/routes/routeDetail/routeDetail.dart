@@ -387,6 +387,10 @@ class _RoutedetailState extends State<Routedetail> {
       List<int> totalDistanceList =
           await fetchTotalRouteDistance(routeDetail, mapConfig);
       // loadingAlertService.hideLoading();
+      if (totalDistanceList.isEmpty) {
+        failToast('Unable to calculate route distance.Please Try again.');
+        return;
+      }
       totalDistance = (totalDistanceList[0].toDouble()) / 1000;
       // debugPrint("New Distance: $distance");
       if (totalDistance >

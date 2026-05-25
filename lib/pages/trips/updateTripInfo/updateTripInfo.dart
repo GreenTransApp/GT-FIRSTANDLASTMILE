@@ -1184,13 +1184,19 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             fontSize: SizeConfig.smallTextSize),
                                         decoration: InputDecoration(
                                           errorText: _startReadingError,
-                                          errorStyle: const TextStyle(
-                                              color: Colors.red),
-                                          helperText: lastTripInfo != null
-                                              ? "Must be > last trip reading (${lastTripInfo!.endreadingkm})"
-                                              : "Enter start reading",
+                                          errorStyle:
+                                              TextStyle(color: Colors.red),
+                                          helperText: isNullOrEmpty(lastTripInfo
+                                                  ?.endreadingkm
+                                                  .toString())
+                                              ? "Enter start reading"
+                                              : "Must be > last trip reading (${lastTripInfo!.endreadingkm})",
                                           helperStyle: TextStyle(
-                                              color: CommonColors.dangerColor),
+                                              color: isNullOrEmpty(lastTripInfo
+                                                      ?.endreadingkm
+                                                      .toString())
+                                                  ? Colors.black
+                                                  : Colors.red),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(
