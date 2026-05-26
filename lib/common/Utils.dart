@@ -58,6 +58,7 @@ int? executiveid = null;
 int? employeeid = null;
 DiscoveredDevice? connectedDevice;
 Map<String, AllFormLoadModel> fieldMap = {};
+
 // List<CurrentDeliveryModel> activeDrsList = List.empty(growable: true);
 class ScreenDimension {
   static double width = 0.0;
@@ -69,6 +70,9 @@ DateTime dashboardFromDt = DateTime.now();
 DateTime dashboardToDt = DateTime.now();
 int locationUpdateInterval = 30000; // default 30 seconds
 NotificationCountModel notificationCountModel = NotificationCountModel();
+String bookingNavigatorUrl = "";
+String menuCode = "";
+
 // String getDateDifferenceFromNow(DateTime date1) {
 //   Duration diff = DateTime.now().difference(date1);
 //   int rawMinutes = diff.inMinutes;
@@ -293,80 +297,6 @@ Future<String?> getIp() async {
   final deviceIpAddress = await Ipify.ipv4(format: Format.TEXT);
   return deviceIpAddress;
 }
-
-// distance(lat1, lat2, lon1, lon2) {
-//   lon1 =  lon1 * Math.PI / 180;
-//   lon2 = lon2 * Math.PI / 180;
-//   lat1 = lat1 * Math.PI / 180;
-//   lat2 = lat2 * Math.PI / 180;
-
-//   // Haversine formula
-//   let dlon = lon2 - lon1;
-//   let dlat = lat2 - lat1;
-//   let a = Math.pow(Math.sin(dlat / 2), 2)
-//   + Math.cos(lat1) * Math.cos(lat2)
-//   * Math.pow(Math.sin(dlon / 2),2);
-
-//   let c = 2 * Math.asin(Math.sqrt(a));
-
-//   // Radius of earth in kilometers. Use 3956
-//   // for miles
-//   let r = 6371;
-
-//   // calculate the result
-//   return(c * r);
-// }
-
-// void selectScreen(BuildContext context) {
-//   showDialog(
-//     context: context,
-//     builder: (context) => AlertDialog(
-//       content: const Text(
-//         "Select your view",
-//         textAlign: TextAlign.center,
-//       ),
-//       actions: <Widget>[
-//         Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.of(context).pushAndRemoveUntil(
-//                     MaterialPageRoute(
-//                         builder: (context) => UserBottomNavigator()),
-//                     (Route<dynamic> route) => false);
-//               },
-//               child: Container(
-//                 color: Colors.blue,
-//                 padding: const EdgeInsets.all(14),
-//                 child: const Text(
-//                   "User View",
-//                   style: TextStyle(color: Colors.white),
-//                 ),
-//               ),
-//             ),
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.of(context).pushAndRemoveUntil(
-//                     MaterialPageRoute(
-//                         builder: (context) => const DriverBottomNavigator()),
-//                     (Route<dynamic> route) => false);
-//               },
-//               child: Container(
-//                 color: Colors.blue,
-//                 padding: const EdgeInsets.all(14),
-//                 child: const Text(
-//                   "Driver View",
-//                   style: TextStyle(color: Colors.white),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ],
-//     ),
-//   );
-// }
 
 Future<void> setGoogleMapApiKey(String mapKey) async {
   Map<String, dynamic> requestData = {"mapKey": mapKey};
@@ -952,7 +882,6 @@ enum ApiCallingStatus { initial, loading, success, error }
 
 Map<String, String> unitTypeList = {'C': 'CM', 'I': 'INCH', 'M': 'CBM'};
 
-
 void createFieldMap(List<AllFormLoadModel> pageLoadData) {
   fieldMap.clear();
 
@@ -960,26 +889,33 @@ void createFieldMap(List<AllFormLoadModel> pageLoadData) {
     final key = item.Column_Name;
 
     if (key != null && key.isNotEmpty) {
-      fieldMap[key.toLowerCase()] = item ;
+      fieldMap[key.toLowerCase()] = item;
     }
     debugPrint(fieldMap.toString());
   }
-
-
 }
 
-enum RETURN_TYPE {LabelName,FieldInfo,PlaceHolder,DisableColumn,IsRequired,IsDefaultDisable,DisableInEditMode}
-String? getFormStringValue(String key,RETURN_TYPE returnType) {
-  final item =   fieldMap[key.toLowerCase()];
-  if(item == null) return  null;
+enum RETURN_TYPE {
+  LabelName,
+  FieldInfo,
+  PlaceHolder,
+  DisableColumn,
+  IsRequired,
+  IsDefaultDisable,
+  DisableInEditMode
+}
+
+String? getFormStringValue(String key, RETURN_TYPE returnType) {
+  final item = fieldMap[key.toLowerCase()];
+  if (item == null) return null;
   String? value;
-  switch(returnType) {
+  switch (returnType) {
     case RETURN_TYPE.LabelName:
       value = item.LabelName;
       break;
 
     case RETURN_TYPE.FieldInfo:
-      value  = item.FieldInfo;
+      value = item.FieldInfo;
       break;
 
     case RETURN_TYPE.PlaceHolder:
@@ -992,13 +928,12 @@ String? getFormStringValue(String key,RETURN_TYPE returnType) {
     return null;
   }
   return value;
-
 }
 
-bool? getFormBoolValue(String key,RETURN_TYPE returnType) {
-  final item =   fieldMap[key.toLowerCase()];
-  if(item == null) return  null;
-  switch(returnType) {
+bool? getFormBoolValue(String key, RETURN_TYPE returnType) {
+  final item = fieldMap[key.toLowerCase()];
+  if (item == null) return null;
+  switch (returnType) {
     case RETURN_TYPE.DisableColumn:
       return item.DisableColumn;
 
@@ -1015,5 +950,3 @@ bool? getFormBoolValue(String key,RETURN_TYPE returnType) {
   }
   // return fieldMap[key.toLowerCase()]?.LabelName;
 }
-
-

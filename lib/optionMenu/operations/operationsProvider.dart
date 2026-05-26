@@ -78,7 +78,7 @@ class OperationsProvider extends ChangeNotifier {
         "prmlinkpagemenucode": menuCode,
         'prmdrivercode': savedUser.drivercode.toString(),
         "prmusercode": savedUser.usercode.toString(),
-        'prmmenucode': 'GTAPP_PAGELINKS',
+        'prmmenucode': 'GTLMD_INFINITIOPSLINK',
         "prmsessionid": savedUser.sessionid.toString(),
         "prmloginbranchcode": savedUser.loginbranchcode.toString(),
         "prmloginbranchtype": savedUser.loginbranchtype.toString(),

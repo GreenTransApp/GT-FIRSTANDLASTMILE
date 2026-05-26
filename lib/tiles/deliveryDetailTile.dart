@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
+import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/app_sizes.dart';
 import 'package:gtlmd/design_system/size_config.dart';
@@ -53,11 +58,16 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   late IconData statusIcon;
   late Color statusIconColor;
   String? status;
+  BaseRepository _baseRepo = BaseRepository();
+  List<StreamSubscription> _subscription = [];
+
   @override
   void initState() {
     super.initState();
     modelDetail = widget.model;
     currentDelivery = widget.currentDeliveryModel;
+    setObservers();
+
     setState(() {
       // if (widget.model.deliverystatus == 'Y') {
       if (widget.model.deliverystatus == 'P') {
@@ -198,6 +208,65 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       }
     } catch (err) {
       failToast(err.toString());
+    }
+  }
+
+  setObservers() {
+    _subscription.add(_baseRepo.urlModel.stream.listen((resp) {
+      if (!isNullOrEmpty(resp.pageLink)) {
+        bookingNavigatorUrl = resp.pageLink!;
+        debugPrint('Booking  page Link ${resp.pageLink!}');
+      }
+      openBookingPage();
+    }));
+  }
+
+  getInfinitiBookingLink() {
+    final PageLinkJsonParams parameters = PageLinkJsonParams(
+      drivercode: savedUser.drivercode.toString(),
+      transactionid: widget.model.transactionid,
+      grno: widget.model.grno,
+    );
+
+    menuCode = savedUser.companyid == 99883345
+        ? 'GTI_WayBillTallySheetComp'
+        : ''; //GreenTransOtex
+    Map<String, String> params = {
+      "prmlinkpagemenucode": menuCode,
+      'prmjsondatastr': jsonEncode(parameters.toJson()),
+      "prmusercode": savedUser.usercode.toString(),
+      'prmmenucode': 'GTLMD_INFINITIOPSLINK',
+      "prmsessionid": savedUser.sessionid.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmloginbranchtype": savedUser.loginbranchtype.toString(),
+    };
+
+    printParams(params);
+    _baseRepo.getInfinitiOpsLink(params);
+  }
+
+  openBookingPage() async {
+    if (isNullOrEmpty(bookingNavigatorUrl)) {
+      Get.to(Pickup(details: widget.model))?.then((_) {
+        widget.onRefresh();
+      });
+    } else {
+      if (bookingNavigatorUrl != null && bookingNavigatorUrl.isNotEmpty) {
+        final uri = Uri.parse(bookingNavigatorUrl);
+
+        try {
+          await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication,
+          );
+        } catch (_) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not launch URL')),
+            );
+          }
+        }
+      }
     }
   }
 
@@ -487,73 +556,73 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           ],
                         ),
                       ),
-                      Visibility(
-                        visible: modelDetail.consignmenttype == 'P' &&
-                            modelDetail.isOtpRequired == 'Y' &&
-                            modelDetail.isVerified == 'N' &&
-                            modelDetail.pickupstatus == 'P',
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(const PickupOtp());
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    SizeConfig.extraLargeHorizontalPadding,
-                                vertical: SizeConfig.extraSmallVerticalPadding),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(SizeConfig.smallRadius),
-                              border:
-                                  Border.all(color: CommonColors.dangerColor!),
-                            ),
-                            child: Text(
-                              'VERIFY',
-                              style: TextStyle(
-                                  color: CommonColors.dangerColor,
-                                  fontSize: SizeConfig.smallTextSize,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: modelDetail.consignmenttype == 'P' &&
-                            modelDetail.isOtpRequired == 'Y' &&
-                            modelDetail.isVerified == 'Y' &&
-                            modelDetail.pickupstatus == 'P',
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.smallHorizontalPadding,
-                              vertical: SizeConfig.extraSmallVerticalPadding),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(SizeConfig.smallRadius),
-                              border:
-                                  Border.all(color: CommonColors.successColor!),
-                              color: CommonColors.successColor),
-                          child: Row(
-                            children: [
-                              Text(
-                                'VERIFIED',
-                                style: TextStyle(
-                                    color: CommonColors.White,
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                width: SizeConfig.extraSmallHorizontalPadding,
-                              ),
-                              Icon(
-                                Symbols.check_circle_filled,
-                                color: CommonColors.White,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Visibility(
+                      //   visible: modelDetail.consignmenttype == 'P' &&
+                      //       modelDetail.isOtpRequired == 'Y' &&
+                      //       modelDetail.isVerified == 'N' &&
+                      //       modelDetail.pickupstatus == 'P',
+                      //   child: GestureDetector(
+                      //     onTap: () {
+                      //       Get.to(const PickupOtp());
+                      //     },
+                      //     child: Container(
+                      //       padding: EdgeInsets.symmetric(
+                      //           horizontal:
+                      //               SizeConfig.extraLargeHorizontalPadding,
+                      //           vertical: SizeConfig.extraSmallVerticalPadding),
+                      //       alignment: Alignment.center,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius:
+                      //             BorderRadius.circular(SizeConfig.smallRadius),
+                      //         border:
+                      //             Border.all(color: CommonColors.dangerColor!),
+                      //       ),
+                      //       child: Text(
+                      //         'VERIFY',
+                      //         style: TextStyle(
+                      //             color: CommonColors.dangerColor,
+                      //             fontSize: SizeConfig.smallTextSize,
+                      //             fontWeight: FontWeight.w600),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      //  Visibility(
+                      //   visible: modelDetail.consignmenttype == 'P' &&
+                      //       modelDetail.isOtpRequired == 'Y' &&
+                      //       modelDetail.isVerified == 'Y' &&
+                      //       modelDetail.pickupstatus == 'P',
+                      //   child: Container(
+                      //     padding: EdgeInsets.symmetric(
+                      //         horizontal: SizeConfig.smallHorizontalPadding,
+                      //         vertical: SizeConfig.extraSmallVerticalPadding),
+                      //     alignment: Alignment.center,
+                      //     decoration: BoxDecoration(
+                      //         borderRadius:
+                      //             BorderRadius.circular(SizeConfig.smallRadius),
+                      //         border:
+                      //             Border.all(color: CommonColors.successColor!),
+                      //         color: CommonColors.successColor),
+                      //     child: Row(
+                      //       children: [
+                      //         Text(
+                      //           'VERIFIED',
+                      //           style: TextStyle(
+                      //               color: CommonColors.White,
+                      //               fontSize: SizeConfig.smallTextSize,
+                      //               fontWeight: FontWeight.w600),
+                      //         ),
+                      //         SizedBox(
+                      //           width: SizeConfig.extraSmallHorizontalPadding,
+                      //         ),
+                      //         Icon(
+                      //           Symbols.check_circle_filled,
+                      //           color: CommonColors.White,
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
 
@@ -661,9 +730,17 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(Pickup(details: widget.model))?.then((_) {
-                                widget.onRefresh();
-                              });
+                              // Get.to(Pickup(details: widget.model))?.then((_) {
+                              //   widget.onRefresh();
+                              // });
+                              if (isNullOrEmpty(menuCode)) {
+                                Get.to(Pickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                getInfinitiBookingLink();
+                              }
                             },
                             icon: Icon(Icons.check,
                                 size: SizeConfig.mediumIconSize),
