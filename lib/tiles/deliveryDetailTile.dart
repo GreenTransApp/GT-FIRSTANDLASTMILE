@@ -228,9 +228,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       grno: widget.model.grno,
     );
 
-    menuCode = savedUser.companyid == 99883345
-        ? 'GTI_WayBillTallySheetComp'
-        : ''; //GreenTransOtex
+    // menuCode = savedUser.companyid == 99883345
+    //     ? 'GTI_WayBillTallySheetComp'
+    //     : ''; //GreenTransOtex
     Map<String, String> params = {
       "prmlinkpagemenucode": menuCode,
       'prmjsondatastr': jsonEncode(parameters.toJson()),
@@ -242,6 +242,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     };
 
     printParams(params);
+
     _baseRepo.getInfinitiOpsLink(params);
   }
 

@@ -9,6 +9,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/lastActiveTripModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
@@ -19,7 +20,7 @@ class UpdateTripInfoRepository extends BaseRepository {
       StreamController();
   StreamController<UpsertTripResponseModel> updateCloseTripLiveData =
       StreamController();
-  StreamController<TripModel> lastTripInfo = StreamController();
+  StreamController<LastActiveTripModel> lastTripInfo = StreamController();
 
   void updateTripInfo(Map<String, String> params) async {
     viewDialog.add(true);
@@ -142,12 +143,13 @@ class UpdateTripInfoRepository extends BaseRepository {
     if (hasInternet) {
       try {
         CommonResponse resp =
-            await apiGet("${lmdUrl}GetLastBookingDetails", params);
+            await apiPostWithModel("${lmdUrl}GetLastBookingDetails", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           List<dynamic> list = table.values.first;
-          TripModel validateResponse = TripModel.fromJson(list[0]);
+          LastActiveTripModel validateResponse =
+              LastActiveTripModel.fromJson(list[0]);
           if (validateResponse.commandstatus == 1) {
             lastTripInfo.add(validateResponse);
           } else {

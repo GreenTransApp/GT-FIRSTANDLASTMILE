@@ -116,10 +116,13 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     _subscription.add(_baseRepo.compAccPara.stream.listen((resp) {
       debugPrint(resp);
       setState(() {
+         if(resp.isNotEmpty && resp.contains('GTI')){
         menuCode = resp;
-        if (isNullOrEmpty(menuCode)) {
+        debugPrint('Booking Menucode ${resp}');
+         }else{
           debugPrint('Booking Menucode Not Found');
-        }
+         }
+
       });
     }));
   }
