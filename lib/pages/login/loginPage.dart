@@ -8,7 +8,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/pages/faceRecognition/faceLogin.dart';
+
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
-  bool isFaceLogin = false;
+  // bool isFaceLogin = false;
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Clear any previous errors or state if needed
       context.read<LoginProvider>().resetState();
-      checkFaceLogin();
+      // checkFaceLogin();
     });
   }
 
@@ -210,19 +210,19 @@ class _LoginPageState extends State<LoginPage> {
     context.read<LoginProvider>().validateDivision(params);
   }
 
-  void checkFaceLogin() async {
-    String? faceID = await authService.storageGet(ENV.faceLoginPrefTag);
+  // void checkFaceLogin() async {
+  //   String? faceID = await authService.storageGet(ENV.faceLoginPrefTag);
 
-    if (faceID == null || faceID == "" || faceID.toLowerCase() == "null") {
-      setState(() {
-        isFaceLogin = false;
-      });
-    } else {
-      setState(() {
-        isFaceLogin = true;
-      });
-    }
-  }
+  //   if (faceID == null || faceID == "" || faceID.toLowerCase() == "null") {
+  //     setState(() {
+  //       isFaceLogin = false;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isFaceLogin = true;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -595,22 +595,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                Visibility(
-                  visible: isFaceLogin,
-                  child: Positioned(
-                    top: 20,
-                    right: 20,
-                    child: InkWell(
-                      onTap: () {
-                        Get.to(() => FaceLogin());
-                      },
-                      child: Image.asset(
-                        'assets/images/face-scan.png',
-                        height: 40,
-                      ),
-                    ),
-                  ),
-                ),
+                // Visibility(
+                //   visible: isFaceLogin,
+                //   child: Positioned(
+                //     top: 20,
+                //     right: 20,
+                //     child: InkWell(
+                //       onTap: () {
+                //         Get.to(() => FaceLogin());
+                //       },
+                //       child: Image.asset(
+                //         'assets/images/face-scan.png',
+                //         height: 40,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

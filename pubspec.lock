@@ -257,14 +257,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.8"
-  face_verification:
-    dependency: "direct main"
-    description:
-      name: face_verification
-      sha256: da56bd44bd0db15642d224beb90c0575adac0845da06cdbe84c3ff088add2f8a
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.6"
   fake_async:
     dependency: transitive
     description:
@@ -752,30 +744,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.14+3"
-  google_mlkit_commons:
-    dependency: "direct main"
-    description:
-      name: google_mlkit_commons
-      sha256: "3e69fea4211727732cc385104e675ad1e40b29f12edd492ee52fa108423a6124"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.1"
-  google_mlkit_face_detection:
-    dependency: "direct main"
-    description:
-      name: google_mlkit_face_detection
-      sha256: "7b6ddcc69dbd6fbfa313fb2d974ad0f0c3a0d1657560f0da6be465baf1889687"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.13.2"
-  google_mlkit_object_detection:
-    dependency: "direct main"
-    description:
-      name: google_mlkit_object_detection
-      sha256: "9dd35886972e18747e22098f8ebee78d30716a99a789bb2e3a65a24229e031e7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.1"
   hex:
     dependency: transitive
     description:
@@ -1344,14 +1312,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  pool:
-    dependency: transitive
-    description:
-      name: pool
-      sha256: "978783255c543aa3586a1b3c21f6e9d720eb315376a915872c61ef8b5c20177d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.2"
   posix:
     dependency: transitive
     description:
@@ -1400,14 +1360,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.14"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      sha256: ea0b925899e64ecdfbf9c7becb60d5b50e706ade44a85b2363be2a22d88117d2
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.2"
   reactive_ble_mobile:
     dependency: transitive
     description:
@@ -1621,14 +1573,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
-  tflite_flutter:
-    dependency: "direct main"
-    description:
-      name: tflite_flutter
-      sha256: "0bba9040d8decda0960d7abf8eabf32243bf092bc7d0084e8e19681866b0bdbe"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.12.1"
   timeline_tile:
     dependency: "direct main"
     description:
