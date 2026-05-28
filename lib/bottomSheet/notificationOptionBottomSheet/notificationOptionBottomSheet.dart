@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:gtlmd/bottomSheet/notificationOptionBottomSheet/model/notificationOptionModel.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
+import 'package:gtlmd/pages/documentApproval/documentApproval.dart';
 import 'package:gtlmd/pages/reminderList/reminderList.dart';
 
 import '../../common/Utils.dart';
@@ -24,9 +25,9 @@ class _NotificationOptionBottomSheetState
         pageName: "ReminderListPage",
         count: int.parse(notificationCountModel.remindercount!)),
     NotificationOptionModel(
-        title: "Jinni Approval",
-        key: "J",
-        pageName: "JinniApprovalList",
+        title: "Document Approval",
+        key: "D",
+        pageName: "DocumentApprovalListPage",
         count: int.parse(notificationCountModel.approvalcount!)),
   ];
 
@@ -34,7 +35,7 @@ class _NotificationOptionBottomSheetState
     switch (key) {
       case "R":
         return Icons.notifications_active;
-      case "J":
+      case "D":
         return Icons.verified_user;
       default:
         return Icons.notifications;
@@ -45,7 +46,7 @@ class _NotificationOptionBottomSheetState
     switch (key) {
       case "R":
         return CommonColors.orange!;
-      case "J":
+      case "D":
         return CommonColors.successColor!;
       default:
         return CommonColors.primaryColorShade!;
@@ -59,8 +60,7 @@ class _NotificationOptionBottomSheetState
         Get.to(() => ReminderListPage());
         break;
       case "J":
-        // Get.to(() => ReminderListPage());
-        failToast("Not yet implemented");
+        Get.to(() => ReminderListPage());
         break;
       default:
     }

@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
@@ -31,6 +37,9 @@ class _DeliveryDetailState extends State<DeliveryDetail>
   List<DeliveryDetailModel> deliveryDetailList = List.empty(growable: true);
   late LoadingAlertService loadingAlertService;
   final DeliveryViewModel viewModel = DeliveryViewModel();
+  BaseRepository _baseRepo = BaseRepository();
+  List<StreamSubscription> _subscription = [];
+
   @override
   void initState() {
     super.initState();
@@ -44,20 +53,29 @@ class _DeliveryDetailState extends State<DeliveryDetail>
           if (user.commandstatus == null || user.commandstatus == -1)
             throw Exception("")
           else
-            {setObservers(), getDeliveryDetails()}
+            {
+              setObservers(),
+              getDeliveryDetails(),
+              // getBookingMenuCodeFromCompAccPara()
+            }
         });
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.resumed) {
-  //     getDeliveryDetails();
-  //   }
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshScreen();
+    }
+  }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
+    for (var sub in _subscription) {
+      sub.cancel();
+    }
+
     super.dispose();
   }
 
@@ -94,6 +112,19 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     });
+
+    _subscription.add(_baseRepo.compAccPara.stream.listen((resp) {
+      debugPrint(resp);
+      setState(() {
+         if(resp.isNotEmpty && resp.contains('GTI')){
+        menuCode = resp;
+        debugPrint('Booking Menucode ${resp}');
+         }else{
+          debugPrint('Booking Menucode Not Found');
+         }
+
+      });
+    }));
   }
 
   getDeliveryDetails() {
@@ -112,6 +143,17 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   Future<void> refreshScreen() async {
     getDeliveryDetails();
+    getBookingMenuCodeFromCompAccPara();
+  }
+
+  getBookingMenuCodeFromCompAccPara() {
+    Map<String, String> params = {
+      "prmvarname": "GLMDBOOKINGMENUCODE",
+      "prmcompanyid": savedLogin.companyid.toString(),
+    };
+
+    printParams(params);
+    _baseRepo.getValueFromCompAccPara(params);
   }
 
   @override
@@ -269,6 +311,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                 itemCount: deliveryDetailList.length,
                                 itemBuilder: (context, index) {
                                   var data = deliveryDetailList[index];
+
                                   return DeliveryDetailTile(
                                     model: data,
                                     currentDeliveryModel: deliveryModel,

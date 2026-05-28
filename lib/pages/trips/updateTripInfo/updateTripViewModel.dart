@@ -4,6 +4,7 @@ import 'package:gtlmd/base/baseViewModel.dart';
 
 import 'package:gtlmd/pages/home/Model/UpdateTripResponseModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/lastActiveTripModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfoRepository.dart';
 
@@ -19,7 +20,7 @@ class UpdateTripInfoViewModel extends BaseViewModel {
       StreamController();
 
   StreamController<bool> viewDialogLiveData = StreamController();
-  StreamController<TripModel> lastTripInfo = StreamController();
+  StreamController<LastActiveTripModel> lastTripInfo = StreamController();
 
   UpdateTripInfoViewModel() {
     updateTripLiveData = _repo.updateTripInfoLiveData;

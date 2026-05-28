@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/optionMenu/operations/models/operationsModel.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigDetailModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
@@ -18,8 +20,8 @@ class BaseRepository {
   StreamController<String> compAccPara = StreamController();
   StreamController<MapConfigDetailModel> mapConfigDetail = StreamController();
   StreamController<String> scannedCode = StreamController();
-  StreamController<List<DrsListModel>> deliveryLiveData =
-      StreamController();
+  StreamController<OperationsModel> urlModel = StreamController();
+
   // StreamController<List<CurrentDeliveryModel>> deliveryLiveData =
   //     StreamController();
 
@@ -136,87 +138,33 @@ class BaseRepository {
     }
   }
 
-  Future<void> getDrsList(Map<String, String> params) async {
-    // viewDialog.add(true);
+  Future<void> getInfinitiOpsLink(Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
-    if (hasInternet) {
-      try {
-        viewDialog.add(true);
-        // CommonResponse resp = await apiGet("${lmdUrl}/GetDrsListV2", params);
-        CommonResponse resp = await apiGet("${lmdUrl}/GetDrsList", params);
-        if (resp.commandStatus == 1) {
-          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-          Iterable<MapEntry<String, dynamic>> entries = table.entries;
-          for (final entry in entries) {
-            if (entry.key == "Table") {
-              List<dynamic> list2 = entry.value;
-              List<DrsListModel> resultList = List.generate(list2.length,    (index) => DrsListModel.fromJson(list2[index]));
-              deliveryLiveData.add(resultList);
-            }
-          }
-        } else {
-          isErrorLiveData.add(resp.commandMessage!);
-        }
-        viewDialog.add(false);
-      } on SocketException catch (_) {
-        isErrorLiveData.add("No Internet");
-        viewDialog.add(false);
-      } catch (err) {
-        isErrorLiveData.add(err.toString());
-        viewDialog.add(false);
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp =
+          await apiPostWithModel("${lmdUrl}GetInfinitiPageLink", params);
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Single Operation fetch failed");
       }
-    } else {
-      viewDialog.add(false);
-      isErrorLiveData.add("No Internet available");
+
+      if (resp.commandStatus == 1 && resp.dataSet != null) {
+        // OperationsModel? result =
+        //     await compute(parseSingleOperationIsolate, resp.dataSet!);
+        Map<String, dynamic> table =
+            await compute<String, dynamic>(jsonDecode, resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        OperationsModel result = OperationsModel.fromJson(list[0]);
+        urlModel.add(result);
+      } else {
+        debugPrint('Error in : ${resp.commandMessage}');
+      }
+    } catch (err) {
+      debugPrint('Error in getSingleOperation: $err');
+      rethrow;
     }
   }
-
-  // Future<void> savePodEntryOffline(Map<String, dynamic> params) async {
-  //   viewDialog.add(true);
-  //   CommonResponse resp = await apiPost("${lmdUrl}SavePodOffline", params);
-  //   viewDialog.add(false);
-  //   try {
-  //     if (resp.commandStatus == 1) {
-  //       Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-  //       Iterable<MapEntry<String, dynamic>> entries = table.entries;
-  //       List<dynamic> list = table.values.first;
-  //       List<UpdateDeliveryModel> resultList = List.generate(
-  //           list.length, (index) => UpdateDeliveryModel.fromJson(list[index]));
-  //       UpdateDeliveryModel response = resultList[0];
-
-  //       if (response.commandstatus == 1) {
-  //         savePodCommonLiveData.add(resultList[0]);
-  //       } else {
-  //         isErrorLiveData.add(response.commandmessage!);
-  //       }
-  //     } else {
-  //       isErrorLiveData.add(resp.commandMessage.toString());
-  //     }
-  //   } catch (err) {
-  //     isErrorLiveData.add(err.toString());
-  //   }
-  // }
-
-  // Future<void> updateUndeliveryOffline(Map<String, dynamic> params) async {
-  //   viewDialog.add(true);
-  //   CommonResponse resp =
-  //       await apiPost("${lmdUrl}UpdateUndeliveryOffline", params);
-  //   viewDialog.add(false);
-  //   if (resp.commandStatus == 1) {
-  //     Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-  //     List<dynamic> list = table.values.first;
-  //     List<UpdateDeliveryModel> resultList = List.generate(
-  //         list.length, (index) => UpdateDeliveryModel.fromJson(list[index]));
-  //     UpdateDeliveryModel validateResponse = resultList[0];
-  //     // ValidateDeviceModel.fromJson(resultList[0]);
-  //     if (validateResponse.commandstatus == 1) {
-  //       saveUnDeliveryList.add(resultList[0]);
-  //     } else {
-  //       isErrorLiveData.add(validateResponse.commandmessage!);
-  //     }
-  //   } else {
-  //     isErrorLiveData.add(resp.commandMessage.toString());
-  //   }
-  //   // saveUnDeliveryLiveData.add(resp);
-  // }
 }

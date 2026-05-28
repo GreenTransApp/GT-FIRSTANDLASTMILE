@@ -37,6 +37,7 @@ const jeenaAPIUrl = "$baseUrl/JeenaAPI/";
 const bikerUrl = "$baseUrl/Biker/";
 const crmUrl = "$baseUrl/CRMPORTALAPI/";
 const lmdUrl = "$baseUrl/LMDAPI/";
+const jinniUrl = "$baseUrl/JinniAPI/";
 
 /// Service class to handle API interactions
 class ApiService {

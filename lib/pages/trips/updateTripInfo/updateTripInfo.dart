@@ -6,10 +6,12 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/trips/tripDetail/Model/lastActiveTripModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripViewModel.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
@@ -56,7 +58,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 
   UpdateTripInfoViewModel viewModel = UpdateTripInfoViewModel();
   late LoadingAlertService loadingAlertService;
-  TripModel? lastTripInfo;
+  LastActiveTripModel? lastTripInfo;
   @override
   void initState() {
     super.initState();
@@ -87,9 +89,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 
   void getLastTripInfo() {
     Map<String, String> params = {
-      "prmcompanyid": savedUser.companyid.toString(),
-      "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmtripid": widget.model.tripid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
     viewModel.getLastTripInfo(params);
@@ -159,6 +161,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       if (data.commandstatus == 1) {
         setState(() {
           lastTripInfo = data;
+          debugPrint(
+              "Last End Reading :${lastTripInfo!.lastendreadingkm.toString()}");
+          isOdometerUnAvailable = data.odometerbypass == 'Y' ? true : false;
         });
       }
     });
@@ -189,13 +194,23 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 
   void changeStartReading(String value) {
     setState(() {
+      int currentReading = int.tryParse(value.trim()) ?? 0;
+      int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
       if (value.isNotEmpty) {
-        if (lastTripInfo != null &&
-            int.parse(value) <=
-                int.parse(lastTripInfo!.endreadingkm.toString())) {
+        if (lastTripInfo != null && currentReading <= lastReading) {
           _startReadingError =
-              "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.endreadingkm}";
+              "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.lastendreadingkm}";
           debugPrint(_startReadingError);
+        } else if (currentReading - lastReading >
+            int.parse(lastTripInfo!.readingdiff.toString())) {
+          commonAlertDialog(
+              context,
+              "ALERT!",
+              "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
+              "",
+              const Icon(Icons.info),
+              okayCallBackForAlert,
+              cancelCallBack: () {});
         } else {
           _startReadingError = null;
         }
@@ -206,7 +221,12 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     });
   }
 
+  void okayCallBackForAlert() {
+
+     _startReadingController.text = "";
+  }
   validateBeforeUpdate() {
+
     if (widget.status == TripStatus.close) {
       if (isOdometerUnAvailable == false) {
         if (isNullOrEmpty(_closeDateController.text)) {
@@ -222,7 +242,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           failToast("Close Reading Value Can't be Zero");
           return;
         } else if (int.parse(_closeReadingController.text) <=
-            int.parse(widget.model!.startreadingkm.toString())) {
+            int.parse(widget.model.startreadingkm.toString())) {
           failToast(
               "Close Reading Value Can't be less than Start Reading Value");
           return;
@@ -233,6 +253,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       widget.model.endtripdate = _closeDateController.text;
       widget.model.endtriptime = _closeTimeController.text;
     } else {
+      int currentReading = int.tryParse(_startReadingController.text.trim()) ?? 0;
+      int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
       if (isOdometerUnAvailable == false) {
         if (isNullOrEmpty(_dispatchDateController.text)) {
           failToast("Please Select Dispatch Data.");
@@ -248,6 +270,10 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           return;
         } else if (_startReadingError != null) {
           failToast(_startReadingError!);
+          return;
+        }else if (currentReading - lastReading >
+            int.parse(lastTripInfo!.readingdiff.toString())) {
+          failToast("Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
           return;
         }
         widget.model.startreadingkm =
@@ -342,13 +368,15 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
               ),
             ),
             Checkbox(
-                checkColor: CommonColors.White,
-                activeColor: CommonColors.colorPrimary,
-                value: isOdometerUnAvailable,
-                onChanged: (value) {
-                  isOdometerUnAvailable = value;
-                  setState(() {});
-                }),
+              checkColor: CommonColors.White,
+              activeColor: CommonColors.colorPrimary,
+              value: isOdometerUnAvailable,
+              // onChanged: (value) {
+              //   isOdometerUnAvailable = value;
+              //   setState(() {});
+              // }
+              onChanged: null,
+            ),
           ],
         ),
         Visibility(
@@ -712,7 +740,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           ),
         ),
         SizedBox(height: SizeConfig.mediumVerticalSpacing),
-        odoMeterUnAvailable(),
+        Visibility(
+            visible: isOdometerUnAvailable!,
+            child: odoMeterUnAvailable()),
         SizedBox(height: SizeConfig.mediumVerticalSpacing),
         Opacity(
           opacity: isOdometerUnAvailable == true ? 0.4 : 1,
@@ -1127,7 +1157,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                         ),
                       ),
                       SizedBox(height: SizeConfig.mediumVerticalSpacing),
-                      odoMeterUnAvailable(),
+                      Visibility(
+                          visible: isOdometerUnAvailable!,
+                          child: odoMeterUnAvailable()),
                       SizedBox(height: SizeConfig.mediumVerticalSpacing),
                       Opacity(
                         opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
@@ -1187,16 +1219,18 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                           errorStyle:
                                               TextStyle(color: Colors.red),
                                           helperText: isNullOrEmpty(lastTripInfo
-                                                  ?.endreadingkm
+                                                  ?.lastendreadingkm
                                                   .toString())
                                               ? "Enter start reading"
-                                              : "Must be > last trip reading (${lastTripInfo!.endreadingkm})",
+                                              : "Must be > last trip reading (${lastTripInfo!.lastendreadingkm})",
                                           helperStyle: TextStyle(
-                                              color: isNullOrEmpty(lastTripInfo
-                                                      ?.endreadingkm
-                                                      .toString())
-                                                  ? Colors.black
-                                                  : Colors.red),
+                                              color: Colors.black
+                                                  ),
+                                            // color: isNullOrEmpty(lastTripInfo
+                                            //           ?.lastendreadingkm
+                                            //           .toString())
+                                            //       ? Colors.black
+                                            //       : Colors.red),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(
