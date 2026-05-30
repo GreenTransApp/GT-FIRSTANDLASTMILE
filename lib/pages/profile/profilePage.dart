@@ -102,7 +102,7 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
                   height: SizeConfig.mediumVerticalSpacing,
                 ),
                 ContactInfoCard(context, isSmallDevice),
-                InkWell(
+/*                 InkWell(
                   onTap: () {
                     Get.to(() => FaceRegistration());
                   },
@@ -137,7 +137,7 @@ class _ProfileScreen extends State<ProfileScreen> with WidgetsBindingObserver {
                       ],
                     ),
                   ),
-                ),
+                ), */
               ],
             ),
           ),

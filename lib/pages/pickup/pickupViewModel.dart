@@ -20,13 +20,6 @@ import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 class PickupViewModel extends BaseViewModel {
   final PickupRepository repository = PickupRepository();
   StreamController<bool> viewDialog = StreamController();
-  StreamController<List<PickupDetailModel>> pickupDetailsList =
-      StreamController();
-  StreamController<List<ServiceTypeModel>> serviceTypeList = StreamController();
-  StreamController<List<LoadTypeModel>> loadTypeList = StreamController();
-  StreamController<List<DeliveryTypeModel>> deliveryTypeList =
-      StreamController();
-  StreamController<List<BookingTypeModel>> bookingTypeList = StreamController();
   StreamController<List<PinCodeModel>> pinCodeList = StreamController();
   StreamController<List<BranchModel>> branchList = StreamController();
   StreamController<List<CustomerModel>> customerList = StreamController();
@@ -38,11 +31,7 @@ class PickupViewModel extends BaseViewModel {
   PickupViewModel() {
     viewDialog = repository.viewDialog;
     isErrorLiveData = repository.isErrorLiveData;
-    pickupDetailsList = repository.pickupDetailsList;
-    serviceTypeList = repository.serviceTypeList;
-    loadTypeList = repository.loadTypeList;
-    deliveryTypeList = repository.deliveryTypeList;
-    bookingTypeList = repository.bookingTypeList;
+
     pinCodeList = repository.pinCodeList;
     branchList = repository.branchList;
     customerList = repository.customerList;

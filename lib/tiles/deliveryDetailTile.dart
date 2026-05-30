@@ -226,6 +226,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       drivercode: savedUser.drivercode.toString(),
       transactionid: widget.model.transactionid,
       grno: widget.model.grno,
+      orderid: isNullOrEmpty(widget.model.orderid) ? '' : widget.model.orderid,
     );
 
     // menuCode = savedUser.companyid == 99883345
