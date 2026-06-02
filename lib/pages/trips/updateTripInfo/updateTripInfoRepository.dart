@@ -147,14 +147,28 @@ class UpdateTripInfoRepository extends BaseRepository {
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-          List<dynamic> list = table.values.first;
-          LastActiveTripModel validateResponse =
-              LastActiveTripModel.fromJson(list[0]);
-          if (validateResponse.commandstatus == 1) {
-            lastTripInfo.add(validateResponse);
-          } else {
-            isErrorLiveData.add(validateResponse.commandmessage!);
+          LastActiveTripModel lastTrip = LastActiveTripModel();
+          for (MapEntry<String, dynamic> v in table.entries) {
+            if (v.key == 'Table') {
+              List<dynamic> list = v.value;
+              lastTrip = LastActiveTripModel.fromJson(list[0]);
+            } else if (v.key == 'Table1') {
+              List<dynamic> list = v.value;
+              // var decodedJson = jsonDecode(list[0]);
+              lastTrip.readingdiff = list[0]['readingdiff'].toString();
+              lastTrip.odometerbypass = list[0]['odometerbypass'].toString();
+            }
           }
+          lastTripInfo.add(lastTrip);
+
+          // List<dynamic> list = table.values.first;
+          // LastActiveTripModel validateResponse =
+          //     LastActiveTripModel.fromJson(list[0]);
+          // if (validateResponse.commandstatus == 1) {
+          //   lastTripInfo.add(validateResponse);
+          // } else {
+          //   isErrorLiveData.add(validateResponse.commandmessage!);
+          // }
         } else {
           isErrorLiveData.add(resp.commandMessage.toString());
         }

@@ -28,6 +28,7 @@ class UpdateTripInfoViewModel extends BaseViewModel {
     updateCloseTripLiveData = _repo.updateCloseTripLiveData;
     viewDialogLiveData = _repo.viewDialog;
     lastTripInfo = _repo.lastTripInfo;
+    isErrorLiveData = _repo.isErrorLiveData;
   }
 
   void updateTripInfo(Map<String, String> params) {

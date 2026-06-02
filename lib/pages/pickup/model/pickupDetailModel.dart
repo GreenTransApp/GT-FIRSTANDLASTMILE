@@ -11,8 +11,10 @@ class PickupDetailModel {
   final String? custDeptId;
   final String? orgCode;
   final String? orgName;
+  final String? orgZipCode;
   final String? destCode;
   final String? destName;
+  final String? destZipCode;
   final String? cngrCode;
   final String? cngr;
   final String? cngrZipCode;
@@ -57,8 +59,10 @@ class PickupDetailModel {
     this.custDeptId,
     this.orgCode,
     this.orgName,
+    this.orgZipCode,
     this.destCode,
     this.destName,
+    this.destZipCode,
     this.cngrCode,
     this.cngr,
     this.cngrZipCode,
@@ -105,8 +109,10 @@ class PickupDetailModel {
       custDeptId: json['custdeptid'].toString(),
       orgCode: json['orgcode'].toString(),
       orgName: json['orgname'].toString(),
+      orgZipCode: json['orgzipcode'].toString(),
       destCode: json['destcode'].toString(),
       destName: json['destname'].toString(),
+      destZipCode: json['destzipcode'].toString(),
       cngrCode: json['cngrcode'].toString(),
       cngr: json['cngr'].toString(),
       cngrZipCode: json['cngrzipcode'].toString(),

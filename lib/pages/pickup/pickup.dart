@@ -11,6 +11,7 @@ import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/commonButton.dart';
+import 'package:gtlmd/common/genericBottomSheet.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
@@ -33,8 +34,8 @@ import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class Pickup extends StatefulWidget {
-  DeliveryDetailModel details;
-  Pickup({super.key, required this.details});
+  final DeliveryDetailModel details;
+  const Pickup({super.key, required this.details});
 
   @override
   State<Pickup> createState() => _PickupState();
@@ -52,12 +53,9 @@ class _PickupState extends State<Pickup> {
   final TextEditingController _orgController = TextEditingController();
   final TextEditingController _destPincodeController = TextEditingController();
   final TextEditingController _destController = TextEditingController();
-  // final  TextEditingController _imageController = TextEditingController();
   final TextEditingController _custController = TextEditingController();
   final TextEditingController _deptController = TextEditingController();
-  final TextEditingController _cngrController = TextEditingController();
-  final TextEditingController _cngeController = TextEditingController();
-  // final TextEditingController _returnReasonController = TextEditingController();
+
   final TextEditingController _noofpckgsController = TextEditingController();
   final TextEditingController _remarksController = TextEditingController();
   final TextEditingController _gweightController = TextEditingController();
@@ -123,27 +121,15 @@ class _PickupState extends State<Pickup> {
   CngrCngeModel? _selectedCnge;
   String currentAddress = '';
 
-  // LoadTypeModel? _selectedLoadType;
   String? selected;
   String? _itemImagePath = "";
   String _selectedSignaturePath = '';
 
-  // String? _itemImagePath;
   bool skuVerified = false;
   bool returnCodeValid = false;
   late InvoiceModel firstInvoiceModel;
   List<InvoiceModel> invoiceList = List.empty(growable: true);
   String autoGrLabel = "Consignment";
-  bool _branchesLoaded = false;
-  bool _customersLoaded = false;
-  bool _cngrLoaded = false;
-  bool _cngeLoaded = false;
-  bool _serviceLoaded = false;
-  bool _loadTypeLoaded = false;
-  bool _deliveryLoaded = false;
-  bool _deptLoaded = false;
-  bool _pickupLoaded = false;
-  bool _bookingLoaded = false;
   double screenWidth = 0;
   bool isSmallDevice = false;
   bool enableAutoGr = false;
@@ -159,16 +145,7 @@ class _PickupState extends State<Pickup> {
     _bookingtimeController.text = DateFormat("HH:mm").format(DateTime.now());
 
     setObservers();
-    // getPinCodeList();
-    // loadingAlertService.showLoading();
-
     getData();
-
-    // getBranchList();
-    // getCustomerList();
-    // getCngrCngeList('R');
-    // getCngrCngeList('E');
-    // getDepartmentList();
   }
 
   @override
@@ -225,81 +202,22 @@ class _PickupState extends State<Pickup> {
           serviceList = data.serviceList,
           bookingTypeList = data.bookingList,
           loadTypeList = data.loadList,
-          getBranchList().then((data) => {
-                branchList = data,
-                getCustomerList().then((data) => {
-                      customerList = data,
-                      getCngrCngeList('R').then((data) => {
-                            cngrList = data,
-                            getCngrCngeList('E').then((data) => {
-                                  cngeList = data,
-                                  getDepartmentList().then((data) => {
-                                        deptList = data,
-                                        setUiData(),
-                                        loadingAlertService.hideLoading()
-                                      })
-                                })
-                          })
-                    })
-              })
+          setUiData(),
+          loadingAlertService.hideLoading()
         });
   }
 
   void setObservers() {
-    viewModel.pickupDetailsList.stream.listen((pickupDetail) {
-      debugPrint('Pickup List Length: ${pickupDetail}');
-      if (pickupDetail != null &&
-          pickupDetail.length > 0 &&
-          pickupDetail[0].commandStatus == -1) {
-        failToast(pickupDetail[0].commandMessage ?? "Something went wrong");
-        return;
-      } else {
-        setState(() {
-          _pickupLoaded = true;
-          this.pickupDetail = pickupDetail.first;
-          // loadAllData();
-          // trySetUiData();
-        });
-      }
-    });
-
     viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     });
 
-    viewModel.serviceTypeList.stream.listen((serviceTypeList) {
-      debugPrint('Service Type List Length: ${serviceTypeList.length}');
-      setState(() {
-        serviceList = serviceTypeList;
-        _serviceLoaded = true;
-      });
-      // trySetUiData();
-      // _selectedServiceType = serviceList.first;
-    });
-    viewModel.loadTypeList.stream.listen((loadType) {
-      debugPrint('Load Type List Length: $loadType');
-      setState(() {
-        loadTypeList = loadType;
-        _loadTypeLoaded = true;
-      });
-      // trySetUiData();
-      // _selectedLoadType = loadTypeList.first;
-    });
     viewModel.viewDialog.stream.listen((showLoading) {
       if (showLoading) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
       }
-    });
-
-    viewModel.deliveryTypeList.stream.listen((deliveryData) {
-      debugPrint('Delivery type list size: ${deliveryData.length}');
-      setState(() {
-        deliveryTypeList = deliveryData;
-        _deliveryLoaded = true;
-        // trySetUiData();
-      });
     });
 
     viewModel.pinCodeList.stream.listen((pincodeData) {
@@ -310,21 +228,10 @@ class _PickupState extends State<Pickup> {
       });
     });
 
-    viewModel.bookingTypeList.stream.listen((bookingData) {
-      debugPrint('Delivery type list size: ${bookingData.length}');
-      setState(() {
-        bookingTypeList = bookingData;
-        _bookingLoaded = true;
-        // trySetUiData();
-      });
-    });
-
     viewModel.branchList.stream.listen((branchData) {
       debugPrint('Delivery type list size: ${branchData.length}');
       setState(() {
         branchList = branchData;
-        _branchesLoaded = true;
-        // trySetUiData();
       });
     });
 
@@ -332,8 +239,6 @@ class _PickupState extends State<Pickup> {
       debugPrint('Delivery type list size: ${customerData.length}');
       setState(() {
         customerList = customerData;
-        _customersLoaded = true;
-        // trySetUiData();
       });
     });
 
@@ -341,24 +246,18 @@ class _PickupState extends State<Pickup> {
       debugPrint('Delivery type list size: ${cngr.length}');
       setState(() {
         cngrList = cngr;
-        _cngrLoaded = true;
-        // trySetUiData();
       });
     });
     viewModel.cngeList.stream.listen((cnge) {
       debugPrint('Delivery type list size: ${cnge.length}');
       setState(() {
         cngeList = cnge;
-        _cngeLoaded = true;
-        // trySetUiData();
       });
     });
     viewModel.deptList.stream.listen((list) {
       debugPrint('Delivery type list size: ${list.length}');
       setState(() {
         deptList = list;
-        _deptLoaded = true;
-        // trySetUiData();
       });
     });
 
@@ -403,9 +302,7 @@ class _PickupState extends State<Pickup> {
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      // "prmbranchcode": "00000",
       "prmusercode": savedUser.usercode.toString(),
-      // "prmmenucode": 'GTAPP_BOOKINGWITHOUTINDENT',
       "prmsessionid": savedUser.sessionid.toString(),
       "prmcharstr": '',
     };
@@ -418,7 +315,6 @@ class _PickupState extends State<Pickup> {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      // "prmmenucode": 'GTAPP_BOOKINGWITHOUTINDENT',
       "prmsessionid": savedUser.sessionid.toString(),
       "prmcharstr": '',
     };
@@ -430,7 +326,6 @@ class _PickupState extends State<Pickup> {
     Map<String, String> params = {
       "prmconnstring": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      // "prmbranchcode": '00000',
       "prmgrtype": 'R',
       "prmcngrcnge": type,
       "prmcustcode": '',
@@ -451,44 +346,46 @@ class _PickupState extends State<Pickup> {
   }
 
   setUiData() {
-    // _orgPincodeController.text = pickupDetail!.cngrZipCode.toString();
-    // _orgController.text = pickupDetail!.orgName.toString();
-    // _destPincodeController.text = pickupDetail!.cngeZipCo de.toString();
-    // _destController.text = pickupDetail!.destName.toString();
-    // loadingAlertService.showLoading();
-    for (BranchModel branch in branchList) {
-      if (branch.stnCode == pickupDetail!.orgCode) {
-        _selectedOrigin = branch;
-        _orgController.text = _selectedOrigin!.stnName.toString();
-        // _orgPincodeController.text = _selectedOrigin!.zipCode.toString();
-      }
-    }
+    _selectedOrigin = BranchModel(
+      stnCode: pickupDetail!.orgCode?.toString(),
+      stnName: pickupDetail!.orgName?.toString(),
+      zipCode: pickupDetail!.orgZipCode?.toString(),
+    );
 
-    for (BranchModel branch in branchList) {
-      if (branch.stnCode == pickupDetail!.destCode) {
-        _selectedDest = branch;
-        _destController.text = _selectedDest!.stnName.toString();
-        // _destPincodeController.text = _selectedDest!.zipCode.toString();
-      }
-    }
+    _selectedDest = BranchModel(
+      stnCode: pickupDetail!.destCode?.toString(),
+      stnName: pickupDetail!.destName?.toString(),
+      zipCode: pickupDetail!.destZipCode?.toString(),
+    );
 
-    for (CustomerModel customer in customerList) {
-      if (customer.custCode == pickupDetail!.custCode) {
-        _selectedCustomer = customer;
-      }
-    }
+    _selectedCustomer = CustomerModel(
+      custCode: pickupDetail!.custCode?.toString(),
+      custName: pickupDetail!.custName?.toString(),
+    );
 
-    for (CngrCngeModel cngr in cngrList) {
-      if (cngr.code == pickupDetail!.cngrCode) {
-        _selectedCngr = cngr;
-      }
-    }
+    _selectedCngr = CngrCngeModel(
+      code: pickupDetail!.cngrCode?.toString(),
+      name: pickupDetail!.cngr?.toString(),
+      zipCode: pickupDetail!.cngrZipCode?.toString(),
+      address: pickupDetail!.cngrAddress?.toString(),
+      city: pickupDetail!.cngrCity?.toString(),
+      state: pickupDetail!.cngrState?.toString(),
+      country: pickupDetail!.cngrCountry?.toString(),
+      telNo: pickupDetail!.cngrMobileNo?.toString(),
+      email: pickupDetail!.cngrEmailId?.toString(),
+    );
 
-    for (CngrCngeModel cnge in cngeList) {
-      if (cnge.code == pickupDetail!.cngeCode) {
-        _selectedCnge = cnge;
-      }
-    }
+    _selectedCnge = CngrCngeModel(
+      code: pickupDetail!.cngeCode?.toString(),
+      name: pickupDetail!.cnge?.toString(),
+      zipCode: pickupDetail!.cngeZipCode?.toString(),
+      address: pickupDetail!.cngeAddress?.toString(),
+      city: pickupDetail!.cngeCity?.toString(),
+      state: pickupDetail!.cngeState?.toString(),
+      country: pickupDetail!.cngeCountry?.toString(),
+      telNo: pickupDetail!.cngeMobileNo?.toString(),
+      email: pickupDetail!.cngeEmailId?.toString(),
+    );
 
     for (ServiceTypeModel serviceType in serviceList) {
       if (serviceType.prodCode == pickupDetail!.productCode.toString()) {
@@ -543,45 +440,7 @@ class _PickupState extends State<Pickup> {
 
     enableAutoGr = (pickupDetail?.autogenerategr) == "Y";
     autoGr = enableAutoGr ? true : autoGr;
-    // if (enableAutoGr) {
-    //   autoGr = true;
-    // } else {
-    //   autoGr = false;
-    // }
     setState(() {});
-    // loadingAlertService.hideLoading();
-  }
-
-  Future<void> loadAllData() async {
-    loadingAlertService.showLoading();
-    await Future.wait([
-      getBranchList(),
-      getCustomerList(),
-      getCngrCngeList('R'),
-      getCngrCngeList('E'),
-      getDepartmentList(),
-    ]);
-
-    // All data ready → update UI once
-    setUiData();
-
-    // setState(() {
-    //   isUiReady = true;
-    // });
-  }
-
-  void trySetUiData() {
-    if (_branchesLoaded &&
-        _customersLoaded &&
-        _cngrLoaded &&
-        _cngeLoaded &&
-        _serviceLoaded &&
-        _loadTypeLoaded &&
-        _deliveryLoaded &&
-        _deptLoaded &&
-        _pickupLoaded) {
-      setUiData(); // <-- Only once
-    }
   }
 
   validateForm() {
@@ -605,28 +464,12 @@ class _PickupState extends State<Pickup> {
       invoiceList.add(InvoiceModel(
           invoiceNo: '', date: todayDate, pckgs: '', invoiceValue: ''));
     });
-
-    // Wait for UI to rebuild, then scroll
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _scrollController.animateTo(
-    //     _scrollController.position.maxScrollExtent,
-    //     duration: const Duration(milliseconds: 400),
-    //     curve: Curves.easeOut,
-    //   );
-    // });
   }
 
   deleteInvoice(int index) {
     setState(() {
       invoiceList.removeAt(index);
     });
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _scrollController.animateTo(
-    //     _scrollController.position.maxScrollExtent,
-    //     duration: const Duration(milliseconds: 400),
-    //     curve: Curves.easeOut,
-    //   );
-    // });
   }
 
   Widget defaultInvoiceCard() {
@@ -635,7 +478,6 @@ class _PickupState extends State<Pickup> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // heading
             Text(
               "Invoice #: 1",
               style: TextStyle(
@@ -645,7 +487,6 @@ class _PickupState extends State<Pickup> {
             const SizedBox(
               height: 8,
             ),
-            // first row
             Row(
               children: [
                 Expanded(
@@ -654,20 +495,13 @@ class _PickupState extends State<Pickup> {
                   isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
                         firstInvoiceModel.invoiceNo =
                             firstInvoiceModel.invoiceNoController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: firstInvoiceModel.invoiceNoController,
@@ -678,12 +512,6 @@ class _PickupState extends State<Pickup> {
                     decoration: _inputDecoration(
                       "Invoice No",
                     ),
-                    // validator: (value) {
-                    //   if (value == null || value.isEmpty) {
-                    //     return 'Please enter Invoice No.';
-                    //   }
-                    //   return null;
-                    // },
                   ),
                 )),
                 const SizedBox(
@@ -702,10 +530,7 @@ class _PickupState extends State<Pickup> {
                     isRequired: false,
                     icon: Icons.numbers,
                     child: TextFormField(
-                      // focusNode: skuFocus,
-                      onTapOutside: (event) {
-                        // skuFocus.unfocus();
-                      },
+                      onTapOutside: (event) {},
                       autofocus: false,
                       enabled: false,
                       textInputAction: TextInputAction.done,
@@ -717,18 +542,11 @@ class _PickupState extends State<Pickup> {
                       decoration: _inputDecoration(
                         "Invoice Date",
                       ),
-                      // validator: (value) {
-                      //   if (value == null || value.isEmpty) {
-                      //     return 'Please enter invoice date';
-                      //   }
-                      //   return null;
-                      // },
                     ),
                   ),
                 ))
               ],
             ),
-            // second row
             const SizedBox(
               height: 8,
             ),
@@ -740,21 +558,13 @@ class _PickupState extends State<Pickup> {
                   isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-
                         firstInvoiceModel.pckgs =
                             firstInvoiceModel.pckgsController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: firstInvoiceModel.pckgsController,
@@ -769,12 +579,6 @@ class _PickupState extends State<Pickup> {
                     decoration: _inputDecoration(
                       "Invoice No",
                     ),
-                    // validator: (value) {
-                    //   if (value == null || value.isEmpty) {
-                    //     return 'Please enter Invoice No';
-                    //   }
-                    //   return null;
-                    // },
                   ),
                 )),
                 const SizedBox(
@@ -786,33 +590,19 @@ class _PickupState extends State<Pickup> {
                   isRequired: false,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-
                         firstInvoiceModel.invoiceValue =
                             firstInvoiceModel.invoiceValueController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: firstInvoiceModel.invoiceValueController,
                     keyboardType: TextInputType.text,
                     style: const TextStyle(color: CommonColors.appBarColor),
                     decoration: _inputDecoration("Invoice Value"),
-                    // validator: (value) {
-                    //   if (value == null || value.isEmpty) {
-                    //     return 'Please enter invoice date';
-                    //   }
-                    //   return null;
-                    // },
                   ),
                 ))
               ],
@@ -820,90 +610,6 @@ class _PickupState extends State<Pickup> {
             const SizedBox(
               height: 8,
             ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: _buildFormField(
-            //       label: 'Content',
-            //       isRequired: true,
-            //       icon: Icons.numbers,
-            //       child: TextFormField(
-            //         // focusNode: skuFocus,
-            //         onTap: () {
-            //           showContentSelectionBs(context, "Select Content", (data) {
-            //             debugPrint(data);
-            //           });
-            //         },
-            //         onTapOutside: (event) {
-            //           // skuFocus.unfocus();
-            //         },
-            //         autofocus: false,
-            //         onEditingComplete: () {
-            //           setState(() {
-            //             // _skuController.text =
-            //             //     _skuController.text.trim();
-            //           });
-            //           // skuFocus.unfocus();
-            //           // verifySku();
-            //         },
-            //         // textInputAction: TextInputAction.done,
-            //         // controller: model.invoiceValueController,
-            //         // keyboardType: TextInputType.text,
-            //         enabled: true,
-            //         style: const TextStyle(color: CommonColors.appBarColor),
-            //         decoration: _inputDecoration(" Content"),
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Please select content';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //     ))
-            //   ],
-            // ),
-            // const SizedBox(
-            //   height: 8,
-            // ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: _buildFormField(
-            //       label: 'Packing',
-            //       isRequired: true,
-            //       icon: Icons.numbers,
-            //       child: TextFormField(
-            //         onTap: () {},
-            //         enabled: false,
-            //         // focusNode: skuFocus,
-            //         onTapOutside: (event) {
-            //           // skuFocus.unfocus();
-            //         },
-            //         autofocus: false,
-            //         onEditingComplete: () {
-            //           setState(() {
-            //             // _skuController.text =
-            //             //     _skuController.text.trim();
-            //             // model.invoiceValue = model.invoiceValueController.text;
-            //           });
-            //           // skuFocus.unfocus();
-            //           // verifySku();
-            //         },
-            //         // textInputAction: TextInputAction.done,
-            //         // controller: model.invoiceValueController,
-            //         // keyboardType: TextInputType.text,
-            //         style: const TextStyle(color: CommonColors.appBarColor),
-            //         decoration: _inputDecoration("Packing"),
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Please select packing';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //     ))
-            //   ],
-            // ),
             SizedBox(
               width: double.infinity,
               child: Padding(
@@ -944,7 +650,6 @@ class _PickupState extends State<Pickup> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // heading
             Text(
               "Invoice #: $index",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
@@ -952,7 +657,6 @@ class _PickupState extends State<Pickup> {
             const SizedBox(
               height: 8,
             ),
-            // first row
             Row(
               children: [
                 Expanded(
@@ -961,21 +665,12 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
-
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-
                         model.invoiceNo = model.invoiceNoController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: model.invoiceNoController,
@@ -1010,10 +705,7 @@ class _PickupState extends State<Pickup> {
                     isRequired: true,
                     icon: Icons.numbers,
                     child: TextFormField(
-                      // focusNode: skuFocus,
-                      onTapOutside: (event) {
-                        // skuFocus.unfocus();
-                      },
+                      onTapOutside: (event) {},
                       autofocus: false,
                       enabled: false,
                       textInputAction: TextInputAction.done,
@@ -1036,7 +728,6 @@ class _PickupState extends State<Pickup> {
                 ))
               ],
             ),
-            // second row
             const SizedBox(
               height: 8,
             ),
@@ -1048,20 +739,12 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-
                         model.pckgs = model.pckgsController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: model.pckgsController,
@@ -1089,19 +772,12 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
                       setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
                         model.invoiceValue = model.invoiceValueController.text;
                       });
-                      // skuFocus.unfocus();
-                      // verifySku();
                     },
                     textInputAction: TextInputAction.done,
                     controller: model.invoiceValueController,
@@ -1125,89 +801,6 @@ class _PickupState extends State<Pickup> {
             const SizedBox(
               height: 8,
             ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: _buildFormField(
-            //       label: 'Content',
-            //       isRequired: true,
-            //       icon: Icons.numbers,
-            //       child: TextFormField(
-            //         // focusNode: skuFocus,
-            //         onTap: () {},
-            //         onTapOutside: (event) {
-            //           // skuFocus.unfocus();
-            //         },
-            //         autofocus: false,
-            //         onEditingComplete: () {
-            //           setState(() {
-            //             // _skuController.text =
-            //             //     _skuController.text.trim();
-            //           });
-            //           // skuFocus.unfocus();
-            //           // verifySku();
-            //         },
-            //         // textInputAction: TextInputAction.done,
-            //         // controller: model.invoiceValueController,
-            //         // keyboardType: TextInputType.text,
-            //         enabled: false,
-            //         style: const TextStyle(color: CommonColors.appBarColor),
-            //         decoration: _inputDecoration(" Content"),
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Please select content';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //     ))
-            //   ],
-            // ),
-            // const SizedBox(
-            //   height: 8,
-            // ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //         child: _buildFormField(
-            //       label: 'Packing',
-            //       isRequired: true,
-            //       icon: Icons.numbers,
-            //       child: TextFormField(
-            //         onTap: () {},
-            //         enabled: false,
-            //         // focusNode: skuFocus,
-            //         onTapOutside: (event) {
-            //           // skuFocus.unfocus();
-            //         },
-            //         autofocus: false,
-            //         onEditingComplete: () {
-            //           setState(() {
-            //             // _skuController.text =
-            //             //     _skuController.text.trim();
-            //             // model.invoiceValue = model.invoiceValueController.text;
-            //           });
-            //           // skuFocus.unfocus();
-            //           // verifySku();
-            //         },
-            //         // textInputAction: TextInputAction.done,
-            //         // controller: model.invoiceValueController,
-            //         // keyboardType: TextInputType.text,
-            //         style: const TextStyle(color: CommonColors.appBarColor),
-            //         decoration: _inputDecoration("Packing"),
-            //         validator: (value) {
-            //           if (value == null || value.isEmpty) {
-            //             return 'Please select packing';
-            //           }
-            //           return null;
-            //         },
-            //       ),
-            //     ))
-            //   ],
-            // ),
-            // const SizedBox(
-            //   height: 8,
-            // ),
             Row(
               children: [
                 Expanded(
@@ -1295,14 +888,6 @@ class _PickupState extends State<Pickup> {
                 fontWeight: FontWeight.bold, fontSize: isSmallDevice ? 18 : 20),
           ),
           children: [
-            // heading
-            // const Text(
-            //   "Consignor Details",
-            //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            // ),
-            // const SizedBox(
-            //   height: 8,
-            // ),
             Row(
               children: [
                 Expanded(
@@ -1311,7 +896,6 @@ class _PickupState extends State<Pickup> {
                     isRequired: true,
                     icon: Icons.numbers,
                     child: TextFormField(
-                      // focusNode: skuFocus,
                       readOnly: true,
                       onTap: () {
                         List<CommonDataModel<CngrCngeModel>> commonList =
@@ -1342,18 +926,11 @@ class _PickupState extends State<Pickup> {
                           commonList,
                         );
                       },
-                      onTapOutside: (event) {
-                        // skuFocus.unfocus();
-                      },
+                      onTapOutside: (event) {},
                       enabled: canEditCngr,
                       autofocus: false,
                       onEditingComplete: () {
-                        setState(() {
-                          // _skuController.text =
-                          //     _skuController.text.trim();
-                        });
-                        // skuFocus.unfocus();
-                        // verifySku();
+                        setState(() {});
                       },
                       textInputAction: TextInputAction.done,
                       controller: _consignorNameController,
@@ -1379,7 +956,6 @@ class _PickupState extends State<Pickup> {
                 )
               ],
             ),
-            // first row
             Row(
               children: [
                 Expanded(
@@ -1388,19 +964,11 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
                     enabled: false,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     textInputAction: TextInputAction.done,
                     controller: _consignorAddressController,
@@ -1432,10 +1000,7 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     enabled: false,
                     textInputAction: TextInputAction.done,
@@ -1473,18 +1038,10 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     enabled: false,
                     textInputAction: TextInputAction.done,
@@ -1517,18 +1074,10 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     enabled: false,
                     textInputAction: TextInputAction.done,
@@ -1577,14 +1126,6 @@ class _PickupState extends State<Pickup> {
                 fontWeight: FontWeight.bold, fontSize: isSmallDevice ? 18 : 20),
           ),
           children: [
-            // heading
-            // const Text(
-            //   "Consignee Details",
-            //   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            // ),
-            // const SizedBox(
-            //   height: 8,
-            // ),
             Row(
               children: [
                 Expanded(
@@ -1593,11 +1134,8 @@ class _PickupState extends State<Pickup> {
                     isRequired: true,
                     icon: Icons.numbers,
                     child: TextFormField(
-                      // focusNode: skuFocus,
                       enabled: canEditCnge,
-                      onTapOutside: (event) {
-                        // skuFocus.unfocus();
-                      },
+                      onTapOutside: (event) {},
                       onTap: () {
                         List<CommonDataModel<CngrCngeModel>> commonList =
                             cngrList
@@ -1629,12 +1167,7 @@ class _PickupState extends State<Pickup> {
                       },
                       autofocus: false,
                       onEditingComplete: () {
-                        setState(() {
-                          // _skuController.text =
-                          //     _skuController.text.trim();
-                        });
-                        // skuFocus.unfocus();
-                        // verifySku();
+                        setState(() {});
                       },
                       textInputAction: TextInputAction.done,
                       controller: _consigneeNameController,
@@ -1660,7 +1193,6 @@ class _PickupState extends State<Pickup> {
                 )
               ],
             ),
-            // first row
             Row(
               children: [
                 Expanded(
@@ -1669,19 +1201,11 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
                     enabled: false,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     textInputAction: TextInputAction.done,
                     controller: _consigneeAddressController,
@@ -1713,10 +1237,7 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     enabled: false,
                     textInputAction: TextInputAction.done,
@@ -1742,7 +1263,6 @@ class _PickupState extends State<Pickup> {
                 ))
               ],
             ),
-            // second row
             const SizedBox(
               height: 8,
             ),
@@ -1754,19 +1274,11 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     enabled: false,
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     textInputAction: TextInputAction.done,
                     controller: _consigneeCityController,
@@ -1798,19 +1310,11 @@ class _PickupState extends State<Pickup> {
                   isRequired: true,
                   icon: Icons.numbers,
                   child: TextFormField(
-                    // focusNode: skuFocus,
                     enabled: false,
-                    onTapOutside: (event) {
-                      // skuFocus.unfocus();
-                    },
+                    onTapOutside: (event) {},
                     autofocus: false,
                     onEditingComplete: () {
-                      setState(() {
-                        // _skuController.text =
-                        //     _skuController.text.trim();
-                      });
-                      // skuFocus.unfocus();
-                      // verifySku();
+                      setState(() {});
                     },
                     textInputAction: TextInputAction.done,
                     controller: _consigneeMobileController,
@@ -1873,13 +1377,7 @@ class _PickupState extends State<Pickup> {
     double chargeable = double.tryParse(value) ?? 0;
 
     if (chargeable < gross) {
-      // Show toast
-      // Fluttertoast.showToast(
-      //   msg: "Chargeable Weight can't be less than Gross Weight",
-      // );
       failToast("Chargeable Weight can't be less than Gross Weight");
-
-      // Set chargeable weight equal to gross weight
       _cweightController.text = gross.toString();
       setState(() {});
     }
@@ -1922,11 +1420,6 @@ class _PickupState extends State<Pickup> {
       invoicePckgsstr += "${invoice.pckgsController.text},";
       invoiceValuestr += "${invoice.invoiceValueController.text},";
     }
-    debugPrint("Invoice No ${invoicenostr}");
-    debugPrint("Invoice Date ${invoicedtstr}");
-    debugPrint("Invoice Pckgs ${invoicePckgsstr}");
-    debugPrint("Invoice Value ${invoiceValuestr}");
-
     Map<String, String> params = {
       "prmconnstring": savedUser.companyid.toString(),
       "prmtransactionid": widget.details.transactionid.toString(),
@@ -2111,8 +1604,6 @@ class _PickupState extends State<Pickup> {
                                     autofocus: false,
                                     onEditingComplete: () {
                                       setState(() {});
-
-                                      // verifySku();
                                     },
                                     textInputAction: TextInputAction.done,
                                     controller: _grController,
@@ -2175,12 +1666,6 @@ class _PickupState extends State<Pickup> {
                                       Radius.circular(SizeConfig.largeRadius))),
                               child: Column(
                                 children: [
-                                  // const SizedBox(height: 20),
-
-                                  // const SizedBox(width: 12),
-                                  // Row(
-                                  //   children: [consigneeDetailsCard()],
-                                  // ),
                                   SizedBox(width: SizeConfig.mediumTextSize),
                                   Row(
                                     children: [
@@ -2269,9 +1754,7 @@ class _PickupState extends State<Pickup> {
                                   ),
                                   SizedBox(
                                       height: SizeConfig.mediumVerticalSpacing),
-
                                   Card(
-                                    // elevation: 8,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             SizeConfig.largeRadius),
@@ -2285,39 +1768,6 @@ class _PickupState extends State<Pickup> {
                                               SizeConfig.horizontalPadding),
                                       child: Column(
                                         children: [
-                                          // _buildFormField(
-                                          //   label: 'Origin Pincode',
-                                          //   isRequired: true,
-                                          //   icon: Icons.people_outline,
-                                          //   child: DropdownButtonFormField<
-                                          //       PinCodeModel>(
-                                          //     value: _selectedOrigin,
-                                          //     decoration: _inputDecoration(
-                                          //         'Select origin pincode'),
-                                          //     items: pincodeList
-                                          //         .map((PinCodeModel origin) {
-                                          //       return DropdownMenuItem<
-                                          //           PinCodeModel>(
-                                          //         value: origin,
-                                          //         child: Text(
-                                          //             origin.code.toString() ??
-                                          //                 ''),
-                                          //       );
-                                          //     }).toList(),
-                                          //     onChanged:
-                                          //         (PinCodeModel? newValue) {
-                                          //       setState(() {
-                                          //         _selectedOrigin = newValue;
-                                          //       });
-                                          //     },
-                                          //     validator: (value) {
-                                          //       if (value == null) {
-                                          //         return 'Please select a origin pincode';
-                                          //       }
-                                          //       return null;
-                                          //     },
-                                          //   ),
-                                          // ),
                                           _buildFormField(
                                             label: "Origin Pincode",
                                             labelColor:
@@ -2376,39 +1826,6 @@ class _PickupState extends State<Pickup> {
                                           SizedBox(
                                               height: SizeConfig
                                                   .mediumVerticalSpacing),
-                                          // _buildFormField(
-                                          //   label: 'Origin',
-                                          //   isRequired: true,
-                                          //   icon: Icons.people_outline,
-                                          //   child: DropdownButtonFormField<
-                                          //       PinCodeModel>(
-                                          //     value: _selectedOrigin,
-                                          //     decoration: _inputDecoration(
-                                          //         'Select origin'),
-                                          //     items: pincodeList
-                                          //         .map((PinCodeModel origin) {
-                                          //       return DropdownMenuItem<
-                                          //           PinCodeModel>(
-                                          //         value: origin,
-                                          //         child: Text(origin.amount
-                                          //                 .toString() ??
-                                          //             ''),
-                                          //       );
-                                          //     }).toList(),
-                                          //     onChanged:
-                                          //         (PinCodeModel? newValue) {
-                                          //       setState(() {
-                                          //         _selectedOrigin = newValue;
-                                          //       });
-                                          //     },
-                                          //     validator: (value) {
-                                          //       if (value == null) {
-                                          //         return 'Please select a origin';
-                                          //       }
-                                          //       return null;
-                                          //     },
-                                          //   ),
-                                          // )
                                           _buildFormField(
                                             label: "Origin",
                                             labelColor:
@@ -2467,58 +1884,21 @@ class _PickupState extends State<Pickup> {
                                       ),
                                     ),
                                   ),
-
                                   SizedBox(
                                       height: SizeConfig.mediumVerticalSpacing),
                                   Card(
-                                      // elevation: 8,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                            SizeConfig
-                                                .largeRadius), // Adjust corner radius as needed
+                                            SizeConfig.largeRadius),
                                         side: BorderSide(
-                                          color: CommonColors
-                                              .grey400!, // Border color
-                                          width: 1.0, // Border thickness
+                                          color: CommonColors.grey400!,
+                                          width: 1.0,
                                         ),
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.all(
                                             SizeConfig.mediumVerticalSpacing),
                                         child: Column(children: [
-                                          // _buildFormField(
-                                          //   label: 'Destination Pincode',
-                                          //   isRequired: true,
-                                          //   icon: Icons.people_outline,
-                                          //   child: DropdownButtonFormField<
-                                          //       PinCodeModel>(
-                                          //     value: _selectedDest,
-                                          //     decoration: _inputDecoration(
-                                          //         'Select destination'),
-                                          //     items: pincodeList
-                                          //         .map((PinCodeModel dest) {
-                                          //       return DropdownMenuItem<
-                                          //           PinCodeModel>(
-                                          //         value: dest,
-                                          //         child: Text(
-                                          //             dest.code.toString() ??
-                                          //                 ''),
-                                          //       );
-                                          //     }).toList(),
-                                          //     onChanged:
-                                          //         (PinCodeModel? newValue) {
-                                          //       setState(() {
-                                          //         _selectedDest = newValue;
-                                          //       });
-                                          //     },
-                                          //     validator: (value) {
-                                          //       if (value == null) {
-                                          //         return 'Please select a destination';
-                                          //       }
-                                          //       return null;
-                                          //     },
-                                          //   ),
-                                          // ),
                                           _buildFormField(
                                             label: "Destination Pincode",
                                             labelColor:
@@ -2578,39 +1958,6 @@ class _PickupState extends State<Pickup> {
                                           SizedBox(
                                               height: SizeConfig
                                                   .mediumVerticalSpacing),
-                                          // _buildFormField(
-                                          //   label: 'Destionation',
-                                          //   isRequired: true,
-                                          //   icon: Icons.people_outline,
-                                          //   child: DropdownButtonFormField<
-                                          //       PinCodeModel>(
-                                          //     value: _selectedDest,
-                                          //     decoration: _inputDecoration(
-                                          //         'Select destination'),
-                                          //     items: pincodeList
-                                          //         .map((PinCodeModel dest) {
-                                          //       return DropdownMenuItem<
-                                          //           PinCodeModel>(
-                                          //         value: dest,
-                                          //         child: Text(
-                                          //             dest.amount.toString() ??
-                                          //                 ''),
-                                          //       );
-                                          //     }).toList(),
-                                          //     onChanged:
-                                          //         (PinCodeModel? newValue) {
-                                          //       setState(() {
-                                          //         _selectedDest = newValue;
-                                          //       });
-                                          //     },
-                                          //     validator: (value) {
-                                          //       if (value == null) {
-                                          //         return 'Please select a destination';
-                                          //       }
-                                          //       return null;
-                                          //     },
-                                          //   ),
-                                          // )
                                           _buildFormField(
                                             label: "Destination",
                                             labelColor:
@@ -2749,7 +2096,7 @@ class _PickupState extends State<Pickup> {
                                       controller: _custController,
                                       readOnly: true,
                                       onTap: () {
-                                        List<CommonDataModel<CustomerModel>>
+/*                                         List<CommonDataModel<CustomerModel>>
                                             commonList = customerList
                                                 .map((customer) =>
                                                     CommonDataModel<
@@ -2772,6 +2119,47 @@ class _PickupState extends State<Pickup> {
                                             setState(() {});
                                           },
                                           commonList,
+                                        ); */
+
+                                        showGenericApiBottomSheet<
+                                            CustomerModel>(
+                                          context: context,
+                                          title: "Search Customer",
+                                          // 1. Tell it how to call the API using the dynamic search query
+                                          fetchItems: (query) async {
+                                            Map<String, String> params = {
+                                              "prmcompanyid": savedUser
+                                                  .companyid
+                                                  .toString(),
+                                              "prmbranchcode": savedUser
+                                                  .loginbranchcode
+                                                  .toString(),
+                                              "prmusercode":
+                                                  savedUser.usercode.toString(),
+                                              "prmsessionid": savedUser
+                                                  .sessionid
+                                                  .toString(),
+                                              "prmcharstr":
+                                                  query, // <-- Send user search query to backend
+                                            };
+                                            return await viewModel.repository
+                                                .getCustomerList(params);
+                                          },
+                                          // 2. Tell it what key to show on UI
+                                          itemTitle: (customer) =>
+                                              customer.custName ?? 'Unknown',
+                                          itemSubtitle: (customer) =>
+                                              "Code: ${customer.custCode}",
+                                          // 3. Receive the selected model back
+                                          onSelected: (selectedCustomer) {
+                                            setState(() {
+                                              _selectedCustomer =
+                                                  selectedCustomer;
+                                              _custController.text =
+                                                  selectedCustomer.custName
+                                                      .toString();
+                                            });
+                                          },
                                         );
                                       },
                                       keyboardType: TextInputType.text,
@@ -2828,13 +2216,11 @@ class _PickupState extends State<Pickup> {
                                           _inputDecoration("Department"),
                                     ),
                                   ),
-
                                   consignorDetailsCard(),
                                   SizedBox(
                                     width: SizeConfig.smallHorizontalSpacing,
                                   ),
                                   consigneeDetailsCard(),
-
                                   SizedBox(
                                       height: SizeConfig.mediumVerticalSpacing),
                                   Row(
@@ -2874,45 +2260,6 @@ class _PickupState extends State<Pickup> {
                                             },
                                           ),
                                         ),
-                                        //  _buildFormField(
-                                        //   label: 'Service Type',
-                                        //   isRequired: true,
-                                        //   icon: Icons.check_circle_outline,
-                                        //   child: DropdownButtonFormField<
-                                        //       ServiceTypeModel>(
-                                        //     value: _selectedServiceType,
-                                        //     decoration: _inputDecoration(
-                                        //         'Select service'),
-                                        //     items: serviceList
-                                        //         .map((ServiceTypeModel status) {
-                                        //       return DropdownMenuItem<
-                                        //           ServiceTypeModel>(
-                                        //         value: status,
-                                        //         child: Text(status.prodName!
-                                        //             .toString()),
-                                        //       );
-                                        //     }).toList(),
-                                        //     onChanged:
-                                        //         (ServiceTypeModel? newValue) {
-                                        //       setState(() {
-                                        //         _selectedServiceType = newValue;
-                                        //         _serviceController.text =
-                                        //             newValue.toString();
-                                        //       });
-                                        //     },
-                                        //     validator: (value) {
-                                        //       if (_selectedServiceType == null)
-                                        //         return "Please select service type";
-
-                                        //       return null;
-                                        //       // if (value == null ||
-                                        //       //     value.isEmpty) {
-                                        //       //   return 'Please select a Service';
-                                        //       // }
-                                        //       // return null;
-                                        //     },
-                                        //   ),
-                                        // ),
                                       ),
                                       SizedBox(
                                           width: SizeConfig
@@ -2940,8 +2287,6 @@ class _PickupState extends State<Pickup> {
                                                 (LoadTypeModel? newValue) {
                                               setState(() {
                                                 _selectedLoadType = newValue;
-                                                // _serviceController.text =
-                                                //     newValue.toString();
                                               });
                                             },
                                             validator: (value) {
@@ -2949,11 +2294,6 @@ class _PickupState extends State<Pickup> {
                                                 return "Please select service type";
 
                                               return null;
-                                              // if (value == null ||
-                                              //     value.isEmpty) {
-                                              //   return 'Please select a Service';
-                                              // }
-                                              // return null;
                                             },
                                           ),
                                         ),
@@ -3019,7 +2359,6 @@ class _PickupState extends State<Pickup> {
                                               setState(() {
                                                 _selectedDeliveryType =
                                                     newValue;
-                                                // _reasonController.text = newValue.toString();
                                               });
                                             },
                                             validator: (value) {
@@ -3558,12 +2897,6 @@ class _PickupState extends State<Pickup> {
           fontSize: SizeConfig.smallTextSize,
         ),
       ),
-      // hintText: hint,
-      // hintMaxLines: 1,
-      // hintStyle: TextStyle(
-      //   color: CommonColors.grey400!,
-      //   overflow: TextOverflow.ellipsis,
-      // ),
       contentPadding: EdgeInsets.symmetric(
           horizontal: SizeConfig.mediumHorizontalSpacing,
           vertical: SizeConfig.mediumVerticalSpacing),
@@ -3598,7 +2931,6 @@ Widget _buildFormField({
   required IconData icon,
   required Widget child,
   Color labelColor = const Color(0xFF334155),
-  // bool isSmallDevice = false,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,

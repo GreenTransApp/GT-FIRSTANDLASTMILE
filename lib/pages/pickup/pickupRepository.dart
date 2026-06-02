@@ -24,16 +24,9 @@ class PickupRepository extends BaseRepository {
   StreamController<String> isErrorLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
 
-  StreamController<List<PickupDetailModel>> pickupDetailsList =
-      StreamController();
-  StreamController<List<ServiceTypeModel>> serviceTypeList = StreamController();
-  StreamController<List<LoadTypeModel>> loadTypeList = StreamController();
-  StreamController<List<DeliveryTypeModel>> deliveryTypeList =
-      StreamController();
   StreamController<List<PinCodeModel>> pinCodeList = StreamController();
   StreamController<List<BranchModel>> branchList = StreamController();
   StreamController<List<CustomerModel>> customerList = StreamController();
-  StreamController<List<BookingTypeModel>> bookingTypeList = StreamController();
   StreamController<List<CngrCngeModel>> cngrList = StreamController();
   StreamController<List<CngrCngeModel>> cngeList = StreamController();
   StreamController<List<DepartmentModel>> departmentList = StreamController();
@@ -44,9 +37,7 @@ class PickupRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
-        CommonResponse resp =
-            await apiGet("${lmdUrl}/GetPickupDetails", params);
+        CommonResponse resp = await apiGet("$lmdUrl/GetPickupDetails", params);
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           Iterable<MapEntry<String, dynamic>> entries = table.entries;
@@ -60,40 +51,29 @@ class PickupRepository extends BaseRepository {
               List<dynamic> list1 = entry.value;
               List<PickupDetailModel> resultList = List.generate(list1.length,
                   (index) => PickupDetailModel.fromJson(list1[index]));
-              // pickupDetailsList.add(resultList);
               pickupList = resultList;
             } else if (entry.key == "Table1") {
               List<dynamic> list2 = entry.value;
               List<ServiceTypeModel> resultList = List.generate(list2.length,
                   (index) => ServiceTypeModel.fromJson(list2[index]));
-              // serviceTypeList.add(resultList);
               serviceList = resultList;
             } else if (entry.key == "Table2") {
               List<dynamic> list2 = entry.value;
               List<LoadTypeModel> resultList = List.generate(list2.length,
                   (index) => LoadTypeModel.fromJson(list2[index]));
-              // loadTypeList.add(resultList);
               loadList = resultList;
             } else if (entry.key == "Table3") {
               List<dynamic> list2 = entry.value;
               List<DeliveryTypeModel> resultList = List.generate(list2.length,
                   (index) => DeliveryTypeModel.fromJson(list2[index]));
-              // deliveryTypeList.add(resultList);
               deliveryList = resultList;
             } else if (entry.key == "Table4") {
               List<dynamic> list2 = entry.value;
               List<BookingTypeModel> resultList = List.generate(list2.length,
                   (index) => BookingTypeModel.fromJson(list2[index]));
-              // bookingTypeList.add(resultList);
               bookingList = resultList;
             }
           }
-          // pickupDetailsList.add(pickupList);
-          // serviceTypeList.add(serviceList);
-          // loadTypeList.add(loadList);
-          // deliveryTypeList.add(deliveryList);
-          // bookingTypeList.add(bookingList);
-
           return PickResp(
             pickupList: pickupList,
             serviceList: serviceList,
@@ -222,7 +202,7 @@ class PickupRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
+        viewDialog.add(false);
 
         CommonResponse resp =
             await apiGet("${lmdUrl}GetViewAllCustomerList", params);

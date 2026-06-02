@@ -22,29 +22,30 @@ class DeliveryDetailModel {
   String? userallocationstatus;
   String? isOtpRequired;
   String? isVerified;
+  String? orderid;
 
-  DeliveryDetailModel({
-    this.commandstatus,
-    this.commandmessage,
-    this.grno,
-    this.cngename,
-    this.cngemobile,
-    this.pcs,
-    this.undeliverreason,
-    this.deliverystatus,
-    this.statusColor,
-    this.sequenceno,
-    this.planningid,
-    this.manifestno,
-    this.manifesttype,
-    this.consignmenttype,
-    this.pickupstatus,
-    this.reversepickupstatus,
-    this.consignmenttypeview,
-    this.transactionid,
-    this.isOtpRequired,
-    this.isVerified,
-  });
+  DeliveryDetailModel(
+      {this.commandstatus,
+      this.commandmessage,
+      this.grno,
+      this.cngename,
+      this.cngemobile,
+      this.pcs,
+      this.undeliverreason,
+      this.deliverystatus,
+      this.statusColor,
+      this.sequenceno,
+      this.planningid,
+      this.manifestno,
+      this.manifesttype,
+      this.consignmenttype,
+      this.pickupstatus,
+      this.reversepickupstatus,
+      this.consignmenttypeview,
+      this.transactionid,
+      this.isOtpRequired,
+      this.isVerified,
+      this.orderid});
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
     return DeliveryDetailModel(
@@ -68,6 +69,7 @@ class DeliveryDetailModel {
       transactionid: json['transactionid'],
       isOtpRequired: json['isotprequired'],
       isVerified: json['isverified'],
+      orderid: json['orderid'],
     );
   }
 
@@ -93,6 +95,7 @@ class DeliveryDetailModel {
       'transactionid': transactionid,
       'isotprequired': isOtpRequired,
       'isverified': isVerified,
+      'orderid': orderid,
     };
   }
 }
