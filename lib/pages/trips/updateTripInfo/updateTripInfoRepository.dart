@@ -154,7 +154,7 @@ class UpdateTripInfoRepository extends BaseRepository {
               lastTrip = LastActiveTripModel.fromJson(list[0]);
             } else if (v.key == 'Table1') {
               List<dynamic> list = v.value;
-              // var decodedJson = jsonDecode(list[0]);
+              // var decodedJson = jso`nDecode(list[0]);
               lastTrip.readingdiff = list[0]['readingdiff'].toString();
               lastTrip.odometerbypass = list[0]['odometerbypass'].toString();
             }

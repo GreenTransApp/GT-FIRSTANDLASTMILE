@@ -174,46 +174,46 @@ class _PickupState extends State<Pickup> {
       }
     });
 
-    viewModel.pinCodeList.stream.listen((pincodeData) {
-      debugPrint('Delivery type list size: ${pincodeData.length}');
-      setState(() {
-        pincodeList = pincodeData;
-        setUiData();
-      });
-    });
+    // viewModel.pinCodeList.stream.listen((pincodeData) {
+    //   debugPrint('Delivery type list size: ${pincodeData.length}');
+    //   setState(() {
+    //     pincodeList = pincodeData;
+    //     setUiData();
+    //   });
+    // });
 
-    viewModel.branchList.stream.listen((branchData) {
-      debugPrint('Delivery type list size: ${branchData.length}');
-      setState(() {
-        branchList = branchData;
-      });
-    });
+    // viewModel.branchList.stream.listen((branchData) {
+    //   debugPrint('Delivery type list size: ${branchData.length}');
+    //   setState(() {
+    //     branchList = branchData;
+    //   });
+    // });
 
-    viewModel.customerList.stream.listen((customerData) {
-      debugPrint('Delivery type list size: ${customerData.length}');
-      setState(() {
-        customerList = customerData;
-      });
-    });
+    // viewModel.customerList.stream.listen((customerData) {
+    //   debugPrint('Delivery type list size: ${customerData.length}');
+    //   setState(() {
+    //     customerList = customerData;
+    //   });
+    // });
 
-    viewModel.cngrList.stream.listen((cngr) {
-      debugPrint('Delivery type list size: ${cngr.length}');
-      setState(() {
-        cngrList = cngr;
-      });
-    });
-    viewModel.cngeList.stream.listen((cnge) {
-      debugPrint('Delivery type list size: ${cnge.length}');
-      setState(() {
-        cngeList = cnge;
-      });
-    });
-    viewModel.deptList.stream.listen((list) {
-      debugPrint('Delivery type list size: ${list.length}');
-      setState(() {
-        deptList = list;
-      });
-    });
+    // viewModel.cngrList.stream.listen((cngr) {
+    //   debugPrint('Delivery type list size: ${cngr.length}');
+    //   setState(() {
+    //     cngrList = cngr;
+    //   });
+    // });
+    // viewModel.cngeList.stream.listen((cnge) {
+    //   debugPrint('Delivery type list size: ${cnge.length}');
+    //   setState(() {
+    //     cngeList = cnge;
+    //   });
+    // });
+    // viewModel.deptList.stream.listen((list) {
+    //   debugPrint('Delivery type list size: ${list.length}');
+    //   setState(() {
+    //     deptList = list;
+    //   });
+    // });
 
     viewModel.savePickupLiveData.stream.listen((saveResponse) {
       if (saveResponse.commandStatus == 1) {
@@ -851,33 +851,64 @@ class _PickupState extends State<Pickup> {
                     icon: Icons.numbers,
                     child: TextFormField(
                       readOnly: true,
-                      onTap: () {
-                        List<CommonDataModel<CngrCngeModel>> commonList =
-                            cngrList
-                                .map((cngr) => CommonDataModel<CngrCngeModel>(
-                                      cngr.name ?? cngr.name ?? 'Unknown',
-                                      cngr,
-                                    ))
-                                .toList();
+                      onTap: () async {
+                        // List<CommonDataModel<CngrCngeModel>> commonList =
+                        //     cngrList
+                        //         .map((cngr) => CommonDataModel<CngrCngeModel>(
+                        //               cngr.name ?? cngr.name ?? 'Unknown',
+                        //               cngr,
+                        //             ))
+                        //         .toList();
 
-                        showCommonBottomSheet(
-                          context,
-                          "Select Cnginor",
-                          (data) {
-                            _selectedCngr = data;
-                            _consignorNameController.text =
-                                _selectedCngr!.name.toString();
-                            _consignorMobileController.text =
-                                _selectedCngr!.telNo.toString();
-                            _consignorCityController.text =
-                                _selectedCngr!.city.toString();
-                            _consignorAddressController.text =
-                                _selectedCngr!.address.toString();
-                            _consignorZipCodeController.text =
-                                _selectedCngr!.zipCode.toString();
-                            setState(() {});
+                        // showCommonBottomSheet(
+                        //   context,
+                        //   "Select Cnginor",
+                        //   (data) {
+                        //     _selectedCngr = data;
+                        //     _consignorNameController.text =
+                        //         _selectedCngr!.name.toString();
+                        //     _consignorMobileController.text =
+                        //         _selectedCngr!.telNo.toString();
+                        //     _consignorCityController.text =
+                        //         _selectedCngr!.city.toString();
+                        //     _consignorAddressController.text =
+                        //         _selectedCngr!.address.toString();
+                        //     _consignorZipCodeController.text =
+                        //         _selectedCngr!.zipCode.toString();
+                        //     setState(() {});
+                        //   },
+                        //   commonList,
+                        // );
+
+                        showGenericApiBottomSheet<CngrCngeModel>(
+                          context: context,
+                          title: "Search Consignor",
+                          // 1. Tell it how to call the API using the dynamic search query
+                          fetchItems: (query) async {
+                            Map<String, String> params = {
+                              "prmconnstring": savedUser.companyid.toString(),
+                              "prmbranchcode":
+                                  savedUser.loginbranchcode.toString(),
+                              "prmgrtype": 'R',
+                              "prmcngrcnge": 'R',
+                              "prmcustcode": '',
+                              "prmcharstr": query,
+                            };
+
+                            return await viewModel.getCngrCngeList(params, 'R');
                           },
-                          commonList,
+                          // 2. Tell it what key to show on UI
+                          itemTitle: (consignor) => consignor.name ?? 'Unknown',
+                          itemSubtitle: (consignor) =>
+                              "Code: ${consignor.code}",
+                          // 3. Receive the selected model back
+                          onSelected: (selectedCngr) {
+                            setState(() {
+                              _selectedCngr = selectedCngr;
+                              _consignorNameController.text =
+                                  selectedCngr.name.toString();
+                            });
+                          },
                         );
                       },
                       onTapOutside: (event) {},
@@ -1090,33 +1121,63 @@ class _PickupState extends State<Pickup> {
                     child: TextFormField(
                       enabled: canEditCnge,
                       onTapOutside: (event) {},
-                      onTap: () {
-                        List<CommonDataModel<CngrCngeModel>> commonList =
-                            cngrList
-                                .map((cnge) => CommonDataModel<CngrCngeModel>(
-                                      cnge.name ?? cnge.name ?? 'Unknown',
-                                      cnge,
-                                    ))
-                                .toList();
+                      onTap: () async {
+                        // List<CommonDataModel<CngrCngeModel>> commonList =
+                        //     cngrList
+                        //         .map((cnge) => CommonDataModel<CngrCngeModel>(
+                        //               cnge.name ?? cnge.name ?? 'Unknown',
+                        //               cnge,
+                        //             ))
+                        //         .toList();
 
-                        showCommonBottomSheet(
-                          context,
-                          "Select Cnginee",
-                          (data) {
-                            _selectedCnge = data;
-                            _consigneeNameController.text =
-                                _selectedCnge!.name.toString();
-                            _consigneeMobileController.text =
-                                _selectedCnge!.telNo.toString();
-                            _consigneeCityController.text =
-                                _selectedCnge!.city.toString();
-                            _consigneeAddressController.text =
-                                _selectedCnge!.address.toString();
-                            _consigneeZipCodeController.text =
-                                _selectedCnge!.zipCode.toString();
-                            setState(() {});
+                        // showCommonBottomSheet(
+                        //   context,
+                        //   "Select Cnginee",
+                        //   (data) {
+                        //     _selectedCnge = data;
+                        //     _consigneeNameController.text =
+                        //         _selectedCnge!.name.toString();
+                        //     _consigneeMobileController.text =
+                        //         _selectedCnge!.telNo.toString();
+                        //     _consigneeCityController.text =
+                        //         _selectedCnge!.city.toString();
+                        //     _consigneeAddressController.text =
+                        //         _selectedCnge!.address.toString();
+                        //     _consigneeZipCodeController.text =
+                        //         _selectedCnge!.zipCode.toString();
+                        //     setState(() {});
+                        //   },
+                        //   commonList,
+                        // );
+
+                        showGenericApiBottomSheet<CngrCngeModel>(
+                          context: context,
+                          title: "Search Consignee",
+                          // 1. Tell it how to call the API using the dynamic search query
+                          fetchItems: (query) async {
+                            Map<String, String> params = {
+                              "prmconnstring": savedUser.companyid.toString(),
+                              "prmbranchcode":
+                                  savedUser.loginbranchcode.toString(),
+                              "prmgrtype": 'R',
+                              "prmcngrcnge": 'E',
+                              "prmcustcode": '',
+                              "prmcharstr": query,
+                            };
+
+                            return await viewModel.getCngrCngeList(params, 'E');
                           },
-                          commonList,
+                          // 2. Tell it what key to show on UI
+                          itemTitle: (consignee) => consignee.name ?? 'Unknown',
+                          itemSubtitle: (customer) => "Code: ${customer.code}",
+                          // 3. Receive the selected model back
+                          onSelected: (selectedCnge) {
+                            setState(() {
+                              _selectedCnge = selectedCnge;
+                              _consigneeNameController.text =
+                                  selectedCnge.name.toString();
+                            });
+                          },
                         );
                       },
                       autofocus: false,
@@ -1635,7 +1696,7 @@ class _PickupState extends State<Pickup> {
                                           child: _buildFormField(
                                             label: "Booking Date",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: true,
                                             icon: Icons.calendar_today_outlined,
                                             child: TextFormField(
@@ -1677,7 +1738,7 @@ class _PickupState extends State<Pickup> {
                                           child: _buildFormField(
                                             label: "Booking Time",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: false,
                                             icon: Icons.access_time_outlined,
                                             child: TextFormField(
@@ -1725,44 +1786,44 @@ class _PickupState extends State<Pickup> {
                                           _buildFormField(
                                             label: "Origin Pincode",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: true,
                                             icon: Icons.location_city,
                                             child: TextFormField(
                                               // enabled: false,
                                               readOnly: true,
                                               onTap: () {
-                                                List<
-                                                        CommonDataModel<
-                                                            BranchModel>>
-                                                    commonList = branchList
-                                                        .map((branch) =>
-                                                            CommonDataModel<
-                                                                BranchModel>(
-                                                              branch.zipCode ??
-                                                                  branch
-                                                                      .zipCode ??
-                                                                  'Unknown',
-                                                              branch,
-                                                            ))
-                                                        .toList();
+                                                // List<
+                                                //         CommonDataModel<
+                                                //             BranchModel>>
+                                                //     commonList = branchList
+                                                //         .map((branch) =>
+                                                //             CommonDataModel<
+                                                //                 BranchModel>(
+                                                //               branch.zipCode ??
+                                                //                   branch
+                                                //                       .zipCode ??
+                                                //                   'Unknown',
+                                                //               branch,
+                                                //             ))
+                                                //         .toList();
 
-                                                showCommonBottomSheet(
-                                                  context,
-                                                  "Select Origin Pincode",
-                                                  (data) {
-                                                    _selectedOrigin = data;
-                                                    _orgPincodeController.text =
-                                                        _selectedOrigin!.zipCode
-                                                            .toString();
+                                                // showCommonBottomSheet(
+                                                //   context,
+                                                //   "Select Origin Pincode",
+                                                //   (data) {
+                                                //     _selectedOrigin = data;
+                                                //     _orgPincodeController.text =
+                                                //         _selectedOrigin!.zipCode
+                                                //             .toString();
 
-                                                    _orgController.text =
-                                                        _selectedOrigin!.stnName
-                                                            .toString();
-                                                    setState(() {});
-                                                  },
-                                                  commonList,
-                                                );
+                                                //     _orgController.text =
+                                                //         _selectedOrigin!.stnName
+                                                //             .toString();
+                                                //     setState(() {});
+                                                //   },
+                                                //   commonList,
+                                                // );
                                               },
                                               controller: _orgPincodeController,
                                               keyboardType: TextInputType.text,
@@ -1783,42 +1844,62 @@ class _PickupState extends State<Pickup> {
                                           _buildFormField(
                                             label: "Origin",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: true,
                                             icon: Icons.location_city,
                                             child: TextFormField(
                                               enabled: true,
                                               readOnly: true,
                                               onTap: () {
-                                                List<
-                                                        CommonDataModel<
-                                                            BranchModel>>
-                                                    commonList = branchList
-                                                        .map((branch) =>
-                                                            CommonDataModel<
-                                                                BranchModel>(
-                                                              branch.stnName ??
-                                                                  branch
-                                                                      .stnName ??
-                                                                  'Unknown',
-                                                              branch,
-                                                            ))
-                                                        .toList();
+                                                showGenericApiBottomSheet<
+                                                    BranchModel>(
+                                                  context: context,
+                                                  title: "Search Origin",
+                                                  // 1. Tell it how to call the API using the dynamic search query
+                                                  fetchItems: (query) async {
+                                                    Map<String, String> params =
+                                                        {
+                                                      "prmcompanyid": savedUser
+                                                          .companyid
+                                                          .toString(),
+                                                      "prmbranchcode": savedUser
+                                                          .loginbranchcode
+                                                          .toString(),
+                                                      "prmusercode": savedUser
+                                                          .usercode
+                                                          .toString(),
+                                                      "prmsessionid": savedUser
+                                                          .sessionid
+                                                          .toString(),
+                                                      "prmcharstr": query,
+                                                    };
 
-                                                showCommonBottomSheet(
-                                                  context,
-                                                  "Select Origin",
-                                                  (data) {
-                                                    _selectedOrigin = data;
-                                                    _orgController.text =
-                                                        _selectedOrigin!.stnName
-                                                            .toString();
-                                                    _orgPincodeController.text =
-                                                        _selectedOrigin!.zipCode
-                                                            .toString();
-                                                    setState(() {});
+                                                    return await viewModel
+                                                        .getBranchList(params);
                                                   },
-                                                  commonList,
+                                                  // 2. Tell it what key to show on UI
+                                                  itemTitle: (branch) =>
+                                                      branch.stnName ??
+                                                      'Unknown',
+                                                  itemSubtitle: (branch) =>
+                                                      "Zipcode: ${branch.zipCode}",
+                                                  // 3. Receive the selected model back
+                                                  onSelected: (selectedBranch) {
+                                                    setState(() {
+                                                      _selectedOrigin =
+                                                          selectedBranch;
+                                                      _orgPincodeController
+                                                              .text =
+                                                          _selectedOrigin!
+                                                              .zipCode
+                                                              .toString();
+
+                                                      _orgController.text =
+                                                          _selectedOrigin!
+                                                              .stnName
+                                                              .toString();
+                                                    });
+                                                  },
                                                 );
                                               },
                                               controller: _orgController,
@@ -1856,43 +1937,43 @@ class _PickupState extends State<Pickup> {
                                           _buildFormField(
                                             label: "Destination Pincode",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: true,
                                             icon: Icons.location_city,
                                             child: TextFormField(
                                               readOnly: true,
                                               onTap: () {
-                                                List<
-                                                        CommonDataModel<
-                                                            BranchModel>>
-                                                    commonList = branchList
-                                                        .map((branch) =>
-                                                            CommonDataModel<
-                                                                BranchModel>(
-                                                              branch.zipCode ??
-                                                                  branch
-                                                                      .zipCode ??
-                                                                  'Unknown',
-                                                              branch,
-                                                            ))
-                                                        .toList();
+                                                // List<
+                                                //         CommonDataModel<
+                                                //             BranchModel>>
+                                                //     commonList = branchList
+                                                //         .map((branch) =>
+                                                //             CommonDataModel<
+                                                //                 BranchModel>(
+                                                //               branch.zipCode ??
+                                                //                   branch
+                                                //                       .zipCode ??
+                                                //                   'Unknown',
+                                                //               branch,
+                                                //             ))
+                                                //         .toList();
 
-                                                showCommonBottomSheet(
-                                                  context,
-                                                  "Select Destination Pincode",
-                                                  (data) {
-                                                    _selectedDest = data;
-                                                    _destController.text =
-                                                        _selectedDest!.stnName
-                                                            .toString();
-                                                    _destPincodeController
-                                                            .text =
-                                                        _selectedDest!.stnCode
-                                                            .toString();
-                                                    setState(() {});
-                                                  },
-                                                  commonList,
-                                                );
+                                                // showCommonBottomSheet(
+                                                //   context,
+                                                //   "Select Destination Pincode",
+                                                //   (data) {
+                                                //     _selectedDest = data;
+                                                //     _destController.text =
+                                                //         _selectedDest!.stnName
+                                                //             .toString();
+                                                //     _destPincodeController
+                                                //             .text =
+                                                //         _selectedDest!.stnCode
+                                                //             .toString();
+                                                //     setState(() {});
+                                                //   },
+                                                //   commonList,
+                                                // );
                                               },
                                               enabled: true,
                                               controller:
@@ -1915,43 +1996,60 @@ class _PickupState extends State<Pickup> {
                                           _buildFormField(
                                             label: "Destination",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired: true,
                                             icon: Icons.location_city,
                                             child: TextFormField(
                                               readOnly: true,
                                               enabled: true,
                                               onTap: () {
-                                                List<
-                                                        CommonDataModel<
-                                                            BranchModel>>
-                                                    commonList = branchList
-                                                        .map((branch) =>
-                                                            CommonDataModel<
-                                                                BranchModel>(
-                                                              branch.stnName ??
-                                                                  branch
-                                                                      .stnName ??
-                                                                  'Unknown',
-                                                              branch,
-                                                            ))
-                                                        .toList();
+                                                showGenericApiBottomSheet<
+                                                    BranchModel>(
+                                                  context: context,
+                                                  title: "Search Destination",
+                                                  // 1. Tell it how to call the API using the dynamic search query
+                                                  fetchItems: (query) async {
+                                                    Map<String, String> params =
+                                                        {
+                                                      "prmcompanyid": savedUser
+                                                          .companyid
+                                                          .toString(),
+                                                      "prmbranchcode": savedUser
+                                                          .loginbranchcode
+                                                          .toString(),
+                                                      "prmusercode": savedUser
+                                                          .usercode
+                                                          .toString(),
+                                                      "prmsessionid": savedUser
+                                                          .sessionid
+                                                          .toString(),
+                                                      "prmcharstr": query,
+                                                    };
 
-                                                showCommonBottomSheet(
-                                                  context,
-                                                  "Select Destination",
-                                                  (data) {
-                                                    _selectedDest = data;
-                                                    _destController.text =
-                                                        _selectedDest!.stnName
-                                                            .toString();
-                                                    _destPincodeController
-                                                            .text =
-                                                        _selectedDest!.zipCode
-                                                            .toString();
-                                                    setState(() {});
+                                                    return await viewModel
+                                                        .getBranchList(params);
                                                   },
-                                                  commonList,
+                                                  // 2. Tell it what key to show on UI
+                                                  itemTitle: (branch) =>
+                                                      branch.stnName ??
+                                                      'Unknown',
+                                                  itemSubtitle: (branch) =>
+                                                      "Zipcode: ${branch.zipCode}",
+                                                  // 3. Receive the selected model back
+                                                  onSelected: (selectedBranch) {
+                                                    setState(() {
+                                                      _selectedDest =
+                                                          selectedBranch;
+                                                      _destPincodeController
+                                                              .text =
+                                                          _selectedDest!.zipCode
+                                                              .toString();
+
+                                                      _destController.text =
+                                                          _selectedDest!.stnName
+                                                              .toString();
+                                                    });
+                                                  },
                                                 );
                                               },
                                               controller: _destController,
@@ -1976,7 +2074,7 @@ class _PickupState extends State<Pickup> {
                                       Expanded(
                                         child: _buildFormField(
                                           label: "Order Number",
-                                          labelColor: CommonColors.appBarColor!,
+                                          labelColor: CommonColors.appBarColor,
                                           isRequired: true,
                                           icon: Icons.calendar_today_outlined,
                                           child: TextFormField(
@@ -2016,8 +2114,7 @@ class _PickupState extends State<Pickup> {
                                                   BookingTypeModel>(
                                                 value: booking,
                                                 child: Text(
-                                                    booking.name.toString() ??
-                                                        ''),
+                                                    booking.name.toString()),
                                               );
                                             }).toList(),
                                             onChanged:
@@ -2042,7 +2139,7 @@ class _PickupState extends State<Pickup> {
                                       height: SizeConfig.mediumVerticalSpacing),
                                   _buildFormField(
                                     label: "Bill To Customer",
-                                    labelColor: CommonColors.appBarColor!,
+                                    labelColor: CommonColors.appBarColor,
                                     isRequired: true,
                                     icon: Icons.person,
                                     child: TextFormField(
@@ -2130,7 +2227,7 @@ class _PickupState extends State<Pickup> {
                                       height: SizeConfig.mediumVerticalSpacing),
                                   _buildFormField(
                                     label: "Department",
-                                    labelColor: CommonColors.appBarColor!,
+                                    labelColor: CommonColors.appBarColor,
                                     isRequired: false,
                                     icon: Icons.person,
                                     child: TextFormField(
@@ -2140,30 +2237,68 @@ class _PickupState extends State<Pickup> {
                                       controller: _deptController,
                                       keyboardType: TextInputType.text,
                                       onTap: () {
-                                        List<CommonDataModel<DepartmentModel>>
-                                            commonList = deptList
-                                                .map((customer) =>
-                                                    CommonDataModel<
-                                                        DepartmentModel>(
-                                                      customer.custDeptName ??
-                                                          customer
-                                                              .custDeptName ??
-                                                          'Unknown',
-                                                      customer,
-                                                    ))
-                                                .toList();
+                                        // List<CommonDataModel<DepartmentModel>>
+                                        //     commonList = deptList
+                                        //         .map((customer) =>
+                                        //             CommonDataModel<
+                                        //                 DepartmentModel>(
+                                        //               customer.custDeptName ??
+                                        //                   customer
+                                        //                       .custDeptName ??
+                                        //                   'Unknown',
+                                        //               customer,
+                                        //             ))
+                                        //         .toList();
 
-                                        showCommonBottomSheet(
-                                          context,
-                                          "Select Department",
-                                          (data) {
-                                            _selectedDept = data;
-                                            _deptController.text =
-                                                _selectedDept!.custDeptName
-                                                    .toString();
-                                            setState(() {});
+                                        // showCommonBottomSheet(
+                                        //   context,
+                                        //   "Select Department",
+                                        //   (data) {
+                                        //     _selectedDept = data;
+                                        //     _deptController.text =
+                                        //         _selectedDept!.custDeptName
+                                        //             .toString();
+                                        //     setState(() {});
+                                        //   },
+                                        //   commonList,
+                                        // );
+
+                                        showGenericApiBottomSheet<
+                                            DepartmentModel>(
+                                          context: context,
+                                          title: "Search Department",
+                                          // 1. Tell it how to call the API using the dynamic search query
+                                          fetchItems: (query) async {
+                                            Map<String, String> params = {
+                                              "prmconnstring": savedUser
+                                                  .companyid
+                                                  .toString(),
+                                              "prmcustcode": pickupDetail!
+                                                  .custCode
+                                                  .toString(),
+                                              "prmorgcode": pickupDetail!
+                                                  .orgCode
+                                                  .toString(),
+                                            };
+
+                                            return await viewModel
+                                                .getDepartmentList(params);
                                           },
-                                          commonList,
+                                          // 2. Tell it what key to show on UI
+                                          itemTitle: (department) =>
+                                              department.custDeptName ??
+                                              'Unknown',
+                                          itemSubtitle: (department) =>
+                                              "Code: ${department.custDeptId}",
+                                          // 3. Receive the selected model back
+                                          onSelected: (selectedDept) {
+                                            setState(() {
+                                              _selectedDept = selectedDept;
+                                              _deptController.text =
+                                                  selectedDept.custDeptName
+                                                      .toString();
+                                            });
+                                          },
                                         );
                                       },
                                       decoration:
@@ -2196,8 +2331,7 @@ class _PickupState extends State<Pickup> {
                                                   ServiceTypeModel>(
                                                 value: service,
                                                 child: Text(service.prodName
-                                                        .toString() ??
-                                                    ''),
+                                                    .toString()),
                                               );
                                             }).toList(),
                                             onChanged:
@@ -2244,8 +2378,9 @@ class _PickupState extends State<Pickup> {
                                               });
                                             },
                                             validator: (value) {
-                                              if (_selectedLoadType == null)
+                                              if (_selectedLoadType == null) {
                                                 return "Please select service type";
+                                              }
 
                                               return null;
                                             },
@@ -2261,7 +2396,7 @@ class _PickupState extends State<Pickup> {
                                       Expanded(
                                         child: _buildFormField(
                                           label: "No. of Pckgs",
-                                          labelColor: CommonColors.appBarColor!,
+                                          labelColor: CommonColors.appBarColor,
                                           isRequired: true,
                                           icon: Icons.numbers,
                                           child: TextFormField(
@@ -2348,7 +2483,7 @@ class _PickupState extends State<Pickup> {
                                       Expanded(
                                         child: _buildFormField(
                                           label: "Gross Weight",
-                                          labelColor: CommonColors.appBarColor!,
+                                          labelColor: CommonColors.appBarColor,
                                           isRequired: true,
                                           icon: Icons.label_outline,
                                           child: TextFormField(
@@ -2385,7 +2520,7 @@ class _PickupState extends State<Pickup> {
                                       Expanded(
                                         child: _buildFormField(
                                           label: "Vol. Weight",
-                                          labelColor: CommonColors.appBarColor!,
+                                          labelColor: CommonColors.appBarColor,
                                           isRequired: true,
                                           icon: Icons.label_outline,
                                           child: TextFormField(
@@ -2425,7 +2560,7 @@ class _PickupState extends State<Pickup> {
                                       Expanded(
                                         child: _buildFormField(
                                           label: "Chargeable Weight",
-                                          labelColor: CommonColors.appBarColor!,
+                                          labelColor: CommonColors.appBarColor,
                                           isRequired: true,
                                           icon: Icons.label_outline,
                                           child: TextFormField(
@@ -2465,7 +2600,7 @@ class _PickupState extends State<Pickup> {
                                           child: _buildFormField(
                                             label: "Freight",
                                             labelColor:
-                                                CommonColors.appBarColor!,
+                                                CommonColors.appBarColor,
                                             isRequired:
                                                 savedUser.hidefreight == 'N',
                                             icon: Icons.label_outline,
@@ -2798,7 +2933,7 @@ class _PickupState extends State<Pickup> {
                                                     )
                                                   : Image.file(
                                                       File(
-                                                          _selectedSignaturePath!),
+                                                          _selectedSignaturePath),
                                                       fit: BoxFit.contain,
                                                     ),
                                             ),

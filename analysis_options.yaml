@@ -9,3 +9,4 @@ linter:
 dart:
   formatter:
     line-length: 1000
+    page_width: 150

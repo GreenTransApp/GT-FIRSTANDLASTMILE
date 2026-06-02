@@ -24,12 +24,12 @@ class PickupRepository extends BaseRepository {
   StreamController<String> isErrorLiveData = StreamController();
   StreamController<bool> viewDialog = StreamController();
 
-  StreamController<List<PinCodeModel>> pinCodeList = StreamController();
-  StreamController<List<BranchModel>> branchList = StreamController();
-  StreamController<List<CustomerModel>> customerList = StreamController();
-  StreamController<List<CngrCngeModel>> cngrList = StreamController();
-  StreamController<List<CngrCngeModel>> cngeList = StreamController();
-  StreamController<List<DepartmentModel>> departmentList = StreamController();
+  // StreamController<List<PinCodeModel>> pinCodeList = StreamController();
+  // StreamController<List<BranchModel>> branchList = StreamController();
+  // StreamController<List<CustomerModel>> customerList = StreamController();
+  // StreamController<List<CngrCngeModel>> cngrList = StreamController();
+  // StreamController<List<CngrCngeModel>> cngeList = StreamController();
+  // StreamController<List<DepartmentModel>> departmentList = StreamController();
   StreamController<SavePickupRespModel> savePickupResp = StreamController();
 
   Future<PickResp> getPickupDetails(Map<String, String> params) async {
@@ -123,12 +123,12 @@ class PickupRepository extends BaseRepository {
     }
   }
 
-  Future<void> getPincodeList(Map<String, String> params) async {
+  Future<List<PinCodeModel>> getPincodeList(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
+        viewDialog.add(false);
 
         CommonResponse resp =
             await apiGet("${bookingUrl}getPinCodeList", params);
@@ -138,22 +138,25 @@ class PickupRepository extends BaseRepository {
           List<dynamic> list = table.values.first;
           List<PinCodeModel> resultList = List.generate(
               list.length, (index) => PinCodeModel.fromJson(list[index]));
-          pinCodeList.add(resultList);
+          // pinCodeList.add(resultList);
+          return resultList;
         } else {
           isErrorLiveData.add(resp.commandMessage!);
+          return [];
         }
-        viewDialog.add(false);
       } on SocketException catch (_) {
         isErrorLiveData.add("No Internet");
         viewDialog.add(false);
+        return [];
       } catch (err) {
         isErrorLiveData.add(err.toString());
         viewDialog.add(false);
+        return [];
       }
-      viewDialog.add(false);
     } else {
       viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
+      return [];
     }
   }
 
@@ -162,7 +165,7 @@ class PickupRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
+        viewDialog.add(false);
 
         CommonResponse resp =
             await apiGet("${bookingUrl}GetBranchListWithSearchType", params);
@@ -172,7 +175,7 @@ class PickupRepository extends BaseRepository {
           List<dynamic> list = table.values.first;
           List<BranchModel> resultList = List.generate(
               list.length, (index) => BranchModel.fromJson(list[index]));
-          branchList.add(resultList);
+          // branchList.add(resultList);
           return resultList;
         } else {
           isErrorLiveData.add(resp.commandMessage!);
@@ -212,7 +215,7 @@ class PickupRepository extends BaseRepository {
           List<dynamic> list = table.values.first;
           List<CustomerModel> resultList = List.generate(
               list.length, (index) => CustomerModel.fromJson(list[index]));
-          customerList.add(resultList);
+          // customerList.add(resultList);
           return resultList;
         } else {
           viewDialog.add(false);
@@ -243,19 +246,19 @@ class PickupRepository extends BaseRepository {
     if (hasInternet) {
       try {
         CommonResponse resp = await apiGet("${lmdUrl}showcngrcnge", params);
+        viewDialog.add(false);
 
         if (resp.commandStatus == 1) {
-          viewDialog.add(false);
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
           List<dynamic> list = table.values.first;
           List<CngrCngeModel> resultList = List.generate(
               list.length, (index) => CngrCngeModel.fromJson(list[index]));
-          if (type == 'R') {
-            cngrList.add(resultList);
-          } else {
-            cngeList.add(resultList);
-          }
-          return [];
+          // if (type == 'R') {
+          //   cngrList.add(resultList);
+          // } else {
+          //   cngeList.add(resultList);
+          // }
+          return resultList;
         } else {
           isErrorLiveData.add(resp.commandMessage!);
           viewDialog.add(false);
@@ -291,7 +294,7 @@ class PickupRepository extends BaseRepository {
           List<dynamic> list = table.values.first;
           List<DepartmentModel> resultList = List.generate(
               list.length, (index) => DepartmentModel.fromJson(list[index]));
-          departmentList.add(resultList);
+          // departmentList.add(resultList);
           return resultList;
         } else {
           isErrorLiveData.add(resp.commandMessage!);
@@ -320,7 +323,7 @@ class PickupRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        // viewDialog.add(true);
+        viewDialog.add(false);
 
         // CommonResponse resp = await apiGet("${bookingUrl}GetCngrCngeListV2", params);
         CommonResponse resp = await apiPost("${lmdUrl}Pickup_Upsert", params);

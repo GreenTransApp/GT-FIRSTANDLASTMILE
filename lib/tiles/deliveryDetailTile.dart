@@ -12,6 +12,7 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/app_sizes.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/presentation/OtexPickupScreen.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
 import 'package:gtlmd/pages/pickupOtp/pickupOtp.dart';
 
@@ -226,7 +227,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       drivercode: savedUser.drivercode.toString(),
       transactionid: widget.model.transactionid,
       grno: widget.model.grno,
-      orderid: isNullOrEmpty(widget.model.orderid) ? '' : widget.model.orderid,
+      orderid: isNullOrEmpty(widget.model.orderid) ? '0' : widget.model.orderid,
     );
 
     // menuCode = savedUser.companyid == 99883345
@@ -743,6 +744,19 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               } else {
                                 getInfinitiBookingLink();
                               }
+                              // if (savedUser.companyid.toString() ==
+                              //     "99883345") {
+                              //   Get.to(OtexPickupScreen(
+                              //     transactionId: "0",
+                              //   ))?.then((_) {
+                              //     widget.onRefresh();
+                              //   });
+                              // } else {
+                              //   Get.to(Pickup(details: widget.model))
+                              //       ?.then((_) {
+                              //     widget.onRefresh();
+                              //   });
+                              // }
                             },
                             icon: Icon(Icons.check,
                                 size: SizeConfig.mediumIconSize),

@@ -315,7 +315,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmdispatchdt":
           convert2SmallDateTime(widget.model.tripdispatchdate.toString()),
       "prmdispatchtime": widget.model.tripdispatchdatetime.toString(),
-      "prmstartreading": widget.model.startreadingkm.toString(),
+      "prmstartreading": isNullOrEmpty(widget.model.startreadingkm.toString())
+          ? ''
+          : widget.model.startreadingkm.toString(),
       "prmstartreadimgpath": widget.status == TripStatus.open
           ? isNullOrEmpty(widget.model.startreadingimg)
               ? ""

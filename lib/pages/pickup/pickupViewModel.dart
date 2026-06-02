@@ -20,24 +20,24 @@ import 'package:gtlmd/pages/pickup/model/serviceTypeModel.dart';
 class PickupViewModel extends BaseViewModel {
   final PickupRepository repository = PickupRepository();
   StreamController<bool> viewDialog = StreamController();
-  StreamController<List<PinCodeModel>> pinCodeList = StreamController();
-  StreamController<List<BranchModel>> branchList = StreamController();
-  StreamController<List<CustomerModel>> customerList = StreamController();
-  StreamController<List<CngrCngeModel>> cngrList = StreamController();
-  StreamController<List<CngrCngeModel>> cngeList = StreamController();
-  StreamController<List<DepartmentModel>> deptList = StreamController();
+  // StreamController<List<PinCodeModel>> pinCodeList = StreamController();
+  // StreamController<List<BranchModel>> branchList = StreamController();
+  // StreamController<List<CustomerModel>> customerList = StreamController();
+  // StreamController<List<CngrCngeModel>> cngrList = StreamController();
+  // StreamController<List<CngrCngeModel>> cngeList = StreamController();
+  // StreamController<List<DepartmentModel>> deptList = StreamController();
   StreamController<SavePickupRespModel> savePickupLiveData = StreamController();
 
   PickupViewModel() {
     viewDialog = repository.viewDialog;
     isErrorLiveData = repository.isErrorLiveData;
 
-    pinCodeList = repository.pinCodeList;
-    branchList = repository.branchList;
-    customerList = repository.customerList;
-    cngrList = repository.cngrList;
-    cngeList = repository.cngeList;
-    deptList = repository.departmentList;
+    // pinCodeList = repository.pinCodeList;
+    // branchList = repository.branchList;
+    // customerList = repository.customerList;
+    // cngrList = repository.cngrList;
+    // cngeList = repository.cngeList;
+    // deptList = repository.departmentList;
     savePickupLiveData = repository.savePickupResp;
   }
 
@@ -45,8 +45,8 @@ class PickupViewModel extends BaseViewModel {
     return repository.getPickupDetails(params);
   }
 
-  void getPinCodeList(Map<String, String> params) {
-    repository.getPincodeList(params);
+  Future<List<PinCodeModel>> getPinCodeList(Map<String, String> params) {
+    return repository.getPincodeList(params);
   }
 
   Future<List<BranchModel>> getBranchList(Map<String, String> params) async {
