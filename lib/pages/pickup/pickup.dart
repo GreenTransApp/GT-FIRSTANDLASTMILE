@@ -148,6 +148,52 @@ class _PickupState extends State<Pickup> {
     getData();
   }
 
+  @override
+  void dispose() {
+    _grController.dispose();
+    _bookingdtController.dispose();
+    _bookingtimeController.dispose();
+    _orgPincodeController.dispose();
+    _orgController.dispose();
+    _destPincodeController.dispose();
+    _destController.dispose();
+    _custController.dispose();
+    _deptController.dispose();
+    _cngrController.dispose();
+    _cngeController.dispose();
+    _noofpckgsController.dispose();
+    _remarksController.dispose();
+    _gweightController.dispose();
+    _vweightController.dispose();
+    _cweightController.dispose();
+    _freightController.dispose();
+    _serviceController.dispose();
+
+    _consignorNameController.dispose();
+    _consignorAddressController.dispose();
+    _consignorZipCodeController.dispose();
+    _consignorCityController.dispose();
+    _consignorMobileController.dispose();
+
+    _consigneeNameController.dispose();
+    _consigneeAddressController.dispose();
+    _consigneeZipCodeController.dispose();
+    _consigneeCityController.dispose();
+    _consigneeMobileController.dispose();
+    _orderNumberController.dispose();
+
+    remarksFocus.dispose();
+    returnCodeFocus.dispose();
+    skuFocus.dispose();
+
+    firstInvoiceModel.disposeControllers();
+    for (var invoice in invoiceList) {
+      invoice.disposeControllers();
+    }
+
+    super.dispose();
+  }
+
   getData() {
     getPickupDetails().then((data) => {
           loadingAlertService.showLoading(),

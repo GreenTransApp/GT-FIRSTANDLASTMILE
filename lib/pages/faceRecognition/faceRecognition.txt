@@ -1,0 +1,7 @@
+Face recognition feature blocked for now. Will be used in future as required.
+required pckgs
+google_mlkit_face_detection
+face_verification
+tflite_flutter
+google_mlkit_commons
+google_mlkit_object_detection   

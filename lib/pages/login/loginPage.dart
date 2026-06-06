@@ -8,7 +8,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/pages/faceRecognition/faceLogin.dart';
+
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
-  bool isFaceLogin = false;
+  // bool isFaceLogin = false;
 
   @override
   void initState() {
