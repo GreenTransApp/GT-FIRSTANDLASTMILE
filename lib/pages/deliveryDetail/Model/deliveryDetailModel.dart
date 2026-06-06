@@ -22,7 +22,7 @@ class DeliveryDetailModel {
   String? userallocationstatus;
   String? isOtpRequired;
   String? isVerified;
-  String? orderid;
+  int? orderid;
 
   DeliveryDetailModel(
       {this.commandstatus,

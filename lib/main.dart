@@ -26,10 +26,9 @@ import 'package:gtlmd/optionMenu/operations/operationsProvider.dart';
 final locationService = LocationService();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await locationService.init();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   runApp(
     MultiProvider(
       providers: [
@@ -42,6 +41,9 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+
+  // await locationService.init();
+
   if (Platform.isIOS) {
     requestIosLocationPermission();
   }

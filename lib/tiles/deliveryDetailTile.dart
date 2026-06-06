@@ -9,20 +9,15 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
-import 'package:gtlmd/design_system/app_sizes.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/presentation/OtexPickupScreen.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
-import 'package:gtlmd/pages/pickupOtp/pickupOtp.dart';
-
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/rejectPickup/rejectPickup.dart';
 import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
-
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -227,7 +222,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       drivercode: savedUser.drivercode.toString(),
       transactionid: widget.model.transactionid,
       grno: widget.model.grno,
-      orderid: isNullOrEmpty(widget.model.orderid) ? '0' : widget.model.orderid,
+      orderid: isNullOrEmpty(widget.model.orderid.toString())
+          ? '0'
+          : widget.model.orderid.toString(),
     );
 
     // menuCode = savedUser.companyid == 99883345
@@ -330,7 +327,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         children: [
                           Flexible(
                             child: Text(
-                              '${widget.model.grno}',
+                              '${widget.model.grno}/${isNullOrEmpty(widget.model.orderid.toString()) ? "" : widget.model.orderid}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: SizeConfig.smallTextSize,
@@ -736,27 +733,34 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               // Get.to(Pickup(details: widget.model))?.then((_) {
                               //   widget.onRefresh();
                               // });
-                              if (isNullOrEmpty(menuCode)) {
-                                Get.to(Pickup(details: widget.model))
-                                    ?.then((_) {
-                                  widget.onRefresh();
-                                });
-                              } else {
-                                getInfinitiBookingLink();
-                              }
-                              // if (savedUser.companyid.toString() ==
-                              //     "99883345") {
-                              //   Get.to(OtexPickupScreen(
-                              //     transactionId: "0",
-                              //   ))?.then((_) {
-                              //     widget.onRefresh();
-                              //   });
-                              // } else {
+                              // if (isNullOrEmpty(menuCode)) {
                               //   Get.to(Pickup(details: widget.model))
                               //       ?.then((_) {
                               //     widget.onRefresh();
                               //   });
+                              // } else {
+                              //   getInfinitiBookingLink();
                               // }
+                              if (savedUser.companyid.toString() ==
+                                  "99883345") {
+                                Get.to(
+                                  OtexPickupScreen(
+                                      transactionId: isNullOrEmpty(widget
+                                              .model.transactionid
+                                              .toString())
+                                          ? '0'
+                                          : widget.model.transactionid
+                                              .toString(),
+                                      grno: widget.model.grno.toString()),
+                                )?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                Get.to(Pickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              }
                             },
                             icon: Icon(Icons.check,
                                 size: SizeConfig.mediumIconSize),

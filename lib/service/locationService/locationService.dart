@@ -113,6 +113,11 @@ class LocationService {
   /// Start the foreground service
   Future<void> startService(
       List<TripModel> activeTripList, UserModel userdata) async {
+    if (kDebugMode) {
+      print('Debug mode: Location service tracking disabled to prevent hang');
+      return;
+    }
+
     if (activeTripList.isEmpty) {
       print('No trips → service not started');
       return;

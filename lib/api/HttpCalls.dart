@@ -114,7 +114,7 @@ class ApiService {
   }) async {
     try {
       final UserModel userData = await getUserData();
-      final LoginModel userLoginData = await getLoginData();
+      // final LoginModel userLoginData = await getLoginData();
 
       final ApiCallParametersModel parameters = ApiCallParametersModel(
         companyId: userData.companyid.toString(),

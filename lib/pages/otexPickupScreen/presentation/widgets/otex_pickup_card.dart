@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gtlmd/common/colors.dart';
-import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/collapsible_header_section.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/OtexPickupProvider.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/common/genericBottomSheet.dart';
-
-// Import necessary models for search sheets
-import 'package:gtlmd/pages/pickup/model/branchModel.dart';
+import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupSplitInfo.dart';
+import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/OtexPickupProvider.dart';
+import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/lovPickerField.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
+import 'package:gtlmd/pages/pickup/model/branchModel.dart';
+import 'package:provider/provider.dart';
 
 class OtexPickupCard extends StatefulWidget {
-  final OtexPickupProvider controller;
   final int index;
-  final bool
-      isFreightVisible; // Determines conditional visibility of freight (based on Booking Type PP)
-  final VoidCallback? onDelete; // Allows card removal if allowed
 
+  // No controller prop — reads from Provider directly.
+  // No isFreightVisible prop — derived from state inside.
+  // No onDelete prop — derived from state inside.
   const OtexPickupCard({
     super.key,
-    required this.controller,
     required this.index,
-    required this.isFreightVisible,
-    this.onDelete,
   });
 
   @override
@@ -32,620 +27,721 @@ class OtexPickupCard extends StatefulWidget {
 
 class _OtexPickupCardState extends State<OtexPickupCard> {
   bool _isCardExpanded = true;
+  bool _isSaving = false;
 
-  // Controllers for dynamic text fields
-  final TextEditingController _ewayBillController = TextEditingController();
+  // Only real text input controllers — LOV fields are gone
   final TextEditingController _palletQtyController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _freightController = TextEditingController();
 
-  // Selected LOV text variables
-  String _selectedDestination = "Select Destination";
-  String _selectedConsignee = "Select Consignee";
-  String _selectedPackaging = "Select Packaging Method";
-  String _selectedSaidToContain = "Select Said to Contain";
+  // Track what we've synced to avoid overwriting user edits mid-session
+  bool _initialSyncDone = false;
 
   @override
   void initState() {
     super.initState();
-    _palletQtyController.text = "1";
+    // Sync once after first frame so provider is available
+    WidgetsBinding.instance.addPostFrameCallback((_) => _syncFromState());
+  }
 
-    // Bind from provider if state contains pre-filled data
-    final splitList = widget.controller.state.splitInfo;
-    if (widget.index < splitList.length) {
-      final cardData = splitList[widget.index];
-      _ewayBillController.text = cardData.wayBillNo ?? "";
-      if (cardData.palletQty != null) {
-        _palletQtyController.text = cardData.palletQty.toString();
-      }
-      if (cardData.weight != null) {
-        _weightController.text = cardData.weight.toString();
-      }
-      if (cardData.freightAmt != null) {
-        _freightController.text = cardData.freightAmt.toString();
-      }
-      if (cardData.destName != null) {
-        _selectedDestination = cardData.destName!;
-      }
-      if (cardData.cngeName != null) {
-        _selectedConsignee = cardData.cngeName!;
-      }
-      if (cardData.packingMethod != null) {
-        _selectedPackaging = cardData.packingMethod!;
-      }
-      if (cardData.saidToContain != null) {
-        _selectedSaidToContain = cardData.saidToContain!;
-      }
-    }
+  void _syncFromState() {
+    if (_initialSyncDone || !mounted) return;
+    final provider = context.read<OtexPickupProvider>();
+    final cards = provider.state.splitInfo;
+    if (widget.index >= cards.length) return;
+
+    final card = cards[widget.index];
+    _palletQtyController.text = card.palletQty?.toString() ?? "0";
+    _weightController.text = card.weight?.toString() ?? "";
+    _freightController.text = card.freightAmt?.toString() ?? "";
+    _initialSyncDone = true;
   }
 
   @override
   void dispose() {
-    _ewayBillController.dispose();
     _palletQtyController.dispose();
     _weightController.dispose();
     _freightController.dispose();
     super.dispose();
   }
 
-  void _clearCardData() {
-    setState(() {
-      _ewayBillController.clear();
-      _palletQtyController.text = "1";
-      _weightController.clear();
-      _freightController.clear();
-      _selectedDestination = "Select Destination";
-      _selectedConsignee = "Select Consignee";
-      _selectedPackaging = "Select Packaging Method";
-      _selectedSaidToContain = "Select Said to Contain";
-    });
+  // ── Sheet openers ──────────────────────────────────────────
 
-    // Reset provider record
-    widget.controller.updateCardData(widget.index, OtexPickupSplitInfo());
+  void _openDestinationSheet(
+      BuildContext context, OtexPickupProvider provider) {
+    showGenericApiBottomSheet<BranchModel>(
+      context: context,
+      title: "Search Destination",
+      fetchItems: (query) => provider.searchBranches(query),
+      itemTitle: (b) => b.stnName ?? 'Unknown',
+      itemSubtitle: (b) => "Code: ${b.stnCode ?? ''} | Zip: ${b.zipCode ?? ''}",
+      onSelected: (b) {
+        final card = provider.state.splitInfo[widget.index];
+        provider.updateCardData(
+          widget.index,
+          card.copyWith(destName: b.stnName, destCode: b.stnCode),
+        );
+      },
+    );
   }
+
+  void _openConsigneeSheet(BuildContext context, OtexPickupProvider provider) {
+    showGenericApiBottomSheet<CngrCngeModel>(
+      context: context,
+      title: "Search Consignee",
+      fetchItems: (query) => provider.searchCngrCnge(query, 'E'),
+      itemTitle: (c) => c.name ?? 'Unknown',
+      itemSubtitle: (c) => "Code: ${c.code ?? ''}",
+      onSelected: (c) {
+        final card = provider.state.splitInfo[widget.index];
+        provider.updateCardData(
+          widget.index,
+          card.copyWith(cngeName: c.name, cngeCode: c.code),
+        );
+      },
+    );
+  }
+
+  void _openPackingMethodSheet(
+      BuildContext context, OtexPickupProvider provider) {
+    // TODO: wire to provider.searchPackingMethods() tomorrow
+    showGenericApiBottomSheet<_SimpleOption>(
+      context: context,
+      title: "Select Packing Method",
+      fetchItems: (_) async => [
+        _SimpleOption("Box", "BOX"),
+        _SimpleOption("Wooden Case", "WC"),
+        _SimpleOption("Carton", "CTN"),
+        _SimpleOption("Pallet", "PLT"),
+        _SimpleOption("Bag", "BAG"),
+      ],
+      itemTitle: (o) => o.name,
+      itemSubtitle: (o) => "Code: ${o.code}",
+      onSelected: (o) {
+        final card = provider.state.splitInfo[widget.index];
+        provider.updateCardData(
+          widget.index,
+          card.copyWith(packingMethodName: o.name, packingMethodCode: o.code),
+        );
+      },
+    );
+  }
+
+  void _openSaidToContainSheet(
+      BuildContext context, OtexPickupProvider provider) {
+    // TODO: wire to provider.searchSaidToContain() tomorrow
+    showGenericApiBottomSheet<_SimpleOption>(
+      context: context,
+      title: "Select Said To Contain",
+      fetchItems: (_) async => [
+        _SimpleOption("Documents", "DOC"),
+        _SimpleOption("Electronics", "ELC"),
+        _SimpleOption("Spare Parts", "SP"),
+        _SimpleOption("Clothes", "CLT"),
+        _SimpleOption("Medicines", "MED"),
+        _SimpleOption("Others", "OTH"),
+      ],
+      itemTitle: (o) => o.name,
+      itemSubtitle: (o) => "Code: ${o.code}",
+      onSelected: (o) {
+        final card = provider.state.splitInfo[widget.index];
+        provider.updateCardData(
+          widget.index,
+          card.copyWith(saidToContainName: o.name, saidToContainCode: o.code),
+        );
+      },
+    );
+  }
+
+  // ── Actions ────────────────────────────────────────────────
+
+  Future<void> _handleSave(OtexPickupProvider provider) async {
+    // Basic card-level validation before hitting provider
+    final card = provider.state.splitInfo[widget.index];
+    if (card.destCode == null || card.destCode!.isEmpty) {
+      _showValidationSnack("Please select a Destination");
+      return;
+    }
+    if (card.cngeCode == null || card.cngeCode!.isEmpty) {
+      _showValidationSnack("Please select a Consignee");
+      return;
+    }
+    if (card.packingMethodCode == null || card.packingMethodCode!.isEmpty) {
+      _showValidationSnack("Please select a Packing Method");
+      return;
+    }
+    if (card.saidToContainCode == null || card.saidToContainCode!.isEmpty) {
+      _showValidationSnack("Please select Said To Contain");
+      return;
+    }
+    final palletQty = int.tryParse(_palletQtyController.text) ?? 0;
+    if (palletQty <= 0) {
+      _showValidationSnack("Pallet Quantity must be greater than 0");
+      return;
+    }
+    final weight = double.tryParse(_weightController.text) ?? 0;
+    if (weight <= 0) {
+      _showValidationSnack("Weight must be greater than 0");
+      return;
+    }
+    final isFreightVisible = provider.state.info.bookingTypeCode == "PP";
+    if (isFreightVisible) {
+      final freight = double.tryParse(_freightController.text) ?? 0;
+      if (freight <= 0) {
+        _showValidationSnack("Freight Amount must be greater than 0");
+        return;
+      }
+    }
+
+    setState(() => _isSaving = true);
+    final success = await provider.saveCardEntry(widget.index);
+    if (mounted) setState(() => _isSaving = false);
+
+    if (success && mounted) {
+      // Auto-collapse on successful save — clean UX signal to user
+      setState(() => _isCardExpanded = false);
+    }
+  }
+
+  void _handleClear(OtexPickupProvider provider, bool isSaved) {
+    _palletQtyController.text = "0";
+    _weightController.clear();
+    _freightController.clear();
+    // Preserve waybill and isSaved when clearing — only reset editable fields
+    final current = provider.state.splitInfo[widget.index];
+    provider.updateCardData(
+      widget.index,
+      OtexPickupSplitInfo(
+        wayBillNo: current.wayBillNo, // keep waybill
+        isSaved: current.isSaved, // keep saved status
+      ),
+    );
+  }
+
+  void _showValidationSnack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded,
+                color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Text(message, style: const TextStyle(fontSize: 13))),
+          ],
+        ),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // ── Build ──────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side:
-            BorderSide(color: CommonColors.grey400 ?? Colors.grey, width: 0.5),
-      ),
-      child: Column(
-        children: [
-          // Collapsible Header Row
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isCardExpanded = !_isCardExpanded;
-              });
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: SizeConfig.smallVerticalPadding,
-                horizontal: SizeConfig.mediumHorizontalSpacing,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey.shade50,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(12),
-                  topRight: const Radius.circular(12),
-                  bottomLeft: Radius.circular(_isCardExpanded ? 0 : 12),
-                  bottomRight: Radius.circular(_isCardExpanded ? 0 : 12),
+    // Selector: this card only rebuilds when ITS slot in the list changes,
+    // or when bookingTypeCode changes (freight visibility).
+    // Other cards saving won't cause this card to rebuild.
+    return Selector<OtexPickupProvider,
+        ({OtexPickupSplitInfo card, bool isFreightVisible, bool canDelete})>(
+      selector: (_, p) {
+        final cards = p.state.splitInfo;
+        final card = widget.index < cards.length
+            ? cards[widget.index]
+            : OtexPickupSplitInfo();
+        return (
+          card: card,
+          isFreightVisible: p.state.info.bookingTypeCode == "PP",
+          // Can delete only if: more than 1 card total AND this card is not saved
+          canDelete:
+              cards.length > 1 && widget.index >= p.state.permanentCardCount,
+        );
+      },
+      builder: (context, data, _) {
+        final card = data.card;
+        final isFreightVisible = data.isFreightVisible;
+        final canDelete = data.canDelete;
+        final isSaved = card.isSaved;
+        final provider = context.read<OtexPickupProvider>();
+
+        return Card(
+          surfaceTintColor: Colors.white,
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            // Green border when saved — instant visual feedback
+            side: BorderSide(
+              color: isSaved
+                  ? Colors.green.shade400
+                  : (CommonColors.grey400 ?? Colors.grey),
+              width: isSaved ? 1.5 : 0.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              // ── Card Header ──
+              _buildCardHeader(provider, card, isSaved, canDelete),
+
+              // ── Card Body ──
+              AnimatedCrossFade(
+                duration: const Duration(milliseconds: 300),
+                crossFadeState: _isCardExpanded
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                secondChild: const SizedBox.shrink(),
+                firstChild: _buildCardBody(
+                  context,
+                  provider,
+                  card,
+                  isSaved,
+                  isFreightVisible,
                 ),
               ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: CommonColors.colorPrimary,
-                    child: Text(
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCardHeader(
+    OtexPickupProvider provider,
+    OtexPickupSplitInfo card,
+    bool isSaved,
+    bool canDelete,
+  ) {
+    return InkWell(
+      onTap: () => setState(() => _isCardExpanded = !_isCardExpanded),
+      borderRadius: BorderRadius.vertical(
+        top: const Radius.circular(12),
+        bottom: Radius.circular(_isCardExpanded ? 0 : 12),
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: SizeConfig.smallVerticalPadding,
+          horizontal: SizeConfig.mediumHorizontalSpacing,
+        ),
+        decoration: BoxDecoration(
+          // Subtle green tint on header when saved
+          color: isSaved ? Colors.green.shade50 : Colors.blueGrey.shade50,
+          borderRadius: BorderRadius.vertical(
+            top: const Radius.circular(12),
+            bottom: Radius.circular(_isCardExpanded ? 0 : 12),
+          ),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 12,
+              backgroundColor:
+                  isSaved ? Colors.green.shade600 : CommonColors.colorPrimary,
+              child: isSaved
+                  ? const Icon(Icons.check, color: Colors.white, size: 14)
+                  : Text(
                       "${widget.index + 1}",
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(width: 8),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    "Consignment Entry Card",
+                    "Consignment Entry ${widget.index + 1}",
                     style: TextStyle(
                       fontSize: SizeConfig.smallTextSize,
                       fontWeight: FontWeight.w600,
                       color: Colors.blueGrey.shade800,
                     ),
                   ),
-                  const Spacer(),
-                  if (widget.onDelete != null) ...[
-                    IconButton(
-                      icon: Icon(Icons.delete_outline,
-                          color: CommonColors.red, size: 20),
-                      onPressed: widget.onDelete,
+                  // Show waybill inline on header when saved — user sees it collapsed
+                  if (isSaved && card.wayBillNo != null)
+                    Text(
+                      "WB: ${card.wayBillNo}",
+                      style: TextStyle(
+                        fontSize: SizeConfig.extraSmallTextSize,
+                        color: Colors.green.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    const SizedBox(width: 4),
-                  ],
-                  Icon(
-                    _isCardExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Colors.blueGrey,
-                  ),
                 ],
               ),
+            ),
+            if (canDelete)
+              IconButton(
+                icon: Icon(Icons.delete_outline,
+                    color: CommonColors.red, size: 20),
+                onPressed: () => context
+                    .read<OtexPickupProvider>()
+                    .removeCardEntry(widget.index),
+              ),
+            Icon(
+              _isCardExpanded
+                  ? Icons.keyboard_arrow_up
+                  : Icons.keyboard_arrow_down,
+              color: Colors.blueGrey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardBody(
+    BuildContext context,
+    OtexPickupProvider provider,
+    OtexPickupSplitInfo card,
+    bool isSaved,
+    bool isFreightVisible,
+  ) {
+    return Container(
+      color: CommonColors.White,
+      padding: EdgeInsets.all(SizeConfig.mediumHorizontalSpacing),
+      child: Column(
+        children: [
+          // 1. Waybill — always disabled, server-generated
+          _buildFormField(
+            label: "WayBill Number",
+            isRequired: false,
+            icon: Icons.receipt_long_outlined,
+            child: LovPickerField(
+              value: card.wayBillNo,
+              placeholder: "Generated after save",
+              onTap: null, // always locked
             ),
           ),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
-          // Card Body
-          AnimatedCrossFade(
-            firstChild: Padding(
-              padding: EdgeInsets.all(SizeConfig.mediumHorizontalSpacing),
-              child: Column(
-                children: [
-                  // 1. EwayBill Number (Disabled by default)
-                  otexBuildFormField(
-                    label: "EwayBill Number",
-                    isRequired: false,
-                    icon: Icons.receipt_long_outlined,
-                    child: TextFormField(
-                      controller: _ewayBillController,
-                      enabled: false,
-                      decoration: otexInputDecoration("Generated on Server"),
-                    ),
-                  ),
-                  SizedBox(height: SizeConfig.mediumVerticalSpacing),
+          // 2. Destination
+          _buildFormField(
+            label: "Destination",
+            isRequired: true,
+            icon: Icons.pin_drop_outlined,
+            child: LovPickerField(
+              value: card.destName,
+              placeholder: "Select Destination",
+              onTap: () => _openDestinationSheet(context, provider),
+            ),
+          ),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
-                  // 2. Destination (LOV Selection UI)
-                  otexBuildFormField(
-                    label: "Destination",
-                    isRequired: true,
-                    icon: Icons.pin_drop_outlined,
-                    child: InkWell(
-                      onTap: () {
-                        showGenericApiBottomSheet<BranchModel>(
-                          context: context,
-                          title: "Search Destination",
-                          fetchItems: (query) =>
-                              widget.controller.searchBranches(query),
-                          itemTitle: (branch) => branch.stnName ?? 'Unknown',
-                          itemSubtitle: (branch) =>
-                              "Code: ${branch.stnCode ?? ''} | Zip: ${branch.zipCode ?? ''}",
-                          onSelected: (branch) {
-                            setState(() => _selectedDestination =
-                                branch.stnName ?? 'Unknown');
-                            final currentCard =
-                                widget.controller.state.splitInfo[widget.index];
-                            widget.controller.updateCardData(
-                              widget.index,
-                              currentCard.copyWith(
-                                destName: branch.stnName,
-                                destCode: branch.stnCode,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.mediumHorizontalSpacing,
-                          vertical: SizeConfig.mediumVerticalSpacing,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: CommonColors.appBarColor),
-                          borderRadius:
-                              BorderRadius.circular(SizeConfig.largeRadius),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _selectedDestination,
-                                style: TextStyle(
-                                  color:
-                                      _selectedDestination.startsWith("Select")
-                                          ? CommonColors.grey400
-                                          : Colors.black,
-                                  fontSize: SizeConfig.smallTextSize,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const Icon(Icons.arrow_drop_down,
-                                color: Colors.grey),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: SizeConfig.mediumVerticalSpacing),
+          // 3. Consignee
+          _buildFormField(
+            label: "Consignee",
+            isRequired: true,
+            icon: Icons.person_pin_outlined,
+            child: LovPickerField(
+              value: card.cngeName,
+              placeholder: "Select Consignee",
+              onTap: () => _openConsigneeSheet(context, provider),
+            ),
+          ),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
-                  // 3. Consignee (LOV Selection UI)
-                  otexBuildFormField(
-                    label: "Consignee",
-                    isRequired: true,
-                    icon: Icons.person_pin_outlined,
-                    child: InkWell(
-                      onTap: () {
-                        showGenericApiBottomSheet<CngrCngeModel>(
-                          context: context,
-                          title: "Search Consignee",
-                          fetchItems: (query) =>
-                              widget.controller.searchCngrCnge(query, 'E'),
-                          itemTitle: (consignee) => consignee.name ?? 'Unknown',
-                          itemSubtitle: (consignee) =>
-                              "Code: ${consignee.code ?? ''}",
-                          onSelected: (consignee) {
-                            setState(() => _selectedConsignee =
-                                consignee.name ?? 'Unknown');
-                            final currentCard =
-                                widget.controller.state.splitInfo[widget.index];
-                            widget.controller.updateCardData(
-                              widget.index,
-                              currentCard.copyWith(
-                                cngeName: consignee.name,
-                                cngeCode: consignee.code,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.mediumHorizontalSpacing,
-                          vertical: SizeConfig.mediumVerticalSpacing,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: CommonColors.appBarColor),
-                          borderRadius:
-                              BorderRadius.circular(SizeConfig.largeRadius),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _selectedConsignee,
-                                style: TextStyle(
-                                  color: _selectedConsignee.startsWith("Select")
-                                      ? CommonColors.grey400
-                                      : Colors.black,
-                                  fontSize: SizeConfig.smallTextSize,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const Icon(Icons.arrow_drop_down,
-                                color: Colors.grey),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: SizeConfig.mediumVerticalSpacing),
-
-                  // 4. Pallet Quantity & 7. Weight (Combined in one row)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: otexBuildFormField(
-                          label: "Pallet Quantity",
-                          isRequired: true,
-                          icon: Icons.grid_view_outlined,
-                          child: TextFormField(
-                            controller: _palletQtyController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            decoration: otexInputDecoration("Quantity"),
-                            onChanged: (val) {
-                              final parsed = int.tryParse(val) ?? 1;
-                              final currentCard = widget
-                                  .controller.state.splitInfo[widget.index];
-                              widget.controller.updateCardData(
-                                widget.index,
-                                currentCard.copyWith(palletQty: parsed),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                      Expanded(
-                        child: otexBuildFormField(
-                          label: "Weight",
-                          isRequired: true,
-                          icon: Icons.monitor_weight_outlined,
-                          child: TextFormField(
-                            controller: _weightController,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+\.?\d{0,2}$')),
-                            ],
-                            decoration: otexInputDecoration("Weight (KG)"),
-                            onChanged: (val) {
-                              final parsed = double.tryParse(val) ?? 0.0;
-                              final currentCard = widget
-                                  .controller.state.splitInfo[widget.index];
-                              widget.controller.updateCardData(
-                                widget.index,
-                                currentCard.copyWith(weight: parsed),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+          // 4. Pallet Qty + Weight
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildFormField(
+                  label: "Pallet Qty",
+                  isRequired: true,
+                  icon: Icons.grid_view_outlined,
+                  child: TextFormField(
+                    controller: _palletQtyController,
+                    enabled: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      // Blocks 0 as first character
+                      FilteringTextInputFormatter.deny(RegExp(r'^0')),
                     ],
+                    decoration: _inputDecoration("Qty"),
+                    onChanged: (val) {
+                      final parsed = int.tryParse(val) ?? 1;
+                      final current = provider.state.splitInfo[widget.index];
+                      provider.updateCardData(
+                          widget.index, current.copyWith(palletQty: parsed));
+                    },
                   ),
-                  SizedBox(height: SizeConfig.mediumVerticalSpacing),
-
-                  // 5. Packaging Method & 6. Said to Contain (Combined in one row)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: otexBuildFormField(
-                          label: "Packaging",
-                          isRequired: true,
-                          icon: Icons.workspaces_outline,
-                          child: InkWell(
-                            onTap: () {
-                              showGenericApiBottomSheet<String>(
-                                context: context,
-                                title: "Select Packaging Method",
-                                fetchItems: (query) async => [
-                                  "BOX",
-                                  "WOODEN CASE",
-                                  "CARTON",
-                                  "PALLET",
-                                  "BAG"
-                                ]
-                                    .where(
-                                        (e) => e.contains(query.toUpperCase()))
-                                    .toList(),
-                                itemTitle: (item) => item,
-                                onSelected: (item) {
-                                  setState(() => _selectedPackaging = item);
-                                  final currentCard = widget
-                                      .controller.state.splitInfo[widget.index];
-                                  widget.controller.updateCardData(
-                                    widget.index,
-                                    currentCard.copyWith(packingMethod: item),
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.mediumHorizontalSpacing,
-                                vertical: SizeConfig.mediumVerticalSpacing,
-                              ),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: CommonColors.appBarColor),
-                                borderRadius: BorderRadius.circular(
-                                    SizeConfig.largeRadius),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _selectedPackaging,
-                                      style: TextStyle(
-                                        color: _selectedPackaging
-                                                .startsWith("Select")
-                                            ? CommonColors.grey400
-                                            : Colors.black,
-                                        fontSize: SizeConfig.smallTextSize,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(Icons.arrow_drop_down,
-                                      color: Colors.grey),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                      Expanded(
-                        child: otexBuildFormField(
-                          label: "Said To Contain",
-                          isRequired: true,
-                          icon: Icons.inventory_outlined,
-                          child: InkWell(
-                            onTap: () {
-                              showGenericApiBottomSheet<String>(
-                                context: context,
-                                title: "Select Said to Contain",
-                                fetchItems: (query) async => [
-                                  "DOCUMENTS",
-                                  "ELECTRONICS",
-                                  "SPARE PARTS",
-                                  "CLOTHES",
-                                  "MEDICINES",
-                                  "OTHERS"
-                                ]
-                                    .where(
-                                        (e) => e.contains(query.toUpperCase()))
-                                    .toList(),
-                                itemTitle: (item) => item,
-                                onSelected: (item) {
-                                  setState(() => _selectedSaidToContain = item);
-                                  final currentCard = widget
-                                      .controller.state.splitInfo[widget.index];
-                                  widget.controller.updateCardData(
-                                    widget.index,
-                                    currentCard.copyWith(saidToContain: item),
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.mediumHorizontalSpacing,
-                                vertical: SizeConfig.mediumVerticalSpacing,
-                              ),
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: CommonColors.appBarColor),
-                                borderRadius: BorderRadius.circular(
-                                    SizeConfig.largeRadius),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _selectedSaidToContain,
-                                      style: TextStyle(
-                                        color: _selectedSaidToContain
-                                                .startsWith("Select")
-                                            ? CommonColors.grey400
-                                            : Colors.black,
-                                        fontSize: SizeConfig.smallTextSize,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const Icon(Icons.arrow_drop_down,
-                                      color: Colors.grey),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                ),
+              ),
+              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+              Expanded(
+                child: _buildFormField(
+                  label: "Weight (KG)",
+                  isRequired: true,
+                  icon: Icons.monitor_weight_outlined,
+                  child: TextFormField(
+                    controller: _weightController,
+                    enabled: true,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}$')),
                     ],
+                    decoration: _inputDecoration("KG"),
+                    onChanged: (val) {
+                      final parsed = double.tryParse(val) ?? 0;
+                      final current = provider.state.splitInfo[widget.index];
+                      provider.updateCardData(
+                          widget.index, current.copyWith(weight: parsed));
+                    },
                   ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
-                  // 8. Freight (Conditional Visibility - PP Only)
-                  if (widget.isFreightVisible) ...[
-                    SizedBox(height: SizeConfig.mediumVerticalSpacing),
-                    otexBuildFormField(
-                      label: "Freight",
-                      isRequired: true,
-                      icon: Icons.currency_rupee_outlined,
-                      child: TextFormField(
-                        controller: _freightController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d+\.?\d{0,2}$')),
-                        ],
-                        decoration: otexInputDecoration("Enter Freight Amount"),
-                        onChanged: (val) {
-                          final parsed = double.tryParse(val) ?? 0.0;
-                          final currentCard =
-                              widget.controller.state.splitInfo[widget.index];
-                          widget.controller.updateCardData(
-                            widget.index,
-                            currentCard.copyWith(freightAmt: parsed),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+          // 5. Packing Method + Said To Contain
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildFormField(
+                  label: "Packing",
+                  isRequired: true,
+                  icon: Icons.workspaces_outline,
+                  child: LovPickerField(
+                    value: card.packingMethodName,
+                    placeholder: "Select",
+                    onTap: () => _openPackingMethodSheet(context, provider),
+                  ),
+                ),
+              ),
+              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+              Expanded(
+                child: _buildFormField(
+                  label: "Said To Contain",
+                  isRequired: true,
+                  icon: Icons.inventory_outlined,
+                  child: LovPickerField(
+                    value: card.saidToContainName,
+                    placeholder: "Select",
+                    onTap: () => _openSaidToContainSheet(context, provider),
+                  ),
+                ),
+              ),
+            ],
+          ),
 
-                  // 9. Card-level Buttons (Save, Print Label, Clear, Print Waybill)
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () =>
-                              widget.controller.printLabel(widget.index),
-                          icon: const Icon(Icons.print_outlined, size: 14),
-                          label: const Text("Print Label",
-                              style: TextStyle(fontSize: 10)),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            foregroundColor: CommonColors.colorPrimary,
-                            side: const BorderSide(
-                                color: CommonColors.appBarColor),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () =>
-                              widget.controller.printWaybill(widget.index),
-                          icon:
-                              const Icon(Icons.description_outlined, size: 14),
-                          label: const Text("Print Waybill",
-                              style: TextStyle(fontSize: 10)),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            foregroundColor: CommonColors.colorPrimary,
-                            side: const BorderSide(
-                                color: CommonColors.appBarColor),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _clearCardData,
-                          icon: const Icon(Icons.refresh, size: 14),
-                          label: const Text("Clear",
-                              style: TextStyle(fontSize: 10)),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            foregroundColor: Colors.grey.shade700,
-                            side: BorderSide(color: Colors.grey.shade400),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () =>
-                          widget.controller.saveCardEntry(widget.index),
-                      icon: const Icon(Icons.check_circle_outline, size: 16),
-                      label: const Text("Save Entry",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 12)),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        backgroundColor: CommonColors.colorPrimary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6)),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
+          // 6. Freight — only when booking type is PP
+          if (isFreightVisible) ...[
+            SizedBox(height: SizeConfig.mediumVerticalSpacing),
+            _buildFormField(
+              label: "Freight Amount",
+              isRequired: true,
+              icon: Icons.currency_rupee_outlined,
+              child: TextFormField(
+                controller: _freightController,
+                enabled: true,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}$')),
                 ],
+                decoration: _inputDecoration("Enter Amount"),
+                onChanged: (val) {
+                  final parsed = double.tryParse(val) ?? 0;
+                  final current = provider.state.splitInfo[widget.index];
+                  provider.updateCardData(
+                      widget.index, current.copyWith(freightAmt: parsed));
+                },
               ),
             ),
-            secondChild: const SizedBox.shrink(),
-            crossFadeState: _isCardExpanded
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            duration: const Duration(milliseconds: 300),
+          ],
+
+          // ── Buttons ──
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 8),
+
+          // Print row
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  // Print label only available after save
+                  onPressed:
+                      isSaved ? () => provider.printLabel(widget.index) : null,
+                  icon: const Icon(Icons.print_outlined, size: 14),
+                  label:
+                      const Text("Print Label", style: TextStyle(fontSize: 10)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    foregroundColor: CommonColors.colorPrimary,
+                    disabledForegroundColor: Colors.grey.shade400,
+                    side: BorderSide(
+                        color: isSaved
+                            ? CommonColors.appBarColor
+                            : Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: isSaved
+                      ? () => provider.printWaybill(widget.index)
+                      : null,
+                  icon: const Icon(Icons.description_outlined, size: 14),
+                  label: const Text("Print Waybill",
+                      style: TextStyle(fontSize: 10)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    foregroundColor: CommonColors.colorPrimary,
+                    disabledForegroundColor: Colors.grey.shade400,
+                    side: BorderSide(
+                        color: isSaved
+                            ? CommonColors.appBarColor
+                            : Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _handleClear(provider, isSaved),
+                  icon: const Icon(Icons.refresh, size: 14),
+                  label: const Text("Clear", style: TextStyle(fontSize: 10)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    foregroundColor: Colors.grey.shade700,
+                    side: BorderSide(color: Colors.grey.shade400),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Save button — full width, shows loader while saving
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: (_isSaving) ? null : () => _handleSave(provider),
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : Icon(
+                      isSaved ? Icons.check_circle : Icons.check_circle_outline,
+                      size: 16,
+                    ),
+              label: Text(
+                _isSaving ? "Saving..." : "Save Way Bill",
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                backgroundColor: CommonColors.colorPrimary,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey.shade300,
+                disabledForegroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                elevation: 0,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
+
+  // ── Helpers ────────────────────────────────────────────────
+
+  Widget _buildFormField({
+    required String label,
+    required bool isRequired,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon,
+                size: SizeConfig.largeIconSize, color: const Color(0xFF64748B)),
+            SizedBox(width: SizeConfig.extraSmallHorizontalSpacing),
+            Text.rich(TextSpan(children: [
+              TextSpan(
+                text: label,
+                style: TextStyle(
+                  fontSize: SizeConfig.smallTextSize,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF334155),
+                ),
+              ),
+              if (isRequired)
+                TextSpan(
+                  text: ' *',
+                  style: TextStyle(
+                      color: CommonColors.red, fontWeight: FontWeight.bold),
+                ),
+            ])),
+          ],
+        ),
+        SizedBox(height: SizeConfig.smallVerticalSpacing),
+        child,
+      ],
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+          color: CommonColors.grey400, fontSize: SizeConfig.smallTextSize),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: SizeConfig.mediumHorizontalSpacing,
+        vertical: SizeConfig.mediumVerticalSpacing,
+      ),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+          borderSide: const BorderSide(color: CommonColors.appBarColor)),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+          borderSide: const BorderSide(color: CommonColors.appBarColor)),
+      disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+          borderSide: BorderSide(color: Colors.grey.shade300)),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+          borderSide: BorderSide(
+              color:
+                  CommonColors.primaryColorShade ?? CommonColors.colorPrimary!,
+              width: 1.5)),
+    );
+  }
+}
+
+// Private stub for hardcoded LOV options
+class _SimpleOption {
+  final String name;
+  final String code;
+  const _SimpleOption(this.name, this.code);
 }
