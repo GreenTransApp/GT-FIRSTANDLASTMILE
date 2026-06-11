@@ -143,8 +143,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       if (model.commandstatus == 1) {
         try {
           successToast(model.commandmessage!);
-          await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
-              savedLogin.companyid.toString(), widget.model.tripid.toString());
+          // await FirebaseLocationUpload().deleteLocation(executiveid!.toString(),
+          //     savedLogin.companyid.toString(), widget.model.tripid.toString());
           if (widget.refresh != null) {
             widget.refresh!();
           }
@@ -342,7 +342,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmclosetripdt": convert2SmallDateTime(widget.model.endtripdate!),
       "prmclosetriptime":
           formatTimeString(_closeTimeController.text.toString()),
-      "prmclosetripreading": widget.model.endreadingkm.toString(),
+      "prmclosetripreading": isNullOrEmpty(widget.model.endreadingkm.toString())
+          ? ''
+          : widget.model.endreadingkm.toString(),
       "prmendreadimgpath": widget.status == TripStatus.open
           ? ""
           : isNullOrEmpty(widget.model.endreadingimg)

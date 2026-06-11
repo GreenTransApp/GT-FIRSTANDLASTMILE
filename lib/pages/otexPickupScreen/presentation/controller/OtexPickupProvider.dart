@@ -18,6 +18,7 @@ import 'package:gtlmd/pages/pickup/model/customerModel.dart';
 import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
+import 'package:intl/intl.dart';
 
 class OtexPickupProvider extends ChangeNotifier {
   OtexPickupState _state = OtexPickupState.initial();
@@ -47,11 +48,11 @@ class OtexPickupProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  void initializeForm({String? transactionId, String? grno}) {
+  void initializeForm({String? transactionId, String? grno, String? orderid}) {
     _state = OtexPickupState(
       headerStatus: SectionStatus.idle,
       cardListStatus: SectionStatus.idle,
-      info: const OtexPickupInfoModel(),
+      info: OtexPickupInfoModel(orderid: orderid),
       splitInfo: [OtexPickupSplitInfo()],
       permanentCardCount: 0,
       totalPalletQty: 0,
@@ -61,11 +62,12 @@ class OtexPickupProvider extends ChangeNotifier {
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
-      fetchBookingDetails(transactionId); // <-- already here
+      fetchBookingDetails(transactionId, orderid); // <-- already here
     }
   }
 
-  Future<void> fetchBookingDetails(String transactionid) async {
+  Future<void> fetchBookingDetails(
+      String transactionid, String? orderid) async {
     // Set both sections to loading independently
     _state = _state.copyWith(
       headerStatus: SectionStatus.loading,
@@ -77,92 +79,6 @@ class OtexPickupProvider extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 2)); // simulate network
 
     try {
-      // final stubInfo = OtexPickupInfoModel(
-      //   bookingBranchName: "Mumbai Central",
-      //   bookingBranchCode: "MBC",
-      //   bookingDate: "01-06-2025",
-      //   bookingTime: "10:30",
-      //   bookingTypeName: "PP",
-      //   bookingTypeCode: "PP",
-      //   referenceNumber: "REF-2025-001",
-      //   customerName: "Tata Logistics",
-      //   customerCode: "TATA001",
-      //   departmentName: "Warehousing",
-      //   departmentCode: "WH01",
-      //   shipperName: "Rajesh Transport",
-      //   shipperCode: "RT001",
-      //   shipperMobileNo: "9876543210",
-      //   productTypeName: "OTEX",
-      //   productTypeCode: "OTEX",
-      //   loadTypeName: "Full Load",
-      //   loadTypeCode: "FL",
-      //   deliveryTypeName: "Door to Door",
-      //   deliveryTypeCode: "DD",
-      // );
-
-      // final stubCards = [
-      //   OtexPickupSplitInfo(
-      //     wayBillNo: "WB-1001",
-      //     destName: "Delhi Hub",
-      //     destCode: "DLH",
-      //     cngeName: "Amit Sharma",
-      //     cngeCode: "AS001",
-      //     packingMethodName: "Carton",
-      //     packingMethodCode: "CTN",
-      //     saidToContainName: "Electronics",
-      //     saidToContainCode: "ELC",
-      //     palletQty: 3,
-      //     weight: 120.5,
-      //     freightAmt: 4500.0,
-      //     isSaved: true, // server-fetched cards are already saved
-      //   ),
-      //   OtexPickupSplitInfo(
-      //     wayBillNo: "WB-1002",
-      //     destName: "Pune Depot",
-      //     destCode: "PND",
-      //     cngeName: "Sunita Verma",
-      //     cngeCode: "SV002",
-      //     packingMethodName: "Pallet",
-      //     packingMethodCode: "PLT",
-      //     saidToContainName: "Spare Parts",
-      //     saidToContainCode: "SP",
-      //     palletQty: 5,
-      //     weight: 340.0,
-      //     freightAmt: 8200.0,
-      //     isSaved: true,
-      //   ),
-      //   OtexPickupSplitInfo(
-      //     wayBillNo: "WB-1002",
-      //     destName: "Pune Depot",
-      //     destCode: "PND",
-      //     cngeName: "Sunita Verma",
-      //     cngeCode: "SV002",
-      //     packingMethodName: "Pallet",
-      //     packingMethodCode: "PLT",
-      //     saidToContainName: "Spare Parts",
-      //     saidToContainCode: "SP",
-      //     palletQty: 5,
-      //     weight: 340.0,
-      //     freightAmt: 8200.0,
-      //     isSaved: false,
-      //   ),
-      //   OtexPickupSplitInfo(
-      //     wayBillNo: "WB-1002",
-      //     destName: "Pune Depot",
-      //     destCode: "PND",
-      //     cngeName: "Sunita Verma",
-      //     cngeCode: "SV002",
-      //     packingMethodName: "Pallet",
-      //     packingMethodCode: "PLT",
-      //     saidToContainName: "Spare Parts",
-      //     saidToContainCode: "SP",
-      //     palletQty: 5,
-      //     weight: 340.0,
-      //     freightAmt: 8200.0,
-      //     isSaved: false,
-      //   ),
-      // ];
-
       Map<String, String> params = {
         "prmconnstring": savedLogin.companyid.toString(),
         "prmloginbranchcode": savedUser.loginbranchcode.toString(),
@@ -174,18 +90,31 @@ class OtexPickupProvider extends ChangeNotifier {
       };
       List<dynamic> result = await _repo.getPickupDetails(params);
 
-      final OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
-      List<OtexPickupSplitInfo> splitData =
-          (result[1] as List).cast<OtexPickupSplitInfo>().toList();
+      OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
+      infoData =
+          infoData.copyWith(orderid: isNullOrEmpty(orderid) ? '0' : orderid);
+      // List<OtexPickupSplitInfo> splitData =
+      //     (result[1] as List).cast<OtexPickupSplitInfo>().toList();
 
-      if (splitData.isEmpty) {
-        splitData = [OtexPickupSplitInfo()];
-      }
+      // if (splitData.isEmpty) {
+      //   splitData = [OtexPickupSplitInfo()];
+      // }
 
-      int totalPallets = 0;
-      for (var card in splitData) {
-        totalPallets += card.palletQty ?? 0;
-      }
+      OtexPickupSplitInfo splitInfo = OtexPickupSplitInfo(
+          destName: infoData.destName,
+          destCode: infoData.destCode,
+          cngeName: infoData.cngeName,
+          cngeCode: infoData.cngeCode,
+          palletQty: infoData.pcs,
+          packingMethodName: infoData.packing,
+          packingMethodCode: infoData.packingcode,
+          weight: isNullOrEmpty(infoData.weight)
+              ? 0.0
+              : double.tryParse(infoData.weight.toString()),
+          saidToContainName: infoData.goods);
+
+      List<OtexPickupSplitInfo> splitData = [];
+      splitData.add(splitInfo);
 
       _state = _state.copyWith(
         headerStatus: SectionStatus.success,
@@ -194,7 +123,7 @@ class OtexPickupProvider extends ChangeNotifier {
         splitInfo: splitData,
         // Both cards came from server so permanent count = 2
         permanentCardCount: splitData.where((c) => c.isSaved).length,
-        totalPalletQty: totalPallets,
+        totalPalletQty: infoData.pcs,
       );
       notifyListeners();
     } catch (e) {
@@ -247,9 +176,9 @@ class OtexPickupProvider extends ChangeNotifier {
 
   // API Call: Search Departments for LOV Bottom Sheet
   Future<List<DepartmentModel>> searchDepartments(String query) async {
-    final currentInfo = _state.info ?? const OtexPickupInfoModel();
-    if (isNullOrEmpty(currentInfo.customerCode) ||
-        isNullOrEmpty(currentInfo.bookingBranchCode)) {
+    final currentInfo = _state.info ?? OtexPickupInfoModel();
+    if (isNullOrEmpty(currentInfo.custCode) ||
+        isNullOrEmpty(currentInfo.orgCode)) {
       _state = _state.copyWith(
           errorMessage: "Booking Branch and customer mandatory");
       notifyListeners();
@@ -259,8 +188,8 @@ class OtexPickupProvider extends ChangeNotifier {
       // final params = <String, String>{"SearchText": query};
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
-        "prmcustcode": _state.info!.customerCode.toString(),
-        "prmorgcode": _state.info!.bookingBranchCode.toString(),
+        "prmcustcode": _state.info!.custCode.toString(),
+        "prmorgcode": _state.info!.orgCode.toString(),
       };
 
       return await _repo.getDepartmentList(params);
@@ -283,9 +212,9 @@ class OtexPickupProvider extends ChangeNotifier {
       //   "prmcharstr": query,
       // };
       Map<String, String> p = {
-        "BookingBranchCode": isNullOrEmpty(_state.info.bookingBranchCode)
+        "BookingBranchCode": isNullOrEmpty(_state.info.orgCode)
             ? ''
-            : _state.info.bookingBranchCode.toString(),
+            : _state.info.orgCode.toString(),
         'DestinationCode': '',
         'LOVType': 'R'
       };
@@ -313,9 +242,9 @@ class OtexPickupProvider extends ChangeNotifier {
       String query, String cngrcnge) async {
     try {
       Map<String, String> p = {
-        "BookingBranchCode": isNullOrEmpty(_state.info.bookingBranchCode)
+        "BookingBranchCode": isNullOrEmpty(_state.info.orgCode)
             ? ''
-            : _state.info.bookingBranchCode.toString(),
+            : _state.info.orgCode.toString(),
         'DestinationCode': '',
         'LOVType': cngrcnge
       };
@@ -496,33 +425,34 @@ class OtexPickupProvider extends ChangeNotifier {
         isNullOrEmpty(_state.splitInfo[index].wayBillNo) ? 'A' : 'U';
 
     _state = _state.copyWith(
-        info: _state.info.copyWith(documentType: 'C', recstatus: status));
+        info: _state.info.copyWith(documentType: 'C', recStatus: status));
 
     Map<String, dynamic> buildSaveJson() {
       return {
         // ── Basic Info ────────────────────────────────────────────
         'indentid': _state.info.indentId ?? 0,
         'documenttype': _state.info.documentType ?? '',
-        'orgcode': _state.info.bookingBranchCode ?? '',
-        'orgname': _state.info.bookingBranchName ?? '',
-        'grdt': _state.info.grdt ?? '',
-        'picktime': _state.info.picktime ?? '',
-        'cnmtno1': _state.info.cnmtNo1 ?? '',
-        'cnmtno2': _state.info.cnmtNo2 ?? '',
-        'grno': _state.info.grNo ?? '',
+        'orgcode': _state.info.orgCode ?? '',
+        'orgname': _state.info.orgCode ?? '',
+        'grdt': convert2SmallDateTime(
+            DateFormat('yyyy-MM-dd').format(DateTime.now())),
+        'picktime': DateFormat('HH:mm').format(DateTime.now()),
+        'cnmtno1': '',
+        'cnmtno2': '',
+        'grno': '',
         'contracttype': '',
-        'referenceno': _state.info.referenceNumber ?? '',
+        'referenceno': _state.info.referenceNo ?? '',
 
         // ── Pickup ────────────────────────────────────────────────
         'pickuppoint': _state.info.pickupPoint ?? '',
-        'pickuppincode': _state.info.pickupPinCode ?? '',
+        'pickuppincode': _state.info.pickupPincode ?? '',
         'pickupaddress': _state.info.pickupAddress ?? '',
 
         // ── Destination / Delivery ────────────────────────────────
-        'destcode': '',
-        'destname': '',
+        'destcode': _state.info.destCode,
+        'destname': _state.info.destName,
         'deliverypoint': _state.info.deliveryPoint ?? '',
-        'deliverypincode': _state.info.deliveryPinCode ?? '',
+        'deliverypincode': _state.info.deliveryPincode ?? '',
         'dlvaddress': _state.info.deliveryAddress ?? '',
 
         // ── GR / Booking ──────────────────────────────────────────
@@ -530,28 +460,28 @@ class OtexPickupProvider extends ChangeNotifier {
         'expecteddeliverydt': '',
 
         // ── Customer ──────────────────────────────────────────────
-        'custcode': _state.info.customerCode ?? '',
-        'custname': _state.info.customerName ?? '',
-        'custgstno': _state.info.customerGstNo ?? '',
-        'custdeptid': int.tryParse(_state.info.departmentCode ?? '0') ?? 0,
+        'custcode': _state.info.custCode ?? '',
+        'custname': _state.info.custName ?? '',
+        'custgstno': _state.info.custGstNo ?? '',
+        'custdeptid': int.tryParse(_state.info.custDeptId.toString()) ?? 0,
         'collectionstn': '',
         'billingbranchcode': '',
 
         // ── Consignor ─────────────────────────────────────────────
         'cngrdocumenttype': '',
-        'cngrgstno': _state.info.shipperCode ?? '',
-        'cngrdocnocode': _state.info.shipperCode ?? '',
-        'cngrcode': _state.info.shipperCode ?? '',
-        'cngr': _state.info.shipperName ?? '',
-        'cngrname': _state.info.shipperName ?? '',
+        'cngrgstno': _state.info.cngrGstNo ?? '',
+        'cngrdocnocode': _state.info.cngrDocNoCode ?? '',
+        'cngrcode': _state.info.cngrCode ?? '',
+        'cngr': _state.info.cngr ?? '',
+        'cngrname': _state.info.cngrName ?? '',
         'cngrdealercode': '',
-        'cngrtelno': _state.info.shipperMobileNo ?? '',
-        'cngremail': _state.info.shipperEmail ?? '',
-        'cngraddress': _state.info.shipperAddress ?? '',
-        'cngrcity': '',
-        'cngrzipcode': _state.info.shipperZipCode ?? '',
-        'cngrstate': '',
-        'cngrcountry': '',
+        'cngrtelno': _state.info.cngrMobileNo ?? '',
+        'cngremail': _state.info.cngrMobileNo ?? '',
+        'cngraddress': _state.info.cngrAddress ?? '',
+        'cngrcity': _state.info.cngrCity,
+        'cngrzipcode': _state.info.cngrZipCode ?? '',
+        'cngrstate': _state.info.cngrState ?? '',
+        'cngrcountry': _state.info.cngrCountry ?? '',
 
         // ── Consignee ─────────────────────────────────────────────
         'cngedocumenttype': '',
@@ -562,17 +492,17 @@ class OtexPickupProvider extends ChangeNotifier {
         'cngename': _state.info.cngeName ?? '',
         'cngedealercode': '',
         'cngetelno': _state.info.cngeMobileNo ?? '',
-        'cngeemail': _state.info.cngeEmail ?? '',
+        'cngeemail': _state.info.cngeEmailId ?? '',
         'cngeaddress': _state.info.cngeAddress ?? '',
-        'cngecity': '',
+        'cngecity': _state.info.cngeCity ?? '',
         'cngezipcode': _state.info.cngeZipCode ?? '',
-        'cngestate': '',
-        'cngecountry': '',
+        'cngestate': _state.info.cngeState ?? '',
+        'cngecountry': _state.info.cngeCountry ?? '',
 
         // ── Other Details ─────────────────────────────────────────
         'loadtype': _state.info.loadTypeCode ?? '',
-        'productcode': _state.info.productTypeCode ?? '',
-        'dlvtype': _state.info.deliveryTypeCode ?? '',
+        'productcode': _state.info.productCode ?? '',
+        'dlvtype': _state.info.dlvType ?? '',
         'freighton': '',
         'valgoods': 0,
         'remarks': _state.info.remarks ?? '',
@@ -580,12 +510,12 @@ class OtexPickupProvider extends ChangeNotifier {
         'orderid': 0,
 
         // ── Settings ──────────────────────────────────────────────
-        'recstatus': _state.info.recstatus ?? 'N',
+        'recstatus': status,
         'totalpckgs': _state.info.pcs.toString() ?? '0',
         'totalvweight': 0.00,
         'totalaweight': 0.00,
         'totalcweight': 0.00,
-        'indentrefrenceno': _state.info.indentId ?? 0,
+        'indentrefrenceno': _state.info.orderid ?? 0,
       };
     }
 

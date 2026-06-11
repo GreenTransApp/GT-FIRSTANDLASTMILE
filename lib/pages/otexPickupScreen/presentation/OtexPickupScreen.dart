@@ -11,14 +11,20 @@ import 'package:provider/provider.dart';
 class OtexPickupScreen extends StatelessWidget {
   final String? transactionId;
   final String? grno;
+  final String? orderid;
 
-  const OtexPickupScreen({super.key, this.transactionId, this.grno});
+  const OtexPickupScreen(
+      {super.key, this.transactionId, this.grno, this.orderid});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<OtexPickupProvider>(
       create: (_) => OtexPickupProvider(),
-      child: _OtexPickupScreenBody(transactionId: transactionId, grno: grno),
+      child: _OtexPickupScreenBody(
+        transactionId: transactionId,
+        grno: grno,
+        orderid: orderid,
+      ),
     );
   }
 }
@@ -54,7 +60,9 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
       _provider = Provider.of<OtexPickupProvider>(context, listen: false);
       _provider!.addListener(_onProviderChanged);
       _provider!.initializeForm(
-          transactionId: widget.transactionId, grno: widget.grno);
+          transactionId: widget.transactionId,
+          grno: widget.grno,
+          orderid: widget.orderid);
     });
   }
 
@@ -270,7 +278,7 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
                           // SizedBox(height: SizeConfig.smallVerticalPadding),
 
 // Section 2: Card count input  ← ADD THIS
-                          _buildCardCountRow(provider, state),
+                          // _buildCardCountRow(provider, state),
                           SizedBox(height: SizeConfig.smallVerticalPadding),
 
                           // Section 2: Dynamically Rendered Card List
@@ -298,85 +306,85 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
     );
   }
 
-  Widget _buildCardCountRow(
-      OtexPickupProvider provider, OtexPickupState state) {
-    final floor = state.permanentCardCount > 0 ? state.permanentCardCount : 1;
-    final isLocked = state.isHeaderLocked && state.permanentCardCount > 0;
+  // Widget _buildCardCountRow(
+  //     OtexPickupProvider provider, OtexPickupState state) {
+  //   final floor = state.permanentCardCount > 0 ? state.permanentCardCount : 1;
+  //   final isLocked = state.isHeaderLocked && state.permanentCardCount > 0;
 
-    return Card(
-      elevation: 1,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: EdgeInsets.all(SizeConfig.mediumHorizontalSpacing),
-        child: Row(
-          children: [
-            const Icon(Icons.copy_outlined, color: Colors.blueGrey),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Number of Destinations",
-                    style: TextStyle(
-                      fontSize: SizeConfig.smallTextSize,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blueGrey.shade800,
-                    ),
-                  ),
-                  if (floor > 1)
-                    Text(
-                      "Minimum $floor (${floor} booking${floor > 1 ? 's' : ''} saved)",
-                      style: TextStyle(
-                        fontSize: SizeConfig.extraSmallTextSize,
-                        color: Colors.orange.shade700,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 70,
-              child: TextFormField(
-                controller: _cardCountController,
-                enabled: true,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  filled: isLocked,
-                  fillColor: Colors.grey.shade100,
-                ),
-                onChanged: (val) {
-                  if (val.isEmpty) return;
-                  final parsed = int.tryParse(val);
-                  if (parsed == null) return;
-                  if (parsed < floor || parsed > 100) return;
-                  provider.setCardCount(parsed);
-                },
-                onEditingComplete: () {
-                  final parsed =
-                      int.tryParse(_cardCountController.text) ?? floor;
-                  final clamped = parsed.clamp(floor, 100);
-                  _cardCountController.text = clamped.toString();
-                  provider.setCardCount(clamped);
-                  FocusScope.of(context).unfocus();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  //   return Card(
+  //     elevation: 1,
+  //     color: Colors.white,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  //     child: Padding(
+  //       padding: EdgeInsets.all(SizeConfig.mediumHorizontalSpacing),
+  //       child: Row(
+  //         children: [
+  //           const Icon(Icons.copy_outlined, color: Colors.blueGrey),
+  //           const SizedBox(width: 8),
+  // Expanded(
+  //   child: Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         "Number of Destinations",
+  //         style: TextStyle(
+  //           fontSize: SizeConfig.smallTextSize,
+  //           fontWeight: FontWeight.w500,
+  //           color: Colors.blueGrey.shade800,
+  //         ),
+  //       ),
+  //       if (floor > 1)
+  //         Text(
+  //           "Minimum $floor (${floor} booking${floor > 1 ? 's' : ''} saved)",
+  //           style: TextStyle(
+  //             fontSize: SizeConfig.extraSmallTextSize,
+  //             color: Colors.orange.shade700,
+  //           ),
+  //         ),
+  //     ],
+  //   ),
+  // ),
+  // SizedBox(
+  //   width: 70,
+  //   child: TextFormField(
+  //     controller: _cardCountController,
+  //     enabled: true,
+  //     keyboardType: TextInputType.number,
+  //     textAlign: TextAlign.center,
+  //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+  //     style: const TextStyle(fontWeight: FontWeight.bold),
+  //     decoration: InputDecoration(
+  //       contentPadding:
+  //           const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+  //       border: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(8)),
+  //       disabledBorder: OutlineInputBorder(
+  //         borderRadius: BorderRadius.circular(8),
+  //         borderSide: BorderSide(color: Colors.grey.shade300),
+  //       ),
+  //       filled: isLocked,
+  //       fillColor: Colors.grey.shade100,
+  //     ),
+  //     onChanged: (val) {
+  //       if (val.isEmpty) return;
+  //       final parsed = int.tryParse(val);
+  //       if (parsed == null) return;
+  //       if (parsed < floor || parsed > 100) return;
+  //       provider.setCardCount(parsed);
+  //     },
+  //     onEditingComplete: () {
+  //       final parsed =
+  //           int.tryParse(_cardCountController.text) ?? floor;
+  //       final clamped = parsed.clamp(floor, 100);
+  //       _cardCountController.text = clamped.toString();
+  //       provider.setCardCount(clamped);
+  //       FocusScope.of(context).unfocus();
+  //     },
+  //   ),
+  // ),
+  //       ],
+  //     ),
+  //   ),
+  // );
+  // }
 }

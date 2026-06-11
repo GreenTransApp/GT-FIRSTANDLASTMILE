@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -9,19 +8,16 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/optionMenu/operations/operationsProvider.dart';
 import 'package:gtlmd/optionMenu/stickerPrinting/stickerProvider.dart';
-import 'package:gtlmd/pages/login/loginPage.dart';
-import 'package:gtlmd/pages/login/models/loginModel.dart';
-import 'package:gtlmd/service/authenticationService.dart';
-import 'package:gtlmd/service/locationService/locationService.dart';
-
-import 'firebase_options.dart';
-
-import 'package:provider/provider.dart';
-import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingProvider.dart';
-import 'package:gtlmd/optionMenu/operations/operationsProvider.dart';
+import 'package:gtlmd/pages/login/loginPage.dart';
+import 'package:gtlmd/pages/login/models/loginModel.dart';
+import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
+import 'package:gtlmd/service/authenticationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
+import 'package:provider/provider.dart';
 
 final locationService = LocationService();
 Future<void> main() async {
@@ -159,6 +155,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       setObserver();
 
       authService.storageGet(ENV.loginPrefTag).then((login) {
+        if (!mounted) return;
         ScreenDimension.width = MediaQuery.of(context).size.width;
         ScreenDimension.height = MediaQuery.of(context).size.height;
         if (login == null) {
@@ -181,8 +178,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   void dispose() {
-    // Safely remove listener if context is still valid or use a different approach
-    // In MyStatefulWidget (Splash screen basically), it might be destroyed soon.
+    context.read<LoginProvider>().removeListener(_loginStateListener);
     super.dispose();
   }
 

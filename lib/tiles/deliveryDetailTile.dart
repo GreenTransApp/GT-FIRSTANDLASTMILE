@@ -751,7 +751,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                           ? '0'
                                           : widget.model.transactionid
                                               .toString(),
-                                      grno: widget.model.grno.toString()),
+                                      grno: widget.model.grno.toString(),
+                                      orderid: isNullOrEmpty(
+                                              widget.model.orderid.toString())
+                                          ? '0'
+                                          : widget.model.orderid.toString()),
                                 )?.then((_) {
                                   widget.onRefresh();
                                 });

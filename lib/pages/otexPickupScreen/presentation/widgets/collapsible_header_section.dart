@@ -67,8 +67,8 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
       onSelected: (b) {
         provider.updateInfo(
           provider.state.info.copyWith(
-            bookingBranchName: b.stnName,
-            bookingBranchCode: b.stnCode,
+            orgName: b.stnName,
+            orgCode: b.stnCode,
           ),
         );
       },
@@ -85,11 +85,11 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
       onSelected: (c) {
         provider.updateInfo(
           provider.state.info.copyWith(
-            customerName: c.custName,
-            customerCode: c.custCode,
+            custName: c.custName,
+            custCode: c.custCode,
             // Clear department when customer changes
-            departmentName: null,
-            departmentCode: null,
+            custDeptId: null,
+            custDeptName: null,
           ),
         );
       },
@@ -99,11 +99,11 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
   void _openDepartmentSheet(BuildContext context, OtexPickupProvider provider) {
     final info = provider.state.info;
     // Validation lives here — blocks the sheet before any API call
-    if (info.bookingBranchCode == null || info.bookingBranchCode!.isEmpty) {
+    if (info.orgCode == null || info.orgCode!.isEmpty) {
       _showValidationSnack(context, "Please select a Booking Branch first");
       return;
     }
-    if (info.customerCode == null || info.customerCode!.isEmpty) {
+    if (info.custCode == null || info.custCode!.isEmpty) {
       _showValidationSnack(context, "Please select a Customer first");
       return;
     }
@@ -116,8 +116,8 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
       onSelected: (d) {
         provider.updateInfo(
           provider.state.info.copyWith(
-            departmentName: d.custDeptName,
-            departmentCode: d.custDeptId?.toString(),
+            custDeptName: d.custDeptName,
+            custDeptId: d.custDeptId,
           ),
         );
       },
@@ -134,12 +134,12 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
       onSelected: (s) {
         provider.updateInfo(
           provider.state.info.copyWith(
-            shipperName: s.name,
-            shipperCode: s.code,
-            shipperAddress: s.address,
-            shipperZipCode: s.zipCode,
-            shipperMobileNo: s.telNo,
-            shipperEmail: s.email,
+            cngrName: s.name,
+            cngrCode: s.code,
+            cngrAddress: s.address,
+            cngrZipCode: s.zipCode,
+            cngrMobileNo: s.telNo,
+            cngrEmailId: s.email,
           ),
         );
       },
@@ -176,8 +176,8 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
       onSelected: (o) {
         provider.updateInfo(
           provider.state.info.copyWith(
-            productTypeName: o.productname,
-            productTypeCode: o.productcode,
+            productName: o.productname,
+            productCode: o.productcode,
           ),
         );
       },
@@ -199,7 +199,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
         provider.updateInfo(
           provider.state.info.copyWith(
             loadTypeName: o.name,
-            loadTypeCode: o.code,
+            loadType: o.code,
           ),
         );
       },
@@ -236,7 +236,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
     if (picked != null) {
       provider.updateInfo(
         provider.state.info.copyWith(
-          bookingDate: DateFormat("dd-MM-yyyy").format(picked),
+          grdt: DateFormat("dd-MM-yyyy").format(picked),
         ),
       );
     }
@@ -254,7 +254,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
           DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
       provider.updateInfo(
         provider.state.info.copyWith(
-          bookingTime: DateFormat("HH:mm").format(dt),
+          time: DateFormat("HH:mm").format(dt),
         ),
       );
     }
@@ -294,7 +294,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
         final isLocked = provider.state.isHeaderLocked;
 
         // Sync ref controller once when prefill arrives
-        _syncRefController(info.referenceNumber);
+        _syncRefController(info.referenceNo);
         _syncPcsController(info.pcs);
 
         return Card(
@@ -390,7 +390,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
             isRequired: true,
             icon: Icons.location_city_outlined,
             child: LovPickerField(
-              value: info.bookingBranchName,
+              value: info.orgName,
               placeholder: "Select Booking Branch",
               onTap:
                   isLocked ? null : () => _openBranchSheet(context, provider),
@@ -422,7 +422,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
                   isRequired: true,
                   icon: Icons.access_time_outlined,
                   child: LovPickerField(
-                    value: info.picktime,
+                    value: info.time,
                     placeholder: DateFormat("HH:mm").format(DateTime.now()),
                     onTap:
                         isLocked ? null : () => _selectTime(context, provider),
@@ -458,7 +458,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
               enabled: !isLocked,
               decoration: _inputDecoration("Enter Reference Number"),
               onChanged: (val) => provider.updateInfo(
-                info.copyWith(referenceNumber: val),
+                info.copyWith(referenceNo: val),
               ),
             ),
           ),
@@ -470,7 +470,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
             isRequired: true,
             icon: Icons.person_search_outlined,
             child: LovPickerField(
-              value: info.customerName,
+              value: info.custName,
               placeholder: "Select Customer",
               onTap:
                   isLocked ? null : () => _openCustomerSheet(context, provider),
@@ -484,7 +484,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
             isRequired: false,
             icon: Icons.corporate_fare_outlined,
             child: LovPickerField(
-              value: info.departmentName,
+              value: info.custDeptName,
               placeholder: "Select Department",
               // Enabled only when: not locked AND branch+customer filled
               // Validation message shown inside _openDepartmentSheet
@@ -501,7 +501,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
             isRequired: true,
             icon: Icons.local_shipping_outlined,
             child: LovPickerField(
-              value: info.shipperName,
+              value: info.cngrName,
               placeholder: "Select Shipper",
               onTap:
                   isLocked ? null : () => _openShipperSheet(context, provider),
@@ -518,7 +518,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
                   isRequired: true,
                   icon: Icons.inventory_2_outlined,
                   child: LovPickerField(
-                    value: info.productTypeName,
+                    value: info.productName,
                     placeholder: "Select",
                     onTap: isLocked
                         ? null

@@ -345,7 +345,7 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
 
       Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
       Iterable<MapEntry<String, dynamic>> entries = table.entries;
-      OtexPickupInfoModel infoModel = const OtexPickupInfoModel();
+      OtexPickupInfoModel infoModel = OtexPickupInfoModel();
       List<OtexPickupSplitInfo> splitInfo = [];
       for (final entry in entries) {
         if (entry.key == 'Table' || entry.key == 'Table1') {

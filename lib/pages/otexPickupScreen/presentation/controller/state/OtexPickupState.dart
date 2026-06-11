@@ -41,7 +41,7 @@ class OtexPickupState {
   });
 
   factory OtexPickupState.initial() {
-    return const OtexPickupState(
+    return OtexPickupState(
       headerStatus: SectionStatus.idle,
       cardListStatus: SectionStatus.idle,
       info: OtexPickupInfoModel(),

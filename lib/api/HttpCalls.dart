@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:gtlmd/api/model/ApiCallParametersModel.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/common/debug.dart';
 import 'package:gtlmd/common/utils.dart';
-import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:http/http.dart' as http;
 

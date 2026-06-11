@@ -159,8 +159,8 @@ class _PickupState extends State<Pickup> {
     _destController.dispose();
     _custController.dispose();
     _deptController.dispose();
-    _cngrController.dispose();
-    _cngeController.dispose();
+    // _cngrController.dispose();
+    // _cngeController.dispose();
     _noofpckgsController.dispose();
     _remarksController.dispose();
     _gweightController.dispose();
