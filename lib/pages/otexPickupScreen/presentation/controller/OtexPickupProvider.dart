@@ -106,11 +106,29 @@ class OtexPickupProvider extends ChangeNotifier {
           cngeName: infoData.cngeName,
           cngeCode: infoData.cngeCode,
           palletQty: infoData.pcs,
+          grtype: infoData.grType,
+
           packingMethodName: infoData.packing,
           packingMethodCode: infoData.packingcode,
-          weight: isNullOrEmpty(infoData.weight)
+          weight: isNullOrEmpty(infoData.weight.toString())
               ? 0.0
               : double.tryParse(infoData.weight.toString()),
+          actualWeight: isNullOrEmpty(infoData.weight.toString())
+              ? 0.0
+              : double.tryParse(infoData.weight.toString()),
+          chargeableWeight: isNullOrEmpty(infoData.weight.toString())
+              ? 0.0
+              : double.tryParse(infoData.weight.toString()),
+          volumetricWeight: isNullOrEmpty(infoData.weight.toString())
+              ? 0.0
+              : double.tryParse(infoData.weight.toString()),
+          noOfBox: isNullOrEmpty(infoData.pcs.toString())
+              ? 0
+              : int.tryParse(infoData.pcs.toString()),
+
+          freightAmt: isNullOrEmpty(infoData.freight.toString())
+              ? 0.0
+              : double.tryParse(infoData.freight.toString()),
           saidToContainName: infoData.goods);
 
       List<OtexPickupSplitInfo> splitData = [];
@@ -401,7 +419,7 @@ class OtexPickupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> saveCardEntry(int index) async {
+  Future<bool> saveCardEntry(int index,String docImagePath,String signImagePath ) async {
     if (index >= _state.splitInfo.length) return false;
 
     // Validate total pieces before saving
@@ -424,7 +442,7 @@ class OtexPickupProvider extends ChangeNotifier {
     String status =
         isNullOrEmpty(_state.splitInfo[index].wayBillNo) ? 'A' : 'U';
 
-    _state = _state.copyWith(
+    _state =  _state.copyWith(
         info: _state.info.copyWith(documentType: 'C', recStatus: status));
 
     Map<String, dynamic> buildSaveJson() {
@@ -456,7 +474,7 @@ class OtexPickupProvider extends ChangeNotifier {
         'dlvaddress': _state.info.deliveryAddress ?? '',
 
         // ── GR / Booking ──────────────────────────────────────────
-        'grtype': _state.info.bookingTypeCode ?? '',
+        'grtype': _state.info.grtype ?? '',
         'expecteddeliverydt': '',
 
         // ── Customer ──────────────────────────────────────────────
@@ -506,16 +524,18 @@ class OtexPickupProvider extends ChangeNotifier {
         'freighton': '',
         'valgoods': 0,
         'remarks': _state.info.remarks ?? '',
-        'freight': 0.00,
+        'freight': _state.info.freight ?? 0,
         'orderid': 0,
 
         // ── Settings ──────────────────────────────────────────────
         'recstatus': status,
         'totalpckgs': _state.info.pcs.toString() ?? '0',
-        'totalvweight': 0.00,
-        'totalaweight': 0.00,
-        'totalcweight': 0.00,
+        'totalvweight': double.tryParse(_state.info.weight.toString()) ?? 0,
+        'totalaweight':  double.tryParse(_state.info.weight.toString()) ?? 0,
+        'totalcweight' :double.tryParse(_state.info.weight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
+        'noofbox': _state.info.pcs.toString() ?? '0',
+
       };
     }
 
@@ -524,6 +544,8 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmjsondatastr": jsonEncode(buildSaveJson()),
       "prminvjsondatastr":
           jsonEncode(_state.splitInfo.map((e) => e.toJson()).toList()),
+      "prmdocimgpath": isNullOrEmpty(docImagePath) ? "" : convertFilePathToBase64(docImagePath),
+      "prmsignimgpath": isNullOrEmpty(signImagePath) ? "" : convertFilePathToBase64(signImagePath) ,
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),

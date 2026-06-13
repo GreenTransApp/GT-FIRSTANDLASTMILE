@@ -42,6 +42,9 @@ class OtexPickupSplitInfo {
   final double? invoiceVolumetricWeight;
   final double? invoiceChargeableWeight;
   final int? invoiceQty;
+  final String? grtype;
+
+
 
   const OtexPickupSplitInfo({
     this.wayBillNo,
@@ -78,6 +81,8 @@ class OtexPickupSplitInfo {
     this.invoiceVolumetricWeight,
     this.invoiceChargeableWeight,
     this.invoiceQty,
+    this.grtype,
+
   });
 
   factory OtexPickupSplitInfo.fromJson(Map<String, dynamic> json) {
@@ -105,6 +110,8 @@ class OtexPickupSplitInfo {
       invoiceVolumetricWeight: (json['invvweight'] as num?)?.toDouble(),
       invoiceChargeableWeight: (json['invcweight'] as num?)?.toDouble(),
       invoiceQty: json['invqty'],
+      grtype: json['grtype']
+
     );
   }
 
@@ -191,6 +198,9 @@ class OtexPickupSplitInfo {
     double? invoiceVolumetricWeight,
     double? invoiceChargeableWeight,
     int? invoiceQty,
+    String? grtype,
+    String? signImagePath,
+    String? docImagePath,
   }) {
     return OtexPickupSplitInfo(
       wayBillNo: wayBillNo ?? this.wayBillNo,
@@ -229,6 +239,8 @@ class OtexPickupSplitInfo {
       invoiceChargeableWeight:
           invoiceChargeableWeight ?? this.invoiceChargeableWeight,
       invoiceQty: invoiceQty ?? this.invoiceQty,
+      grtype: grtype ?? this.grtype,
+
     );
   }
 }

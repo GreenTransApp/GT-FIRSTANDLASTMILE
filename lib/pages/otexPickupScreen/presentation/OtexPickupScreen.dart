@@ -221,6 +221,7 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
                           // Section 1: Collapsible Header Card
                           CollapsibleHeaderSection(),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
+                          
 
                           // Card Count Dynamic Control Form Row
                           // Card(

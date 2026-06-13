@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/Toast.dart';
+import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/pages/otexPickupScreen/domain/models/productTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/lovPickerField.dart';
 import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
@@ -575,6 +578,31 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
               ),
             ),
           ),
+
+           SizedBox(
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical:
+                                              SizeConfig.mediumVerticalSpacing),
+                                      child: CommonButton(
+                                        color: CommonColors.colorPrimary!,
+                                        onTap: () {
+                                          if (!isNullOrEmpty(
+                                              info.invoiceimage)) {
+                                            showDialogWithImage(context,
+                                                info.invoiceimage!,
+                                                isLocal: false);
+                                          } else {
+                                            failToast("No Invoice Available");
+                                          }
+                                        },
+                                        title: "View Invoice",
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      height: SizeConfig.mediumVerticalSpacing),
         ],
       ),
     );
