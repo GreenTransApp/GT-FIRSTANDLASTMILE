@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/otexPickupScreen/data/repository/OtexPickupRepo.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupInfoModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupSplitInfo.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/goodsTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/packingTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/productTypeModel.dart';
+import 'package:gtlmd/optionMenu/operations/models/operationsModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/packingTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
@@ -19,8 +21,7 @@ import 'package:gtlmd/pages/pickup/model/pinCodeModel.dart';
 import 'package:gtlmd/pages/pickup/model/savePickupRespModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-class OtexPickupRepoImpl implements OtexPickupRepo {
-  @override
+class OtexPickupRepoImpl {
   Future<List<BranchModel>> getBranchList(Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (!hasInternet) {
@@ -48,7 +49,6 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
     }
   }
 
-  @override
   Future<List<CngrCngeModel>> getCngrCngeList(
       Map<String, String> params, String type) async {
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -218,7 +218,6 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
     }
   }
 
-  @override
   Future<List<CustomerModel>> getCustomerList(
       Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -247,7 +246,6 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
     }
   }
 
-  @override
   Future<List<DepartmentModel>> getDepartmentList(
       Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -276,7 +274,6 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
     }
   }
 
-  @override
   Future<List<PinCodeModel>> getPincodeList(Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (!hasInternet) {
@@ -370,6 +367,72 @@ class OtexPickupRepoImpl implements OtexPickupRepo {
     } catch (e) {
       if (e is Exception) rethrow;
       throw Exception(e.toString());
+    }
+  }
+
+  Future<MailDetails> getMailDetails(Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp = await apiGet("${lmdUrl}GetMailDetails", params);
+
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Failed to fetch branch list");
+      }
+
+      Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+      Iterable<MapEntry<String, dynamic>> entries = table.entries;
+      MailDetails mailDetails = MailDetails();
+      for (final entry in entries) {
+        if (entry.key == 'Table') {
+          List<dynamic> list = entry.value;
+          List<MailDetails> resultList = List.generate(
+              list.length, (index) => MailDetails.fromJson(list[index]));
+          if (resultList.isNotEmpty) {
+            mailDetails = resultList[0];
+          }
+        }
+      }
+
+      return mailDetails;
+    } on SocketException catch (_) {
+      throw Exception("No Internet");
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<OperationsModel?> getPageLink(Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp = await apiGet("${lmdUrl}GetPageLink", params);
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Single Operation fetch failed");
+      }
+
+      if (resp.commandStatus == 1 && resp.dataSet != null) {
+        // OperationsModel? result =
+        //     await compute(parseSingleOperationIsolate, resp.dataSet!);
+        Map<String, dynamic> table =
+            await compute<String, dynamic>(jsonDecode, resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        OperationsModel result = OperationsModel.fromJson(list[0]);
+
+        return result;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      debugPrint('Error in getSingleOperation: $err');
+      rethrow;
     }
   }
 }

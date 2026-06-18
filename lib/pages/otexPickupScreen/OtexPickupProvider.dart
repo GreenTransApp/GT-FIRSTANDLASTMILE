@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gtlmd/api/model/ApiCallParametersModel.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupInfoModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupSplitInfo.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/goodsTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/packingTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/productTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/state/OtexPickupState.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/repo/OtexPickupRepoImpl.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/packingTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupState.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupRepoImpl.dart';
 import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
 
 // Import necessary models for search APIs
@@ -25,40 +26,20 @@ class OtexPickupProvider extends ChangeNotifier {
   final OtexPickupRepoImpl _repo = OtexPickupRepoImpl();
   OtexPickupState get state => _state;
 
-  // API Call: Fetch pre-fill booking details
-  // Future<void> fetchBookingDetails(String transactionId) async {
-  //   _state = _state.copyWith(status: OtexPickupStatus.loading);
-  //   notifyListeners();
-
-  //   try {
-  //     // TODO: Implement API call via repository
-  //     // final response = await repository.getPickupDetails(params);
-
-  //     _state = _state.copyWith(
-  //       status: OtexPickupStatus.success,
-  //       // info: fetchedInfo,
-  //       // splitInfo: fetchedSplitList,
-  //     );
-  //   } catch (e) {
-  //     _state = _state.copyWith(
-  //       status: OtexPickupStatus.failure,
-  //       errorMessage: e.toString(),
-  //     );
-  //   }
-  //   notifyListeners();
-  // }
-
   void initializeForm({String? transactionId, String? grno, String? orderid}) {
     _state = OtexPickupState(
-      headerStatus: SectionStatus.idle,
-      cardListStatus: SectionStatus.idle,
-      info: OtexPickupInfoModel(orderid: orderid),
-      splitInfo: [OtexPickupSplitInfo()],
-      permanentCardCount: 0,
-      totalPalletQty: 0,
-      hasTransactionId: transactionId != null && transactionId != "0",
-      errorMessage: null,
-    );
+        headerStatus: SectionStatus.idle,
+        cardListStatus: SectionStatus.idle,
+        info: OtexPickupInfoModel(orderid: orderid),
+        mailDetails: MailDetails(),
+        splitInfo: [OtexPickupSplitInfo()],
+        permanentCardCount: 0,
+        totalPalletQty: 0,
+        hasTransactionId: transactionId != null && transactionId != "0",
+        isMailDialogOpen: false,
+        errorMessage: null,
+        openVehicleArrival: false,
+        vehicleArrivalUrl: '');
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
@@ -107,7 +88,6 @@ class OtexPickupProvider extends ChangeNotifier {
           cngeCode: infoData.cngeCode,
           palletQty: infoData.pcs,
           grtype: infoData.grType,
-
           packingMethodName: infoData.packing,
           packingMethodCode: infoData.packingcode,
           weight: isNullOrEmpty(infoData.weight.toString())
@@ -125,7 +105,6 @@ class OtexPickupProvider extends ChangeNotifier {
           noOfBox: isNullOrEmpty(infoData.pcs.toString())
               ? 0
               : int.tryParse(infoData.pcs.toString()),
-
           freightAmt: isNullOrEmpty(infoData.freight.toString())
               ? 0.0
               : double.tryParse(infoData.freight.toString()),
@@ -194,7 +173,7 @@ class OtexPickupProvider extends ChangeNotifier {
 
   // API Call: Search Departments for LOV Bottom Sheet
   Future<List<DepartmentModel>> searchDepartments(String query) async {
-    final currentInfo = _state.info ?? OtexPickupInfoModel();
+    final currentInfo = _state.info;
     if (isNullOrEmpty(currentInfo.custCode) ||
         isNullOrEmpty(currentInfo.orgCode)) {
       _state = _state.copyWith(
@@ -206,8 +185,8 @@ class OtexPickupProvider extends ChangeNotifier {
       // final params = <String, String>{"SearchText": query};
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
-        "prmcustcode": _state.info!.custCode.toString(),
-        "prmorgcode": _state.info!.orgCode.toString(),
+        "prmcustcode": _state.info.custCode.toString(),
+        "prmorgcode": _state.info.orgCode.toString(),
       };
 
       return await _repo.getDepartmentList(params);
@@ -419,7 +398,8 @@ class OtexPickupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> saveCardEntry(int index,String docImagePath,String signImagePath ) async {
+  Future<bool> saveCardEntry(
+      int index, String docImagePath, String signImagePath) async {
     if (index >= _state.splitInfo.length) return false;
 
     // Validate total pieces before saving
@@ -442,7 +422,7 @@ class OtexPickupProvider extends ChangeNotifier {
     String status =
         isNullOrEmpty(_state.splitInfo[index].wayBillNo) ? 'A' : 'U';
 
-    _state =  _state.copyWith(
+    _state = _state.copyWith(
         info: _state.info.copyWith(documentType: 'C', recStatus: status));
 
     Map<String, dynamic> buildSaveJson() {
@@ -529,13 +509,12 @@ class OtexPickupProvider extends ChangeNotifier {
 
         // ── Settings ──────────────────────────────────────────────
         'recstatus': status,
-        'totalpckgs': _state.info.pcs.toString() ?? '0',
+        'totalpckgs': _state.info.pcs.toString(),
         'totalvweight': double.tryParse(_state.info.weight.toString()) ?? 0,
-        'totalaweight':  double.tryParse(_state.info.weight.toString()) ?? 0,
-        'totalcweight' :double.tryParse(_state.info.weight.toString()) ?? 0,
+        'totalaweight': double.tryParse(_state.info.weight.toString()) ?? 0,
+        'totalcweight': double.tryParse(_state.info.weight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
-        'noofbox': _state.info.pcs.toString() ?? '0',
-
+        'noofbox': _state.info.pcs.toString(),
       };
     }
 
@@ -544,8 +523,12 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmjsondatastr": jsonEncode(buildSaveJson()),
       "prminvjsondatastr":
           jsonEncode(_state.splitInfo.map((e) => e.toJson()).toList()),
-      "prmdocimgpath": isNullOrEmpty(docImagePath) ? "" : convertFilePathToBase64(docImagePath),
-      "prmsignimgpath": isNullOrEmpty(signImagePath) ? "" : convertFilePathToBase64(signImagePath) ,
+      "prmdocimgpath": isNullOrEmpty(docImagePath)
+          ? ""
+          : convertFilePathToBase64(docImagePath),
+      "prmsignimgpath": isNullOrEmpty(signImagePath)
+          ? ""
+          : convertFilePathToBase64(signImagePath),
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),
@@ -575,7 +558,11 @@ class OtexPickupProvider extends ChangeNotifier {
           permanentCardCount: permanentCount,
           hasTransactionId: wasFirstSave ? true : _state.hasTransactionId,
         );
+
         notifyListeners();
+
+        await getMailDetails(updated[index].wayBillNo.toString());
+
         return true;
       } else {
         _state = _state.copyWith(errorMessage: response.commandMessage);
@@ -587,6 +574,39 @@ class OtexPickupProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<bool> getMailDetails(String grno) async {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmgrno": grno,
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmlogindivisionid": savedUser.logindivisionid.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmmenucode": 'GTLMD_OTEXPICKUP',
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    try {
+      final response = await _repo.getMailDetails(params);
+      if (response.commandstatus == 1) {
+        _state = _state.copyWith(mailDetails: response, isMailDialogOpen: true);
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      _state = _state.copyWith(
+          errorMessage: _extractMessage(e), isMailDialogOpen: false);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  void closeMailDialog() {
+    _state = _state.copyWith(isMailDialogOpen: false);
+    notifyListeners();
   }
 
   // Add a dynamic card entry
@@ -616,13 +636,13 @@ class OtexPickupProvider extends ChangeNotifier {
     if (index >= _state.splitInfo.length) return;
     final updatedList = List<OtexPickupSplitInfo>.from(_state.splitInfo);
     updatedList[index] = cardData;
-
-    int newTotal = 0;
-    for (var card in updatedList) {
-      newTotal += card.palletQty ?? 0;
+    if (cardData.palletQty! > _state.info.pcs!) {
+      _state.copyWith(errorMessage: "Pallet Qty cannot exceed total Pieces.");
+      notifyListeners();
+      return;
     }
-
-    _state = _state.copyWith(splitInfo: updatedList, totalPalletQty: newTotal);
+    _state = _state.copyWith(
+        splitInfo: updatedList, totalPalletQty: cardData.palletQty);
     notifyListeners();
   }
 
@@ -636,6 +656,40 @@ class OtexPickupProvider extends ChangeNotifier {
 
   //   return true;
   // }
+  Future<String> getPageLink() async {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmlinkpagemenucode": 'GTI_VEHICLEARRIVAL',
+      'prmdrivercode': savedUser.drivercode.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      'prmmenucode': 'GTLMD_INFINITIOPSLINK',
+      "prmsessionid": savedUser.sessionid.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmloginbranchtype": savedUser.loginbranchtype.toString(),
+    };
+
+    try {
+      final response = await _repo.getPageLink(params);
+      if (response != null) {
+        // Assuming the first result is the desired one
+        _state = _state.copyWith(
+            openVehicleArrival: true, vehicleArrivalUrl: response.pageLink);
+        notifyListeners();
+        return response.pageLink.toString();
+      } else {
+        // No operations found
+        _state = _state.copyWith(
+            openVehicleArrival: false,
+            errorMessage: "No Menu found for the given details.");
+        notifyListeners();
+        return '';
+      }
+    } catch (e) {
+      _state = _state.copyWith(errorMessage: _extractMessage(e));
+      notifyListeners();
+      return '';
+    }
+  }
 
   // Helper to extract clean message from Exception
   String _extractMessage(dynamic e) {

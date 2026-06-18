@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/common/dialogs/mailDialog.dart';
 import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/OtexPickupProvider.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/state/OtexPickupState.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/collapsible_header_section.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/otex_pickup_card.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupProvider.dart';
+import 'package:gtlmd/pages/otexPickupScreen/widgets/collapsible_header_section.dart';
+import 'package:gtlmd/pages/otexPickupScreen/widgets/otex_pickup_card.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 
 class OtexPickupScreen extends StatelessWidget {
@@ -109,6 +109,18 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
       _cardCountController.text = providerCount.toString();
     }
 
+    if (_provider!.state.isMailDialogOpen) {
+      // Clear immediately to prevent re-opening on subsequent changes
+      _provider!.closeMailDialog();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showDialog(
+            context: context,
+            builder: (_) =>
+                MailDialog(mailDetails: _provider!.state.mailDetails));
+      });
+    }
+
     // Guard prevents re-entry while snackbar is already being shown
     if (_isShowingError) return;
 
@@ -158,24 +170,10 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
       builder: (context, provider, child) {
         final state = provider.state;
 
-        // Dynamically adjust local controller text if count is synchronized by API or updates
         if (state.splitInfo.isNotEmpty &&
             _cardCountController.text != state.splitInfo.length.toString()) {
           _cardCountController.text = state.splitInfo.length.toString();
         }
-
-        // Dynamically evaluate if freight input is conditionally visible
-        final bool isFreightVisible = state.info?.bookingTypeCode == "PP";
-
-        // if (state.status == OtexPickupStatus.loading) {
-        //   return Scaffold(
-        //     body: Center(
-        //       child: CircularProgressIndicator(
-        //         color: CommonColors.colorPrimary,
-        //       ),
-        //     ),
-        //   );
-        // }
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -221,7 +219,6 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
                           // Section 1: Collapsible Header Card
                           CollapsibleHeaderSection(),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
-                          
 
                           // Card Count Dynamic Control Form Row
                           // Card(

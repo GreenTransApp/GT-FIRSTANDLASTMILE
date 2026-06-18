@@ -24,11 +24,7 @@ class LovPickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isError
-        ? CommonColors.red!
-        : _isDisabled
-            ? CommonColors.grey400
-            : CommonColors.appBarColor;
+    final borderColor = isError ? CommonColors.red! : CommonColors.appBarColor;
 
     final bgColor = _isDisabled ? Colors.grey.shade100 : Colors.white;
 
@@ -54,9 +50,15 @@ class LovPickerField extends StatelessWidget {
               child: Text(
                 _hasValue ? value! : placeholder,
                 style: TextStyle(
-                  fontSize: SizeConfig.smallTextSize,
+                  fontSize: _hasValue
+                      ? SizeConfig.mediumTextSize
+                      : SizeConfig.smallTextSize,
                   color: _hasValue
-                      ? (_isDisabled ? Colors.grey.shade600 : Colors.black87)
+                      ? (_isDisabled
+                          ? Colors.grey.shade600
+                          : _hasValue
+                              ? CommonColors.appBarColor
+                              : Colors.black87)
                       : CommonColors.grey400,
                 ),
                 overflow: TextOverflow.ellipsis,

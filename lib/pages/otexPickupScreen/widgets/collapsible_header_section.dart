@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/commonButton.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/productTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/lovPickerField.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/widgets/lovPickerField.dart';
 import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
 import 'package:provider/provider.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupInfoModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/OtexPickupProvider.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/state/OtexPickupState.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupProvider.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupState.dart';
 import 'package:gtlmd/common/genericBottomSheet.dart';
 import 'package:intl/intl.dart';
 
@@ -29,7 +29,7 @@ class CollapsibleHeaderSection extends StatefulWidget {
 }
 
 class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
-  bool _isExpanded = true;
+  bool _isExpanded = false;
 
   // Only one controller left — for reference number, which is a real text input
   final TextEditingController _refController = TextEditingController();
@@ -325,7 +325,7 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
                           color: CommonColors.colorPrimary),
                       const SizedBox(width: 8),
                       Text(
-                        'Global Booking Details',
+                        'Booking Details',
                         style: TextStyle(
                           fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w600,
@@ -579,30 +579,26 @@ class _CollapsibleHeaderSectionState extends State<CollapsibleHeaderSection> {
             ),
           ),
 
-           SizedBox(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical:
-                                              SizeConfig.mediumVerticalSpacing),
-                                      child: CommonButton(
-                                        color: CommonColors.colorPrimary!,
-                                        onTap: () {
-                                          if (!isNullOrEmpty(
-                                              info.invoiceimage)) {
-                                            showDialogWithImage(context,
-                                                info.invoiceimage!,
-                                                isLocal: false);
-                                          } else {
-                                            failToast("No Invoice Available");
-                                          }
-                                        },
-                                        title: "View Invoice",
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height: SizeConfig.mediumVerticalSpacing),
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: SizeConfig.mediumVerticalSpacing),
+              child: CommonButton(
+                color: CommonColors.colorPrimary!,
+                onTap: () {
+                  if (!isNullOrEmpty(info.invoiceimage)) {
+                    showDialogWithImage(context, info.invoiceimage!,
+                        isLocal: false);
+                  } else {
+                    failToast("No Invoice Available");
+                  }
+                },
+                title: "View Invoice",
+              ),
+            ),
+          ),
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
         ],
       ),
     );

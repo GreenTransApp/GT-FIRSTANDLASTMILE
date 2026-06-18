@@ -9,13 +9,14 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/genericBottomSheet.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
-import 'package:gtlmd/pages/otexPickupScreen/domain/models/OtexPickupSplitInfo.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/controller/OtexPickupProvider.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/widgets/lovPickerField.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupProvider.dart';
+import 'package:gtlmd/pages/otexPickupScreen/widgets/lovPickerField.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OtexPickupCard extends StatefulWidget {
   final int index;
@@ -202,22 +203,23 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
         return;
       }
     }
-    if(isNullOrEmpty(_itemImagePath)){
-        _showValidationSnack("Please upload document");
-        return;
+    if (isNullOrEmpty(_itemImagePath)) {
+      _showValidationSnack("Please upload document");
+      return;
     }
 
-    if(isNullOrEmpty(_selectedSignaturePath)){
-        _showValidationSnack("Please upload signature");
-        return;
+    if (isNullOrEmpty(_selectedSignaturePath)) {
+      _showValidationSnack("Please upload signature");
+      return;
     }
     setState(() => _isSaving = true);
-    final success = await provider.saveCardEntry(widget.index,_itemImagePath!,_selectedSignaturePath);
+    final success = await provider.saveCardEntry(
+        widget.index, _itemImagePath!, _selectedSignaturePath);
     if (mounted) setState(() => _isSaving = false);
 
     if (success && mounted) {
       // Auto-collapse on successful save — clean UX signal to user
-      setState(() => _isCardExpanded = false);
+      // setState(() => _isCardExpanded = false);
     }
   }
 
@@ -446,7 +448,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
             icon: Icons.receipt_long_outlined,
             child: LovPickerField(
               value: card.wayBillNo,
-              placeholder: "Generated after save",
+              placeholder: "To Be Generated",
               onTap: null, // always locked
             ),
           ),
@@ -460,7 +462,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
             child: LovPickerField(
               value: card.destName,
               placeholder: "Select Destination",
-              onTap: () => _openDestinationSheet(context, provider),
+              onTap: null,
+              // onTap: () => _openDestinationSheet(context, provider),
             ),
           ),
           SizedBox(height: SizeConfig.mediumVerticalSpacing),
@@ -473,7 +476,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
             child: LovPickerField(
               value: card.cngeName,
               placeholder: "Select Consignee",
-              onTap: () => _openConsigneeSheet(context, provider),
+              onTap: null,
+              // onTap: () => _openConsigneeSheet(context, provider),
             ),
           ),
           SizedBox(height: SizeConfig.mediumVerticalSpacing),
@@ -486,7 +490,6 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                 child: _buildFormField(
                   label: "Pallet Qty",
                   isRequired: true,
-                  
                   icon: Icons.grid_view_outlined,
                   child: TextFormField(
                     controller: _palletQtyController,
@@ -495,11 +498,11 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                       // Blocks 0 as first character
-                      FilteringTextInputFormatter.deny(RegExp(r'^0')),
+                      // FilteringTextInputFormatter.deny(RegExp(r'^0')),
                     ],
                     decoration: _inputDecoration("Qty"),
                     onChanged: (val) {
-                      final parsed = int.tryParse(val) ?? 1;
+                      final parsed = int.tryParse(val) ?? 0;
                       final current = provider.state.splitInfo[widget.index];
                       provider.updateCardData(
                           widget.index, current.copyWith(palletQty: parsed));
@@ -515,7 +518,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                   icon: Icons.monitor_weight_outlined,
                   child: TextFormField(
                     controller: _weightController,
-                    enabled: true,
+                    enabled: false,
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
@@ -523,12 +526,12 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           RegExp(r'^\d+\.?\d{0,2}$')),
                     ],
                     decoration: _inputDecoration("KG"),
-                    onChanged: (val) {
-                      final parsed = double.tryParse(val) ?? 0;
-                      final current = provider.state.splitInfo[widget.index];
-                      provider.updateCardData(
-                          widget.index, current.copyWith(weight: parsed));
-                    },
+                    // onChanged: (val) {
+                    //   final parsed = double.tryParse(val) ?? 0;
+                    //   final current = provider.state.splitInfo[widget.index];
+                    //   provider.updateCardData(
+                    //       widget.index, current.copyWith(weight: parsed));
+                    // },
                   ),
                 ),
               ),
@@ -548,7 +551,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                   child: LovPickerField(
                     value: card.packingMethodName,
                     placeholder: "Select",
-                    onTap: () => _openPackingMethodSheet(context, provider),
+                    onTap: null,
+                    // onTap: () => _openPackingMethodSheet(context, provider),
                   ),
                 ),
               ),
@@ -561,7 +565,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                   child: LovPickerField(
                     value: card.saidToContainName,
                     placeholder: "Select",
-                    onTap: () => _openSaidToContainSheet(context, provider),
+                    onTap: null,
+                    // onTap: () => _openSaidToContainSheet(context, provider),
                   ),
                 ),
               ),
@@ -577,298 +582,234 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
               icon: Icons.currency_rupee_outlined,
               child: TextFormField(
                 controller: _freightController,
-                enabled: true,
+                enabled: false,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}$')),
                 ],
                 decoration: _inputDecoration("Enter Amount"),
-                onChanged: (val) {
-                  final parsed = double.tryParse(val) ?? 0;
-                  final current = provider.state.splitInfo[widget.index];
-                  provider.updateCardData(
-                      widget.index, current.copyWith(freightAmt: parsed));
-                },
+                // onChanged: (val) {
+                //   final parsed = double.tryParse(val) ?? 0;
+                //   final current = provider.state.splitInfo[widget.index];
+                //   provider.updateCardData(
+                //       widget.index, current.copyWith(freightAmt: parsed));
+                // },
               ),
             ),
           ],
- /// upload  document 
-            SizedBox(
-               height: SizeConfig.mediumVerticalSpacing),
-           Container(
-                  padding: EdgeInsets.symmetric(
-                 vertical: SizeConfig.verticalPadding,
-                 horizontal:
-                     SizeConfig.horizontalPadding),
-             decoration: BoxDecoration(
-                 border: Border.all(
-                     color: CommonColors.grey400!,
-                     width: 1),
-                 borderRadius: BorderRadius.all(
-                     Radius.circular(
-                         SizeConfig.largeRadius))),
-             child: Column(
-               crossAxisAlignment:
-                   CrossAxisAlignment.start,
-               children: [
-                 Row(
-                   children: [
-                     const Icon(
-                       Icons.camera_alt_outlined,
-                       color: Colors.black54,
-                     ),
-                     SizedBox(
-                       width: SizeConfig
-                           .mediumHorizontalSpacing,
-                     ),
-                     const Text(
-                       "DOCUMENT UPLOAD",
-                       style: TextStyle(
-                           color: Colors.black87),
-                     ),
-                     Expanded(
-                         child: Align(
-                       alignment:
-                           AlignmentGeometry.centerRight,
-                       child: InkWell(
-                         child: const Icon(
-                           Icons.file_upload_outlined,
-                           color: Colors.black54,
-                           // size: 24,
-                         ),
-                         onTap: () {
-                           showImagePickerDialog(context,
-                               (file) async {
-                             if (file != null) {
-                               debugPrint(
-                                   ' data: ${file.path}');
-                               setState(() {
-                                 _itemImagePath =
-                                     file.path;
-                               });
-                             } else {
-                               failToast(
-                                   "File not selected");
-                             }
-                           });
-                         },
-                       ),
-                     ))
-                   ],
-                 ),
-                 Padding(
-                   padding: EdgeInsets.all(
-                       SizeConfig.mediumVerticalSpacing),
-                   child: SizedBox(
-                     height: 200,
-                     width: MediaQuery.sizeOf(context)
-                         .width,
-                     child: Container(
-                       decoration: BoxDecoration(
-                           color: CommonColors.grey300,
-                           borderRadius: BorderRadius
-                               .all(Radius.circular(
-                                   SizeConfig
-                                       .largeIconSize))),
-                       child: isNullOrEmpty(
-                               _itemImagePath)
-                           ? InkWell(
-                               child: const Column(
-                                 mainAxisAlignment:
-                                     MainAxisAlignment
-                                         .center,
-                                 crossAxisAlignment:
-                                     CrossAxisAlignment
-                                         .center,
-                                 children: [
-                                   Icon(
-                                     Icons
-                                         .file_upload_outlined,
-                                     color:
-                                         Colors.black54,
-                                   ),
-                                   Text(
-                                     "Upload Image",
-                                     style: TextStyle(
-                                         color: Colors
-                                             .black87),
-                                   ),
-                                   Text(
-                                     "Click the upload button above",
-                                     style: TextStyle(
-                                         color: Colors
-                                             .black87),
-                                   )
-                                 ],
-                               ),
-                               onTap: () {
-                                 showImagePickerDialog(
-                                     context,
-                                     (file) async {
-                                   if (file != null) {
-                                     debugPrint(
-                                         ' data: ${file.path}');
-                                     setState(() {
-                                       _itemImagePath =
-                                           file.path;
-                                     });
-                                   } else {
-                                     failToast(
-                                         "File not selected");
-                                   }
-                                 });
-                               },
-                             )
-                           : Image.file(
-                               File(_itemImagePath!),
-                               fit: BoxFit.contain,
-                             ),
-                     ),
-                   ),
-                 ),
-               ],
-             ),
-           ),
-           SizedBox(
-             height: SizeConfig.mediumVerticalSpacing,
-           ),
-         Container(
-           padding: EdgeInsets.symmetric(
-               vertical: SizeConfig.verticalPadding,
-               horizontal:
-                   SizeConfig.horizontalPadding),
-           decoration: BoxDecoration(
-               border: Border.all(
-                   color: CommonColors.grey400!,
-                   width: 1),
-               borderRadius: BorderRadius.all(
-                   Radius.circular(
-                       SizeConfig.largeRadius))),
-           child: Column(
-             crossAxisAlignment:
-                 CrossAxisAlignment.start,
-             children: [
-               Row(
-                 children: [
-                   const Icon(
-                     Symbols.signature_rounded,
-                     color: Colors.black54,
-                   ),
-                   SizedBox(
-                     width: SizeConfig
-                         .mediumHorizontalSpacing,
-                   ),
-                   const Text(
-                     "SIGNATURE UPLOAD",
-                     style: TextStyle(
-                         color: Colors.black87),
-                   ),
-                   Expanded(
-                       child: Align(
-                     alignment:
-                         AlignmentGeometry.centerRight,
-                     child: InkWell(
-                       child: const Icon(
-                         Symbols.signature_rounded,
-                         color: Colors.black54,
-                         // size: 24,
-                       ),
-                       onTap: () {
-                         showSignatureBottomSheet(
-                             context, (path, base64) {
-                           if (!isNullOrEmpty(path)) {
-                             setState(() {
-                               _selectedSignaturePath =
-                                   path;
-                             });
-                           } else {
-                             failToast(
-                                 'Please input signature again.');
-                           }
-                         });
-                       },
-                     ),
-                   ))
-                 ],
-               ),
-               Padding(
-                 padding: EdgeInsets.all(
-                     SizeConfig.mediumVerticalSpacing),
-                 child: SizedBox(
-                   height: 200,
-                   width: MediaQuery.sizeOf(context)
-                       .width,
-                   child: Container(
-                     decoration: BoxDecoration(
-                         color: CommonColors.grey300,
-                         borderRadius: BorderRadius
-                             .all(Radius.circular(
-                                 SizeConfig
-                                     .largeIconSize))),
-                     child: isNullOrEmpty(
-                             _selectedSignaturePath)
-                         ? InkWell(
-                             child: const Column(
-                               mainAxisAlignment:
-                                   MainAxisAlignment
-                                       .center,
-                               crossAxisAlignment:
-                                   CrossAxisAlignment
-                                       .center,
-                               children: [
-                                 Icon(
-                                   Icons
-                                       .file_upload_outlined,
-                                   color:
-                                       Colors.black54,
-                                 ),
-                                 Text(
-                                   "Click to Sign",
-                                   style: TextStyle(
-                                       color: Colors
-                                           .black87),
-                                 ),
-                                 Text(
-                                   "Click the signature button above",
-                                   style: TextStyle(
-                                       color: Colors
-                                           .black87),
-                                 )
-                               ],
-                             ),
-                             onTap: () {
-                               showSignatureBottomSheet(
-                                   context,
-                                   (path, base64) {
-                                 if (!isNullOrEmpty(
-                                     path)) {
-                                   setState(() {
-                                     _selectedSignaturePath =
-                                         path;
-                                   });
-                                 } else {
-                                   failToast(
-                                       'Please input signature again.');
-                                 }
-                               });
-                             },
-                           )
-                         : Image.file(
-                             File(
-                                 _selectedSignaturePath),
-                             fit: BoxFit.contain,
-                           ),
-                   ),
-                 ),
-               ),
-             ],
-           ),
-         ),
-         SizedBox(
-           height: SizeConfig.mediumVerticalSpacing,
-         ),
 
+          /// upload  document
+          SizedBox(height: SizeConfig.mediumVerticalSpacing),
+          Container(
+            padding: EdgeInsets.symmetric(
+                vertical: SizeConfig.verticalPadding,
+                horizontal: SizeConfig.horizontalPadding),
+            decoration: BoxDecoration(
+                border: Border.all(color: CommonColors.grey400!, width: 1),
+                borderRadius:
+                    BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.black54,
+                    ),
+                    SizedBox(
+                      width: SizeConfig.mediumHorizontalSpacing,
+                    ),
+                    const Text(
+                      "DOCUMENT UPLOAD",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    Expanded(
+                        child: Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: InkWell(
+                        child: const Icon(
+                          Icons.file_upload_outlined,
+                          color: Colors.black54,
+                          // size: 24,
+                        ),
+                        onTap: () {
+                          showImagePickerDialog(context, (file) async {
+                            if (file != null) {
+                              debugPrint(' data: ${file.path}');
+                              setState(() {
+                                _itemImagePath = file.path;
+                              });
+                            } else {
+                              failToast("File not selected");
+                            }
+                          });
+                        },
+                      ),
+                    ))
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
+                  child: SizedBox(
+                    height: 200,
+                    width: MediaQuery.sizeOf(context).width,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: CommonColors.grey300,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeIconSize))),
+                      child: isNullOrEmpty(_itemImagePath)
+                          ? InkWell(
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.file_upload_outlined,
+                                    color: Colors.black54,
+                                  ),
+                                  Text(
+                                    "Upload Image",
+                                    style: TextStyle(color: Colors.black87),
+                                  ),
+                                  Text(
+                                    "Click the upload button above",
+                                    style: TextStyle(color: Colors.black87),
+                                  )
+                                ],
+                              ),
+                              onTap: () {
+                                showImagePickerDialog(context, (file) async {
+                                  if (file != null) {
+                                    debugPrint(' data: ${file.path}');
+                                    setState(() {
+                                      _itemImagePath = file.path;
+                                    });
+                                  } else {
+                                    failToast("File not selected");
+                                  }
+                                });
+                              },
+                            )
+                          : Image.file(
+                              File(_itemImagePath!),
+                              fit: BoxFit.contain,
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: SizeConfig.mediumVerticalSpacing,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(
+                vertical: SizeConfig.verticalPadding,
+                horizontal: SizeConfig.horizontalPadding),
+            decoration: BoxDecoration(
+                border: Border.all(color: CommonColors.grey400!, width: 1),
+                borderRadius:
+                    BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Symbols.signature_rounded,
+                      color: Colors.black54,
+                    ),
+                    SizedBox(
+                      width: SizeConfig.mediumHorizontalSpacing,
+                    ),
+                    const Text(
+                      "SIGNATURE UPLOAD",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    Expanded(
+                        child: Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: InkWell(
+                        child: const Icon(
+                          Symbols.signature_rounded,
+                          color: Colors.black54,
+                          // size: 24,
+                        ),
+                        onTap: () {
+                          showSignatureBottomSheet(context, (path, base64) {
+                            if (!isNullOrEmpty(path)) {
+                              setState(() {
+                                _selectedSignaturePath = path;
+                              });
+                            } else {
+                              failToast('Please input signature again.');
+                            }
+                          });
+                        },
+                      ),
+                    ))
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
+                  child: SizedBox(
+                    height: 200,
+                    width: MediaQuery.sizeOf(context).width,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: CommonColors.grey300,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeIconSize))),
+                      child: isNullOrEmpty(_selectedSignaturePath)
+                          ? InkWell(
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.file_upload_outlined,
+                                    color: Colors.black54,
+                                  ),
+                                  Text(
+                                    "Click to Sign",
+                                    style: TextStyle(color: Colors.black87),
+                                  ),
+                                  Text(
+                                    "Click the signature button above",
+                                    style: TextStyle(color: Colors.black87),
+                                  )
+                                ],
+                              ),
+                              onTap: () {
+                                showSignatureBottomSheet(context,
+                                    (path, base64) {
+                                  if (!isNullOrEmpty(path)) {
+                                    setState(() {
+                                      _selectedSignaturePath = path;
+                                    });
+                                  } else {
+                                    failToast('Please input signature again.');
+                                  }
+                                });
+                              },
+                            )
+                          : Image.file(
+                              File(_selectedSignaturePath),
+                              fit: BoxFit.contain,
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: SizeConfig.mediumVerticalSpacing,
+          ),
 
           // ── Buttons ──
           const SizedBox(height: 16),
@@ -921,21 +862,21 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _handleClear(provider, isSaved),
-                  icon: const Icon(Icons.refresh, size: 14),
-                  label: const Text("Clear", style: TextStyle(fontSize: 10)),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    foregroundColor: Colors.grey.shade700,
-                    side: BorderSide(color: Colors.grey.shade400),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
-                  ),
-                ),
-              ),
+              // const SizedBox(width: 4),
+              // Expanded(
+              //   child: OutlinedButton.icon(
+              //     onPressed: () => _handleClear(provider, isSaved),
+              //     icon: const Icon(Icons.refresh, size: 14),
+              //     label: const Text("Clear", style: TextStyle(fontSize: 10)),
+              //     style: OutlinedButton.styleFrom(
+              //       padding: const EdgeInsets.symmetric(vertical: 10),
+              //       foregroundColor: Colors.grey.shade700,
+              //       side: BorderSide(color: Colors.grey.shade400),
+              //       shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(6)),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           const SizedBox(height: 8),
@@ -966,6 +907,48 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                 backgroundColor: CommonColors.colorPrimary,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors.grey.shade300,
+                disabledForegroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                elevation: 0,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+          // Vechicle Arrival button — full width,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: isNullOrEmpty(card.wayBillNo)
+                  ? null
+                  : () async {
+                      await provider.getPageLink();
+                      if (provider.state.openVehicleArrival) {
+                        try {
+                          await launchUrl(
+                            Uri.parse(provider.state.vehicleArrivalUrl!),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Could not launch URL')),
+                            );
+                          }
+                        }
+                      }
+                    },
+              label: const Text(
+                "Vehicle Arrival",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                // backgroundColor: CommonColors.colorPrimary,
+                foregroundColor: CommonColors.colorPrimary,
+                disabledBackgroundColor: Colors.grey.shade600,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6)),

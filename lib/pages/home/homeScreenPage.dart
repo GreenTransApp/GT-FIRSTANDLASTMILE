@@ -614,10 +614,14 @@ class _HomeScreen extends State<HomeScreen>
     dashboardToDt = todt;
     viewFromDt = DateFormat('dd-MM-yyyy').format(fromdt);
     viewToDt = DateFormat('dd-MM-yyyy').format(todt);
-    getDashboardDetails();
-    allotedRouteKey.currentState?.onRefresh();
-    drsSelectionKey.currentState?.refreshScreen();
-    runningTripsKey.currentState?.onRefresh();
+    // getDashboardDetails();
+    if (_selectedIndex == 0) {
+      allotedRouteKey.currentState?.onRefresh();
+    } else if (_selectedIndex == 1) {
+      drsSelectionKey.currentState?.refreshScreen();
+    } else if (_selectedIndex == 2) {
+      runningTripsKey.currentState?.onRefresh();
+    }
   }
 
   // void _handleDrsUpdateRequest(dynamic model, DrsStatus status) {

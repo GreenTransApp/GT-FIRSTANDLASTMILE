@@ -11,7 +11,7 @@ import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/presentation/OtexPickupScreen.dart';
+import 'package:gtlmd/pages/otexPickupScreen/OtexPickupScreen.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/rejectPickup/rejectPickup.dart';
@@ -330,7 +330,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               '${widget.model.grno}/${isNullOrEmpty(widget.model.orderid.toString()) ? "" : widget.model.orderid}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: SizeConfig.smallTextSize,
+                                fontSize: SizeConfig.mediumTextSize,
                               ),
                             ),
                           ),
@@ -349,7 +349,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               child: Text(
                                 'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
                                 style: TextStyle(
-                                  fontSize: SizeConfig.extraSmallTextSize,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   fontWeight: FontWeight.bold,
                                   color: CommonColors.colorPrimary,
                                   overflow: TextOverflow.ellipsis,
@@ -379,7 +379,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 child: Text(
                                   status.toString(),
                                   style: TextStyle(
-                                    fontSize: SizeConfig.extraSmallTextSize,
+                                    fontSize: SizeConfig.smallTextSize,
                                     fontWeight: FontWeight.w500,
                                     color: statusIconColor,
                                   ),
@@ -396,7 +396,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               ? const SizedBox.shrink()
                               : Text('Reason: ${modelDetail.undeliverreason}',
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: SizeConfig.smallTextSize,
                                     fontWeight: FontWeight.w800,
                                     color: CommonColors.colorPrimary,
                                   )),
@@ -407,6 +407,60 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
 
                   SizedBox(height: SizeConfig.smallVerticalSpacing),
 
+                  Row(
+                    children: [
+                      // Expanded(
+                      //   child: Column(
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       Text(
+                      //         'Destination',
+                      //         style: TextStyle(
+                      //           color: Colors.black,
+                      //           fontSize: SizeConfig.smallTextSize,
+                      //         ),
+                      //       ),
+                      //       SizedBox(
+                      //           height: SizeConfig.extraSmallVerticalSpacing),
+                      //       Text(
+                      //         '',
+                      //         style: TextStyle(
+                      //           fontWeight: FontWeight.w600,
+                      //           fontSize: SizeConfig.smallTextSize,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Consignee Name',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
+                            ),
+                            SizedBox(
+                                height: SizeConfig.extraSmallVerticalSpacing),
+                            Text(
+                              modelDetail.cngename.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(
+                    height: SizeConfig.smallVerticalSpacing,
+                  ),
                   // Consignment Details
                   Row(
                     children: [
@@ -415,16 +469,15 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Consignee Name',
+                              'Pcs',
                               style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: SizeConfig.extraSmallTextSize,
+                                color: Colors.black,
+                                fontSize: SizeConfig.smallTextSize,
                               ),
                             ),
-                            SizedBox(
-                                height: SizeConfig.extraSmallVerticalSpacing),
+                            const SizedBox(height: 4),
                             Text(
-                              modelDetail.cngename.toString(),
+                              '${modelDetail.pcs}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: SizeConfig.smallTextSize,
@@ -441,7 +494,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               'Mobile No.',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: SizeConfig.extraSmallTextSize,
+                                fontSize: SizeConfig.smallTextSize,
                               ),
                             ),
                             SizedBox(
@@ -531,100 +584,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                   ),
 
                   SizedBox(height: SizeConfig.smallVerticalSpacing),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Pcs',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: SizeConfig.extraSmallTextSize,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${modelDetail.pcs}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: SizeConfig.smallTextSize,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Visibility(
-                      //   visible: modelDetail.consignmenttype == 'P' &&
-                      //       modelDetail.isOtpRequired == 'Y' &&
-                      //       modelDetail.isVerified == 'N' &&
-                      //       modelDetail.pickupstatus == 'P',
-                      //   child: GestureDetector(
-                      //     onTap: () {
-                      //       Get.to(const PickupOtp());
-                      //     },
-                      //     child: Container(
-                      //       padding: EdgeInsets.symmetric(
-                      //           horizontal:
-                      //               SizeConfig.extraLargeHorizontalPadding,
-                      //           vertical: SizeConfig.extraSmallVerticalPadding),
-                      //       alignment: Alignment.center,
-                      //       decoration: BoxDecoration(
-                      //         borderRadius:
-                      //             BorderRadius.circular(SizeConfig.smallRadius),
-                      //         border:
-                      //             Border.all(color: CommonColors.dangerColor!),
-                      //       ),
-                      //       child: Text(
-                      //         'VERIFY',
-                      //         style: TextStyle(
-                      //             color: CommonColors.dangerColor,
-                      //             fontSize: SizeConfig.smallTextSize,
-                      //             fontWeight: FontWeight.w600),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      //  Visibility(
-                      //   visible: modelDetail.consignmenttype == 'P' &&
-                      //       modelDetail.isOtpRequired == 'Y' &&
-                      //       modelDetail.isVerified == 'Y' &&
-                      //       modelDetail.pickupstatus == 'P',
-                      //   child: Container(
-                      //     padding: EdgeInsets.symmetric(
-                      //         horizontal: SizeConfig.smallHorizontalPadding,
-                      //         vertical: SizeConfig.extraSmallVerticalPadding),
-                      //     alignment: Alignment.center,
-                      //     decoration: BoxDecoration(
-                      //         borderRadius:
-                      //             BorderRadius.circular(SizeConfig.smallRadius),
-                      //         border:
-                      //             Border.all(color: CommonColors.successColor!),
-                      //         color: CommonColors.successColor),
-                      //     child: Row(
-                      //       children: [
-                      //         Text(
-                      //           'VERIFIED',
-                      //           style: TextStyle(
-                      //               color: CommonColors.White,
-                      //               fontSize: SizeConfig.smallTextSize,
-                      //               fontWeight: FontWeight.w600),
-                      //         ),
-                      //         SizedBox(
-                      //           width: SizeConfig.extraSmallHorizontalPadding,
-                      //         ),
-                      //         Icon(
-                      //           Symbols.check_circle_filled,
-                      //           color: CommonColors.White,
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
 
                   // Action Buttons for Pending
                   if (modelDetail.consignmenttype == "D" &&
