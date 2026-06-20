@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -88,6 +89,7 @@ class _HomeScreen extends State<HomeScreen>
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();
+  
   @override
   void initState() {
     super.initState();
@@ -1018,6 +1020,34 @@ class _HomeScreen extends State<HomeScreen>
             ],
           ),
           drawer: const SideMenu(),
+   floatingActionButton: AvatarGlow(
+     glowColor: CommonColors.colorPrimary??Colors.blue,
+  repeat: true,
+     child: FloatingActionButton(
+  onPressed: () {},
+  shape: const CircleBorder(),
+  backgroundColor: CommonColors.indigoshade50,
+  highlightElevation: 20.0,
+  child: Container(
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: CommonColors.colorPrimary ?? Colors.blue, // Border color
+        width: 2, // Border thickness
+      ),
+    ),
+    child: ClipOval(
+      child: Image.asset(
+        'assets/images/jinnilogo.png',
+        fit: BoxFit.cover,
+        // width: 50,
+        // height: 50,
+      ),
+    ),
+  ),
+)
+   ),
+      
           body: Container(
             color: CommonColors.blueGrey?.withOpacity(0.1),
             child: IndexedStack(
