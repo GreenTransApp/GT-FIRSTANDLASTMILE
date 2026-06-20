@@ -27,7 +27,7 @@ class MailDetails {
         toemailid: json["toemailid"],
         ccemailids: json["ccemailids"],
         issendattachment: json["issendattachment"],
-        emailtemplateid: json["emailtemplateid"],
+        emailtemplateid: json["emailtemplateid"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

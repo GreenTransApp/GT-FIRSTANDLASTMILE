@@ -35,6 +35,7 @@ class OtexPickupState {
 
   // One-shot error message for snackbar, null = no error
   final String? errorMessage;
+  final String? successMessage;
 
   final bool openVehicleArrival;
 
@@ -53,6 +54,7 @@ class OtexPickupState {
     required this.openVehicleArrival,
     required this.vehicleArrivalUrl,
     this.errorMessage,
+    this.successMessage,
   });
 
   factory OtexPickupState.initial() {
@@ -67,6 +69,7 @@ class OtexPickupState {
         hasTransactionId: false,
         isMailDialogOpen: false,
         errorMessage: null,
+        successMessage: null,
         openVehicleArrival: false,
         vehicleArrivalUrl: '');
   }
@@ -87,6 +90,7 @@ class OtexPickupState {
       bool? hasTransactionId,
       bool? isMailDialogOpen,
       String? errorMessage,
+      String? successMessage,
       bool clearError =
           false, // explicit clear without overwriting other fields
       bool openVehicleArrival = false,
@@ -102,6 +106,8 @@ class OtexPickupState {
         hasTransactionId: hasTransactionId ?? this.hasTransactionId,
         isMailDialogOpen: isMailDialogOpen ?? this.isMailDialogOpen,
         errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+        successMessage:
+            clearError ? null : (successMessage ?? this.successMessage),
         openVehicleArrival: openVehicleArrival,
         vehicleArrivalUrl: vehicleArrivalUrl ?? this.vehicleArrivalUrl);
   }

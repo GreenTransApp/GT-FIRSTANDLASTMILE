@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/dialogs/mailDialog.dart';
+import 'package:gtlmd/common/dialogs/model/MailDialogResult.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupProvider.dart';
 import 'package:gtlmd/pages/otexPickupScreen/widgets/collapsible_header_section.dart';
 import 'package:gtlmd/pages/otexPickupScreen/widgets/otex_pickup_card.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 
 class OtexPickupScreen extends StatelessWidget {
@@ -49,7 +49,8 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _cardCountController = TextEditingController();
   OtexPickupProvider? _provider;
-  bool _isShowingError = false; // ← add this
+  bool _isShowingError = false;
+  bool _isShowingSuccessMessage = false;
 
   @override
   void initState() {
@@ -112,49 +113,88 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
     if (_provider!.state.isMailDialogOpen) {
       // Clear immediately to prevent re-opening on subsequent changes
       _provider!.closeMailDialog();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
-        showDialog(
+        final result = await showDialog<MailDialogResult>(
             context: context,
             builder: (_) =>
                 MailDialog(mailDetails: _provider!.state.mailDetails));
+        if (result != null && mounted) {
+          _provider!.sendMail(
+              email: result.email,
+              sendLabel: result.sendLabel,
+              ccemails: result.ccemails);
+        }
       });
     }
 
-    // Guard prevents re-entry while snackbar is already being shown
-    if (_isShowingError) return;
-
-    final errorMsg = _provider!.state.errorMessage;
-    if (errorMsg == null || errorMsg.isEmpty) return;
-
-    _isShowingError = true;
-
-    // Clear immediately — before post frame, so no subsequent
-    // listener call sees the stale error
-    _provider!.clearError();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(errorMsg, style: const TextStyle(fontSize: 13)),
+    // Error handling block
+    if (!_isShowingError) {
+      final errorMsg = _provider!.state.errorMessage;
+      if (errorMsg != null && errorMsg.isNotEmpty) {
+        _isShowingError = true;
+        _provider!.clearError();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline,
+                      color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(errorMsg, style: const TextStyle(fontSize: 13)),
+                  ),
+                ],
               ),
-            ],
-          ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-      _isShowingError = false;
-    });
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(12),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          _isShowingError = false;
+        });
+      }
+    }
+
+    // Success handling block
+    if (!_isShowingSuccessMessage) {
+      final successMessage = _provider!.state.successMessage;
+      if (successMessage != null && successMessage.isNotEmpty) {
+        _isShowingSuccessMessage = true;
+        _provider!.clearError();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline,
+                      color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(successMessage,
+                        style: const TextStyle(fontSize: 13)),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.green.shade700,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(12),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          _isShowingSuccessMessage = false;
+        });
+      }
+    }
   }
 
   @override

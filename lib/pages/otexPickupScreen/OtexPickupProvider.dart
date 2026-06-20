@@ -583,7 +583,7 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmmenucode": 'GTLMD_OTEXPICKUP',
+      "prmmenucode": 'GTAPP_PICKUPBOOKING',
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -707,5 +707,52 @@ class OtexPickupProvider extends ChangeNotifier {
   // Bluetooth/Local Printer Call: Print Local Waybill
   Future<void> printWaybill(int index) async {
     // TODO: Implement Bluetooth/USB printer waybill PDF print call
+  }
+
+  Future<bool> sendMail(
+      {required String email,
+      required bool sendLabel,
+      required String ccemails}) async {
+    List<String> ccemailslist = ccemails.split(',');
+    String cc = "";
+    if (ccemailslist.isNotEmpty) {
+      for (String x in ccemailslist) {
+        cc += x;
+        cc += ',';
+      }
+    }
+
+    Map<String, String> params = {
+      "prmusercode": savedUser.usercode.toString(),
+      "prmalertsubject": _state.mailDetails.emailsubject.toString(),
+      "prmalertmessage": _state.mailDetails.emailbody.toString(),
+      "prmemailid": email,
+      "prmfilenamewithext": '',
+      "prmattachfile": sendLabel ? 'Y' : 'N',
+      "prmattachment": '',
+      "prmalertcc": cc,
+      "prmemailtemplateid": _state.mailDetails.emailtemplateid.toString(),
+      "prmmenucode": 'GTLMD_OTEXPICKUP',
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    try {
+      final response = await _repo.scheduleMailAlert(params);
+      if (response.commandStatus == 1) {
+        _state = _state.copyWith(
+          isMailDialogOpen: false,
+        );
+        _state = _state.copyWith(successMessage: response.commandMessage);
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      _state = _state.copyWith(
+          errorMessage: _extractMessage(e), isMailDialogOpen: false);
+      notifyListeners();
+      return false;
+    }
   }
 }

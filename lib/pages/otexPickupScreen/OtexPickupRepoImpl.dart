@@ -435,4 +435,33 @@ class OtexPickupRepoImpl {
       rethrow;
     }
   }
+
+  Future<SavePickupRespModel> scheduleMailAlert(
+      Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp =
+          await apiPostWithModel("${lmdUrl}ScheduleMailAlert", params);
+
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<SavePickupRespModel> resultList = List.generate(
+            list.length, (index) => SavePickupRespModel.fromJson(list[index]));
+        return resultList[0];
+      } else {
+        throw Exception(resp.commandMessage ?? "Failed to send mail");
+      }
+    } on SocketException catch (_) {
+      throw Exception("No Internet");
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(e.toString());
+    }
+    return SavePickupRespModel();
+  }
 }

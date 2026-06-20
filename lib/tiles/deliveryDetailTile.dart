@@ -18,6 +18,8 @@ import 'package:gtlmd/pages/rejectPickup/rejectPickup.dart';
 import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
+import 'package:gtlmd/tiles/addressCard.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -272,9 +274,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isSmallDevice = screenWidth <= 360;
-
     return TimelineTile(
         isFirst: isFirst,
         isLast: isLast,
@@ -292,7 +291,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
           height: 15,
           width: 15,
           indicator: Container(
-            // margin: const EdgeInsets.only(top: 20),
             height: 15,
             width: 15,
             decoration: BoxDecoration(
@@ -360,107 +358,135 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: SizeConfig
+                                            .extraSmallHorizontalPadding,
+                                        vertical: SizeConfig
+                                            .extraSmallVerticalPadding),
+                                    child: Text(
+                                      status.toString(),
+                                      style: TextStyle(
+                                        fontSize: SizeConfig.smallTextSize,
+                                        fontWeight: FontWeight.w500,
+                                        color: statusIconColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    statusIcon,
+                                    color: statusIconColor,
+                                    size: SizeConfig.extraLargeIconSize,
+                                  ),
+                                ],
+                              ),
+                              isNullOrEmpty(modelDetail.undeliverreason)
+                                  ? const SizedBox.shrink()
+                                  : Text(
+                                      'Reason: ${modelDetail.undeliverreason}',
+                                      style: TextStyle(
+                                        fontSize: SizeConfig.smallTextSize,
+                                        fontWeight: FontWeight.w800,
+                                        color: CommonColors.colorPrimary,
+                                      )),
+                            ],
+                          ),
                           Row(
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        SizeConfig.extraSmallHorizontalPadding,
-                                    vertical:
-                                        SizeConfig.extraSmallVerticalPadding),
-                                // decoration: BoxDecoration(
-                                //   color: cardBgColor
-                                //       .withAlpha((0.7 * 255).round()),
-                                //   borderRadius: BorderRadius.circular(12),
-                                // ),
-                                child: Text(
-                                  status.toString(),
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w500,
-                                    color: statusIconColor,
+                              GestureDetector(
+                                onTap: () {
+                                  print('Location clicked');
+                                },
+                                child: Container(
+                                  height: 36,
+                                  width: 36,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue
+                                        .withAlpha((0.15 * 255).toInt()),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.location_on_outlined,
+                                      color: Colors.blue,
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
                               ),
-                              Icon(
-                                statusIcon,
-                                color: statusIconColor,
-                                size: SizeConfig.extraLargeIconSize,
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: () {
+                                  print('Share clicked');
+                                },
+                                child: Container(
+                                  height: 36,
+                                  width: 36,
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple
+                                        .withAlpha((0.15 * 255).toInt()),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.share_outlined,
+                                      color: Colors.purple,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
-                          ),
-                          isNullOrEmpty(modelDetail.undeliverreason)
-                              ? const SizedBox.shrink()
-                              : Text('Reason: ${modelDetail.undeliverreason}',
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w800,
-                                    color: CommonColors.colorPrimary,
-                                  )),
+                          )
                         ],
-                      ),
+                      )
                     ],
                   ),
 
                   SizedBox(height: SizeConfig.smallVerticalSpacing),
 
-                  Row(
-                    children: [
-                      // Expanded(
-                      //   child: Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       Text(
-                      //         'Destination',
-                      //         style: TextStyle(
-                      //           color: Colors.black,
-                      //           fontSize: SizeConfig.smallTextSize,
-                      //         ),
-                      //       ),
-                      //       SizedBox(
-                      //           height: SizeConfig.extraSmallVerticalSpacing),
-                      //       Text(
-                      //         '',
-                      //         style: TextStyle(
-                      //           fontWeight: FontWeight.w600,
-                      //           fontSize: SizeConfig.smallTextSize,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Consignee Name',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: SizeConfig.smallTextSize,
-                              ),
-                            ),
-                            SizedBox(
-                                height: SizeConfig.extraSmallVerticalSpacing),
-                            Text(
-                              modelDetail.cngename.toString(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: SizeConfig.smallTextSize,
-                              ),
-                            ),
-                          ],
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: modelDetail.consignmenttype == 'P'
+                              ? 'Consignor : '
+                              : 'Consignee : ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: SizeConfig.smallTextSize,
+                            fontWeight: FontWeight.normal,
+                          ),
                         ),
-                      ),
-                    ],
+                        TextSpan(
+                          text: modelDetail.cngename ?? '',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: SizeConfig.smallTextSize,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   SizedBox(
                     height: SizeConfig.smallVerticalSpacing,
                   ),
+
+                  // Address Card
+                  AddressCard(
+                      title: 'Address',
+                      address: modelDetail.cngeaddress ?? '',
+                      color: statusIconColor.withAlpha((0.1 * 255).toInt())),
                   // Consignment Details
                   Row(
                     children: [
