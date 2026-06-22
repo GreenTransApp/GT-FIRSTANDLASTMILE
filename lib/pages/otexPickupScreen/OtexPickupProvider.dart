@@ -590,7 +590,15 @@ class OtexPickupProvider extends ChangeNotifier {
     try {
       final response = await _repo.getMailDetails(params);
       if (response.commandstatus == 1) {
-        _state = _state.copyWith(mailDetails: response, isMailDialogOpen: true);
+        if (_state.info.autoSendEmail == 'N') {
+          _state =
+              _state.copyWith(mailDetails: response, isMailDialogOpen: true);
+        } else {
+          sendMail(
+              email: response.toemailid.toString(),
+              sendLabel: true,
+              ccemails: response.ccemailids.toString());
+        }
         notifyListeners();
         return true;
       } else {
