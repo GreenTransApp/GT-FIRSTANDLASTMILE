@@ -40,6 +40,7 @@ class OtexPickupState {
   final bool openVehicleArrival;
 
   final String? vehicleArrivalUrl;
+  final bool isReadOnly;
 
   const OtexPickupState({
     required this.headerStatus,
@@ -53,6 +54,7 @@ class OtexPickupState {
     required this.isMailDialogOpen,
     required this.openVehicleArrival,
     required this.vehicleArrivalUrl,
+    required this.isReadOnly,
     this.errorMessage,
     this.successMessage,
   });
@@ -71,7 +73,8 @@ class OtexPickupState {
         errorMessage: null,
         successMessage: null,
         openVehicleArrival: false,
-        vehicleArrivalUrl: '');
+        vehicleArrivalUrl: '',
+        isReadOnly: false);
   }
 
   // Convenience getters — used in UI to decide enable/disable
@@ -94,7 +97,8 @@ class OtexPickupState {
       bool clearError =
           false, // explicit clear without overwriting other fields
       bool openVehicleArrival = false,
-      String? vehicleArrivalUrl}) {
+      String? vehicleArrivalUrl,
+      bool? isReadOnly}) {
     return OtexPickupState(
         headerStatus: headerStatus ?? this.headerStatus,
         cardListStatus: cardListStatus ?? this.cardListStatus,
@@ -109,6 +113,7 @@ class OtexPickupState {
         successMessage:
             clearError ? null : (successMessage ?? this.successMessage),
         openVehicleArrival: openVehicleArrival,
-        vehicleArrivalUrl: vehicleArrivalUrl ?? this.vehicleArrivalUrl);
+        vehicleArrivalUrl: vehicleArrivalUrl ?? this.vehicleArrivalUrl,
+        isReadOnly: isReadOnly ?? this.isReadOnly);
   }
 }

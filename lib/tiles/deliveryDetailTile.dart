@@ -272,6 +272,23 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     }
   }
 
+  Future<void> navigateToLocation({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final Uri googleMapsUri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1'
+      '&destination=$latitude,$longitude'
+      '&travelmode=driving',
+    );
+
+    try {
+      await launchUrl(googleMapsUri, mode: LaunchMode.externalApplication);
+    } on Exception catch (e) {
+      print('Error launching Google Maps: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TimelineTile(
@@ -335,26 +352,120 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           const SizedBox(width: 12),
                           // Stop badge next to GR No
                           Flexible(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.smallHorizontalPadding,
-                                  vertical: SizeConfig.smallVerticalPadding),
-                              decoration: BoxDecoration(
-                                color: CommonColors.colorPrimary!
-                                    .withAlpha((0.1 * 255).round()),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
-                                style: TextStyle(
-                                  fontSize: SizeConfig.mediumTextSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: CommonColors.colorPrimary,
-                                  overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.smallHorizontalPadding,
+                                        vertical:
+                                            SizeConfig.smallVerticalPadding),
+                                    decoration: BoxDecoration(
+                                      color: CommonColors.colorPrimary!
+                                          .withAlpha((0.1 * 255).round()),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
+                                      style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize,
+                                        fontWeight: FontWeight.bold,
+                                        color: CommonColors.colorPrimary,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 4),
+                                PopupMenuButton<String>(
+                                  icon: const Icon(Icons.more_vert),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 'enquiry':
+                                        Get.to(OtexPickupScreen(
+                                          transactionId: isNullOrEmpty(widget
+                                                  .model.transactionid
+                                                  .toString())
+                                              ? '0'
+                                              : widget.model.transactionid
+                                                  .toString(),
+                                          grno: widget.model.grno.toString(),
+                                          orderid: isNullOrEmpty(widget
+                                                  .model.orderid
+                                                  .toString())
+                                              ? '0'
+                                              : widget.model.orderid.toString(),
+                                          isReadOnly: true,
+                                        ));
+                                        break;
+                                      case 'share':
+                                        print('Share clicked');
+                                        break;
+                                      case 'map':
+                                        {
+                                          // we have to pass lattitude and longitude of the consignment.
+                                          // used static for testing.
+                                          navigateToLocation(
+                                              latitude: 28.38667891299393,
+                                              longitude: 77.29868395341859);
+                                        }
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'enquiry',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.contact_support_rounded,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text('Enquiry')
+                                        ],
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'share',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.share_rounded,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text('Share')
+                                        ],
+                                      ),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'map',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on_rounded,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text('Map')
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
+                          )
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -399,55 +510,67 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                       )),
                             ],
                           ),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print('Location clicked');
-                                },
-                                child: Container(
-                                  height: 36,
-                                  width: 36,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue
-                                        .withAlpha((0.15 * 255).toInt()),
-                                    borderRadius: BorderRadius.circular(12),
+                          GestureDetector(
+                            child: Container(
+                              padding: EdgeInsets.all(
+                                  SizeConfig.smallHorizontalPadding),
+                              decoration: BoxDecoration(
+                                  color: Colors.black.withAlpha(
+                                    (0.1 * 255).toInt(),
                                   ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.location_on_outlined,
-                                      color: Colors.blue,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              GestureDetector(
-                                onTap: () {
-                                  print('Share clicked');
-                                },
-                                child: Container(
-                                  height: 36,
-                                  width: 36,
-                                  decoration: BoxDecoration(
-                                    color: Colors.purple
-                                        .withAlpha((0.15 * 255).toInt()),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.share_outlined,
-                                      color: Colors.purple,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                                  borderRadius: BorderRadius.circular(4)),
+                              child: const Text("Reached"),
+                            ),
                           )
+                          // Row(
+                          //   children: [
+                          //     GestureDetector(
+                          //       onTap: () {
+                          //         print('Location clicked');
+                          //       },
+                          //       child: Container(
+                          //         height: 36,
+                          //         width: 36,
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.blue
+                          //               .withAlpha((0.15 * 255).toInt()),
+                          //           borderRadius: BorderRadius.circular(12),
+                          //         ),
+                          //         child: const Center(
+                          //           child: Icon(
+                          //             Icons.location_on_outlined,
+                          //             color: Colors.blue,
+                          //             size: 18,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     const SizedBox(width: 12),
+                          //     GestureDetector(
+                          //       onTap: () {
+                          //         print('Share clicked');
+                          //       },
+                          //       child: Container(
+                          //         height: 36,
+                          //         width: 36,
+                          //         decoration: BoxDecoration(
+                          //           color: Colors.purple
+                          //               .withAlpha((0.15 * 255).toInt()),
+                          //           borderRadius: BorderRadius.circular(12),
+                          //         ),
+                          //         child: const Center(
+                          //           child: Icon(
+                          //             Icons.share_outlined,
+                          //             color: Colors.purple,
+                          //             size: 18,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // )
                         ],
-                      )
+                      ),
                     ],
                   ),
 

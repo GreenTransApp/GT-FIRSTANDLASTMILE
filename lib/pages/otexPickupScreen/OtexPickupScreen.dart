@@ -12,9 +12,10 @@ class OtexPickupScreen extends StatelessWidget {
   final String? transactionId;
   final String? grno;
   final String? orderid;
+  final bool isReadOnly;
 
   const OtexPickupScreen(
-      {super.key, this.transactionId, this.grno, this.orderid});
+      {super.key, this.transactionId, this.grno, this.orderid, this.isReadOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class OtexPickupScreen extends StatelessWidget {
         transactionId: transactionId,
         grno: grno,
         orderid: orderid,
+        isReadOnly: isReadOnly,
       ),
     );
   }
@@ -33,12 +35,14 @@ class _OtexPickupScreenBody extends StatefulWidget {
   final String? transactionId;
   final String? grno;
   final String? orderid;
+  final bool isReadOnly;
 
   const _OtexPickupScreenBody({
     super.key,
     this.transactionId,
     this.grno,
     this.orderid,
+    this.isReadOnly = false,
   });
 
   @override
@@ -63,7 +67,8 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
       _provider!.initializeForm(
           transactionId: widget.transactionId,
           grno: widget.grno,
-          orderid: widget.orderid);
+          orderid: widget.orderid,
+          isReadOnly: widget.isReadOnly);
     });
   }
 

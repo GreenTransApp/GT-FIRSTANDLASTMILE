@@ -360,7 +360,9 @@ class OtexPickupRepoImpl {
       }
       List<dynamic> result = [];
       result.add(infoModel);
-      result.add(splitInfo);
+      if (splitInfo.isNotEmpty) {
+        result.add(splitInfo);
+      }
       return result;
     } on SocketException catch (_) {
       throw Exception("No Internet");
@@ -462,6 +464,5 @@ class OtexPickupRepoImpl {
       if (e is Exception) rethrow;
       throw Exception(e.toString());
     }
-    return SavePickupRespModel();
   }
 }

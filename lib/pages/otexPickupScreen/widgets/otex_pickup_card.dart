@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gtlmd/bottomSheet/multiImageBottomSheet.dart';
 import 'package:gtlmd/bottomSheet/signatureBottomSheet.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -45,7 +46,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
   // Track what we've synced to avoid overwriting user edits mid-session
   bool _initialSyncDone = false;
   String? selected;
-  String? _itemImagePath = "";
+  // String? _itemImagePath = "";
+  List<String> bookingImages = [];
   String _selectedSignaturePath = '';
 
   @override
@@ -203,8 +205,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
         return;
       }
     }
-    if (isNullOrEmpty(_itemImagePath)) {
-      _showValidationSnack("Please upload document");
+    if (bookingImages.isEmpty) {
+      _showValidationSnack("Please upload booking image");
       return;
     }
 
@@ -214,7 +216,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     }
     setState(() => _isSaving = true);
     final success = await provider.saveCardEntry(
-        widget.index, _itemImagePath!, _selectedSignaturePath);
+        widget.index, bookingImages, _selectedSignaturePath);
     if (mounted) setState(() => _isSaving = false);
 
     if (success && mounted) {
@@ -227,7 +229,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     _palletQtyController.text = "0";
     _weightController.clear();
     _freightController.clear();
-    _itemImagePath = "";
+    // _itemImagePath = "";
+    bookingImages.clear();
     _selectedSignaturePath = "";
     // Preserve waybill and isSaved when clearing — only reset editable fields
     final current = provider.state.splitInfo[widget.index];
@@ -493,7 +496,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                   icon: Icons.grid_view_outlined,
                   child: TextFormField(
                     controller: _palletQtyController,
-                    enabled: true,
+                    enabled: !provider.state.isReadOnly,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -634,72 +637,78 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           color: Colors.black54,
                           // size: 24,
                         ),
-                        onTap: () {
-                          showImagePickerDialog(context, (file) async {
-                            if (file != null) {
-                              debugPrint(' data: ${file.path}');
-                              setState(() {
-                                _itemImagePath = file.path;
-                              });
-                            } else {
-                              failToast("File not selected");
-                            }
-                          });
+                        onTap: provider.state.isReadOnly ? null : () async {
+                          // showImagePickerDialog(context, (file) async {
+                          //   if (file != null) {
+                          //     debugPrint(' data: ${file.path}');
+                          //     setState(() {
+                          //       _itemImagePath = file.path;
+                          //     });
+                          //   } else {
+                          //     failToast("File not selected");
+                          //   }
+                          // });
+                          List<String> imagePaths =
+                              await showMultiImageBottomSheetDialog(
+                                  context, bookingImages);
+
+                          bookingImages = imagePaths;
                         },
                       ),
                     ))
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
-                  child: SizedBox(
-                    height: 200,
-                    width: MediaQuery.sizeOf(context).width,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: CommonColors.grey300,
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(SizeConfig.largeIconSize))),
-                      child: isNullOrEmpty(_itemImagePath)
-                          ? InkWell(
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.file_upload_outlined,
-                                    color: Colors.black54,
-                                  ),
-                                  Text(
-                                    "Upload Image",
-                                    style: TextStyle(color: Colors.black87),
-                                  ),
-                                  Text(
-                                    "Click the upload button above",
-                                    style: TextStyle(color: Colors.black87),
-                                  )
-                                ],
-                              ),
-                              onTap: () {
-                                showImagePickerDialog(context, (file) async {
-                                  if (file != null) {
-                                    debugPrint(' data: ${file.path}');
-                                    setState(() {
-                                      _itemImagePath = file.path;
-                                    });
-                                  } else {
-                                    failToast("File not selected");
-                                  }
-                                });
-                              },
-                            )
-                          : Image.file(
-                              File(_itemImagePath!),
-                              fit: BoxFit.contain,
-                            ),
-                    ),
-                  ),
-                ),
+
+                // Padding(
+                //   padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
+                //   child: SizedBox(
+                //     height: 200,
+                //     width: MediaQuery.sizeOf(context).width,
+                //     child: Container(
+                //       decoration: BoxDecoration(
+                //           color: CommonColors.grey300,
+                //           borderRadius: BorderRadius.all(
+                //               Radius.circular(SizeConfig.largeIconSize))),
+                //       child: isNullOrEmpty(_itemImagePath)
+                //           ? InkWell(
+                //               child: const Column(
+                //                 mainAxisAlignment: MainAxisAlignment.center,
+                //                 crossAxisAlignment: CrossAxisAlignment.center,
+                //                 children: [
+                //                   Icon(
+                //                     Icons.file_upload_outlined,
+                //                     color: Colors.black54,
+                //                   ),
+                //                   Text(
+                //                     "Upload Image",
+                //                     style: TextStyle(color: Colors.black87),
+                //                   ),
+                //                   Text(
+                //                     "Click the upload button above",
+                //                     style: TextStyle(color: Colors.black87),
+                //                   )
+                //                 ],
+                //               ),
+                //               onTap: () {
+                //                 showImagePickerDialog(context, (file) async {
+                //                   if (file != null) {
+                //                     debugPrint(' data: ${file.path}');
+                //                     setState(() {
+                //                       _itemImagePath = file.path;
+                //                     });
+                //                   } else {
+                //                     failToast("File not selected");
+                //                   }
+                //                 });
+                //               },
+                //             )
+                //           : Image.file(
+                //               File(_itemImagePath!),
+                //               fit: BoxFit.contain,
+                //             ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -739,7 +748,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           color: Colors.black54,
                           // size: 24,
                         ),
-                        onTap: () {
+                        onTap: provider.state.isReadOnly ? null : () {
                           showSignatureBottomSheet(context, (path, base64) {
                             if (!isNullOrEmpty(path)) {
                               setState(() {
@@ -784,7 +793,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                                   )
                                 ],
                               ),
-                              onTap: () {
+                              onTap: provider.state.isReadOnly ? null : () {
                                 showSignatureBottomSheet(context,
                                     (path, base64) {
                                   if (!isNullOrEmpty(path)) {
@@ -823,7 +832,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                 child: OutlinedButton.icon(
                   // Print label only available after save
                   onPressed:
-                      isSaved ? () => provider.printLabel(widget.index) : null,
+                      (isSaved || provider.state.isReadOnly) ? () => provider.printLabel(widget.index) : null,
                   icon: const Icon(Icons.print_outlined, size: 14),
                   label:
                       const Text("Print Label", style: TextStyle(fontSize: 10)),
@@ -832,7 +841,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                     foregroundColor: CommonColors.colorPrimary,
                     disabledForegroundColor: Colors.grey.shade400,
                     side: BorderSide(
-                        color: isSaved
+                        color: (isSaved || provider.state.isReadOnly)
                             ? CommonColors.appBarColor
                             : Colors.grey.shade300),
                     shape: RoundedRectangleBorder(
@@ -843,7 +852,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
               const SizedBox(width: 4),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: isSaved
+                  onPressed: (isSaved || provider.state.isReadOnly)
                       ? () => provider.printWaybill(widget.index)
                       : null,
                   icon: const Icon(Icons.description_outlined, size: 14),
@@ -854,7 +863,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                     foregroundColor: CommonColors.colorPrimary,
                     disabledForegroundColor: Colors.grey.shade400,
                     side: BorderSide(
-                        color: isSaved
+                        color: (isSaved || provider.state.isReadOnly)
                             ? CommonColors.appBarColor
                             : Colors.grey.shade300),
                     shape: RoundedRectangleBorder(
@@ -882,80 +891,83 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
           const SizedBox(height: 8),
 
           // Save button — full width, shows loader while saving
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: (_isSaving) ? null : () => _handleSave(provider),
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : Icon(
-                      isSaved ? Icons.check_circle : Icons.check_circle_outline,
-                      size: 16,
-                    ),
-              label: Text(
-                _isSaving ? "Saving..." : "Save Way Bill",
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                backgroundColor: CommonColors.colorPrimary,
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: Colors.grey.shade300,
-                disabledForegroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
-                elevation: 0,
+          if (!provider.state.isReadOnly)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: (_isSaving) ? null : () => _handleSave(provider),
+                icon: _isSaving
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : Icon(
+                        isSaved ? Icons.check_circle : Icons.check_circle_outline,
+                        size: 16,
+                      ),
+                label: Text(
+                  _isSaving ? "Saving..." : "Save Way Bill",
+                  style:
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  backgroundColor: CommonColors.colorPrimary,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey.shade300,
+                  disabledForegroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                  elevation: 0,
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 8),
+          if (!provider.state.isReadOnly)
+            const SizedBox(height: 8),
           // Vechicle Arrival button — full width,
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: isNullOrEmpty(card.wayBillNo)
-                  ? null
-                  : () async {
-                      await provider.getPageLink();
-                      if (provider.state.openVehicleArrival) {
-                        try {
-                          await launchUrl(
-                            Uri.parse(provider.state.vehicleArrivalUrl!),
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } catch (_) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Could not launch URL')),
+          if (!provider.state.isReadOnly)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isNullOrEmpty(card.wayBillNo)
+                    ? null
+                    : () async {
+                        await provider.getPageLink();
+                        if (provider.state.openVehicleArrival) {
+                          try {
+                            await launchUrl(
+                              Uri.parse(provider.state.vehicleArrivalUrl!),
+                              mode: LaunchMode.externalApplication,
                             );
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Could not launch URL')),
+                              );
+                            }
                           }
                         }
-                      }
-                    },
-              label: const Text(
-                "Vehicle Arrival",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                // backgroundColor: CommonColors.colorPrimary,
-                foregroundColor: CommonColors.colorPrimary,
-                disabledBackgroundColor: Colors.grey.shade600,
-                disabledForegroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
-                elevation: 0,
+                      },
+                label: const Text(
+                  "Vehicle Arrival",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  // backgroundColor: CommonColors.colorPrimary,
+                  foregroundColor: CommonColors.colorPrimary,
+                  disabledBackgroundColor: Colors.grey.shade600,
+                  disabledForegroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                  elevation: 0,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -57,12 +57,12 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         });
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      refreshScreen();
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     refreshScreen();
+  //   }
+  // }
 
   @override
   void dispose() {

@@ -44,8 +44,6 @@ class OtexPickupSplitInfo {
   final int? invoiceQty;
   final String? grtype;
 
-
-
   const OtexPickupSplitInfo({
     this.wayBillNo,
     this.destName,
@@ -82,37 +80,35 @@ class OtexPickupSplitInfo {
     this.invoiceChargeableWeight,
     this.invoiceQty,
     this.grtype,
-
   });
 
   factory OtexPickupSplitInfo.fromJson(Map<String, dynamic> json) {
     return OtexPickupSplitInfo(
-      invGuid: json['invguid'],
-      partGuid: json['partguid'],
-      transactionId: json['transactionid'],
-      grNo: json['grno'],
-      innerQty: json['innerqty'],
-      noOfBox: json['noofbox'],
-      itemCode: json['itemcode'],
-      itemName: json['itemname'],
-      packingMethodCode: json['packingcode'],
-      packingMethodName: json['packingname'],
-      actualWeight: (json['aweight'] as num?)?.toDouble(),
-      volumetricWeight: (json['vweight'] as num?)?.toDouble(),
-      chargeableWeight: (json['cweight'] as num?)?.toDouble(),
-      dimensionUnitType: json['dimensionunittype'],
-      cft: (json['cft'] as num?)?.toDouble(),
-      length: (json['length'] as num?)?.toDouble(),
-      width: (json['width'] as num?)?.toDouble(),
-      height: (json['height'] as num?)?.toDouble(),
-      invoicePackages: json['invpckgs'],
-      invoiceActualWeight: (json['invaweight'] as num?)?.toDouble(),
-      invoiceVolumetricWeight: (json['invvweight'] as num?)?.toDouble(),
-      invoiceChargeableWeight: (json['invcweight'] as num?)?.toDouble(),
-      invoiceQty: json['invqty'],
-      grtype: json['grtype']
-
-    );
+        invGuid: json['invguid'],
+        partGuid: json['partguid'],
+        transactionId: json['transactionid'],
+        grNo: json['grno'],
+        wayBillNo: json['grno'],
+        innerQty: json['innerqty'],
+        noOfBox: json['noofbox'],
+        itemCode: json['itemcode'],
+        itemName: json['itemname'],
+        packingMethodCode: json['packingcode'],
+        packingMethodName: json['packingname'],
+        actualWeight: (json['aweight'] as num?)?.toDouble(),
+        volumetricWeight: (json['vweight'] as num?)?.toDouble(),
+        chargeableWeight: (json['cweight'] as num?)?.toDouble(),
+        dimensionUnitType: json['dimensionunittype'],
+        cft: (json['cft'] as num?)?.toDouble(),
+        length: (json['length'] as num?)?.toDouble(),
+        width: (json['width'] as num?)?.toDouble(),
+        height: (json['height'] as num?)?.toDouble(),
+        invoicePackages: json['invpckgs'],
+        invoiceActualWeight: (json['invaweight'] as num?)?.toDouble(),
+        invoiceVolumetricWeight: (json['invvweight'] as num?)?.toDouble(),
+        invoiceChargeableWeight: (json['invcweight'] as num?)?.toDouble(),
+        invoiceQty: json['invqty'],
+        grtype: json['grtype']);
   }
 
   // Map<String, dynamic> toJson() {
@@ -240,7 +236,6 @@ class OtexPickupSplitInfo {
           invoiceChargeableWeight ?? this.invoiceChargeableWeight,
       invoiceQty: invoiceQty ?? this.invoiceQty,
       grtype: grtype ?? this.grtype,
-
     );
   }
 }

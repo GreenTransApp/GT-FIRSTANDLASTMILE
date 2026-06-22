@@ -26,7 +26,11 @@ class OtexPickupProvider extends ChangeNotifier {
   final OtexPickupRepoImpl _repo = OtexPickupRepoImpl();
   OtexPickupState get state => _state;
 
-  void initializeForm({String? transactionId, String? grno, String? orderid}) {
+  void initializeForm(
+      {String? transactionId,
+      String? grno,
+      String? orderid,
+      bool isReadOnly = false}) {
     _state = OtexPickupState(
         headerStatus: SectionStatus.idle,
         cardListStatus: SectionStatus.idle,
@@ -39,7 +43,8 @@ class OtexPickupProvider extends ChangeNotifier {
         isMailDialogOpen: false,
         errorMessage: null,
         openVehicleArrival: false,
-        vehicleArrivalUrl: '');
+        vehicleArrivalUrl: '',
+        isReadOnly: isReadOnly);
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
@@ -74,6 +79,10 @@ class OtexPickupProvider extends ChangeNotifier {
       OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
       infoData =
           infoData.copyWith(orderid: isNullOrEmpty(orderid) ? '0' : orderid);
+      OtexPickupSplitInfo? si = null;
+      if (result.length > 1) {
+        si = result[1][0] as OtexPickupSplitInfo;
+      }
       // List<OtexPickupSplitInfo> splitData =
       //     (result[1] as List).cast<OtexPickupSplitInfo>().toList();
 
@@ -90,6 +99,8 @@ class OtexPickupProvider extends ChangeNotifier {
           grtype: infoData.grType,
           packingMethodName: infoData.packing,
           packingMethodCode: infoData.packingcode,
+          grNo: si != null ? si.grNo : '',
+          wayBillNo: si != null ? si.wayBillNo : '',
           weight: isNullOrEmpty(infoData.weight.toString())
               ? 0.0
               : double.tryParse(infoData.weight.toString()),
@@ -399,7 +410,7 @@ class OtexPickupProvider extends ChangeNotifier {
   }
 
   Future<bool> saveCardEntry(
-      int index, String docImagePath, String signImagePath) async {
+      int index, List<String> bookingImages, String signImagePath) async {
     if (index >= _state.splitInfo.length) return false;
 
     // Validate total pieces before saving
@@ -424,6 +435,10 @@ class OtexPickupProvider extends ChangeNotifier {
 
     _state = _state.copyWith(
         info: _state.info.copyWith(documentType: 'C', recStatus: status));
+    String bookingImagesBase64 = "";
+    for (String image in bookingImages) {
+      bookingImagesBase64 += "${convertFilePathToBase64(image)},";
+    }
 
     Map<String, dynamic> buildSaveJson() {
       return {
@@ -523,9 +538,7 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmjsondatastr": jsonEncode(buildSaveJson()),
       "prminvjsondatastr":
           jsonEncode(_state.splitInfo.map((e) => e.toJson()).toList()),
-      "prmdocimgpath": isNullOrEmpty(docImagePath)
-          ? ""
-          : convertFilePathToBase64(docImagePath),
+      "prmdocimgpath": bookingImagesBase64,
       "prmsignimgpath": isNullOrEmpty(signImagePath)
           ? ""
           : convertFilePathToBase64(signImagePath),
@@ -593,13 +606,16 @@ class OtexPickupProvider extends ChangeNotifier {
         if (_state.info.autoSendEmail == 'N') {
           _state =
               _state.copyWith(mailDetails: response, isMailDialogOpen: true);
+          notifyListeners();
         } else {
+          _state =
+              _state.copyWith(mailDetails: response, isMailDialogOpen: false);
+          notifyListeners();
           sendMail(
               email: response.toemailid.toString(),
               sendLabel: true,
               ccemails: response.ccemailids.toString());
         }
-        notifyListeners();
         return true;
       } else {
         return false;
