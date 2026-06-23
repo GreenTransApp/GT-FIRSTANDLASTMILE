@@ -43,6 +43,7 @@ import 'package:gtlmd/pages/imageEditor/presentation/image_editor_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum DashboardTabs { ALLOTEDROUTES, CURRENTDELIVERY }
 
@@ -1024,7 +1025,32 @@ class _HomeScreen extends State<HomeScreen>
      glowColor: CommonColors.colorPrimary??Colors.blue,
   repeat: true,
      child: FloatingActionButton(
-  onPressed: () {},
+  onPressed: () async {
+      final url ="https://gtjinni.com/";
+       if (url != null &&
+         url.isNotEmpty) {
+          try {
+            await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode
+                  .externalApplication,
+            );
+          } catch (_) {
+            if (context
+                .mounted) {
+              ScaffoldMessenger.of(
+                      context)
+                  .showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Could not launch URL',
+                  ),
+                ),
+              );
+            }
+          }
+        }
+  },
   shape: const CircleBorder(),
   backgroundColor: CommonColors.indigoshade50,
   highlightElevation: 20.0,
