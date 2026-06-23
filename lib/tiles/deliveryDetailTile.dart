@@ -11,6 +11,7 @@ import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/deliveryDetail/Model/lmdMenuModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupScreen.dart';
 import 'package:gtlmd/pages/pickup/pickup.dart';
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
@@ -19,24 +20,29 @@ import 'package:gtlmd/pages/reversePickup/reversePickup.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 import 'package:gtlmd/tiles/addressCard.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+enum MenuTags { DELIVERY, UNDELIVERY, PICKUP, REVERSE_PICKUP }
 
 class DeliveryDetailTile extends StatefulWidget {
   final DeliveryDetailModel model;
   final CurrentDeliveryModel currentDeliveryModel;
-  final Future<void> Function() onRefresh;
-
-  final int listLength;
   final int index;
-  DeliveryDetailTile({
+  final int listLength;
+  final Function() onRefresh;
+  final Future<void> Function(String grno) updateDriverPosition;
+  final List<LmdMenuModel> menuList;
+
+  const DeliveryDetailTile({
     super.key,
     required this.model,
     required this.currentDeliveryModel,
-    required this.listLength,
     required this.index,
+    required this.listLength,
     required this.onRefresh,
+    required this.updateDriverPosition,
+    this.menuList = const [],
   });
 
   @override
@@ -64,7 +70,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     super.initState();
     modelDetail = widget.model;
     currentDelivery = widget.currentDeliveryModel;
-    setObservers();
+    // setObservers();
 
     setState(() {
       // if (widget.model.deliverystatus == 'Y') {
@@ -79,7 +85,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     listValue = widget.listLength;
     listIndex = widget.index;
 
-    if (listValue == 1 && listIndex == 0) {
+    if (listValue == 0 && listIndex == 1) {
       isFirst = true;
       isLast = true;
     } else if (listIndex == 0) {
@@ -209,72 +215,27 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     }
   }
 
-  setObservers() {
-    _subscription.add(_baseRepo.urlModel.stream.listen((resp) {
-      if (!isNullOrEmpty(resp.pageLink)) {
-        bookingNavigatorUrl = resp.pageLink!;
-        debugPrint('Booking  page Link ${resp.pageLink!}');
+  getBookingPrintLink() async {
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmgrno": widget.model.generatedGr.toString(),
+        "prmusercode": savedUser.usercode.toString(),
+        "prmmenucode": "GTAPP_BOOKING",
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+      String url = await _baseRepo.getBookingPrint(params);
+      if (!isNullOrEmpty(url)) {
+        launchUrl(Uri.parse(url));
       }
-      openBookingPage();
-    }));
-  }
-
-  getInfinitiBookingLink() {
-    final PageLinkJsonParams parameters = PageLinkJsonParams(
-      drivercode: savedUser.drivercode.toString(),
-      transactionid: widget.model.transactionid,
-      grno: widget.model.grno,
-      orderid: isNullOrEmpty(widget.model.orderid.toString())
-          ? '0'
-          : widget.model.orderid.toString(),
-    );
-
-    // menuCode = savedUser.companyid == 99883345
-    //     ? 'GTI_WayBillTallySheetComp'
-    //     : ''; //GreenTransOtex
-    Map<String, String> params = {
-      "prmlinkpagemenucode": menuCode,
-      'prmjsondatastr': jsonEncode(parameters.toJson()),
-      "prmusercode": savedUser.usercode.toString(),
-      'prmmenucode': 'GTLMD_INFINITIOPSLINK',
-      "prmsessionid": savedUser.sessionid.toString(),
-      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
-      "prmloginbranchtype": savedUser.loginbranchtype.toString(),
-    };
-
-    printParams(params);
-
-    _baseRepo.getInfinitiOpsLink(params);
-  }
-
-  openBookingPage() async {
-    if (isNullOrEmpty(bookingNavigatorUrl)) {
-      Get.to(Pickup(details: widget.model))?.then((_) {
-        widget.onRefresh();
-      });
-    } else {
-      if (bookingNavigatorUrl != null && bookingNavigatorUrl.isNotEmpty) {
-        final uri = Uri.parse(bookingNavigatorUrl);
-
-        try {
-          await launchUrl(
-            uri,
-            mode: LaunchMode.externalApplication,
-          );
-        } catch (_) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not launch URL')),
-            );
-          }
-        }
-      }
+    } catch (error) {
+      failToast(error.toString());
     }
   }
 
   Future<void> navigateToLocation({
-    required double latitude,
-    required double longitude,
+    required String latitude,
+    required String longitude,
   }) async {
     final Uri googleMapsUri = Uri.parse(
       'https://www.google.com/maps/dir/?api=1'
@@ -287,6 +248,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     } on Exception catch (e) {
       print('Error launching Google Maps: $e');
     }
+  }
+
+  updateDriverReached() async {
+    await widget.updateDriverPosition(widget.model.grno.toString());
   }
 
   @override
@@ -402,50 +367,57 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                         ));
                                         break;
                                       case 'share':
-                                        print('Share clicked');
+                                        getBookingPrintLink();
                                         break;
                                       case 'map':
                                         {
                                           // we have to pass lattitude and longitude of the consignment.
                                           // used static for testing.
                                           navigateToLocation(
-                                              latitude: 28.38667891299393,
-                                              longitude: 77.29868395341859);
+                                              latitude: widget.model.deliverylat
+                                                  .toString(),
+                                              longitude: widget
+                                                  .model.deliverylong
+                                                  .toString());
                                         }
                                         break;
                                     }
                                   },
                                   itemBuilder: (context) => [
-                                    const PopupMenuItem(
-                                      value: 'enquiry',
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.contact_support_rounded,
-                                            size: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Text('Enquiry')
-                                        ],
+                                    if (widget.model.consignmenttype == 'P' &&
+                                        status == 'Picked')
+                                      const PopupMenuItem(
+                                        value: 'enquiry',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.contact_support_rounded,
+                                              size: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 4,
+                                            ),
+                                            Text('Enquiry')
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const PopupMenuItem(
-                                      value: 'share',
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.share_rounded,
-                                            size: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Text('Share')
-                                        ],
+                                    if (widget.model.consignmenttype == 'P' &&
+                                        status == 'Picked')
+                                      const PopupMenuItem(
+                                        value: 'share',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.share_rounded,
+                                              size: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 4,
+                                            ),
+                                            Text('Share')
+                                          ],
+                                        ),
                                       ),
-                                    ),
                                     const PopupMenuItem(
                                       value: 'map',
                                       child: Row(
@@ -510,16 +482,44 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                       )),
                             ],
                           ),
-                          GestureDetector(
-                            child: Container(
-                              padding: EdgeInsets.all(
-                                  SizeConfig.smallHorizontalPadding),
-                              decoration: BoxDecoration(
-                                  color: Colors.black.withAlpha(
-                                    (0.1 * 255).toInt(),
-                                  ),
-                                  borderRadius: BorderRadius.circular(4)),
-                              child: const Text("Reached"),
+                          Visibility(
+                            visible: widget.model.reached == 'N',
+                            child: GestureDetector(
+                              onTap: () {
+                                updateDriverReached();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.horizontalPadding,
+                                    vertical: SizeConfig.verticalPadding),
+                                decoration: BoxDecoration(
+                                    color: CommonColors.colorPrimary!.withAlpha(
+                                      (0.1 * 255).toInt(),
+                                    ),
+                                    borderRadius: BorderRadius.circular(16)),
+                                child: Text(
+                                  "Reached",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: CommonColors.colorPrimary),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Visibility(
+                            visible: widget.model.reached == 'Y',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: CommonColors.green600,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                const Text("Reached")
+                              ],
                             ),
                           )
                           // Row(
@@ -743,12 +743,38 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(UnDelivery(
-                                deliveryDetailModel: modelDetail,
-                                currentDeliveryModel: currentDelivery,
-                              ))?.then((_) {
-                                widget.onRefresh();
-                              });
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.UNDELIVERY.name.toString());
+                                {
+                                  menuCode = targetMenu.menuCode.toString();
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'UnDelivery';
+
+                              if (fileName == 'UnDelivery' ||
+                                  fileName == 'undelivery') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(UnDelivery(
+                                  deliveryDetailModel: modelDetail,
+                                  currentDeliveryModel: currentDelivery,
+                                ))?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
                             },
                             icon: Icon(Icons.close,
                                 size: SizeConfig.mediumIconSize),
@@ -771,10 +797,39 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(PodEntry(deliveryDetailModel: modelDetail))
-                                  ?.then((_) {
-                                widget.onRefresh();
-                              });
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.DELIVERY.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'PodEntry';
+
+                              if (fileName == 'PodEntry' ||
+                                  fileName == 'podentry') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(PodEntry(
+                                        deliveryDetailModel: modelDetail))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
                             },
                             icon: Icon(Icons.check,
                                 size: SizeConfig.mediumIconSize),
@@ -804,11 +859,40 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(ReversePickup(
-                                deliveryDetailModel: modelDetail,
-                              ))?.then((_) {
-                                widget.onRefresh();
-                              });
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.REVERSE_PICKUP.name
+                                            .toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'ReversePickup';
+
+                              if (fileName == 'ReversePickup' ||
+                                  fileName == 'reversepickup') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(ReversePickup(
+                                  deliveryDetailModel: modelDetail,
+                                ))?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
                             },
                             icon: Icon(Icons.check,
                                 size: SizeConfig.mediumIconSize),
@@ -838,19 +922,33 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // Get.to(Pickup(details: widget.model))?.then((_) {
-                              //   widget.onRefresh();
-                              // });
-                              // if (isNullOrEmpty(menuCode)) {
-                              //   Get.to(Pickup(details: widget.model))
-                              //       ?.then((_) {
-                              //     widget.onRefresh();
-                              //   });
-                              // } else {
-                              //   getInfinitiBookingLink();
-                              // }
-                              if (savedUser.companyid.toString() ==
-                                  "99883345") {
+                              LmdMenuModel? targetMenu;
+                              print(MenuTags.PICKUP.name.toString());
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.PICKUP.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                                {}
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'pickup';
+
+                              if (fileName == 'OtexPickupScreen' ||
+                                  fileName == 'otexpickupscreen') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
                                 Get.to(
                                   OtexPickupScreen(
                                       transactionId: isNullOrEmpty(widget
@@ -867,11 +965,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 )?.then((_) {
                                   widget.onRefresh();
                                 });
-                              } else {
+                              } else if (fileName == 'Pickup' ||
+                                  fileName == 'pickup') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
                                 Get.to(Pickup(details: widget.model))
                                     ?.then((_) {
                                   widget.onRefresh();
                                 });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
                               }
                             },
                             icon: Icon(Icons.check,
@@ -897,10 +1002,32 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Get.to(RejectPickup(details: widget.model))
-                                  ?.then((_) {
-                                widget.onRefresh();
-                              });
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        'rejectpickup');
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName ?? 'RejectPickup';
+
+                              if (fileName == 'RejectPickup') {
+                                Get.to(RejectPickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
                             },
                             icon: Icon(Icons.close,
                                 size: SizeConfig.mediumIconSize),

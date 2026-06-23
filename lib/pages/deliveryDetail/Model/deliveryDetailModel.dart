@@ -24,6 +24,15 @@ class DeliveryDetailModel {
   String? isVerified;
   int? orderid;
   String? cngeaddress;
+  String? reached;
+  String? reachedlat;
+  String? reachedlong;
+  String? generatedGr;
+  String? deliverylat;
+  String? deliverylong;
+  String? pickuplat;
+  String? pickuplong;
+  int? tripid;
 
   DeliveryDetailModel({
     this.commandstatus,
@@ -48,6 +57,15 @@ class DeliveryDetailModel {
     this.isVerified,
     this.orderid,
     this.cngeaddress,
+    this.reached,
+    this.reachedlat,
+    this.reachedlong,
+    this.generatedGr,
+    this.deliverylat,
+    this.deliverylong,
+    this.pickuplat,
+    this.pickuplong,
+    this.tripid,
   });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
@@ -74,6 +92,15 @@ class DeliveryDetailModel {
       isVerified: json['isverified'],
       orderid: json['orderid'],
       cngeaddress: json['cngeaddress'],
+      reached: json['reached'],
+      reachedlat: json['reachedlat'],
+      reachedlong: json['reachedlong'],
+      generatedGr: json['generatedgr'],
+      deliverylat: json['deliverylat'],
+      deliverylong: json['deliverylong'],
+      pickuplat: json['pickuplat'],
+      pickuplong: json['pickuplong'],
+      tripid: json['tripid'],
     );
   }
 
@@ -101,6 +128,15 @@ class DeliveryDetailModel {
       'isverified': isVerified,
       'orderid': orderid,
       'cngeaddress': cngeaddress,
+      'reached': reached,
+      'reachedlat': reachedlat,
+      'reachedlong': reachedlong,
+      'generatedgr': generatedGr,
+      'deliverylat': deliverylat,
+      'deliverylong': deliverylong,
+      'pickuplat': pickuplat,
+      'pickuplong': pickuplong,
+      'tripid': tripid
     };
   }
 }

@@ -167,4 +167,29 @@ class BaseRepository {
       rethrow;
     }
   }
+
+  Future<String> getBookingPrint(Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp = await apiGet("${bookingUrl}PrintGR", params);
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Error occurred");
+      }
+
+      if (resp.commandStatus == 1) {
+        String url = resp.message.toString();
+        return url;
+      } else {
+        debugPrint('Error in : ${resp.commandMessage}');
+      }
+    } catch (err) {
+      debugPrint('Error in getSingleOperation: $err');
+      rethrow;
+    }
+    return '';
+  }
 }

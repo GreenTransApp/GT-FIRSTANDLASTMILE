@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gtlmd/api/model/ApiCallParametersModel.dart';
+import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
@@ -24,6 +25,7 @@ import 'package:intl/intl.dart';
 class OtexPickupProvider extends ChangeNotifier {
   OtexPickupState _state = OtexPickupState.initial();
   final OtexPickupRepoImpl _repo = OtexPickupRepoImpl();
+  final BaseRepository _baseRepo = BaseRepository();
   OtexPickupState get state => _state;
 
   void initializeForm(
@@ -70,7 +72,8 @@ class OtexPickupProvider extends ChangeNotifier {
         "prmloginbranchcode": savedUser.loginbranchcode.toString(),
         "prmlogindivisionid": savedUser.logindivisionid.toString(),
         "prmusercode": savedUser.usercode.toString(),
-        "prmmenucode": 'GTLMD_OTEXPICKUP',
+        // "prmmenucode": 'GTLMD_OTEXPICKUP',
+        "prmmenucode": menuCode,
         "prmsessionid": savedUser.sessionid.toString(),
         "prmindentid": transactionid,
       };
@@ -545,7 +548,8 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmmenucode": 'GTLMD_OTEXPICKUP',
+      // "prmmenucode": 'GTLMD_OTEXPICKUP',
+      "prmmenucode": menuCode,
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -596,7 +600,8 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmmenucode": 'GTAPP_PICKUPBOOKING',
+      // "prmmenucode": 'GTAPP_PICKUPBOOKING',
+      "prmmenucode": menuCode,
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
@@ -733,6 +738,18 @@ class OtexPickupProvider extends ChangeNotifier {
     // TODO: Implement Bluetooth/USB printer waybill PDF print call
   }
 
+  Future<String> getBookingPdf(String grno) async {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmgrno": grno,
+      "prmusercode": savedUser.usercode.toString(),
+      "prmmenucode": "GTAPP_BOOKING",
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+    String url = await _baseRepo.getBookingPrint(params);
+    return url;
+  }
+
   Future<bool> sendMail(
       {required String email,
       required bool sendLabel,
@@ -746,6 +763,9 @@ class OtexPickupProvider extends ChangeNotifier {
       }
     }
 
+    String url =
+        await getBookingPdf(_state.splitInfo.first.wayBillNo.toString());
+
     Map<String, String> params = {
       "prmusercode": savedUser.usercode.toString(),
       "prmalertsubject": _state.mailDetails.emailsubject.toString(),
@@ -753,10 +773,11 @@ class OtexPickupProvider extends ChangeNotifier {
       "prmemailid": email,
       "prmfilenamewithext": '',
       "prmattachfile": sendLabel ? 'Y' : 'N',
-      "prmattachment": '',
+      "prmattachment": url,
       "prmalertcc": cc,
       "prmemailtemplateid": _state.mailDetails.emailtemplateid.toString(),
-      "prmmenucode": 'GTLMD_OTEXPICKUP',
+      // "prmmenucode": 'GTLMD_OTEXPICKUP',
+      "prmmenucode": menuCode,
       "prmsessionid": savedUser.sessionid.toString(),
     };
 
