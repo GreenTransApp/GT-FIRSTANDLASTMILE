@@ -5,7 +5,9 @@ import 'dart:io';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/attendance/models/punchOutMode.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/deliveryDetail/Model/lmdMenuModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 
 import 'package:gtlmd/service/connectionCheckService.dart';
@@ -15,7 +17,9 @@ class DeliveryRepository extends BaseRepository {
   StreamController<bool> viewDialog = StreamController();
   StreamController<List<DeliveryDetailModel>> deliveryDetailList =
       StreamController();
+  StreamController<List<LmdMenuModel>> menuList = StreamController();
   StreamController<CurrentDeliveryModel> deliveryData = StreamController();
+  StreamController<PunchoutModel> updateDriverPosition = StreamController();
   Future<void> getDeliveryDetails(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -40,6 +44,82 @@ class DeliveryRepository extends BaseRepository {
                   list2.length,
                   (index) => CurrentDeliveryModel.fromJson(list2[index]));
               deliveryData.add(resultList[0]);
+            }
+          }
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> getMenu(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+        CommonResponse resp =
+            await apiPostWithModel("$lmdUrl/GetLMDPageMenu", params);
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Iterable<MapEntry<String, dynamic>> entries = table.entries;
+          for (final entry in entries) {
+            if (entry.key == "Table") {
+              List<dynamic> list1 = entry.value;
+              List<LmdMenuModel> resultList = List.generate(
+                  list1.length, (index) => LmdMenuModel.fromJson(list1[index]));
+              menuList.add(resultList);
+            }
+          }
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+  Future<void> updateDriverReached(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+        CommonResponse resp =
+            await apiPostWithModel("$lmdUrl/UpdateDriverReachPosition", params);
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Iterable<MapEntry<String, dynamic>> entries = table.entries;
+          for (final entry in entries) {
+            if (entry.key == "Table") {
+              List<dynamic> list1 = entry.value;
+              List<PunchoutModel> resultList = List.generate(list1.length,
+                  (index) => PunchoutModel.fromJson(list1[index]));
+              updateDriverPosition.add(resultList.first);
             }
           }
         } else {

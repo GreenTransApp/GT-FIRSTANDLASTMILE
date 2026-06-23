@@ -637,23 +637,25 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           color: Colors.black54,
                           // size: 24,
                         ),
-                        onTap: provider.state.isReadOnly ? null : () async {
-                          // showImagePickerDialog(context, (file) async {
-                          //   if (file != null) {
-                          //     debugPrint(' data: ${file.path}');
-                          //     setState(() {
-                          //       _itemImagePath = file.path;
-                          //     });
-                          //   } else {
-                          //     failToast("File not selected");
-                          //   }
-                          // });
-                          List<String> imagePaths =
-                              await showMultiImageBottomSheetDialog(
-                                  context, bookingImages);
+                        onTap: provider.state.isReadOnly
+                            ? null
+                            : () async {
+                                // showImagePickerDialog(context, (file) async {
+                                //   if (file != null) {
+                                //     debugPrint(' data: ${file.path}');
+                                //     setState(() {
+                                //       _itemImagePath = file.path;
+                                //     });
+                                //   } else {
+                                //     failToast("File not selected");
+                                //   }
+                                // });
+                                List<String> imagePaths =
+                                    await showMultiImageBottomSheetDialog(
+                                        context, bookingImages);
 
-                          bookingImages = imagePaths;
-                        },
+                                bookingImages = imagePaths;
+                              },
                       ),
                     ))
                   ],
@@ -748,17 +750,20 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           color: Colors.black54,
                           // size: 24,
                         ),
-                        onTap: provider.state.isReadOnly ? null : () {
-                          showSignatureBottomSheet(context, (path, base64) {
-                            if (!isNullOrEmpty(path)) {
-                              setState(() {
-                                _selectedSignaturePath = path;
-                              });
-                            } else {
-                              failToast('Please input signature again.');
-                            }
-                          });
-                        },
+                        onTap: provider.state.isReadOnly
+                            ? null
+                            : () {
+                                showSignatureBottomSheet(context,
+                                    (path, base64) {
+                                  if (!isNullOrEmpty(path)) {
+                                    setState(() {
+                                      _selectedSignaturePath = path;
+                                    });
+                                  } else {
+                                    failToast('Please input signature again.');
+                                  }
+                                });
+                              },
                       ),
                     ))
                   ],
@@ -775,6 +780,21 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                               Radius.circular(SizeConfig.largeIconSize))),
                       child: isNullOrEmpty(_selectedSignaturePath)
                           ? InkWell(
+                              onTap: provider.state.isReadOnly
+                                  ? null
+                                  : () {
+                                      showSignatureBottomSheet(context,
+                                          (path, base64) {
+                                        if (!isNullOrEmpty(path)) {
+                                          setState(() {
+                                            _selectedSignaturePath = path;
+                                          });
+                                        } else {
+                                          failToast(
+                                              'Please input signature again.');
+                                        }
+                                      });
+                                    },
                               child: const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -793,18 +813,6 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                                   )
                                 ],
                               ),
-                              onTap: provider.state.isReadOnly ? null : () {
-                                showSignatureBottomSheet(context,
-                                    (path, base64) {
-                                  if (!isNullOrEmpty(path)) {
-                                    setState(() {
-                                      _selectedSignaturePath = path;
-                                    });
-                                  } else {
-                                    failToast('Please input signature again.');
-                                  }
-                                });
-                              },
                             )
                           : Image.file(
                               File(_selectedSignaturePath),
@@ -831,8 +839,9 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
               Expanded(
                 child: OutlinedButton.icon(
                   // Print label only available after save
-                  onPressed:
-                      (isSaved || provider.state.isReadOnly) ? () => provider.printLabel(widget.index) : null,
+                  onPressed: (isSaved || provider.state.isReadOnly)
+                      ? () => provider.printLabel(widget.index)
+                      : null,
                   icon: const Icon(Icons.print_outlined, size: 14),
                   label:
                       const Text("Print Label", style: TextStyle(fontSize: 10)),
@@ -904,13 +913,15 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                             strokeWidth: 2, color: Colors.white),
                       )
                     : Icon(
-                        isSaved ? Icons.check_circle : Icons.check_circle_outline,
+                        isSaved
+                            ? Icons.check_circle
+                            : Icons.check_circle_outline,
                         size: 16,
                       ),
                 label: Text(
                   _isSaving ? "Saving..." : "Save Way Bill",
-                  style:
-                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 12),
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -925,49 +936,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
               ),
             ),
 
-          if (!provider.state.isReadOnly)
-            const SizedBox(height: 8),
+          if (!provider.state.isReadOnly) const SizedBox(height: 8),
           // Vechicle Arrival button — full width,
-          if (!provider.state.isReadOnly)
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: isNullOrEmpty(card.wayBillNo)
-                    ? null
-                    : () async {
-                        await provider.getPageLink();
-                        if (provider.state.openVehicleArrival) {
-                          try {
-                            await launchUrl(
-                              Uri.parse(provider.state.vehicleArrivalUrl!),
-                              mode: LaunchMode.externalApplication,
-                            );
-                          } catch (_) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Could not launch URL')),
-                              );
-                            }
-                          }
-                        }
-                      },
-                label: const Text(
-                  "Vehicle Arrival",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  // backgroundColor: CommonColors.colorPrimary,
-                  foregroundColor: CommonColors.colorPrimary,
-                  disabledBackgroundColor: Colors.grey.shade600,
-                  disabledForegroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
-                  elevation: 0,
-                ),
-              ),
-            ),
         ],
       ),
     );

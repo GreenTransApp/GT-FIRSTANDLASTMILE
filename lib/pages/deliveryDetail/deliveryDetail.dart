@@ -1,13 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
+import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/deliveryDetail/Model/lmdMenuModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
@@ -31,10 +34,11 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     with WidgetsBindingObserver {
   CurrentDeliveryModel deliveryModel = CurrentDeliveryModel();
   List<DeliveryDetailModel> deliveryDetailList = List.empty(growable: true);
+  List<LmdMenuModel> menuList = [];
   late LoadingAlertService loadingAlertService;
   final DeliveryViewModel viewModel = DeliveryViewModel();
-  BaseRepository _baseRepo = BaseRepository();
-  List<StreamSubscription> _subscription = [];
+  final BaseRepository _baseRepo = BaseRepository();
+  final List<StreamSubscription> _subscription = [];
 
   @override
   void initState() {
@@ -52,7 +56,9 @@ class _DeliveryDetailState extends State<DeliveryDetail>
             {
               setObservers(),
               getDeliveryDetails(),
-              getBookingMenuCodeFromCompAccPara()
+              getMenu(),
+              getBookingMenuCodeFromCompAccPara(),
+              // getBookingPdf()
             }
         });
   }
@@ -63,6 +69,18 @@ class _DeliveryDetailState extends State<DeliveryDetail>
   //     refreshScreen();
   //   }
   // }
+
+  void getBookingPdf() async {
+    Map<String, String> params = {
+      "prmconnstring": savedUser.companyid.toString(),
+      "prmgrno": 'RUH10000288',
+      "prmusercode": savedUser.usercode.toString(),
+      "prmmenucode": "GTAPP_BOOKING",
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+    String url = await _baseRepo.getBookingPrint(params);
+    print(url);
+  }
 
   @override
   void dispose() {
@@ -109,6 +127,13 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       failToast(errMsg);
     });
 
+    _subscription.add(viewModel.getMenuLiveData.stream.listen((data) {
+      setState(() {
+        menuList = data;
+      });
+      print(data);
+    }));
+
     _subscription.add(_baseRepo.compAccPara.stream.listen((resp) {
       debugPrint(resp);
       setState(() {
@@ -119,6 +144,13 @@ class _DeliveryDetailState extends State<DeliveryDetail>
           debugPrint('Booking Menucode Not Found');
         }
       });
+    }));
+
+    _subscription.add(viewModel.updateDriverReachedLD.stream.listen((resp) {
+      if (resp.commandstatus == 1) {
+        successToast("Location Update successfull");
+        refreshScreen();
+      }
     }));
   }
 
@@ -136,9 +168,40 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     viewModel.getDeliveryDetail(params);
   }
 
+  getMenu() {
+    Map<String, String> params = {
+      "prmusercode": savedUser.usercode.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmdivisionid": savedUser.logindivisionid.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    printParams(params);
+    viewModel.getMenu(params);
+  }
+
   Future<void> refreshScreen() async {
     getDeliveryDetails();
     getBookingMenuCodeFromCompAccPara();
+  }
+
+  Future<void> updateDriverReached(String grno) async {
+    Position position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
+        desiredAccuracy: LocationAccuracy.high);
+
+    Map<String, String> params = {
+      "prmusercode": savedUser.usercode.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmtripid": widget.tripModel.tripid.toString(),
+      "prmgrno": grno,
+      "prmreachedlat": position.latitude.toString(),
+      "prmreachedlong": position.longitude.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+
+    printParams(params);
+    viewModel.updateDriverReached(params);
   }
 
   getBookingMenuCodeFromCompAccPara() {
@@ -313,6 +376,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                     listLength: deliveryDetailList.length,
                                     index: index,
                                     onRefresh: refreshScreen,
+                                    menuList: menuList,
+                                    updateDriverPosition: updateDriverReached,
                                   );
                                 },
                               ),
