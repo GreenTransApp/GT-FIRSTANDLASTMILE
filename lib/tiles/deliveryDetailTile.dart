@@ -10,6 +10,7 @@ import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
+import 'package:gtlmd/pages/consignmentEnquiry/consignmentEnquiryPage.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/lmdMenuModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupScreen.dart';
