@@ -950,3 +950,25 @@ bool? getFormBoolValue(String key, RETURN_TYPE returnType) {
   }
   // return fieldMap[key.toLowerCase()]?.LabelName;
 }
+
+Future<String?> urlToBase64(String url) async {
+  try {
+    // 1. Fetch the data from the URL
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      // 2. Get the response body bytes
+      final bytes = response.bodyBytes;
+
+      // 3. Encode bytes to a Base64 string
+      String base64String = base64Encode(bytes);
+      return base64String;
+    } else {
+      print('Failed to load file. Status code: ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    print('Error converting URL to Base64: $e');
+    return null;
+  }
+}

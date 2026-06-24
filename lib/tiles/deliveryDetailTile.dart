@@ -85,7 +85,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     listValue = widget.listLength;
     listIndex = widget.index;
 
-    if (listValue == 0 && listIndex == 1) {
+    if (listValue == 1 && listIndex == 0) {
       isFirst = true;
       isLast = true;
     } else if (listIndex == 0) {
@@ -350,20 +350,25 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   onSelected: (value) {
                                     switch (value) {
                                       case 'enquiry':
-                                        Get.to(OtexPickupScreen(
-                                          transactionId: isNullOrEmpty(widget
-                                                  .model.transactionid
-                                                  .toString())
-                                              ? '0'
-                                              : widget.model.transactionid
-                                                  .toString(),
-                                          grno: widget.model.grno.toString(),
-                                          orderid: isNullOrEmpty(widget
-                                                  .model.orderid
-                                                  .toString())
-                                              ? '0'
-                                              : widget.model.orderid.toString(),
-                                          isReadOnly: true,
+                                        // Get.to(OtexPickupScreen(
+                                        //   transactionId: isNullOrEmpty(widget
+                                        //           .model.transactionid
+                                        //           .toString())
+                                        //       ? '0'
+                                        //       : widget.model.transactionid
+                                        //           .toString(),
+                                        //   grno: widget.model.grno.toString(),
+                                        //   orderid: isNullOrEmpty(widget
+                                        //           .model.orderid
+                                        //           .toString())
+                                        //       ? '0'
+                                        //       : widget.model.orderid.toString(),
+                                        //   isReadOnly: true,
+                                        // ));
+                                        Get.to(ConsignmentEnquiryPage(
+                                          consignmentNo: widget
+                                              .model.generatedGr
+                                              .toString(),
                                         ));
                                         break;
                                       case 'share':
@@ -444,43 +449,45 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: SizeConfig
-                                            .extraSmallHorizontalPadding,
-                                        vertical: SizeConfig
-                                            .extraSmallVerticalPadding),
-                                    child: Text(
-                                      status.toString(),
-                                      style: TextStyle(
-                                        fontSize: SizeConfig.smallTextSize,
-                                        fontWeight: FontWeight.w500,
-                                        color: statusIconColor,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: SizeConfig
+                                              .extraSmallHorizontalPadding,
+                                          vertical: SizeConfig
+                                              .extraSmallVerticalPadding),
+                                      child: Text(
+                                        status.toString(),
+                                        style: TextStyle(
+                                          fontSize: SizeConfig.smallTextSize,
+                                          fontWeight: FontWeight.w500,
+                                          color: statusIconColor,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Icon(
-                                    statusIcon,
-                                    color: statusIconColor,
-                                    size: SizeConfig.extraLargeIconSize,
-                                  ),
-                                ],
-                              ),
-                              isNullOrEmpty(modelDetail.undeliverreason)
-                                  ? const SizedBox.shrink()
-                                  : Text(
-                                      'Reason: ${modelDetail.undeliverreason}',
-                                      style: TextStyle(
-                                        fontSize: SizeConfig.smallTextSize,
-                                        fontWeight: FontWeight.w800,
-                                        color: CommonColors.colorPrimary,
-                                      )),
-                            ],
+                                    Icon(
+                                      statusIcon,
+                                      color: statusIconColor,
+                                      size: SizeConfig.extraLargeIconSize,
+                                    ),
+                                  ],
+                                ),
+                                isNullOrEmpty(modelDetail.undeliverreason)
+                                    ? const SizedBox.shrink()
+                                    : Text(
+                                        'Reason: ${modelDetail.undeliverreason}',
+                                        style: TextStyle(
+                                          fontSize: SizeConfig.smallTextSize,
+                                          fontWeight: FontWeight.w800,
+                                          color: CommonColors.colorPrimary,
+                                        )),
+                              ],
+                            ),
                           ),
                           Visibility(
                             visible: widget.model.reached == 'N',
@@ -506,7 +513,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               ),
                             ),
                           ),
-
                           Visibility(
                             visible: widget.model.reached == 'Y',
                             child: Row(
@@ -522,53 +528,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               ],
                             ),
                           )
-                          // Row(
-                          //   children: [
-                          //     GestureDetector(
-                          //       onTap: () {
-                          //         print('Location clicked');
-                          //       },
-                          //       child: Container(
-                          //         height: 36,
-                          //         width: 36,
-                          //         decoration: BoxDecoration(
-                          //           color: Colors.blue
-                          //               .withAlpha((0.15 * 255).toInt()),
-                          //           borderRadius: BorderRadius.circular(12),
-                          //         ),
-                          //         child: const Center(
-                          //           child: Icon(
-                          //             Icons.location_on_outlined,
-                          //             color: Colors.blue,
-                          //             size: 18,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     const SizedBox(width: 12),
-                          //     GestureDetector(
-                          //       onTap: () {
-                          //         print('Share clicked');
-                          //       },
-                          //       child: Container(
-                          //         height: 36,
-                          //         width: 36,
-                          //         decoration: BoxDecoration(
-                          //           color: Colors.purple
-                          //               .withAlpha((0.15 * 255).toInt()),
-                          //           borderRadius: BorderRadius.circular(12),
-                          //         ),
-                          //         child: const Center(
-                          //           child: Icon(
-                          //             Icons.share_outlined,
-                          //             color: Colors.purple,
-                          //             size: 18,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // )
                         ],
                       ),
                     ],

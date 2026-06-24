@@ -192,4 +192,29 @@ class BaseRepository {
     }
     return '';
   }
+
+  Future<String> getStickerData(Map<String, String> params) async {
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (!hasInternet) {
+      throw Exception("No Internet available");
+    }
+
+    try {
+      CommonResponse resp = await apiGet("${lmdUrl}GetStickerData", params);
+      if (resp.commandStatus != 1) {
+        throw Exception(resp.commandMessage ?? "Error occurred");
+      }
+
+      if (resp.commandStatus == 1) {
+        String url = resp.message.toString();
+        return url;
+      } else {
+        debugPrint('Error in : ${resp.commandMessage}');
+      }
+    } catch (err) {
+      debugPrint('Error in getStickerData: $err');
+      rethrow;
+    }
+    return '';
+  }
 }

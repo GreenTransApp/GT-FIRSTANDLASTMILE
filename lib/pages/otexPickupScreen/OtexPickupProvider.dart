@@ -675,16 +675,6 @@ class OtexPickupProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // API Call: Save/Submit specific destination entry card
-  // Future<bool> saveCardEntry(int index) async {
-  //   if (index >= _state.splitInfo.length) return false;
-  //   final card = _state.splitInfo[index];
-
-  //   // TODO: Perform local API call for card level upsert (e.g. Card validation & post request)
-  //   // final success = await repository.saveCard(card, _state.info);
-
-  //   return true;
-  // }
   Future<String> getPageLink() async {
     Map<String, String> params = {
       "prmconnstring": savedUser.companyid.toString(),
@@ -739,49 +729,99 @@ class OtexPickupProvider extends ChangeNotifier {
   }
 
   Future<String> getBookingPdf(String grno) async {
-    Map<String, String> params = {
-      "prmconnstring": savedUser.companyid.toString(),
-      "prmgrno": grno,
-      "prmusercode": savedUser.usercode.toString(),
-      "prmmenucode": "GTAPP_BOOKING",
-      "prmsessionid": savedUser.sessionid.toString(),
-    };
-    String url = await _baseRepo.getBookingPrint(params);
-    return url;
+    String url = "";
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmgrno": grno,
+        "prmusercode": savedUser.usercode.toString(),
+        "prmmenucode": "GTAPP_BOOKING",
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+      url = await _baseRepo.getBookingPrint(params);
+      return url;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<String> getStickerData(String grno) async {
+    String base64 = "";
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+        "prmlogindivisionid": savedUser.logindivisionid.toString(),
+        "prmusercode": savedUser.usercode.toString(),
+        "prmmenucode": menuCode,
+        "prmsessionid": savedUser.sessionid.toString(),
+        "prmgrno": grno,
+        "prmfrom": "1",
+        "prmto": _state.info.pcs.toString(),
+        "prmprintmenucode": menuCode,
+        "prmeventname": "PRINTSTICKER"
+      };
+      base64 = await _baseRepo.getStickerData(params);
+    } catch (error) {
+      rethrow;
+    }
+    return base64;
   }
 
   Future<bool> sendMail(
       {required String email,
       required bool sendLabel,
       required String ccemails}) async {
-    List<String> ccemailslist = ccemails.split(',');
-    String cc = "";
-    if (ccemailslist.isNotEmpty) {
-      for (String x in ccemailslist) {
-        cc += x;
-        cc += ',';
-      }
-    }
-
-    String url =
-        await getBookingPdf(_state.splitInfo.first.wayBillNo.toString());
-
-    Map<String, String> params = {
-      "prmusercode": savedUser.usercode.toString(),
-      "prmalertsubject": _state.mailDetails.emailsubject.toString(),
-      "prmalertmessage": _state.mailDetails.emailbody.toString(),
-      "prmemailid": email,
-      "prmfilenamewithext": '',
-      "prmattachfile": sendLabel ? 'Y' : 'N',
-      "prmattachment": url,
-      "prmalertcc": cc,
-      "prmemailtemplateid": _state.mailDetails.emailtemplateid.toString(),
-      // "prmmenucode": 'GTLMD_OTEXPICKUP',
-      "prmmenucode": menuCode,
-      "prmsessionid": savedUser.sessionid.toString(),
-    };
-
     try {
+      List<String> ccemailslist = ccemails.split(',');
+      String cc = "";
+      if (ccemailslist.isNotEmpty) {
+        for (String x in ccemailslist) {
+          cc += isNullOrEmpty(x) ? '' : x;
+          cc += ',';
+        }
+      }
+
+      if (cc.length == 1) {
+        cc = '';
+      }
+
+      String url =
+          await getBookingPdf(_state.splitInfo.first.wayBillNo.toString());
+
+      String labels =
+          await getStickerData(_state.splitInfo.first.wayBillNo.toString());
+
+      String? attachmentBase64 = await urlToBase64(url);
+      if (!isNullOrEmpty(labels)) {
+        if (isNullOrEmpty(attachmentBase64)) {
+          attachmentBase64 = labels;
+        } else {
+          attachmentBase64 = "$attachmentBase64,$labels";
+        }
+      }
+      String fileName =
+          "${_state.splitInfo.first.wayBillNo.toString()}_BookingPrint.pdf";
+      if (!isNullOrEmpty(labels)) {
+        fileName =
+            "$fileName,${_state.splitInfo.first.wayBillNo.toString()}_Sticker.pdf";
+      }
+      Map<String, String> params = {
+        "prmusercode": savedUser.usercode.toString(),
+        "prmalertsubject": _state.mailDetails.emailsubject.toString(),
+        "prmalertmessage": _state.mailDetails.emailbody.toString(),
+        "prmemailid": email,
+        "prmfilenamewithext": fileName,
+        "prmattachfile":
+            isNullOrEmpty(attachmentBase64) ? '' : attachmentBase64!,
+        "prmattachment": 'Y',
+        "prmalertcc": cc,
+        "prmemailtemplateid": _state.mailDetails.emailtemplateid.toString(),
+        // "prmmenucode": 'GTLMD_OTEXPICKUP',
+        "prmmenucode": menuCode,
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+
       final response = await _repo.scheduleMailAlert(params);
       if (response.commandStatus == 1) {
         _state = _state.copyWith(
