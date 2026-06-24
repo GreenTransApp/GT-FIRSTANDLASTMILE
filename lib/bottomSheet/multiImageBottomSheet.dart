@@ -45,7 +45,9 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
         }
       });
     } else {
-      showDialogWithImage(context, imageUrls[index], isLocal: true);
+      final bool isRemote = imageUrls[index].startsWith('http://') ||
+          imageUrls[index].startsWith('https://');
+      showDialogWithImage(context, imageUrls[index], isLocal: !isRemote);
     }
   }
 
@@ -176,18 +178,40 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
                                   borderRadius: BorderRadius.circular(12),
                                   child: AspectRatio(
                                     aspectRatio: 1,
-                                    child: Image.file(
-                                      File(imageUrls[index]),
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                          'assets/images/profile.png',
-                                          fit: BoxFit.cover,
-                                        );
-                                      },
-                                    ),
+                                    child: imageUrls[index]
+                                                .startsWith("https://") ||
+                                            imageUrls[index]
+                                                .startsWith("http://")
+                                        ? Image.network(
+                                            imageUrls[index],
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Image.network(
+                                                  'assets/images/profile.png',
+                                                  fit: BoxFit.cover);
+                                            },
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            },
+                                          )
+                                        : Image.file(
+                                            File(imageUrls[index]),
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                              return Image.asset(
+                                                'assets/images/profile.png',
+                                                fit: BoxFit.cover,
+                                              );
+                                            },
+                                          ),
                                   ),
                                 ),
                               ),

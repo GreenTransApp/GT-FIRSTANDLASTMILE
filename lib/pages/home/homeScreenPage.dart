@@ -10,6 +10,7 @@ import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/bottomSheet/NotificationOptionBottomSheet/notificationOptionBottomSheet.dart';
 import 'package:gtlmd/bottomSheet/datePicker.dart';
+import 'package:gtlmd/bottomSheet/multiImageBottomSheet.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
@@ -90,7 +91,7 @@ class _HomeScreen extends State<HomeScreen>
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();
-  
+
   @override
   void initState() {
     super.initState();
@@ -1021,59 +1022,53 @@ class _HomeScreen extends State<HomeScreen>
             ],
           ),
           drawer: const SideMenu(),
-   floatingActionButton: AvatarGlow(
-     glowColor: CommonColors.colorPrimary??Colors.blue,
-  repeat: true,
-     child: FloatingActionButton(
-  onPressed: () async {
-      final url ="https://gtjinni.com/";
-       if (url != null &&
-         url.isNotEmpty) {
-          try {
-            await launchUrl(
-              Uri.parse(url),
-              mode: LaunchMode
-                  .externalApplication,
-            );
-          } catch (_) {
-            if (context
-                .mounted) {
-              ScaffoldMessenger.of(
-                      context)
-                  .showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Could not launch URL',
+          floatingActionButton: AvatarGlow(
+              glowColor: CommonColors.colorPrimary ?? Colors.blue,
+              repeat: true,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  final url = "https://gtjinni.com/";
+                  if (url != null && url.isNotEmpty) {
+                    try {
+                      await launchUrl(
+                        Uri.parse(url),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Could not launch URL',
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  }
+                },
+                shape: const CircleBorder(),
+                backgroundColor: CommonColors.indigoshade50,
+                highlightElevation: 20.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: CommonColors.colorPrimary ??
+                          Colors.blue, // Border color
+                      width: 2, // Border thickness
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/jinnilogo.png',
+                      fit: BoxFit.cover,
+                      // width: 50,
+                      // height: 50,
+                    ),
                   ),
                 ),
-              );
-            }
-          }
-        }
-  },
-  shape: const CircleBorder(),
-  backgroundColor: CommonColors.indigoshade50,
-  highlightElevation: 20.0,
-  child: Container(
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(
-        color: CommonColors.colorPrimary ?? Colors.blue, // Border color
-        width: 2, // Border thickness
-      ),
-    ),
-    child: ClipOval(
-      child: Image.asset(
-        'assets/images/jinnilogo.png',
-        fit: BoxFit.cover,
-        // width: 50,
-        // height: 50,
-      ),
-    ),
-  ),
-)
-   ),
-      
+              )),
           body: Container(
             color: CommonColors.blueGrey?.withOpacity(0.1),
             child: IndexedStack(
@@ -1087,13 +1082,11 @@ class _HomeScreen extends State<HomeScreen>
                       visible: ENV.isDebugging,
                       child: GestureDetector(
                         onTap: () async {
-                          ImageEditorController ctrl = ImageEditorController(
-                              repository: ImageEditingRepositoryImpl());
-                          Get.to(
-                            () => ImageEditorScreen(
-                              controller: ctrl,
-                            ),
-                          );
+                          List<String> files = [
+                            'https://images.pexels.com/photos/7752991/pexels-photo-7752991.jpeg',
+                            'https://images.pexels.com/photos/37368106/pexels-photo-37368106.jpeg'
+                          ];
+                          showMultiImageBottomSheetDialog(context, files);
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
