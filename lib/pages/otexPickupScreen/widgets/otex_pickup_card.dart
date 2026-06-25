@@ -37,6 +37,8 @@ class OtexPickupCard extends StatefulWidget {
 class _OtexPickupCardState extends State<OtexPickupCard> {
   bool _isCardExpanded = true;
   bool _isSaving = false;
+  bool _isPrintingLabel = false;
+  bool _isPrintingWaybill = false;
 
   // Only real text input controllers — LOV fields are gone
   final TextEditingController _palletQtyController = TextEditingController();
@@ -223,6 +225,18 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
       // Auto-collapse on successful save — clean UX signal to user
       // setState(() => _isCardExpanded = false);
     }
+  }
+
+  Future<void> _handlePrintLabel(OtexPickupProvider provider) async {
+    setState(() => _isPrintingLabel = true);
+    await provider.printLabel(widget.index);
+    if (mounted) setState(() => _isPrintingLabel = false);
+  }
+
+  Future<void> _handlePrintWaybill(OtexPickupProvider provider) async {
+    setState(() => _isPrintingWaybill = true);
+    await provider.printWaybill(widget.index);
+    if (mounted) setState(() => _isPrintingWaybill = false);
   }
 
   void _handleClear(OtexPickupProvider provider, bool isSaved) {
@@ -836,37 +850,57 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
           // Print row
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  // Print label only available after save
-                  onPressed: (isSaved || provider.state.isReadOnly)
-                      ? () => provider.printLabel(widget.index)
-                      : null,
-                  icon: const Icon(Icons.print_outlined, size: 14),
-                  label:
-                      const Text("Print Label", style: TextStyle(fontSize: 10)),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    foregroundColor: CommonColors.colorPrimary,
-                    disabledForegroundColor: Colors.grey.shade400,
-                    side: BorderSide(
-                        color: (isSaved || provider.state.isReadOnly)
-                            ? CommonColors.appBarColor
-                            : Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6)),
-                  ),
-                ),
-              ),
+              // Expanded(
+              //   child: OutlinedButton.icon(
+              //     // Print label only available after save
+              //     onPressed: (isSaved || provider.state.isReadOnly) &&
+              //             !_isPrintingLabel
+              //         ? () => _handlePrintLabel(provider)
+              //         : null,
+              //     icon: _isPrintingLabel
+              //         ? const SizedBox(
+              //             width: 12,
+              //             height: 12,
+              //             child: CircularProgressIndicator(
+              //                 strokeWidth: 2, color: CommonColors.appBarColor),
+              //           )
+              //         : const Icon(Icons.print_outlined, size: 14),
+              //     label: Text(
+              //       _isPrintingLabel ? "Printing..." : "Print Label",
+              //       style: const TextStyle(fontSize: 10),
+              //     ),
+              //     style: OutlinedButton.styleFrom(
+              //       padding: const EdgeInsets.symmetric(vertical: 10),
+              //       foregroundColor: CommonColors.colorPrimary,
+              //       disabledForegroundColor: Colors.grey.shade400,
+              //       side: BorderSide(
+              //           color: (isSaved || provider.state.isReadOnly)
+              //               ? CommonColors.appBarColor
+              //               : Colors.grey.shade300),
+              //       shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(6)),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(width: 4),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: (isSaved || provider.state.isReadOnly)
-                      ? () => provider.printWaybill(widget.index)
+                  onPressed: (isSaved || provider.state.isReadOnly) &&
+                          !_isPrintingWaybill
+                      ? () => _handlePrintWaybill(provider)
                       : null,
-                  icon: const Icon(Icons.description_outlined, size: 14),
-                  label: const Text("Print Waybill",
-                      style: TextStyle(fontSize: 10)),
+                  icon: _isPrintingWaybill
+                      ? const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: CommonColors.appBarColor),
+                        )
+                      : const Icon(Icons.description_outlined, size: 14),
+                  label: Text(
+                    _isPrintingWaybill ? "Printing..." : "Print Waybill",
+                    style: const TextStyle(fontSize: 10),
+                  ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     foregroundColor: CommonColors.colorPrimary,

@@ -30,6 +30,7 @@ import 'package:gtlmd/service/authenticationService.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -971,4 +972,22 @@ Future<String?> urlToBase64(String url) async {
     print('Error converting URL to Base64: $e');
     return null;
   }
+}
+
+Future<String> convertBase64ToPdfUrl(
+    String base64String, String fileName) async {
+  // 1. Decode the base64 string into raw bytes
+  final Uint8List bytes = base64Decode(base64String.replaceAll('\n', ''));
+
+  // 2. Get the device's temporary or documents directory
+  final Directory tempDir = await getTemporaryDirectory();
+
+  // 3. Create a reference pointer for the file destination
+  final File file = File('${tempDir.path}/$fileName.pdf');
+
+  // 4. Write the binary data to the disk
+  await file.writeAsBytes(bytes);
+
+  // 5. Return the usable file path URI scheme (e.g., file:///...)
+  return file.uri.toString();
 }

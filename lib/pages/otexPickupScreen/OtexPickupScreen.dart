@@ -220,130 +220,134 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
           _cardCountController.text = state.splitInfo.length.toString();
         }
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: CommonColors.colorPrimary,
-            title: Text(
-              widget.transactionId == null || widget.transactionId == "0"
-                  ? 'OTEX Auto waybill entry'
-                  : 'Edit Booking #${widget.transactionId}',
-              style: TextStyle(
-                color: CommonColors.White,
-                fontSize: SizeConfig.mediumTextSize,
-                fontWeight: FontWeight.bold,
+        return Stack(
+          children: [
+            Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: CommonColors.colorPrimary,
+                title: Text(
+                  widget.transactionId == null || widget.transactionId == "0"
+                      ? 'OTEX Auto waybill entry'
+                      : 'Edit Booking #${widget.transactionId}',
+                  style: TextStyle(
+                    color: CommonColors.White,
+                    fontSize: SizeConfig.mediumTextSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: CommonColors.White,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                elevation: 0,
               ),
-            ),
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: CommonColors.White,
-                size: SizeConfig.largeIconSize,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-            elevation: 0,
-          ),
-          body: GestureDetector(
-            onTap: () => FocusScope.of(context)
-                .unfocus(), // Automatically dismiss keyboard on outside tap
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  // Main Scrollable Area
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        vertical: SizeConfig.smallVerticalPadding,
-                        horizontal: SizeConfig.smallHorizontalPadding,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Section 1: Collapsible Header Card
-                          CollapsibleHeaderSection(),
-                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
+              body: GestureDetector(
+                onTap: () => FocusScope.of(context)
+                    .unfocus(), // Automatically dismiss keyboard on outside tap
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // Main Scrollable Area
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(
+                            vertical: SizeConfig.smallVerticalPadding,
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section 1: Collapsible Header Card
+                              CollapsibleHeaderSection(),
+                              SizedBox(height: SizeConfig.mediumVerticalSpacing),
 
-                          // Card Count Dynamic Control Form Row
-                          // Card(
-                          //   surfaceTintColor: CommonColors.White,
-                          //   elevation: 1,
-                          //   shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(8)),
-                          //   child: Padding(
-                          //     padding: EdgeInsets.all(
-                          //         SizeConfig.mediumHorizontalSpacing),
-                          //     child: Row(
-                          //       children: [
-                          //         const Icon(Icons.copy_outlined,
-                          //             color: Colors.blueGrey),
-                          //         const SizedBox(width: 8),
-                          //         Expanded(
-                          //           child: Text(
-                          //             "Number Of Destinations",
-                          //             style: TextStyle(
-                          //               fontSize: SizeConfig.smallTextSize,
-                          //               fontWeight: FontWeight.w500,
-                          //               color: Colors.blueGrey.shade800,
-                          //             ),
-                          //           ),
-                          //         ),
-                          //         SizedBox(
-                          //           width: 70,
-                          //           child: TextFormField(
-                          //             controller: _cardCountController,
-                          //             keyboardType: TextInputType.number,
-                          //             textAlign: TextAlign.center,
-                          //             inputFormatters: [
-                          //               FilteringTextInputFormatter.digitsOnly
-                          //             ],
-                          //             style: const TextStyle(
-                          //                 fontWeight: FontWeight.bold),
-                          //             decoration: InputDecoration(
-                          //               contentPadding:
-                          //                   const EdgeInsets.symmetric(
-                          //                       vertical: 8, horizontal: 4),
-                          //               border: OutlineInputBorder(
-                          //                   borderRadius:
-                          //                       BorderRadius.circular(8)),
-                          //             ),
-                          //             onChanged: (val) {
-                          //               final count = int.tryParse(val) ?? 1;
-                          //               provider.setCardCount(count);
-                          //             },
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                          // SizedBox(height: SizeConfig.smallVerticalPadding),
+                              // Card Count Dynamic Control Form Row
+                              // Card(\r\n                           //   surfaceTintColor: CommonColors.White,\r\n                           //   elevation: 1,\r\n                           //   shape: RoundedRectangleBorder(\r\n                           //       borderRadius: BorderRadius.circular(8)),\r\n                           //   child: Padding(\r\n                           //     padding: EdgeInsets.all(\r\n                           //         SizeConfig.mediumHorizontalSpacing),\r\n                           //     child: Row(\r\n                           //       children: [\r\n                           //         const Icon(Icons.copy_outlined,\r\n                           //             color: Colors.blueGrey),\r\n                           //         const SizedBox(width: 8),\r\n                           //         Expanded(\r\n                           //           child: Text(\r\n                           //             \"Number Of Destinations\",\r\n                           //             style: TextStyle(\r\n                           //               fontSize: SizeConfig.smallTextSize,\r\n                           //               fontWeight: FontWeight.w500,\r\n                           //               color: Colors.blueGrey.shade800,\r\n                           //             ),\r\n                           //           ),\r\n                           //         ),\r\n                           //         SizedBox(\r\n                           //           width: 70,\r\n                           //           child: TextFormField(\r\n                           //             controller: _cardCountController,\r\n                           //             keyboardType: TextInputType.number,\r\n                           //             textAlign: TextAlign.center,\r\n                           //             inputFormatters: [\r\n                           //               FilteringTextInputFormatter.digitsOnly\r\n                           //             ],\r\n                           //             style: const TextStyle(\r\n                           //                 fontWeight: FontWeight.bold),\r\n                           //             decoration: InputDecoration(\r\n                           //               contentPadding:\r\n                           //                   const EdgeInsets.symmetric(\r\n                           //                       vertical: 8, horizontal: 4),\r\n                           //               border: OutlineInputBorder(\r\n                           //                   borderRadius:\r\n                           //                       BorderRadius.circular(8)),\r\n                           //             ),\r\n                           //             onChanged: (val) {\r\n                           //               final count = int.tryParse(val) ?? 1;\r\n                           //               provider.setCardCount(count);\r\n                           //             },\r\n                           //           ),\r\n                           //         ),\r\n                           //       ],\r\n                           //     ),\r\n                           //   ),\r\n                           // ),\r\n                           // SizedBox(height: SizeConfig.smallVerticalPadding),
 
 // Section 2: Card count input  ← ADD THIS
-                          // _buildCardCountRow(provider, state),
-                          SizedBox(height: SizeConfig.smallVerticalPadding),
+                              // _buildCardCountRow(provider, state),
+                              SizedBox(height: SizeConfig.smallVerticalPadding),
 
-                          // Section 2: Dynamically Rendered Card List
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: state.splitInfo.length,
-                            itemBuilder: (context, index) {
-                              return OtexPickupCard(
-                                key: ValueKey("card_$index"),
-                                index: index,
-                              );
-                            },
+                              // Section 2: Dynamically Rendered Card List
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: state.splitInfo.length,
+                                itemBuilder: (context, index) {
+                                  return OtexPickupCard(
+                                    key: ValueKey("card_$index"),
+                                    index: index,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Mail sending loading overlay
+            if (state.isSendingMail)
+              AbsorbPointer(
+                absorbing: true,
+                child: Container(
+                  color: Colors.black.withOpacity(0.45),
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 28, vertical: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            color: CommonColors.colorPrimary,
+                            strokeWidth: 3,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Sending Mail...',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Please wait, do not go back.',
+                            style: TextStyle(
+                              fontSize: SizeConfig.smallTextSize,
+                              color: Colors.grey.shade600,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+          ],
         );
       },
     );

@@ -21,6 +21,7 @@ import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OtexPickupProvider extends ChangeNotifier {
   OtexPickupState _state = OtexPickupState.initial();
@@ -38,7 +39,10 @@ class OtexPickupProvider extends ChangeNotifier {
         cardListStatus: SectionStatus.idle,
         info: OtexPickupInfoModel(orderid: orderid),
         mailDetails: MailDetails(),
-        splitInfo: [OtexPickupSplitInfo()],
+        splitInfo: [
+          OtexPickupSplitInfo(),
+        ],
+        isSendingMail: false,
         permanentCardCount: 0,
         totalPalletQty: 0,
         hasTransactionId: transactionId != null && transactionId != "0",
@@ -720,12 +724,40 @@ class OtexPickupProvider extends ChangeNotifier {
 
   // Bluetooth/Local Printer Call: Print Local labels
   Future<void> printLabel(int index) async {
-    // TODO: Implement Bluetooth/USB printer labels spooled call
+    try {
+      String base64 =
+          await getStickerData(_state.splitInfo[index].wayBillNo.toString());
+      if (!isNullOrEmpty(base64)) {
+        String url = await convertBase64ToPdfUrl(
+            base64, 'sticker_${DateTime.now().millisecondsSinceEpoch}');
+        // await OpenFilex.open(url);
+      }
+    } catch (error) {
+      _state = _state.copyWith(errorMessage: error.toString());
+    }
   }
 
   // Bluetooth/Local Printer Call: Print Local Waybill
   Future<void> printWaybill(int index) async {
-    // TODO: Implement Bluetooth/USB printer waybill PDF print call
+    await getBookingPrintLink(_state.splitInfo[index].wayBillNo.toString());
+  }
+
+  Future<void> getBookingPrintLink(String grno) async {
+    try {
+      Map<String, String> params = {
+        "prmconnstring": savedUser.companyid.toString(),
+        "prmgrno": grno,
+        "prmusercode": savedUser.usercode.toString(),
+        "prmmenucode": "GTAPP_BOOKING",
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+      String url = await _baseRepo.getBookingPrint(params);
+      if (!isNullOrEmpty(url)) {
+        launchUrl(Uri.parse(url));
+      }
+    } catch (error) {
+      _state = _state.copyWith(errorMessage: error.toString());
+    }
   }
 
   Future<String> getBookingPdf(String grno) async {
@@ -772,6 +804,8 @@ class OtexPickupProvider extends ChangeNotifier {
       {required String email,
       required bool sendLabel,
       required String ccemails}) async {
+    _state = _state.copyWith(isSendingMail: true);
+    notifyListeners();
     try {
       List<String> ccemailslist = ccemails.split(',');
       String cc = "";
@@ -826,16 +860,21 @@ class OtexPickupProvider extends ChangeNotifier {
       if (response.commandStatus == 1) {
         _state = _state.copyWith(
           isMailDialogOpen: false,
+          isSendingMail: false,
         );
         _state = _state.copyWith(successMessage: response.commandMessage);
         notifyListeners();
         return true;
       } else {
+        _state = _state.copyWith(isSendingMail: false);
+        notifyListeners();
         return false;
       }
     } catch (e) {
       _state = _state.copyWith(
-          errorMessage: _extractMessage(e), isMailDialogOpen: false);
+          errorMessage: _extractMessage(e),
+          isMailDialogOpen: false,
+          isSendingMail: false);
       notifyListeners();
       return false;
     }

@@ -33,6 +33,9 @@ class OtexPickupState {
   // Mail dialog state
   final bool isMailDialogOpen;
 
+  // Whether mail is currently being sent
+  final bool isSendingMail;
+
   // One-shot error message for snackbar, null = no error
   final String? errorMessage;
   final String? successMessage;
@@ -52,6 +55,7 @@ class OtexPickupState {
     required this.totalPalletQty,
     required this.hasTransactionId,
     required this.isMailDialogOpen,
+    required this.isSendingMail,
     required this.openVehicleArrival,
     required this.vehicleArrivalUrl,
     required this.isReadOnly,
@@ -70,6 +74,7 @@ class OtexPickupState {
         totalPalletQty: 0,
         hasTransactionId: false,
         isMailDialogOpen: false,
+        isSendingMail: false,
         errorMessage: null,
         successMessage: null,
         openVehicleArrival: false,
@@ -92,6 +97,7 @@ class OtexPickupState {
       int? totalPalletQty,
       bool? hasTransactionId,
       bool? isMailDialogOpen,
+      bool? isSendingMail,
       String? errorMessage,
       String? successMessage,
       bool clearError =
@@ -109,6 +115,7 @@ class OtexPickupState {
         totalPalletQty: totalPalletQty ?? this.totalPalletQty,
         hasTransactionId: hasTransactionId ?? this.hasTransactionId,
         isMailDialogOpen: isMailDialogOpen ?? this.isMailDialogOpen,
+        isSendingMail: isSendingMail ?? this.isSendingMail,
         errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
         successMessage:
             clearError ? null : (successMessage ?? this.successMessage),
