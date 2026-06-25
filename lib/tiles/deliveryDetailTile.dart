@@ -366,6 +366,22 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                         //       : widget.model.orderid.toString(),
                                         //   isReadOnly: true,
                                         // ));
+
+                                           LmdMenuModel? targetMenu;
+                                          try {
+                                            targetMenu = widget.menuList.firstWhere(
+                                                (element) =>
+                                                    element.tag?.toString() ==
+                                                    MenuTags.PICKUP.name.toString());
+                                            {
+                                              {
+                                                menuCode = targetMenu.menuCode.toString();
+                                              }
+                                            }
+                                          } catch (e) {
+                                            targetMenu = null;
+                                          }
+
                                         Get.to(ConsignmentEnquiryPage(
                                           consignmentNo: widget
                                               .model.generatedGr

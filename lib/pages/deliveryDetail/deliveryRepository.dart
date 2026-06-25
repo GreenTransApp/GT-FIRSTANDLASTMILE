@@ -43,7 +43,7 @@ class DeliveryRepository extends BaseRepository {
               List<CurrentDeliveryModel> resultList = List.generate(
                   list2.length,
                   (index) => CurrentDeliveryModel.fromJson(list2[index]));
-              deliveryData.add(resultList[0]);
+              deliveryData.add(resultList.first);
             }
           }
         } else {

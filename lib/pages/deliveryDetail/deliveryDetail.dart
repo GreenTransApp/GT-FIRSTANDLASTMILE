@@ -319,7 +319,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${widget.tripModel.noofconsign}',
+                                      '${deliveryModel.noofconsign}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: isSmallDevice ? 14 : 16,
