@@ -443,9 +443,12 @@ class OtexPickupProvider extends ChangeNotifier {
     _state = _state.copyWith(
         info: _state.info.copyWith(documentType: 'C', recStatus: status));
     String bookingImagesBase64 = "";
+    List<String> base64Images = [];
     for (String image in bookingImages) {
-      bookingImagesBase64 += "${convertFilePathToBase64(image)},";
+      // bookingImagesBase64 += "${convertFilePathToBase64(image)}";
+      base64Images.add(convertFilePathToBase64(image));
     }
+    bookingImagesBase64 = base64Images.join(',');
 
     Map<String, dynamic> buildSaveJson() {
       return {
