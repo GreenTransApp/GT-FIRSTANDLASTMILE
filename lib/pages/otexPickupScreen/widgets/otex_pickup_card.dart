@@ -666,7 +666,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                                 // });
                                 List<String> imagePaths =
                                     await showMultiImageBottomSheetDialog(
-                                        context, bookingImages);
+                                        context, bookingImages, false);
 
                                 bookingImages = imagePaths;
                               },

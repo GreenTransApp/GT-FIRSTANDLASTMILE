@@ -1398,7 +1398,7 @@ class _PodEntryState extends State<PodEntry> {
 
                                         List<String> imagePaths =
                                             await showMultiImageBottomSheetDialog(
-                                                context, _damageImages);
+                                                context, _damageImages, false);
                                         setState(() {
                                           _damageImages = imagePaths;
                                         });

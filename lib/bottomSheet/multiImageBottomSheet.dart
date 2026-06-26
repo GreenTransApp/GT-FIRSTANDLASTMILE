@@ -10,7 +10,9 @@ import 'package:gtlmd/common/toast.dart';
 
 class MultiImageBottomSheet extends StatefulWidget {
   final List<String> initialImageUrls;
-  MultiImageBottomSheet({super.key, required this.initialImageUrls});
+  final bool isViewOnly;
+  MultiImageBottomSheet(
+      {super.key, required this.initialImageUrls, required this.isViewOnly});
 
   @override
   State<MultiImageBottomSheet> createState() => _MultiImageBottomSheetState();
@@ -103,23 +105,25 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
                 ),
               ],
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showImagePickerDialog(context, (file) async {
-            if (file != null) {
-              debugPrint('Multi File data: ${file.path}');
-              setState(() {
-                if (file.path.isNotEmpty) {
-                  imageUrls.add(file.path);
-                }
-              });
-            } else {
-              failToast("File not selected");
-            }
-          });
-        },
-        child: const Icon(Icons.add_outlined),
-      ),
+      floatingActionButton: widget.isViewOnly
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                showImagePickerDialog(context, (file) async {
+                  if (file != null) {
+                    debugPrint('Multi File data: ${file.path}');
+                    setState(() {
+                      if (file.path.isNotEmpty) {
+                        imageUrls.add(file.path);
+                      }
+                    });
+                  } else {
+                    failToast("File not selected");
+                  }
+                });
+              },
+              child: const Icon(Icons.add_outlined),
+            ),
       body: imageUrls.isEmpty
           ? const Center(child: Text("No Images"))
           : Column(
@@ -152,7 +156,8 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
                       itemBuilder: (context, index) {
                         final isSelected = selectedIndexes.contains(index);
                         return GestureDetector(
-                          onLongPress: () => _onLongPress(index),
+                          onLongPress: () =>
+                              widget.isViewOnly ? null : _onLongPress(index),
                           onTap: () => _onImageTap(index),
                           child: Stack(
                             children: [
@@ -242,7 +247,7 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
                                   ),
                                 ),
                               // Single delete button (only when not in selection mode)
-                              if (!isSelectionMode)
+                              if (!isSelectionMode && !widget.isViewOnly)
                                 Positioned(
                                   bottom: 8,
                                   right: 8,
@@ -278,13 +283,15 @@ class _MultiImageBottomSheetState extends State<MultiImageBottomSheet> {
   }
 }
 
-showMultiImageBottomSheetDialog(BuildContext context, List<String> imageUrls) {
+showMultiImageBottomSheetDialog(
+    BuildContext context, List<String> imageUrls, bool isViewOnly) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     isDismissible: false,
     enableDrag: false,
+
     backgroundColor: Colors.transparent, // <-- Add this line
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
@@ -301,7 +308,8 @@ showMultiImageBottomSheetDialog(BuildContext context, List<String> imageUrls) {
         ),
         child: SizedBox(
           height: height,
-          child: MultiImageBottomSheet(initialImageUrls: imageUrls),
+          child: MultiImageBottomSheet(
+              initialImageUrls: imageUrls, isViewOnly: isViewOnly),
         ),
       );
     },

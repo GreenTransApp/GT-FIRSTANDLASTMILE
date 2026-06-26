@@ -367,20 +367,22 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                         //   isReadOnly: true,
                                         // ));
 
-                                           LmdMenuModel? targetMenu;
-                                          try {
-                                            targetMenu = widget.menuList.firstWhere(
-                                                (element) =>
-                                                    element.tag?.toString() ==
-                                                    MenuTags.PICKUP.name.toString());
+                                        LmdMenuModel? targetMenu;
+                                        try {
+                                          targetMenu = widget.menuList
+                                              .firstWhere((element) =>
+                                                  element.tag?.toString() ==
+                                                  MenuTags.PICKUP.name
+                                                      .toString());
+                                          {
                                             {
-                                              {
-                                                menuCode = targetMenu.menuCode.toString();
-                                              }
+                                              menuCode = targetMenu.menuCode
+                                                  .toString();
                                             }
-                                          } catch (e) {
-                                            targetMenu = null;
                                           }
+                                        } catch (e) {
+                                          targetMenu = null;
+                                        }
 
                                         Get.to(ConsignmentEnquiryPage(
                                           consignmentNo: widget
@@ -522,7 +524,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     ),
                                     borderRadius: BorderRadius.circular(16)),
                                 child: Text(
-                                  "Reached",
+                                  "Reach At",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: CommonColors.colorPrimary),

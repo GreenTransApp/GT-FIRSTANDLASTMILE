@@ -1086,7 +1086,7 @@ class _HomeScreen extends State<HomeScreen>
                             'https://images.pexels.com/photos/7752991/pexels-photo-7752991.jpeg',
                             'https://images.pexels.com/photos/37368106/pexels-photo-37368106.jpeg'
                           ];
-                          showMultiImageBottomSheetDialog(context, files);
+                          showMultiImageBottomSheetDialog(context, files, true);
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(

@@ -85,19 +85,21 @@ class _ConsignmentEnquiryPageState extends State<ConsignmentEnquiryPage> {
     return Scaffold(
       backgroundColor: CommonColors.grey,
       appBar: AppBar(
-
         backgroundColor: CommonColors.colorPrimary,
-        title:  Text("Consignment Enquiry",style: TextStyle(color:CommonColors.White),),
-          leading: Builder(builder: (context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: CommonColors.white,
-                ));
-          }),
+        title: Text(
+          "Consignment Enquiry",
+          style: TextStyle(color: CommonColors.White),
+        ),
+        leading: Builder(builder: (context) {
+          return IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: CommonColors.white,
+              ));
+        }),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -183,10 +185,11 @@ class _ConsignmentEnquiryPageState extends State<ConsignmentEnquiryPage> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
+                  imageUrls.clear();
                   for (var image in imageList) {
                     imageUrls.add(image.filePath ?? "");
                   }
-                  showMultiImageBottomSheetDialog(context, imageUrls);
+                  showMultiImageBottomSheetDialog(context, imageUrls, true);
                 },
                 icon: const Icon(Icons.photo_library_outlined),
                 label: Text(
