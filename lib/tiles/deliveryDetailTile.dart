@@ -524,7 +524,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     ),
                                     borderRadius: BorderRadius.circular(16)),
                                 child: Text(
-                                  "Reach At",
+                                  "Arrived At",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: CommonColors.colorPrimary),

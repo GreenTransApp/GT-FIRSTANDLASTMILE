@@ -151,7 +151,9 @@ class UpdateTripInfoRepository extends BaseRepository {
           for (MapEntry<String, dynamic> v in table.entries) {
             if (v.key == 'Table') {
               List<dynamic> list = v.value;
-              lastTrip = LastActiveTripModel.fromJson(list[0]);
+              if (list.isNotEmpty) {
+                lastTrip = LastActiveTripModel.fromJson(list[0]);
+              }
             } else if (v.key == 'Table1') {
               List<dynamic> list = v.value;
               // var decodedJson = jso`nDecode(list[0]);

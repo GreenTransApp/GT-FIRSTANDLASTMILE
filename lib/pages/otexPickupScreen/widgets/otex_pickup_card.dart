@@ -194,11 +194,6 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
       _showValidationSnack("Pallet Quantity must be greater than 0");
       return;
     }
-    final weight = double.tryParse(_weightController.text) ?? 0;
-    if (weight <= 0) {
-      _showValidationSnack("Weight must be greater than 0");
-      return;
-    }
     final isFreightVisible = provider.state.info.bookingTypeCode == "PP";
     if (isFreightVisible) {
       final freight = double.tryParse(_freightController.text) ?? 0;
