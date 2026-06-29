@@ -117,74 +117,25 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     );
   }
 
-  void _openPackingMethodSheet(
-      BuildContext context, OtexPickupProvider provider) {
-    // TODO: wire to provider.searchPackingMethods() tomorrow
-    showGenericApiBottomSheet<_SimpleOption>(
-      context: context,
-      title: "Select Packing Method",
-      fetchItems: (_) async => [
-        _SimpleOption("Box", "BOX"),
-        _SimpleOption("Wooden Case", "WC"),
-        _SimpleOption("Carton", "CTN"),
-        _SimpleOption("Pallet", "PLT"),
-        _SimpleOption("Bag", "BAG"),
-      ],
-      itemTitle: (o) => o.name,
-      itemSubtitle: (o) => "Code: ${o.code}",
-      onSelected: (o) {
-        final card = provider.state.splitInfo[widget.index];
-        provider.updateCardData(
-          widget.index,
-          card.copyWith(packingMethodName: o.name, packingMethodCode: o.code),
-        );
-      },
-    );
-  }
-
-  void _openSaidToContainSheet(
-      BuildContext context, OtexPickupProvider provider) {
-    // TODO: wire to provider.searchSaidToContain() tomorrow
-    showGenericApiBottomSheet<_SimpleOption>(
-      context: context,
-      title: "Select Said To Contain",
-      fetchItems: (_) async => [
-        _SimpleOption("Documents", "DOC"),
-        _SimpleOption("Electronics", "ELC"),
-        _SimpleOption("Spare Parts", "SP"),
-        _SimpleOption("Clothes", "CLT"),
-        _SimpleOption("Medicines", "MED"),
-        _SimpleOption("Others", "OTH"),
-      ],
-      itemTitle: (o) => o.name,
-      itemSubtitle: (o) => "Code: ${o.code}",
-      onSelected: (o) {
-        final card = provider.state.splitInfo[widget.index];
-        provider.updateCardData(
-          widget.index,
-          card.copyWith(saidToContainName: o.name, saidToContainCode: o.code),
-        );
-      },
-    );
-  }
-
+ 
+  
   // ── Actions ────────────────────────────────────────────────
 
   Future<void> _handleSave(OtexPickupProvider provider) async {
     // Basic card-level validation before hitting provider
     final card = provider.state.splitInfo[widget.index];
-    if (card.destCode == null || card.destCode!.isEmpty) {
-      _showValidationSnack("Please select a Destination");
-      return;
-    }
-    if (card.cngeCode == null || card.cngeCode!.isEmpty) {
-      _showValidationSnack("Please select a Consignee");
-      return;
-    }
-    if (card.packingMethodCode == null || card.packingMethodCode!.isEmpty) {
-      _showValidationSnack("Please select a Packing Method");
-      return;
-    }
+    // if (card.destCode == null || card.destCode!.isEmpty) {
+    //   _showValidationSnack("Please select a Destination");
+    //   return;
+    // }
+    // if (card.cngeCode == null || card.cngeCode!.isEmpty) {
+    //   _showValidationSnack("Please select a Consignee");
+    //   return;
+    // }
+    // if (card.packingMethodCode == null || card.packingMethodCode!.isEmpty) {
+    //   _showValidationSnack("Please select a Packing Method");
+    //   return;
+    // }
     // if (card.saidToContainCode == null || card.saidToContainCode!.isEmpty) {
     //   _showValidationSnack("Please select Said To Contain");
     //   return;
@@ -194,14 +145,14 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
       _showValidationSnack("Pallet Quantity must be greater than 0");
       return;
     }
-    final isFreightVisible = provider.state.info.bookingTypeCode == "PP";
-    if (isFreightVisible) {
-      final freight = double.tryParse(_freightController.text) ?? 0;
-      if (freight <= 0) {
-        _showValidationSnack("Freight Amount must be greater than 0");
-        return;
-      }
-    }
+    // final isFreightVisible = provider.state.info.bookingTypeCode == "PP";
+    // if (isFreightVisible) {
+    //   final freight = double.tryParse(_freightController.text) ?? 0;
+    //   if (freight <= 0) {
+    //     _showValidationSnack("Freight Amount must be greater than 0");
+    //     return;
+    //   }
+    // }
     if (bookingImages.isEmpty) {
       _showValidationSnack("Please upload booking image");
       return;
@@ -948,7 +899,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                         size: 16,
                       ),
                 label: Text(
-                  _isSaving ? "Saving..." : "Save Way Bill",
+                
+                isSaved && card.wayBillNo != null ? 'Update Way Bill': _isSaving ? "Saving..." : "Save Way Bill",
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 12),
                 ),
