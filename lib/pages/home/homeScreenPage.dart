@@ -999,6 +999,7 @@ class _HomeScreen extends State<HomeScreen>
                 ),
                 label: "CREATE TRIP",
               ),
+             
               NavigationDestination(
                 icon: Icon(Symbols.delivery_truck_bolt,
                     size: SizeConfig.extraLargeIconSize),

@@ -92,6 +92,7 @@ dependencies:
   image_cropper: ^12.2.1
   material_symbols_icons: ^4.2928.1
   avatar_glow: ^3.0.1
+  pdf: ^3.12.0
   
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -33,7 +33,10 @@ import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class PodEntry extends StatefulWidget {
   final DeliveryDetailModel deliveryDetailModel;
@@ -83,6 +86,7 @@ class _PodEntryState extends State<PodEntry> {
   String? totpckgs;
   // List<String> _damageImages = [];
   List<String> _damageImages = List.empty(growable: true);
+  List<String> _deliveryNoteImages = List.empty(growable: true);
   bool isSignRequired = true;
   bool isStampRequired = true;
   PodEntryModel model = PodEntryModel();
@@ -325,6 +329,39 @@ class _PodEntryState extends State<PodEntry> {
     });
   }
 
+  Future<String> convertImagesToPdf(List<String> imagePaths) async {
+    final pdf = pw.Document();
+
+    for (final path in imagePaths) {
+      final file = File(path);
+
+      if (!await file.exists()) continue;
+
+      final Uint8List bytes = await file.readAsBytes();
+
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          build: (_) => pw.Center(
+            child: pw.Image(
+              pw.MemoryImage(bytes),
+              fit: pw.BoxFit.contain,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final pdfPath =
+        '${tempDir.path}/Images_${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+    final pdfFile = File(pdfPath);
+    await pdfFile.writeAsBytes(await pdf.save());
+
+    return pdfPath;
+  }
+
   void backCallBackForAlert() {
     Navigator.pop(context);
   }
@@ -410,13 +447,17 @@ class _PodEntryState extends State<PodEntry> {
     }
   }
 
-  void submitPodForm() {
-    List<String> damageImageList = List.empty(growable: true);
-    for (String image in _damageImages) {
-      damageImageList.add(convertFilePathToBase64(image));
-    }
+  Future<void> submitPodForm() async {
+    // List<String> damageImageList = List.empty(growable: true);
+    // for (String image in _damageImages) {
+    //   damageImageList.add(convertFilePathToBase64(image));
+    // }
+    String damageImgpdfPath = await convertImagesToPdf(_damageImages);
+    String deliveryImgpdfPath = await convertImagesToPdf(_deliveryNoteImages);
+
+
     Map<String, dynamic> params = {
-      "prmconnstring": savedLogin.companyid.toString(),
+      // "prmconnstring": savedLogin.companyid.toString(),
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmgrno": _grNoController.text.toString(),
       "prmdlvdt":
@@ -429,12 +470,14 @@ class _PodEntryState extends State<PodEntry> {
       "prmstamp": model!.stamp.toString(),
       "prmremarks": _remarksController.text.toUpperCase(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmpodimage": convertFilePathToBase64(_podFilePath),
-      "prmsignimage": convertFilePathToBase64(_signatureFilePath),
+      "prmpodimageurl": convertFilePathToBase64(_podFilePath),
+      "prmsignimageurl": convertFilePathToBase64(_signatureFilePath),
+      // "prmpodimage": convertFilePathToBase64(_podFilePath),
+      // "prmsignimage": convertFilePathToBase64(_signatureFilePath),
       "prmsessionid": savedUser.sessionid.toString(),
       // "prmdelayreason": ",",
       "prmdeliveryboy": savedUser.username.toString(),
-      "prmmenucode": "GTAPP_PODENTRY",
+      "prmmenucode": menuCode,
       "prmpoddt": convert2SmallDateTime(_podDateController.text.toString()),
       "prmdrsno": model.drsno.toString(),
       "prmboyid": isNullOrEmpty(savedUser.executiveid.toString()) ? "0" : '',
@@ -447,7 +490,9 @@ class _PodEntryState extends State<PodEntry> {
       "prmdamagereasonid": _selectedDamageReason == null
           ? '0'
           : _selectedDamageReason!.reasoncode,
-      "prmdamageimgstr": damageImageList,
+      // "prmdamageimgstr": damageImageList,
+      "prmdamageimagestr": convertFilePathToBase64(damageImgpdfPath),
+      "prmdeliveryimgpath": convertFilePathToBase64(deliveryImgpdfPath),
       "prmentrylocation": currentAddress
     };
 
@@ -1922,6 +1967,49 @@ class _PodEntryState extends State<PodEntry> {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: CommonColors.whiteShade,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(SizeConfig.largeRadius),
+                        bottomRight: Radius.circular(SizeConfig.largeRadius),
+                      ),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<String> imagePaths =
+                            await showMultiImageBottomSheetDialog(
+                                context, _deliveryNoteImages, false);
+                        setState(() {
+                          _deliveryNoteImages = imagePaths;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CommonColors.primaryColorShade,
+                        foregroundColor: CommonColors.White,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(SizeConfig.largeRadius),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Upload Delivery Notes',
+                        style: TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(

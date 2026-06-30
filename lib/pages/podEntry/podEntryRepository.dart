@@ -99,7 +99,8 @@ class PodEntryRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
-      CommonResponse resp = await apiPost("${lmdUrl}SavePod", params);
+      // CommonResponse resp = await apiPost("${lmdUrl}SavePod", params);
+      CommonResponse resp = await apiPostWithModel("${lmdUrl}SavePodV2", params);
       viewDialog.add(false);
       if (resp.commandStatus == 1) {
         Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
