@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,7 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/lmdMenuModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
+import 'package:gtlmd/pages/directBooking/directBookingPage.dart';
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
@@ -150,6 +152,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       if (resp.commandstatus == 1) {
         successToast("Location Update successfull");
         refreshScreen();
+      }else{
+        failToast(resp.commandmessage ?? "Something went wrong");
       }
     }));
   }
@@ -254,6 +258,36 @@ class _DeliveryDetailState extends State<DeliveryDetail>
           ),
         ],
       ),
+       
+          // floatingActionButton: AvatarGlow(
+          //     glowColor: CommonColors.colorPrimary ?? Colors.blue,
+          //     repeat: true,
+          //     child: FloatingActionButton(
+          //       onPressed: () async {
+          //       Get.to(DirectBookingPage());
+          //       },
+          //       shape: const CircleBorder(),
+          //       backgroundColor: CommonColors.indigoshade50,
+          //       highlightElevation: 10.0,
+          //       child: Container(
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           border: Border.all(
+          //             color: CommonColors.colorPrimary ??
+          //                 Colors.blue, // Border color
+          //             width: 1, // Border thickness
+          //           ),
+          //         ),
+          //         child: ClipOval(
+          //           child: Image.asset(
+          //             'assets/images/directbooking.png',
+          //             fit: BoxFit.cover,
+          //             // width: 50,
+          //             // height: 50,
+          //           ),
+          //         ),
+          //       ),
+          //     )),
       body: widget.tripModel == null
           ? Scaffold(
               body: Center(

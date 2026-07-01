@@ -174,7 +174,7 @@ class _PodEntryState extends State<PodEntry> {
                       else
                         {
                           setObservers(),
-                          getFormLoadData(),
+                          // getFormLoadData(),
                           getGrDetail(),
                           getPodLovs()
                         }

@@ -30,6 +30,7 @@ class TripModel {
   String? manifesttime;
   String? manifestdatetime;
   String? manifestno;
+  String? modecode;
 
   TripModel({
     this.commandstatus,
@@ -56,6 +57,7 @@ class TripModel {
     this.manifesttime,
     this.manifestdatetime,
     this.manifestno,
+    this.modecode,
   });
 
   TripModel.fromJson(Map<String, dynamic> json) {
@@ -90,6 +92,7 @@ class TripModel {
     manifesttime = json['manifesttime']?.toString();
     manifestdatetime = json['manifestdatetime']?.toString();
     manifestno = json['manifestno']?.toString();
+    modecode = json['modecode']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -118,6 +121,7 @@ class TripModel {
       'manifesttime': manifesttime ?? '',
       'manifestdatetime': manifestdatetime ?? '',
       'manifestno': manifestno ?? '',
+      'modecode': modecode ?? '',
     };
   }
 }

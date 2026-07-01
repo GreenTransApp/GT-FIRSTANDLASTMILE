@@ -86,7 +86,7 @@ class _ScanAndLoadState extends State<ScanAndLoad> {
     }
 
     Map<String, dynamic> params = {
-      "prmcompanyid": savedLogin.companyid.toString(),
+      "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmgrno": modelDetail.grno.toString(),

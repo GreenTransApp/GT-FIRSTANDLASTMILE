@@ -92,6 +92,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
       "prmusercode": savedUser.usercode.toString(),
+      "prmvehiclecode":  widget.model.modecode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
     viewModel.getLastTripInfo(params);
@@ -165,6 +166,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
               "Last End Reading :${lastTripInfo!.lastendreadingkm.toString()}");
           isOdometerUnAvailable = data.odometerbypass == 'Y' ? true : false;
         });
+      }else{
+        failToast(data.commandmessage ?? "Something went wrong");
       }
     });
   }
