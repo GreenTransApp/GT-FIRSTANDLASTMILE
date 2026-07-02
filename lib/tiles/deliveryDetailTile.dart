@@ -425,8 +425,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                           ],
                                         ),
                                       ),
-                                    if (widget.model.consignmenttype == 'P' &&
-                                        status == 'Picked')
+                                    if (status == 'Picked' ||
+                                        status == 'Delivered')
                                       const PopupMenuItem(
                                         value: 'share',
                                         child: Row(
