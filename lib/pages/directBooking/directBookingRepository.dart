@@ -5,12 +5,15 @@ import 'dart:io';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/directBooking/model/directBookingModel.dart';
+import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class DirectBookingRepository  extends BaseRepository{
-StreamController<List<DirectBookingModel>> directBookingDataList = StreamController();
-
+StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamController();
+  StreamController<UpsertTripResponseModel> updateDispatchLiveData =
+      StreamController();
  Future<void> getDirectBookingSearchList(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -28,9 +31,52 @@ StreamController<List<DirectBookingModel>> directBookingDataList = StreamControl
             for (final entry in entries) {
               if (entry.key == "Table") {
                 List<dynamic> list2 = entry.value;
-                List<DirectBookingModel> resultList = List.generate(list2.length,
-                    (index) => DirectBookingModel.fromJson(list2[index]));
+                List<DeliveryDetailModel> resultList = List.generate(list2.length,
+                    (index) => DeliveryDetailModel.fromJson(list2[index]));
                 directBookingDataList.add(resultList);
+              }
+            }
+          } catch (err) {
+            isErrorLiveData.add(err.toString());
+          }
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+      }
+      viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+
+ Future<void> UpdateDispatchDetail(Map<String, dynamic> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        // viewDialog.add(true);
+
+        CommonResponse resp =
+            await apiPostWithModel("${lmdUrl}UpdateDirectBookingDispatchDetail", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          Iterable<MapEntry<String, dynamic>> entries = table.entries;
+          try {
+            for (final entry in entries) {
+              if (entry.key == "Table") {
+                List<dynamic> list2 = entry.value;
+                List<UpsertTripResponseModel> resultList = List.generate(list2.length,
+                    (index) => UpsertTripResponseModel.fromJson(list2[index]));
+                updateDispatchLiveData.add(resultList[0]);
               }
             }
           } catch (err) {

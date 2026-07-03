@@ -115,7 +115,7 @@ class _PodEntryState extends State<PodEntry> {
     dmgPckgsFocus = FocusNode();
     remarksFocus = FocusNode();
     modelDetail = widget.deliveryDetailModel;
-    _grNoController.text = modelDetail.grno.toString();
+    _grNoController.text = isNullOrEmpty(modelDetail.generatedGr) ? modelDetail.grno.toString() : modelDetail.generatedGr.toString();
 
     _podDateController.text = /* formatDate(DateTime.now()); */
         DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -376,7 +376,7 @@ class _PodEntryState extends State<PodEntry> {
   getGrDetail() {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
-      "prmgrno": modelDetail.grno.toString(),
+      "prmgrno": isNullOrEmpty(modelDetail.generatedGr) ? modelDetail.grno.toString() : modelDetail.generatedGr.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString()
     };
 

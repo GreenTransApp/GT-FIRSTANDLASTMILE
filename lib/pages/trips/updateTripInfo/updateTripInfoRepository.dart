@@ -137,7 +137,7 @@ class UpdateTripInfoRepository extends BaseRepository {
     }
   }
 
-  void getLastTripInfo(Map<String, String> params) async {
+  void getLastTripInfo(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {

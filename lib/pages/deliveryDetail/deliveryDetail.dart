@@ -189,16 +189,26 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     getBookingMenuCodeFromCompAccPara();
   }
 
-  Future<void> updateDriverReached(String grno) async {
-    Position position = await Geolocator.getCurrentPosition(
-        // ignore: deprecated_member_use
-        desiredAccuracy: LocationAccuracy.high);
+  Future<void> updateDriverReached(String grno, String indentId,String tripid) async {
+    // Position position = await Geolocator.getCurrentPosition(
+    //     // ignore: deprecated_member_use
+    //     desiredAccuracy: LocationAccuracy.high);
+    loadingAlertService.showLoading();
 
+try {
+  Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      );
+  
     Map<String, String> params = {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmtripid": widget.tripModel.tripid.toString(),
+      "prmtripid": tripid,
       "prmgrno": grno,
+      "prmindentid": indentId,
       "prmreachedlat": position.latitude.toString(),
       "prmreachedlong": position.longitude.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
@@ -206,6 +216,12 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
     printParams(params);
     viewModel.updateDriverReached(params);
+
+  viewModel.updateDriverReached(params);
+} finally {
+  loadingAlertService.hideLoading();
+}
+
   }
 
   getBookingMenuCodeFromCompAccPara() {
@@ -281,13 +297,14 @@ class _DeliveryDetailState extends State<DeliveryDetail>
           //         child: ClipOval(
           //           child: Image.asset(
           //             'assets/images/directbooking.png',
-          //             fit: BoxFit.cover,
-          //             // width: 50,
-          //             // height: 50,
+          //             fit: BoxFit.fill,
+          //             width: 48,
+          //             height: 48,
           //           ),
           //         ),
           //       ),
           //     )),
+    
       body: widget.tripModel == null
           ? Scaffold(
               body: Center(

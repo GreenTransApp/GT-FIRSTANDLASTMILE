@@ -43,7 +43,7 @@ class UpdateTripInfoViewModel extends BaseViewModel {
     _repo.updateCloseTrip(params);
   }
 
-  void getLastTripInfo(Map<String, String> params) {
+  void getLastTripInfo(Map<String, dynamic> params) {
     _repo.getLastTripInfo(params);
   }
 }

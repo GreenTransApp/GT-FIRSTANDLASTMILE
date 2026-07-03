@@ -18,12 +18,12 @@ import 'package:intl/intl.dart';
 
 class UnDelivery extends StatefulWidget {
   final DeliveryDetailModel deliveryDetailModel;
-  final CurrentDeliveryModel currentDeliveryModel;
+  
 
   const UnDelivery({
     super.key,
     required this.deliveryDetailModel,
-    required this.currentDeliveryModel,
+    
   });
 
   @override
@@ -65,8 +65,8 @@ class _UnDeliveryState extends State<UnDelivery> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     deliveryDetailModel = widget.deliveryDetailModel;
-    currentDeliveryModel = widget.currentDeliveryModel;
-    _grNoController.text = deliveryDetailModel.grno.toString();
+    
+    _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr) ? deliveryDetailModel.grno.toString() : deliveryDetailModel.generatedGr.toString();
     todayDateTime = DateTime.now();
     smallDateTime = DateFormat('yyyy-MM-dd').format(todayDateTime);
     unDeliverDt = smallDateTime;
@@ -128,7 +128,7 @@ class _UnDeliveryState extends State<UnDelivery> {
         showSuccessAlert(
             context,
             // "UNDELIVER SUCCESSFULLY\n Consignment# -: ${resp.grNo}",
-            "UNDELIVER SUCCESSFULLY\n Consignment# -: ${deliveryDetailModel.grno}",
+            "UNDELIVER SUCCESSFULLY\n Consignment# -: ${deliveryDetailModel.generatedGr.toString() ?? deliveryDetailModel.grno.toString()}",
             "",
             backCallBackForAlert);
       } else {
@@ -356,7 +356,7 @@ class _UnDeliveryState extends State<UnDelivery> {
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
       "prmtime": formatTimeString(_unDeliveryTimeController.text),
       "prmdlvtripsheetno": widget.deliveryDetailModel.manifestno.toString(),
-      "prmgrno": deliveryDetailModel.grno.toString(),
+      "prmgrno": isNullOrEmpty(deliveryDetailModel.generatedGr) ? deliveryDetailModel.grno.toString() : deliveryDetailModel.generatedGr.toString(),
       "prmreasoncode": _selectedReason!.reasoncode.toString(),
       "prmactioncode": _selectedAction!.reasoncode.toString(),
       "prmusercode": savedUser.usercode.toString(),

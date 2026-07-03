@@ -33,6 +33,18 @@ class DeliveryDetailModel {
   String? pickuplat;
   String? pickuplong;
   int? tripid;
+  String? dispatchdatetime;
+  String? dispatchdate;
+  String? dispatchtime;
+  String? vehiclecode;
+  int? startreadingkm;
+  String? startreadingimg;
+  String? validationerrmsg;
+  String? candeliver;
+  String? directdelivery;
+  String? reachedatdatetime;
+  String? pickupstatusupdateon;
+  String? deliverystatusupdateon;
 
   DeliveryDetailModel({
     this.commandstatus,
@@ -66,6 +78,18 @@ class DeliveryDetailModel {
     this.pickuplat,
     this.pickuplong,
     this.tripid,
+    this.dispatchdatetime,
+    this.dispatchdate,
+    this.dispatchtime,
+    this.vehiclecode,
+    this.startreadingkm,
+    this.startreadingimg,
+    this.validationerrmsg,
+    this.candeliver,
+    this.directdelivery,
+    this.reachedatdatetime,
+    this.pickupstatusupdateon,
+    this.deliverystatusupdateon,
   });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
@@ -101,6 +125,18 @@ class DeliveryDetailModel {
       pickuplat: json['pickuplat'],
       pickuplong: json['pickuplong'],
       tripid: json['tripid'],
+      dispatchdatetime: json['dispatchdatetime'],
+      dispatchdate: json['dispatchdate'],
+      dispatchtime: json['dispatchtime'],
+      vehiclecode: json['vehiclecode'],
+      startreadingkm: json['startreadingkm'],
+      startreadingimg: json['startreadingimg'],
+      validationerrmsg: json['validationerrmsg'],
+      candeliver: json['candeliver'],
+      directdelivery: json['directdelivery'],
+      reachedatdatetime: json['reachedatdatetime'],
+      pickupstatusupdateon: json['pickupstatusupdateon'],
+      deliverystatusupdateon: json['deliverystatusupdateon'],
     );
   }
 
@@ -136,7 +172,19 @@ class DeliveryDetailModel {
       'deliverylong': deliverylong,
       'pickuplat': pickuplat,
       'pickuplong': pickuplong,
-      'tripid': tripid
+      'tripid': tripid,
+      'dispatchdatetime': dispatchdatetime,
+      'dispatchdate': dispatchdate,
+      'dispatchtime': dispatchtime,
+      'vehiclecode': vehiclecode,
+      'startreadingkm': startreadingkm,
+      'startreadingimg': startreadingimg,
+      'validationerrmsg': validationerrmsg,
+      'candeliver': candeliver,
+      'directdelivery': directdelivery,
+      'reachedatdatetime': reachedatdatetime,
+      'pickupstatusupdateon': pickupstatusupdateon,
+      'deliverystatusupdateon': deliverystatusupdateon,
     };
   }
 }

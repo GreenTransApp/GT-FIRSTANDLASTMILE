@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
@@ -59,6 +60,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   UpdateTripInfoViewModel viewModel = UpdateTripInfoViewModel();
   late LoadingAlertService loadingAlertService;
   LastActiveTripModel? lastTripInfo;
+  Position? _currentPosition;
   @override
   void initState() {
     super.initState();
@@ -80,7 +82,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       _startReadingImagePath = widget.model.startreadingimg;
       calculateTotalTime(
           widget.model.tripdispatchtime!, _closeTimeController.text.toString());
+
     }
+ 
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
@@ -309,7 +313,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     }
   }
 
-  void updateStartTrip() {
+  Future<void> updateStartTrip() async {
+     _currentPosition = await Geolocator.getCurrentPosition();
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
@@ -331,6 +336,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmsessionid": savedUser.sessionid.toString(),
       'prmentrylocation': currentAddress,
       'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
+      'prmpickatlat': _currentPosition?.latitude.toString() ?? '',
+      'prmpickatlong': _currentPosition?.longitude.toString() ?? '',
     };
 
     viewModel.updateStartTrip(params);
