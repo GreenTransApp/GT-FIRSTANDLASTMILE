@@ -107,6 +107,10 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         setState(() {
           deliveryDetailList = resp;
         });
+      } else {
+        setState(() {
+          deliveryDetailList = [];
+        });
       }
     });
     viewModel.deliveryDataLiveData.stream.listen((resp) {
@@ -152,7 +156,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       if (resp.commandstatus == 1) {
         successToast("Location Update successfull");
         refreshScreen();
-      }else{
+      } else {
         failToast(resp.commandmessage ?? "Something went wrong");
       }
     }));
@@ -297,14 +301,13 @@ try {
           //         child: ClipOval(
           //           child: Image.asset(
           //             'assets/images/directbooking.png',
-          //             fit: BoxFit.fill,
-          //             width: 48,
-          //             height: 48,
+          //             fit: BoxFit.cover,
+          //             // width: 50,
+          //             // height: 50,
           //           ),
           //         ),
           //       ),
           //     )),
-    
       body: widget.tripModel == null
           ? Scaffold(
               body: Center(

@@ -393,10 +393,12 @@ class _PodEntryState extends State<PodEntry> {
     } else if (_receiverMobileByController.text.isEmpty) {
       failToast('Please fill the receiver mobile number field');
       return;
-    } else if (_receiverMobileByController.text.length != 10) {
-      failToast("Please enter a valid mobile number");
-      return;
-    } else if (isNullOrEmpty(_relationController.text.toString())) {
+    }
+    // else if (_receiverMobileByController.text.length != 10) {
+    //   failToast("Please enter a valid mobile number");
+    //   return;
+    // }
+    else if (isNullOrEmpty(_relationController.text.toString())) {
       failToast('Please fill the relation field');
       return;
     }
@@ -454,7 +456,6 @@ class _PodEntryState extends State<PodEntry> {
     // }
     String damageImgpdfPath = await convertImagesToPdf(_damageImages);
     String deliveryImgpdfPath = await convertImagesToPdf(_deliveryNoteImages);
-
 
     Map<String, dynamic> params = {
       // "prmconnstring": savedLogin.companyid.toString(),
@@ -981,7 +982,10 @@ class _PodEntryState extends State<PodEntry> {
                               Get.to(ScanAndLoad(
                                 stickersList: _stickerList,
                                 deliveryDetailModel: modelDetail,
-                              ));
+                              ))!
+                                  .then((_) {
+                                getGrDetail();
+                              });
                             },
                             child: const Icon(
                               Symbols.qr_code_scanner_rounded,

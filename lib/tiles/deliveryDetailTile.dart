@@ -390,170 +390,173 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     targetMenu = null;
                                   }
 
-                                  Get.to(ConsignmentEnquiryPage(
-                                    consignmentNo:
-                                        widget.model.generatedGr.toString(),
-                                  ));
-                                  break;
-                                case 'share':
-                                  getBookingPrintLink();
-                                  break;
-                                case 'map':
-                                  {
-                                    // we have to pass lattitude and longitude of the consignment.
-                                    // used static for testing.
-                                    navigateToLocation(
-                                        latitude:
-                                            widget.model.deliverylat.toString(),
-                                        longitude: widget.model.deliverylong
-                                            .toString());
-                                  }
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              if (widget.model.consignmenttype == 'P' &&
-                                  status == 'Picked')
-                                const PopupMenuItem(
-                                  value: 'enquiry',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.contact_support_rounded,
-                                        size: 20,
+                                        Get.to(ConsignmentEnquiryPage(
+                                          consignmentNo: widget
+                                              .model.generatedGr
+                                              .toString(),
+                                        ));
+                                        break;
+                                      case 'share':
+                                        getBookingPrintLink();
+                                        break;
+                                      case 'map':
+                                        {
+                                          // we have to pass lattitude and longitude of the consignment.
+                                          // used static for testing.
+                                          navigateToLocation(
+                                              latitude: widget.model.deliverylat
+                                                  .toString(),
+                                              longitude: widget
+                                                  .model.deliverylong
+                                                  .toString());
+                                        }
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    if (widget.model.consignmenttype == 'P' &&
+                                        status == 'Picked')
+                                      const PopupMenuItem(
+                                        value: 'enquiry',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.contact_support_rounded,
+                                              size: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 4,
+                                            ),
+                                            Text('Enquiry')
+                                          ],
+                                        ),
                                       ),
-                                      SizedBox(
-                                        width: 4,
+                                    if (widget.model.consignmenttype == 'P' &&
+                                        status == 'Picked')
+                                      const PopupMenuItem(
+                                        value: 'share',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.share_rounded,
+                                              size: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 4,
+                                            ),
+                                            Text('Share')
+                                          ],
+                                        ),
                                       ),
-                                      Text('Enquiry')
-                                    ],
-                                  ),
-                                ),
-                              if (widget.model.consignmenttype == 'P' &&
-                                  status == 'Picked')
-                                const PopupMenuItem(
-                                  value: 'share',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.share_rounded,
-                                        size: 20,
+                                    const PopupMenuItem(
+                                      value: 'map',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on_rounded,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text('Map')
+                                        ],
                                       ),
-                                      SizedBox(
-                                        width: 4,
-                                      ),
-                                      Text('Share')
-                                    ],
-                                  ),
-                                ),
-                              const PopupMenuItem(
-                                value: 'map',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_rounded,
-                                      size: 20,
                                     ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text('Map')
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: SizeConfig
+                                              .extraSmallHorizontalPadding,
+                                          vertical: SizeConfig
+                                              .extraSmallVerticalPadding),
+                                      child: Text(
+                                        status.toString(),
+                                        style: TextStyle(
+                                          fontSize: SizeConfig.smallTextSize,
+                                          fontWeight: FontWeight.w500,
+                                          color: statusIconColor,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      statusIcon,
+                                      color: statusIconColor,
+                                      size: SizeConfig.extraLargeIconSize,
+                                    ),
+                                  ],
+                                ),
+                                isNullOrEmpty(modelDetail.undeliverreason)
+                                    ? const SizedBox.shrink()
+                                    : Text(
+                                        'Reason: ${modelDetail.undeliverreason}',
+                                        style: TextStyle(
+                                          fontSize: SizeConfig.smallTextSize,
+                                          fontWeight: FontWeight.w800,
+                                          color: CommonColors.colorPrimary,
+                                        )),
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: widget.model.reached == 'N',
+                            child: GestureDetector(
+                              onTap: () {
+                                updateDriverReached();
+                              },
+                              child: Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        SizeConfig.extraSmallHorizontalPadding,
-                                    vertical:
-                                        SizeConfig.extraSmallVerticalPadding),
+                                    horizontal: SizeConfig.horizontalPadding,
+                                    vertical: SizeConfig.verticalPadding),
+                                decoration: BoxDecoration(
+                                    color: CommonColors.colorPrimary!.withAlpha(
+                                      (0.1 * 255).toInt(),
+                                    ),
+                                    borderRadius: BorderRadius.circular(16)),
                                 child: Text(
-                                  status.toString(),
+                                  "Arrived At",
                                   style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w500,
-                                    color: statusIconColor,
-                                  ),
+                                      fontWeight: FontWeight.w600,
+                                      color: CommonColors.colorPrimary),
                                 ),
                               ),
-                              Icon(
-                                statusIcon,
-                                color: statusIconColor,
-                                size: SizeConfig.extraLargeIconSize,
-                              ),
-                            ],
+                            ),
                           ),
-                          isNullOrEmpty(modelDetail.undeliverreason)
-                              ? const SizedBox.shrink()
-                              : Text('Reason: ${modelDetail.undeliverreason}',
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w800,
-                                    color: CommonColors.colorPrimary,
-                                  )),
+                          Visibility(
+                            visible: widget.model.reached == 'Y',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  color: CommonColors.green600,
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                const Text("Reached")
+                              ],
+                            ),
+                          )
                         ],
                       ),
-                    ),
-                    Visibility(
-                      visible: widget.model.reached == 'N',
-                      child: GestureDetector(
-                        onTap: () {
-                          updateDriverReached();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          decoration: BoxDecoration(
-                              color: CommonColors.colorPrimary!.withAlpha(
-                                (0.1 * 255).toInt(),
-                              ),
-                              borderRadius: BorderRadius.circular(16)),
-                          child: Text(
-                            "Arrived At",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: CommonColors.colorPrimary),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.model.reached == 'Y',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: CommonColors.green600,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          const Text("Reached")
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
 
             SizedBox(height: SizeConfig.smallVerticalSpacing),
 
