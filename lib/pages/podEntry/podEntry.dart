@@ -72,6 +72,7 @@ class _PodEntryState extends State<PodEntry> {
   final TextEditingController _remarksController = TextEditingController();
   final TextEditingController _arrivalDateController = TextEditingController();
   final TextEditingController _arrivalTimeController = TextEditingController();
+  final TextEditingController _totalPckgsController = TextEditingController();
   final TextEditingController _deliverPckgsController = TextEditingController();
   final TextEditingController _damagedPckgsController = TextEditingController();
   final TextEditingController _totalWeightController = TextEditingController();
@@ -115,7 +116,9 @@ class _PodEntryState extends State<PodEntry> {
     dmgPckgsFocus = FocusNode();
     remarksFocus = FocusNode();
     modelDetail = widget.deliveryDetailModel;
-    _grNoController.text = isNullOrEmpty(modelDetail.generatedGr) ? modelDetail.grno.toString() : modelDetail.generatedGr.toString();
+    _grNoController.text = isNullOrEmpty(modelDetail.generatedGr)
+        ? modelDetail.grno.toString()
+        : modelDetail.generatedGr.toString();
 
     _podDateController.text = /* formatDate(DateTime.now()); */
         DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -215,6 +218,7 @@ class _PodEntryState extends State<PodEntry> {
     model.stamp = 'N';
     _totalWeightController.text = '${pod.cweight.toString()} Kg';
 
+    _totalPckgsController.text = pod.pckgs.toString() ?? "0";
     _deliverPckgsController.text = pod.deliverpckgs.toString() ?? "0";
     _damagedPckgsController.text = pod.damagepckgs.toString() ?? "0";
     totpckgs = pod.pckgs.toString();
@@ -376,7 +380,9 @@ class _PodEntryState extends State<PodEntry> {
   getGrDetail() {
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
-      "prmgrno": isNullOrEmpty(modelDetail.generatedGr) ? modelDetail.grno.toString() : modelDetail.generatedGr.toString(),
+      "prmgrno": isNullOrEmpty(modelDetail.generatedGr)
+          ? modelDetail.grno.toString()
+          : modelDetail.generatedGr.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString()
     };
 
@@ -1172,23 +1178,8 @@ class _PodEntryState extends State<PodEntry> {
                             isRequired: true,
                             icon: Icons.phone_android_outlined,
                             child: TextFormField(
-                              maxLength: 10,
                               style: TextStyle(
                                   fontSize: SizeConfig.mediumTextSize),
-                              buildCounter: (context,
-                                  {required currentLength,
-                                  required isFocused,
-                                  required maxLength}) {
-                                return Text(
-                                  '$currentLength / $maxLength',
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    color: currentLength > (maxLength ?? 0)
-                                        ? Colors.red
-                                        : Colors.grey,
-                                  ),
-                                );
-                              },
                               focusNode: receiverMobileNumFocus,
                               onTapOutside: (event) {
                                 receiverMobileNumFocus.unfocus();
@@ -1246,6 +1237,23 @@ class _PodEntryState extends State<PodEntry> {
                                 return null;
                               },
                             ),
+                          ),
+
+                          SizedBox(height: SizeConfig.mediumVerticalSpacing),
+                          _buildFormField(
+                            // label: "Deliver Pckgs",
+                            label: getFormStringValue(
+                                    "pckgs", RETURN_TYPE.LabelName) ??
+                                "Total Pckgs",
+                            isRequired: true,
+                            icon: Icons.delivery_dining_outlined,
+                            child: TextFormField(
+                                enabled: false,
+                                style: TextStyle(
+                                    fontSize: SizeConfig.mediumTextSize),
+                                controller: _totalPckgsController,
+                                decoration: _inputDecoration('Total Packages'),
+                                onChanged: null),
                           ),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
                           // Delivery Person
@@ -2008,7 +2016,7 @@ class _PodEntryState extends State<PodEntry> {
                         elevation: 0,
                       ),
                       child: Text(
-                        'Upload Delivery Notes',
+                        'Upload Delivery Images',
                         style: TextStyle(
                           fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.w500,

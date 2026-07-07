@@ -6,23 +6,23 @@ import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
-import 'package:gtlmd/pages/directBooking/model/directBookingModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-class DirectBookingRepository  extends BaseRepository{
-StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamController();
+class DirectBookingRepository extends BaseRepository {
+  StreamController<List<DeliveryDetailModel>> directBookingDataList =
+      StreamController();
   StreamController<UpsertTripResponseModel> updateDispatchLiveData =
       StreamController();
- Future<void> getDirectBookingSearchList(Map<String, dynamic> params) async {
+  Future<void> getDirectBookingSearchList(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
         // viewDialog.add(true);
 
-        CommonResponse resp =
-            await apiPostWithModel("${lmdUrl}GetDirectBookingSearchList", params);
+        CommonResponse resp = await apiPostWithModel(
+            "${lmdUrl}GetDirectBookingSearchList", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -31,7 +31,8 @@ StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamContro
             for (final entry in entries) {
               if (entry.key == "Table") {
                 List<dynamic> list2 = entry.value;
-                List<DeliveryDetailModel> resultList = List.generate(list2.length,
+                List<DeliveryDetailModel> resultList = List.generate(
+                    list2.length,
                     (index) => DeliveryDetailModel.fromJson(list2[index]));
                 directBookingDataList.add(resultList);
               }
@@ -57,15 +58,15 @@ StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamContro
     }
   }
 
- Future<void> UpdateDispatchDetail(Map<String, dynamic> params) async {
+  Future<void> UpdateDispatchDetail(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
         // viewDialog.add(true);
 
-        CommonResponse resp =
-            await apiPostWithModel("${lmdUrl}UpdateDirectBookingDispatchDetail", params);
+        CommonResponse resp = await apiPostWithModel(
+            "${lmdUrl}UpdateDirectBookingDispatchDetail", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -74,7 +75,8 @@ StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamContro
             for (final entry in entries) {
               if (entry.key == "Table") {
                 List<dynamic> list2 = entry.value;
-                List<UpsertTripResponseModel> resultList = List.generate(list2.length,
+                List<UpsertTripResponseModel> resultList = List.generate(
+                    list2.length,
                     (index) => UpsertTripResponseModel.fromJson(list2[index]));
                 updateDispatchLiveData.add(resultList[0]);
               }
@@ -99,6 +101,4 @@ StreamController<List<DeliveryDetailModel>> directBookingDataList = StreamContro
       isErrorLiveData.add("No Internet available");
     }
   }
-
-
-} 
+}

@@ -160,6 +160,15 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         failToast(resp.commandmessage ?? "Something went wrong");
       }
     }));
+
+    _subscription.add(viewModel.driverReachedDlvPoint.stream.listen((resp) {
+      if (resp.commandstatus == 1) {
+        successToast("Location Update successfull");
+        refreshScreen();
+      } else {
+        failToast(resp.commandmessage ?? "Something went wrong");
+      }
+    }));
   }
 
   getDeliveryDetails() {
@@ -193,39 +202,67 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     getBookingMenuCodeFromCompAccPara();
   }
 
-  Future<void> updateDriverReached(String grno, String indentId,String tripid) async {
+  Future<void> updateDriverReached(
+      String grno, String indentId, String tripid) async {
     // Position position = await Geolocator.getCurrentPosition(
     //     // ignore: deprecated_member_use
     //     desiredAccuracy: LocationAccuracy.high);
     loadingAlertService.showLoading();
 
-try {
-  Position position = await Geolocator.getCurrentPosition(
+    try {
+      Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
           distanceFilter: 0,
         ),
       );
-  
-    Map<String, String> params = {
-      "prmusercode": savedUser.usercode.toString(),
-      "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmtripid": tripid,
-      "prmgrno": grno,
-      "prmindentid": indentId,
-      "prmreachedlat": position.latitude.toString(),
-      "prmreachedlong": position.longitude.toString(),
-      "prmsessionid": savedUser.sessionid.toString(),
-    };
 
-    printParams(params);
-    viewModel.updateDriverReached(params);
+      Map<String, String> params = {
+        "prmusercode": savedUser.usercode.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmtripid": tripid,
+        "prmgrno": grno,
+        "prmindentid": indentId,
+        "prmreachedlat": position.latitude.toString(),
+        "prmreachedlong": position.longitude.toString(),
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
 
-  viewModel.updateDriverReached(params);
-} finally {
-  loadingAlertService.hideLoading();
-}
+      printParams(params);
+      viewModel.updateDriverReached(params);
+    } finally {
+      loadingAlertService.hideLoading();
+    }
+  }
 
+  Future<void> updateDriverReachedDlvPoint(
+      String grno, String indentId, String tripid) async {
+    loadingAlertService.showLoading();
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      );
+
+      Map<String, String> params = {
+        "prmusercode": savedUser.usercode.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmtripid": tripid,
+        "prmgrno": grno,
+        "prmindentid": indentId,
+        "prmreachedlat": position.latitude.toString(),
+        "prmreachedlong": position.longitude.toString(),
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+
+      printParams(params);
+      viewModel.updateDriverReachedDlvPoint(params);
+    } finally {
+      loadingAlertService.hideLoading();
+    }
   }
 
   getBookingMenuCodeFromCompAccPara() {
@@ -278,36 +315,35 @@ try {
           ),
         ],
       ),
-       
-          // floatingActionButton: AvatarGlow(
-          //     glowColor: CommonColors.colorPrimary ?? Colors.blue,
-          //     repeat: true,
-          //     child: FloatingActionButton(
-          //       onPressed: () async {
-          //       Get.to(DirectBookingPage());
-          //       },
-          //       shape: const CircleBorder(),
-          //       backgroundColor: CommonColors.indigoshade50,
-          //       highlightElevation: 10.0,
-          //       child: Container(
-          //         decoration: BoxDecoration(
-          //           shape: BoxShape.circle,
-          //           border: Border.all(
-          //             color: CommonColors.colorPrimary ??
-          //                 Colors.blue, // Border color
-          //             width: 1, // Border thickness
-          //           ),
-          //         ),
-          //         child: ClipOval(
-          //           child: Image.asset(
-          //             'assets/images/directbooking.png',
-          //             fit: BoxFit.cover,
-          //             // width: 50,
-          //             // height: 50,
-          //           ),
-          //         ),
-          //       ),
-          //     )),
+      // floatingActionButton: AvatarGlow(
+      //   glowColor: CommonColors.colorPrimary ?? Colors.blue,
+      //   repeat: true,
+      //   child: FloatingActionButton(
+      //     onPressed: () async {
+      //       Get.to(DirectBookingPage());
+      //     },
+      //     shape: const CircleBorder(),
+      //     backgroundColor: CommonColors.indigoshade50,
+      //     highlightElevation: 10.0,
+      //     child: Container(
+      //       decoration: BoxDecoration(
+      //         shape: BoxShape.circle,
+      //         border: Border.all(
+      //           color: CommonColors.colorPrimary ?? Colors.blue, // Border color
+      //           width: 1, // Border thickness
+      //         ),
+      //       ),
+      //       child: ClipOval(
+      //         child: Image.asset(
+      //           'assets/images/directbooking.png',
+      //           fit: BoxFit.cover,
+      //           // width: 50,
+      //           // height: 50,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: widget.tripModel == null
           ? Scaffold(
               body: Center(
@@ -425,14 +461,15 @@ try {
                                   var data = deliveryDetailList[index];
 
                                   return DeliveryDetailTile(
-                                    model: data,
-                                    currentDeliveryModel: deliveryModel,
-                                    listLength: deliveryDetailList.length,
-                                    index: index,
-                                    onRefresh: refreshScreen,
-                                    menuList: menuList,
-                                    updateDriverPosition: updateDriverReached,
-                                  );
+                                      model: data,
+                                      currentDeliveryModel: deliveryModel,
+                                      listLength: deliveryDetailList.length,
+                                      index: index,
+                                      onRefresh: refreshScreen,
+                                      menuList: menuList,
+                                      updateDriverPosition: updateDriverReached,
+                                      updateDriverReachedDlvPoint:
+                                          updateDriverReachedDlvPoint);
                                 },
                               ),
                             ),

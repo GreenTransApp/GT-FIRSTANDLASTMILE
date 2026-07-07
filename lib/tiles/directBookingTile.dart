@@ -3,16 +3,12 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
-import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
-import 'package:gtlmd/pages/directBooking/model/directBookingModel.dart';
 import 'package:gtlmd/pages/directBooking/updateBookingDispatchInfo.dart';
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 import 'package:gtlmd/tiles/addressCard.dart';
-import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DirectBookingTile extends StatefulWidget {
   final DeliveryDetailModel model;

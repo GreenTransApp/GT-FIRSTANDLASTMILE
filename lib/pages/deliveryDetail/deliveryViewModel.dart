@@ -17,6 +17,7 @@ class DeliveryViewModel extends BaseViewModel {
       StreamController();
   StreamController<List<LmdMenuModel>> getMenuLiveData = StreamController();
   StreamController<PunchoutModel> updateDriverReachedLD = StreamController();
+  StreamController<PunchoutModel> driverReachedDlvPoint = StreamController();
   DeliveryViewModel() {
     viewDialog = _repo.viewDialog;
     isErrorLiveData = _repo.isErrorLiveData;
@@ -24,6 +25,7 @@ class DeliveryViewModel extends BaseViewModel {
     deliveryDataLiveData = _repo.deliveryData;
     getMenuLiveData = _repo.menuList;
     updateDriverReachedLD = _repo.updateDriverPosition;
+    driverReachedDlvPoint = _repo.driverReachedDlvPoint;
   }
 
   getDeliveryDetail(Map<String, String> params) {
@@ -36,5 +38,9 @@ class DeliveryViewModel extends BaseViewModel {
 
   updateDriverReached(Map<String, String> params) {
     _repo.updateDriverReached(params);
+  }
+
+  updateDriverReachedDlvPoint(Map<String, String> params) {
+    _repo.updateDriverReachedDlvPoint(params);
   }
 }

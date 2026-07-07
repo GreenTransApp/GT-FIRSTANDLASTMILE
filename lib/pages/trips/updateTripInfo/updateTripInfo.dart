@@ -82,9 +82,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       _startReadingImagePath = widget.model.startreadingimg;
       calculateTotalTime(
           widget.model.tripdispatchtime!, _closeTimeController.text.toString());
-
     }
- 
+
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     setObservers();
@@ -96,7 +95,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmvehiclecode":  widget.model.modecode.toString(),
+      "prmvehiclecode": widget.model.modecode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
     };
     viewModel.getLastTripInfo(params);
@@ -170,7 +169,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
               "Last End Reading :${lastTripInfo!.lastendreadingkm.toString()}");
           isOdometerUnAvailable = data.odometerbypass == 'Y' ? true : false;
         });
-      }else{
+      } else {
         failToast(data.commandmessage ?? "Something went wrong");
       }
     });
@@ -314,7 +313,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   }
 
   Future<void> updateStartTrip() async {
-     _currentPosition = await Geolocator.getCurrentPosition();
+    _currentPosition = await Geolocator.getCurrentPosition();
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),

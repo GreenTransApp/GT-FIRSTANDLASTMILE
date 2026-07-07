@@ -20,6 +20,7 @@ class DeliveryRepository extends BaseRepository {
   StreamController<List<LmdMenuModel>> menuList = StreamController();
   StreamController<CurrentDeliveryModel> deliveryData = StreamController();
   StreamController<PunchoutModel> updateDriverPosition = StreamController();
+  StreamController<PunchoutModel> driverReachedDlvPoint = StreamController();
   Future<void> getDeliveryDetails(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -43,7 +44,11 @@ class DeliveryRepository extends BaseRepository {
               List<CurrentDeliveryModel> resultList = List.generate(
                   list2.length,
                   (index) => CurrentDeliveryModel.fromJson(list2[index]));
-              deliveryData.add(resultList.first);
+              if (resultList.isNotEmpty) {
+                deliveryData.add(resultList.first);
+              } else {
+                deliveryData.add(CurrentDeliveryModel());
+              }
             }
           }
         } else {
@@ -105,45 +110,9 @@ class DeliveryRepository extends BaseRepository {
   Future<void> updateDriverReached(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
-
-    // if (hasInternet) {
-    //   try {
-    //     // viewDialog.add(true);
-    //     CommonResponse resp =
-    //         await apiPostWithModel("${lmdUrl}UpdateDriverReachPosition", params);
-    //     if (resp.commandStatus == 1) {
-    //       Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-    //       Iterable<MapEntry<String, dynamic>> entries = table.entries;
-    //       for (final entry in entries) {
-    //         if (entry.key == "Table") {
-    //           List<dynamic> list1 = entry.value;
-    //           List<PunchoutModel> resultList = List.generate(list1.length,
-    //               (index) => PunchoutModel.fromJson(list1[index]));
-    //           updateDriverPosition.add(resultList.first);
-
-    //           if (resp.commandStatus == 1) {
-    //             updateDriverPosition.add(resultList[0]);
-    //           } else {
-    //             viewDialog.add(false);
-    //             isErrorLiveData.add(resp.commandMessage ?? "Data Not Found");
-    //           }
-    //         }
-    //       }
-    //     } else {
-    //       isErrorLiveData.add(resp.commandMessage!);
-    //     }
-    //     viewDialog.add(false);
-    //   } on SocketException catch (_) {
-    //     isErrorLiveData.add("No Internet");
-    //     viewDialog.add(false);
-    //   } catch (err) {
-    //     isErrorLiveData.add(err.toString());
-    //     viewDialog.add(false);
-    //   }
-    //   viewDialog.add(false);
-    // } 
-     if (hasInternet) {
-      CommonResponse resp = await apiPostWithModel("${lmdUrl}UpdateDriverReachPosition", params);
+    if (hasInternet) {
+      CommonResponse resp =
+          await apiPostWithModel("${lmdUrl}UpdateDriverReachPosition", params);
       viewDialog.add(false);
       if (resp.commandStatus == 1) {
         Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -166,6 +135,35 @@ class DeliveryRepository extends BaseRepository {
       viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
     }
-  
+  }
+
+  Future<void> updateDriverReachedDlvPoint(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      CommonResponse resp = await apiPostWithModel(
+          "${lmdUrl}UpdateDriverReachedDlvPoint", params);
+      viewDialog.add(false);
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<PunchoutModel> resultList = List.generate(
+            list.length, (index) => PunchoutModel.fromJson(list[index]));
+        PunchoutModel response = resultList[0];
+
+        if (response.commandstatus == 1) {
+          driverReachedDlvPoint.add(resultList[0]);
+        } else {
+          viewDialog.add(false);
+          isErrorLiveData.add(response.commandmessage ?? "Data Not Found");
+        }
+      } else {
+        viewDialog.add(false);
+        isErrorLiveData.add(resp.commandMessage.toString());
+      }
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
   }
 }

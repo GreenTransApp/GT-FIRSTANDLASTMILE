@@ -6,7 +6,6 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryDetail.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
-import 'package:gtlmd/pages/trips/tripDetail/tripDetail.dart';
 import 'package:gtlmd/pages/trips/tripOrderSummary/tripOrderSummary.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';

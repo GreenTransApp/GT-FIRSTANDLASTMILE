@@ -34,6 +34,8 @@ class DeliveryDetailTile extends StatefulWidget {
   final Function() onRefresh;
   final Future<void> Function(String grno, String indentId, String tripid)
       updateDriverPosition;
+  final Future<void> Function(String grno, String indentId, String tripid)
+      updateDriverReachedDlvPoint;
   final List<LmdMenuModel> menuList;
 
   const DeliveryDetailTile({
@@ -44,6 +46,7 @@ class DeliveryDetailTile extends StatefulWidget {
     required this.listLength,
     required this.onRefresh,
     required this.updateDriverPosition,
+    required this.updateDriverReachedDlvPoint,
     this.menuList = const [],
   });
 
@@ -257,45 +260,51 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         widget.model.transactionid.toString(), widget.model.tripid.toString());
   }
 
+  updateDriverReachedDlvLocation() async {
+    await widget.updateDriverReachedDlvPoint(widget.model.grno.toString(),
+        widget.model.transactionid.toString(), widget.model.tripid.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return TimelineTile(
-        isFirst: isFirst,
-        isLast: isLast,
-        alignment: TimelineAlign.manual,
-        lineXY: 0.05,
-        beforeLineStyle: LineStyle(
-          color: dotColor,
-          thickness: 2,
-        ),
-        afterLineStyle: LineStyle(
-          color: dotColor,
-          thickness: 2,
-        ),
-        indicatorStyle: IndicatorStyle(
+      isFirst: isFirst,
+      isLast: isLast,
+      alignment: TimelineAlign.manual,
+      lineXY: 0.05,
+      beforeLineStyle: LineStyle(
+        color: dotColor,
+        thickness: 2,
+      ),
+      afterLineStyle: LineStyle(
+        color: dotColor,
+        thickness: 2,
+      ),
+      indicatorStyle: IndicatorStyle(
+        height: 15,
+        width: 15,
+        indicator: Container(
           height: 15,
           width: 15,
-          indicator: Container(
-            height: 15,
-            width: 15,
-            decoration: BoxDecoration(
-              color: dotColor,
-              shape: BoxShape.circle,
-            ),
+          decoration: BoxDecoration(
+            color: dotColor,
+            shape: BoxShape.circle,
           ),
         ),
-        endChild: Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: SizeConfig.verticalPadding,
-              horizontal: SizeConfig.horizontalPadding),
-          child: widget.model.directdelivery == "Y" ? directDeliveryConsignmentCard() : consignmentCard(),
-        ),
-      );
+      ),
+      endChild: Padding(
+        padding: EdgeInsets.symmetric(
+            vertical: SizeConfig.verticalPadding,
+            horizontal: SizeConfig.horizontalPadding),
+        child: widget.model.directdelivery == "Y"
+            ? directDeliveryConsignmentCard()
+            : consignmentCard(),
+      ),
+    );
   }
 
   Widget consignmentCard() {
-    return 
-    Container(
+    return Container(
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(12),
@@ -390,173 +399,170 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     targetMenu = null;
                                   }
 
-                                        Get.to(ConsignmentEnquiryPage(
-                                          consignmentNo: widget
-                                              .model.generatedGr
-                                              .toString(),
-                                        ));
-                                        break;
-                                      case 'share':
-                                        getBookingPrintLink();
-                                        break;
-                                      case 'map':
-                                        {
-                                          // we have to pass lattitude and longitude of the consignment.
-                                          // used static for testing.
-                                          navigateToLocation(
-                                              latitude: widget.model.deliverylat
-                                                  .toString(),
-                                              longitude: widget
-                                                  .model.deliverylong
-                                                  .toString());
-                                        }
-                                        break;
-                                    }
-                                  },
-                                  itemBuilder: (context) => [
-                                    if (widget.model.consignmenttype == 'P' &&
-                                        status == 'Picked')
-                                      const PopupMenuItem(
-                                        value: 'enquiry',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.contact_support_rounded,
-                                              size: 20,
-                                            ),
-                                            SizedBox(
-                                              width: 4,
-                                            ),
-                                            Text('Enquiry')
-                                          ],
-                                        ),
+                                  Get.to(ConsignmentEnquiryPage(
+                                    consignmentNo:
+                                        widget.model.generatedGr.toString(),
+                                  ));
+                                  break;
+                                case 'share':
+                                  getBookingPrintLink();
+                                  break;
+                                case 'map':
+                                  {
+                                    // we have to pass lattitude and longitude of the consignment.
+                                    // used static for testing.
+                                    navigateToLocation(
+                                        latitude:
+                                            widget.model.deliverylat.toString(),
+                                        longitude: widget.model.deliverylong
+                                            .toString());
+                                  }
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              if (widget.model.consignmenttype == 'P' &&
+                                  status == 'Picked')
+                                const PopupMenuItem(
+                                  value: 'enquiry',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.contact_support_rounded,
+                                        size: 20,
                                       ),
-                                    if (widget.model.consignmenttype == 'P' &&
-                                        status == 'Picked')
-                                      const PopupMenuItem(
-                                        value: 'share',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.share_rounded,
-                                              size: 20,
-                                            ),
-                                            SizedBox(
-                                              width: 4,
-                                            ),
-                                            Text('Share')
-                                          ],
-                                        ),
+                                      SizedBox(
+                                        width: 4,
                                       ),
-                                    const PopupMenuItem(
-                                      value: 'map',
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.location_on_rounded,
-                                            size: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Text('Map')
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                      Text('Enquiry')
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                              if (widget.model.consignmenttype == 'P' &&
+                                  status == 'Picked')
+                                const PopupMenuItem(
+                                  value: 'share',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.share_rounded,
+                                        size: 20,
+                                      ),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text('Share')
+                                    ],
+                                  ),
+                                ),
+                              const PopupMenuItem(
+                                value: 'map',
+                                child: Row(
                                   children: [
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: SizeConfig
-                                              .extraSmallHorizontalPadding,
-                                          vertical: SizeConfig
-                                              .extraSmallVerticalPadding),
-                                      child: Text(
-                                        status.toString(),
-                                        style: TextStyle(
-                                          fontSize: SizeConfig.smallTextSize,
-                                          fontWeight: FontWeight.w500,
-                                          color: statusIconColor,
-                                        ),
-                                      ),
-                                    ),
                                     Icon(
-                                      statusIcon,
-                                      color: statusIconColor,
-                                      size: SizeConfig.extraLargeIconSize,
+                                      Icons.location_on_rounded,
+                                      size: 20,
                                     ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Text('Map')
                                   ],
-                                ),
-                                isNullOrEmpty(modelDetail.undeliverreason)
-                                    ? const SizedBox.shrink()
-                                    : Text(
-                                        'Reason: ${modelDetail.undeliverreason}',
-                                        style: TextStyle(
-                                          fontSize: SizeConfig.smallTextSize,
-                                          fontWeight: FontWeight.w800,
-                                          color: CommonColors.colorPrimary,
-                                        )),
-                              ],
-                            ),
-                          ),
-                          Visibility(
-                            visible: widget.model.reached == 'N',
-                            child: GestureDetector(
-                              onTap: () {
-                                updateDriverReached();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: SizeConfig.horizontalPadding,
-                                    vertical: SizeConfig.verticalPadding),
-                                decoration: BoxDecoration(
-                                    color: CommonColors.colorPrimary!.withAlpha(
-                                      (0.1 * 255).toInt(),
-                                    ),
-                                    borderRadius: BorderRadius.circular(16)),
-                                child: Text(
-                                  "Arrived At",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: CommonColors.colorPrimary),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          Visibility(
-                            visible: widget.model.reached == 'Y',
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  color: CommonColors.green600,
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                const Text("Reached")
-                              ],
-                            ),
-                          )
                         ],
                       ),
-                    ],
-                  ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        SizeConfig.extraSmallHorizontalPadding,
+                                    vertical:
+                                        SizeConfig.extraSmallVerticalPadding),
+                                child: Text(
+                                  status.toString(),
+                                  style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
+                                    fontWeight: FontWeight.w500,
+                                    color: statusIconColor,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                statusIcon,
+                                color: statusIconColor,
+                                size: SizeConfig.extraLargeIconSize,
+                              ),
+                            ],
+                          ),
+                          isNullOrEmpty(modelDetail.undeliverreason)
+                              ? const SizedBox.shrink()
+                              : Text('Reason: ${modelDetail.undeliverreason}',
+                                  style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
+                                    fontWeight: FontWeight.w800,
+                                    color: CommonColors.colorPrimary,
+                                  )),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.reached == 'N',
+                      child: GestureDetector(
+                        onTap: () {
+                          updateDriverReached();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
+                          decoration: BoxDecoration(
+                              color: CommonColors.colorPrimary!.withAlpha(
+                                (0.1 * 255).toInt(),
+                              ),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Text(
+                            "Arrived At",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: CommonColors.colorPrimary),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.reached == 'Y',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: CommonColors.green600,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          const Text("Reached")
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
 
             SizedBox(height: SizeConfig.smallVerticalSpacing),
 
@@ -1000,10 +1006,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     );
   }
 
-
-Widget directDeliveryConsignmentCard(){
-  return 
- Container(
+  Widget directDeliveryConsignmentCard() {
+    return Container(
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(12),
@@ -1193,7 +1197,7 @@ Widget directDeliveryConsignmentCard(){
                                     vertical:
                                         SizeConfig.extraSmallVerticalPadding),
                                 child: Text(
-                                 "Direct Delivery",
+                                  "Direct Delivery",
                                   style: TextStyle(
                                     fontSize: SizeConfig.smallTextSize,
                                     fontWeight: FontWeight.w500,
@@ -1219,7 +1223,6 @@ Widget directDeliveryConsignmentCard(){
                         ],
                       ),
                     ),
-                  
                   ],
                 ),
               ],
@@ -1333,33 +1336,17 @@ Widget directDeliveryConsignmentCard(){
                                     onTap: () {
                                       if (status == 'Pending' ||
                                           status == 'Un-Picked') {
-                                        if (modelDetail.cngemobile
-                                                .toString()
-                                                .length ==
-                                            10) {
-                                          commonAlertDialog(
-                                              context,
-                                              "Make a phone call?",
-                                              "Are you sure you want to call ${modelDetail.cngemobile}?",
-                                              "",
-                                              Icon(Icons.phone_outlined,
-                                                  size: SizeConfig
-                                                      .extraSmallIconSize), () {
-                                            _makePhoneCall(
-                                                modelDetail.cngemobile);
-                                          });
-                                        } else {
-                                          commonAlertDialog(
-                                              context,
-                                              "Invalid Phone Number",
-                                              "The phone number is not valid",
-                                              'address',
-                                              Icon(
-                                                Icons.phone_outlined,
-                                                size: SizeConfig.smallIconSize,
-                                              ),
-                                              () {});
-                                        }
+                                        commonAlertDialog(
+                                            context,
+                                            "Make a phone call?",
+                                            "Are you sure you want to call ${modelDetail.cngemobile}?",
+                                            "",
+                                            Icon(Icons.phone_outlined,
+                                                size: SizeConfig
+                                                    .extraSmallIconSize), () {
+                                          _makePhoneCall(
+                                              modelDetail.cngemobile);
+                                        });
                                       }
                                     },
                                     child: Icon(
@@ -1381,23 +1368,24 @@ Widget directDeliveryConsignmentCard(){
             SizedBox(height: SizeConfig.smallVerticalSpacing),
 
             // Action Buttons for Pending
-            if (modelDetail.directdelivery=='Y') ...[
-               SizedBox(height: SizeConfig.smallVerticalSpacing),
-                Container(
+            if (modelDetail.directdelivery == 'Y') ...[
+              SizedBox(height: SizeConfig.smallVerticalSpacing),
+              Container(
                 padding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.horizontalPadding,
                     vertical: SizeConfig.verticalPadding),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color: CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                         modelDetail.reached == 'Y'
-                            ?modelDetail.reachedatdatetime.toString()
-                             :'Pending',
+                        modelDetail.reached == 'Y'
+                            ? modelDetail.reachedatdatetime.toString()
+                            : 'Pending',
                         style: TextStyle(
                           fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w600,
@@ -1405,23 +1393,22 @@ Widget directDeliveryConsignmentCard(){
                         ),
                       ),
                     ),
-                       Visibility(
+                    Visibility(
                       visible: widget.model.reached == 'Y',
                       child: Row(
                         children: [
-                            Text(
-                              'Reached',
-                              style: TextStyle(
-                                fontSize: SizeConfig.mediumTextSize,
-                                fontWeight: FontWeight.w600,
-                                color: CommonColors.green600,
-                              ),
+                          Text(
+                            'Reached',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
+                              color: CommonColors.green600,
                             ),
+                          ),
                           Icon(
                             Icons.check_circle,
                             color: CommonColors.green600,
                           ),
-                          
                         ],
                       ),
                     ),
@@ -1429,14 +1416,15 @@ Widget directDeliveryConsignmentCard(){
                       visible: widget.model.reached != 'Y',
                       child: ElevatedButton.icon(
                         onPressed: () {
-                         updateDriverReached();
+                          updateDriverReached();
                         },
                         // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Arried At',
-                            style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+                        label: Text('Arrived At',
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize)),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.horizontalPadding,
+                              horizontal: SizeConfig.horizontalPadding,
                               vertical: SizeConfig.verticalPadding),
                           backgroundColor: CommonColors.colorPrimary,
                           foregroundColor: CommonColors.White,
@@ -1446,26 +1434,26 @@ Widget directDeliveryConsignmentCard(){
                         ),
                       ),
                     ),
-                  
                   ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
-            
-               SizedBox(height: SizeConfig.smallVerticalSpacing),
-                Container(
+              SizedBox(height: SizeConfig.smallVerticalSpacing),
+              Container(
                 padding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.horizontalPadding,
                     vertical: SizeConfig.verticalPadding),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14),
-                  color: CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        isNullOrEmpty(modelDetail.pickupstatusupdateon.toString())
+                        isNullOrEmpty(
+                                modelDetail.pickupstatusupdateon.toString())
                             ? 'Pending'
                             : widget.model.pickupstatusupdateon.toString(),
                         style: TextStyle(
@@ -1476,130 +1464,202 @@ Widget directDeliveryConsignmentCard(){
                       ),
                     ),
                     if (modelDetail.consignmenttype == "P" &&
-                  (modelDetail.pickupstatus == "P")) ...[
-                    Column(
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                          LmdMenuModel? targetMenu;
-                        print(MenuTags.PICKUP.name.toString());
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() ==
-                              MenuTags.PICKUP.name.toString());
-                          {
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          }
-                          {}
-                        } catch (e) {
-                          targetMenu = null;
-                        }
+                        (modelDetail.pickupstatus == "P")) ...[
+                      Column(
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              print(MenuTags.PICKUP.name.toString());
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.PICKUP.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                                {}
+                              } catch (e) {
+                                targetMenu = null;
+                              }
 
-                        String fileName =
-                            targetMenu?.fileName?.toLowerCase() ?? 'pickup';
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'pickup';
 
-                        if (fileName == 'OtexPickupScreen' ||
-                            fileName == 'otexpickupscreen') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(
-                            OtexPickupScreen(
-                                transactionId: isNullOrEmpty(
-                                        widget.model.transactionid.toString())
-                                    ? '0'
-                                    : widget.model.transactionid.toString(),
-                                grno: widget.model.grno.toString(),
-                                orderid: isNullOrEmpty(
-                                        widget.model.orderid.toString())
-                                    ? '0'
-                                    : widget.model.orderid.toString()),
-                          )?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else if (fileName == 'Pickup' ||
-                            fileName == 'pickup') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(Pickup(details: widget.model))?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                          },
-                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                          label: Text('Pickup',
-                              style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
-                            backgroundColor: CommonColors.colorPrimary,
-                            foregroundColor: CommonColors.White,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                        ),
-                    //       ElevatedButton.icon(
-                    //   onPressed: () {
-                      
-                    //   },
-                    //   // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                    //   label: Text('Reject',
-                    //       style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                    //   style: ElevatedButton.styleFrom(
-                    //     padding: EdgeInsets.symmetric(
-                    //         vertical: SizeConfig.verticalPadding),
-                    //     backgroundColor: CommonColors.red600,
-                    //     foregroundColor: CommonColors.White,
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(14),
-                    //     ),
-                    //   ),
-                    // ),
-                      ],
-                    ),
-                  
-                
-                    ],
-
-                      Visibility(
-                        visible: modelDetail.consignmenttype == "P" &&
-                            (modelDetail.pickupstatus == "D"),
-                        child: Row(
-                          children: [
-                             Text(
-                              'Picked',
-                              style: TextStyle(
-                                fontSize: SizeConfig.mediumTextSize,
-                                fontWeight: FontWeight.w600,
-                                color: CommonColors.green600,
+                              if (fileName == 'OtexPickupScreen' ||
+                                  fileName == 'otexpickupscreen') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(
+                                  OtexPickupScreen(
+                                      transactionId: isNullOrEmpty(widget
+                                              .model.transactionid
+                                              .toString())
+                                          ? '0'
+                                          : widget.model.transactionid
+                                              .toString(),
+                                      grno: widget.model.grno.toString(),
+                                      orderid: isNullOrEmpty(
+                                              widget.model.orderid.toString())
+                                          ? '0'
+                                          : widget.model.orderid.toString()),
+                                )?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else if (fileName == 'Pickup' ||
+                                  fileName == 'pickup') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(Pickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                            label: Text('Pickup',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
+                              backgroundColor: CommonColors.colorPrimary,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            Icon(
-                              Icons.check_circle,
+                          ),
+                          //       ElevatedButton.icon(
+                          //   onPressed: () {
+
+                          //   },
+                          //   // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                          //   label: Text('Reject',
+                          //       style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+                          //   style: ElevatedButton.styleFrom(
+                          //     padding: EdgeInsets.symmetric(
+                          //         vertical: SizeConfig.verticalPadding),
+                          //     backgroundColor: CommonColors.red600,
+                          //     foregroundColor: CommonColors.White,
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(14),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ],
+                    Visibility(
+                      visible: modelDetail.consignmenttype == "P" &&
+                          (modelDetail.pickupstatus == "D"),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Picked',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
                               color: CommonColors.green600,
                             ),
-                            SizedBox(width: SizeConfig.smallHorizontalPadding),
-                           
-                          ],
-                        ),
+                          ),
+                          Icon(
+                            Icons.check_circle,
+                            color: CommonColors.green600,
+                          ),
+                          SizedBox(width: SizeConfig.smallHorizontalPadding),
+                        ],
                       ),
-                     ],
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
-            
-             
-        
-                Container(
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        modelDetail.reachedAtDlvPoint == 'Y'
+                            ? modelDetail.reachedAtDlvPointDt.toString()
+                            : 'Pending',
+                        style: TextStyle(
+                          fontSize: SizeConfig.mediumTextSize,
+                          fontWeight: FontWeight.w600,
+                          color: CommonColors.colorPrimary,
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.reachedAtDlvPoint == 'Y',
+                      child: Row(
+                        children: [
+                          Text(
+                            'Reached Delivery Point',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
+                              color: CommonColors.green600,
+                            ),
+                          ),
+                          Icon(
+                            Icons.check_circle,
+                            color: CommonColors.green600,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.reachedAtDlvPoint != 'Y',
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          if (modelDetail.consignmenttype == "P" &&
+                              modelDetail.pickupstatus == "P") {
+                            failToast("Please Pick up the consignment first");
+                            return;
+                          }
+                          updateDriverReachedDlvLocation();
+                        },
+                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                        label: Text('Arrive At Destination',
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize)),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
+                          backgroundColor: CommonColors.colorPrimary,
+                          foregroundColor: CommonColors.White,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: SizeConfig.smallVerticalSpacing),
+              Container(
                 padding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.horizontalPadding,
                     vertical: SizeConfig.verticalPadding),
@@ -1611,7 +1671,8 @@ Widget directDeliveryConsignmentCard(){
                   children: [
                     Expanded(
                       child: Text(
-                        isNullOrEmpty(widget.model.deliverystatusupdateon.toString())
+                        isNullOrEmpty(
+                                widget.model.deliverystatusupdateon.toString())
                             ? 'Pending'
                             : widget.model.deliverystatusupdateon.toString(),
                         style: TextStyle(
@@ -1622,50 +1683,61 @@ Widget directDeliveryConsignmentCard(){
                       ),
                     ),
                     Visibility(
-                      visible:widget.model.deliverystatus == 'P',
-                      child: Column(
+                      visible: widget.model.deliverystatus == 'P',
+                      child: Row(
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
                               LmdMenuModel? targetMenu;
-                          try {
-                            targetMenu = widget.menuList.firstWhere((element) =>
-                                element.tag?.toString() ==
-                                MenuTags.DELIVERY.name.toString());
-                            {
-                              {
-                                menuCode = targetMenu.menuCode.toString();
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.DELIVERY.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
                               }
-                            }
-                          } catch (e) {
-                            targetMenu = null;
-                          }
-                      
-                          String fileName =
-                              targetMenu?.fileName?.toLowerCase() ?? 'PodEntry';
-                      
-                          if (fileName == 'PodEntry' || fileName == 'podentry') {
-                            if (widget.model.reached == 'N') {
-                              failToast("Not reached");
-                              return;
-                            }else if(modelDetail.directdelivery == 'Y' && modelDetail.pickupstatus != 'D'){
-                              failToast("Pickup not done yet.");
-                              return;
-                            }
-                            Get.to(PodEntry(deliveryDetailModel: modelDetail))
-                                ?.then((_) {
-                              widget.onRefresh();
-                            });
-                          } else {
-                            failToast("Screen $fileName not mapped.");
-                          }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'PodEntry';
+
+                              if (fileName == 'PodEntry' ||
+                                  fileName == 'podentry') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                } else if (modelDetail.reachedAtDlvPoint ==
+                                        'Y' &&
+                                    modelDetail.pickupstatus != 'D') {
+                                  failToast("Pickup not done yet.");
+                                  return;
+                                } else if (modelDetail.reachedAtDlvPoint !=
+                                    'Y') {
+                                  failToast('Not reached delivery point');
+                                  return;
+                                }
+                                Get.to(PodEntry(
+                                        deliveryDetailModel: modelDetail))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
                             },
                             // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
                             label: Text('Deliver',
-                                style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
+                                  horizontal: SizeConfig.horizontalPadding,
                                   vertical: SizeConfig.verticalPadding),
                               backgroundColor: CommonColors.successColor,
                               foregroundColor: CommonColors.White,
@@ -1674,92 +1746,99 @@ Widget directDeliveryConsignmentCard(){
                               ),
                             ),
                           ),
-                      
-                            ElevatedButton.icon(
-                        onPressed: () {
-                          LmdMenuModel? targetMenu;
-                          try {
-                            targetMenu = widget.menuList.firstWhere((element) =>
-                                element.tag?.toString() ==
-                                MenuTags.UNDELIVERY.name.toString());
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          } catch (e) {
-                            targetMenu = null;
-                          }
-                      
-                          String fileName =
-                              targetMenu?.fileName?.toLowerCase() ?? 'UnDelivery';
-                      
-                          if (fileName == 'UnDelivery' ||
-                              fileName == 'undelivery') {
-                            if (widget.model.reached == 'N') {
-                              failToast("Not reached");
-                              return;
-                            }else if(modelDetail.directdelivery == 'Y' && modelDetail.pickupstatus != 'D'){
-                              failToast("Pickup not done yet.");
-                              return;
-                            }
-                            Get.to(UnDelivery(deliveryDetailModel: modelDetail))
-                                ?.then((_) {
-                              widget.onRefresh();
-                            });
-                          } else {
-                            failToast("Screen $fileName not mapped.");
-                          }
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Undeliver',
-                            style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                             horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.red600,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                          SizedBox(
+                            width: SizeConfig.horizontalPadding,
                           ),
-                        ),
-                      ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.UNDELIVERY.name.toString());
+                                {
+                                  menuCode = targetMenu.menuCode.toString();
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'UnDelivery';
+
+                              if (fileName == 'UnDelivery' ||
+                                  fileName == 'undelivery') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                } else if (modelDetail.directdelivery == 'Y' &&
+                                    modelDetail.pickupstatus != 'D') {
+                                  failToast("Pickup not done yet.");
+                                  return;
+                                } else if (modelDetail.reachedAtDlvPoint !=
+                                    'Y') {
+                                  failToast('Not reached delivery point');
+                                  return;
+                                }
+                                Get.to(UnDelivery(
+                                        deliveryDetailModel: modelDetail))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                            label: Text('Undeliver',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: SizeConfig.horizontalPadding,
+                                  vertical: SizeConfig.verticalPadding),
+                              backgroundColor: CommonColors.red600,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  
-                   Visibility(
-                        visible:
-                            (modelDetail.deliverystatus != "P"),
-                        child: Row(
-                          children: [
-                             Text(
-                              modelDetail.deliverystatus == 'D' ? 'Delivered' : 'Undelivered',
-                              style: TextStyle(
-                                fontSize: SizeConfig.mediumTextSize,
-                                fontWeight: FontWeight.w600,
-                                color: CommonColors.green600,
-                              ),
-                            ),
-                            Icon(
-                              Icons.check_circle,
+                    Visibility(
+                      visible: (modelDetail.deliverystatus != "P"),
+                      child: Row(
+                        children: [
+                          Text(
+                            modelDetail.deliverystatus == 'D'
+                                ? 'Delivered'
+                                : 'Undelivered',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
                               color: CommonColors.green600,
                             ),
-                            SizedBox(width: SizeConfig.smallHorizontalPadding),
-                           
-                          ],
-                        ),
+                          ),
+                          Icon(
+                            Icons.check_circle,
+                            color: CommonColors.green600,
+                          ),
+                          SizedBox(width: SizeConfig.smallHorizontalPadding),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
-             
-             
             ],
-         ],
+          ],
         ),
       ),
     );
- 
-}
+  }
 }
