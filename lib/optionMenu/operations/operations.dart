@@ -3,6 +3,7 @@ import 'package:gtlmd/api/HttpCalls.dart' as URL;
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/design_system/device_type.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -150,7 +151,7 @@ String defaultImagePath =
                                 "Choose Operation",
                                 style: TextStyle(
                                   color: CommonColors.White,
-                                  fontSize: 15,
+                                  fontSize: SizeConfig.mediumTextSize,
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
@@ -173,9 +174,9 @@ String defaultImagePath =
                   Expanded(
                     child: GridView.builder(
                       padding:
-                          const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
+                           EdgeInsets.symmetric(
+                        horizontal: SizeConfig.smallHorizontalPadding,
+                        vertical: SizeConfig.smallVerticalPadding,
                       ),
                       itemCount:
                           provider.menuList.length,
@@ -183,9 +184,9 @@ String defaultImagePath =
                           SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount:
                             crossAxisCount,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.18,
+                        crossAxisSpacing: SizeConfig.smallTextSize,
+                        mainAxisSpacing: SizeConfig.smallTextSize,
+                        childAspectRatio: 0.92,
                       ),
                       itemBuilder:
                           (context, index) {
@@ -273,16 +274,16 @@ String defaultImagePath =
                                     color:
                                         accentColor,
                                     borderRadius:
-                                        const BorderRadius
+                                         BorderRadius
                                             .only(
                                       topLeft:
                                           Radius
                                               .circular(
-                                                  24),
+                                                  SizeConfig.getExtraExtraLargeRadius()),
                                       topRight:
                                           Radius
                                               .circular(
-                                                  24),
+                                                  SizeConfig.getExtraExtraLargeRadius()),
                                     ),
                                   ),
                                 ),
@@ -296,7 +297,7 @@ String defaultImagePath =
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment
-                                              .spaceEvenly,
+                                              .start,
                                       children: [
                                         /// HERO IMAGE
                                         Stack(
@@ -307,9 +308,11 @@ String defaultImagePath =
                                             /// GLOW
                                             Container(
                                               width:
-                                                  110,
+                                                  SizeConfig.screenWidth *
+                                                      .18,
                                               height:
-                                                  110,
+                                                  SizeConfig.screenWidth *
+                                                      .18,
                                               decoration:
                                                   BoxDecoration(
                                                 shape:
@@ -322,16 +325,18 @@ String defaultImagePath =
                                             /// IMAGE HOLDER
                                             Container(
                                               width:
-                                                  90,
+                                                  SizeConfig.screenWidth*
+                                                      .20,
                                               height:
-                                                  90,
+                                                  SizeConfig.screenWidth*
+                                                      .20,
                                               decoration:
                                                   BoxDecoration(
                                                 color:
                                                     Colors.white,
                                                 borderRadius:
                                                     BorderRadius.circular(
-                                                        24),
+                                                        SizeConfig.getExtraExtraLargeRadius()),
                                                 boxShadow: [
                                                   BoxShadow(
                                                     color: accentColor.withOpacity(
@@ -346,8 +351,9 @@ String defaultImagePath =
                                               child:
                                                   Padding(
                                                 padding:
-                                                    const EdgeInsets.all(
-                                                        8),
+                                                     EdgeInsets.symmetric(horizontal: SizeConfig.smallHorizontalPadding,
+                                                     vertical: SizeConfig.smallVerticalPadding
+                                                     ),
                                                 child:
                                                     Image.network(
                                                   "${URL.imageBaseUrl}GTINFINITIAPP/${operation.menuname}.png",
@@ -392,39 +398,46 @@ String defaultImagePath =
                                           ],
                                         ),
 
-                                        const SizedBox(
-                                            height:
-                                                8),
+                                         SizedBox(
+                                            height:SizeConfig.smallVerticalPadding
+                                                ),
 
-                                        Text(
-                                          operation
-                                                  .menuname ??
-                                              '',
-                                          textAlign:
-                                              TextAlign
-                                                  .center,
-                                          maxLines:
-                                              2,
-                                          overflow:
-                                              TextOverflow
-                                                  .ellipsis,
-                                          style:
-                                              const TextStyle(
-                                            fontSize:
-                                                15,
-                                            fontWeight:
-                                                FontWeight
-                                                    .w700,
+                                        Flexible(
+                                          child: Padding(
+                                           padding: EdgeInsets.symmetric(
+                                              horizontal: SizeConfig.extraSmallHorizontalPadding),
+                                            child: Text(
+                                              operation
+                                                      .menuname ??
+                                                  '',
+                                              textAlign:
+                                                  TextAlign
+                                                      .center,
+                                             maxLines: SizeConfig.deviceType == DeviceType.smallPhone ? 3 : 2,
+                                              overflow:
+                                                  TextOverflow
+                                                      .ellipsis,
+                                                      softWrap: true,
+                                              style:
+                                                   TextStyle(
+                                                fontSize:
+                                                    SizeConfig.smallTextSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .w700,
+                                                        
+                                              ),
+                                            ),
                                           ),
                                         ),
 
                                         Container(
                                           padding:
-                                              const EdgeInsets.symmetric(
+                                               EdgeInsets.symmetric(
                                             horizontal:
-                                                14,
+                                                SizeConfig.smallHorizontalPadding,
                                             vertical:
-                                                6,
+                                                SizeConfig.smallVerticalPadding,
                                           ),
                                           decoration:
                                               BoxDecoration(
@@ -445,7 +458,7 @@ String defaultImagePath =
                                               fontWeight:
                                                   FontWeight.w600,
                                               fontSize:
-                                                  12,
+                                                  SizeConfig.smallTextSize,
                                             ),
                                           ),
                                         ),
