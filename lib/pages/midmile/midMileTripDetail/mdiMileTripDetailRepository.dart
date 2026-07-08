@@ -1,43 +1,36 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
-import 'package:gtlmd/pages/attendance/models/punchOutMode.dart';
-import 'package:gtlmd/pages/midmile/midMileTripList/midMileTripListModel.dart';
+import 'package:gtlmd/pages/midmile/midMileTripDetail/midMileTripDetailModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
-class MidMileTripListRepository extends BaseRepository {
-  final StreamController<List<MidMileTripListModel>> midMileTripsList =
+class MidMileTripDetailRepository extends BaseRepository {
+  final StreamController<List<MidMileTripDetailModel>> tripDetailList =
       StreamController();
-  final StreamController<PunchoutModel> updateTripStart = StreamController();
   final StreamController<bool> loadingDialog = StreamController();
   final StreamController<String> errorDialog = StreamController();
 
-  getMidMileTripsList(Map<String, String> params) async {
+  getMidMileTripsDetailList(Map<String, String> params) async {
     loadingDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
-
     if (hasInternet) {
       try {
         CommonResponse resp =
-            await apiGet("$lmdUrl/getMidMileTripsList", params);
+            await apiGet("${lmdUrl}GetMidMileTripDetail", params);
+
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
-          Iterable<MapEntry<String, dynamic>> entries = table.entries;
-          for (final entry in entries) {
-            if (entry.key == "Table") {
-              List<dynamic> list1 = entry.value;
-              List<MidMileTripListModel> resultList = List.generate(
-                  list1.length,
-                  (index) => MidMileTripListModel.fromJson(list1[index]));
-              if (resultList.isNotEmpty) {
-                midMileTripsList.add(resultList);
-              } else {
-                midMileTripsList.add([]);
-              }
-            }
+          List<dynamic> list = table.values.first;
+          List<MidMileTripDetailModel> resultList = List.generate(list.length,
+              (index) => MidMileTripDetailModel.fromJson(list[index]));
+          if (resultList.isNotEmpty) {
+            tripDetailList.add(resultList);
+          } else {
+            tripDetailList.add([]);
           }
         } else {
           errorDialog.add(resp.commandMessage!);
