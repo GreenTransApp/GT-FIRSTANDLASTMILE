@@ -28,6 +28,7 @@ import 'package:gtlmd/pages/home/Model/allotedRouteModel.dart';
 import 'package:gtlmd/pages/home/Model/moduleModel.dart';
 import 'package:gtlmd/pages/home/Model/notificationCountModel.dart';
 import 'package:gtlmd/pages/home/homeViewModel.dart';
+import 'package:gtlmd/pages/midmile/midMileTripList/midMileTripList.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
@@ -88,6 +89,7 @@ class _HomeScreen extends State<HomeScreen>
   GlobalKey<AllocatedRouteWidgetState> allotedRouteKey = GlobalKey();
   GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
+  GlobalKey<RunningTripsState> midMileTripsKey = GlobalKey();
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();
@@ -625,6 +627,8 @@ class _HomeScreen extends State<HomeScreen>
       drsSelectionKey.currentState?.refreshScreen();
     } else if (_selectedIndex == 2) {
       runningTripsKey.currentState?.onRefresh();
+    } else if (_selectedIndex == 3) {
+      midMileTripsKey.currentState?.onRefresh();
     }
   }
 
@@ -972,6 +976,8 @@ class _HomeScreen extends State<HomeScreen>
                   drsSelectionKey.currentState?.refreshScreen();
                 } else if (value == 2) {
                   runningTripsKey.currentState?.onRefresh();
+                } else if (value == 3) {
+                  midMileTripsKey.currentState?.onRefresh();
                 }
               });
             },
@@ -990,35 +996,34 @@ class _HomeScreen extends State<HomeScreen>
                 label: "ROUTES",
               ),
               NavigationDestination(
-                icon: Icon(Symbols.package_2,
+                icon: Icon(Symbols.add_road_rounded,
                     size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
-                  Symbols.package_2,
+                  Symbols.add_road_rounded,
                   size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "CREATE TRIP",
               ),
-             
               NavigationDestination(
-                icon: Icon(Symbols.delivery_truck_bolt,
+                icon: Icon(Symbols.local_shipping,
                     size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
-                  Symbols.delivery_truck_bolt,
+                  Symbols.local_shipping,
                   size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
                 label: "TRIPS",
               ),
               NavigationDestination(
-                icon: Icon(Symbols.person_rounded,
+                icon: Icon(Symbols.alt_route_rounded,
                     size: SizeConfig.extraLargeIconSize),
                 selectedIcon: Icon(
-                  Symbols.person_rounded,
+                  Symbols.alt_route_rounded,
                   size: SizeConfig.extraLargeIconSize,
                   color: CommonColors.colorPrimary,
                 ),
-                label: "PROFILE",
+                label: "MMT",
               ),
             ],
           ),
@@ -1083,11 +1088,7 @@ class _HomeScreen extends State<HomeScreen>
                       visible: ENV.isDebugging,
                       child: GestureDetector(
                         onTap: () async {
-                          List<String> files = [
-                            'https://images.pexels.com/photos/7752991/pexels-photo-7752991.jpeg',
-                            'https://images.pexels.com/photos/37368106/pexels-photo-37368106.jpeg'
-                          ];
-                          showMultiImageBottomSheetDialog(context, files, true);
+                          Get.to(const MidMileTripList());
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -1158,8 +1159,12 @@ class _HomeScreen extends State<HomeScreen>
                 ),
                 Column(
                   children: [
-                    // attendanceInfo(),
-                    Expanded(child: const ProfileScreen()),
+                    attendanceInfo(),
+                    Expanded(
+                      child: MidMileTripList(
+                        key: midMileTripsKey,
+                      ),
+                    ),
                   ],
                 )
               ],
