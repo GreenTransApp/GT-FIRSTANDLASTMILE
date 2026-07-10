@@ -36,6 +36,8 @@ class DeliveryDetailTile extends StatefulWidget {
       updateDriverPosition;
   final Future<void> Function(String grno, String indentId, String tripid)
       updateDriverReachedDlvPoint;
+  final Future<void> Function(String grno, String tripid)
+      updatePickupDepartedPosition;
   final List<LmdMenuModel> menuList;
 
   const DeliveryDetailTile({
@@ -47,6 +49,7 @@ class DeliveryDetailTile extends StatefulWidget {
     required this.onRefresh,
     required this.updateDriverPosition,
     required this.updateDriverReachedDlvPoint,
+    required this.updatePickupDepartedPosition,
     this.menuList = const [],
   });
 
@@ -263,6 +266,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   updateDriverReachedDlvLocation() async {
     await widget.updateDriverReachedDlvPoint(widget.model.grno.toString(),
         widget.model.transactionid.toString(), widget.model.tripid.toString());
+  }
+
+  updatePickupDepartedPosition() async {
+    await widget.updatePickupDepartedPosition(
+        widget.model.grno.toString(), widget.model.tripid.toString());
   }
 
   @override
@@ -1414,22 +1422,24 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ),
                     Visibility(
                       visible: widget.model.reached != 'Y',
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          updateDriverReached();
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Arrived At',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.colorPrimary,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      child: Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            updateDriverReached();
+                          },
+                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                          label: Text('Arrived At',
+                              style:
+                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            backgroundColor: CommonColors.colorPrimary,
+                            foregroundColor: CommonColors.White,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                         ),
                       ),
@@ -1465,100 +1475,81 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ),
                     if (modelDetail.consignmenttype == "P" &&
                         (modelDetail.pickupstatus == "P")) ...[
-                      Column(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              LmdMenuModel? targetMenu;
-                              print(MenuTags.PICKUP.name.toString());
-                              try {
-                                targetMenu = widget.menuList.firstWhere(
-                                    (element) =>
-                                        element.tag?.toString() ==
-                                        MenuTags.PICKUP.name.toString());
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            LmdMenuModel? targetMenu;
+                            print(MenuTags.PICKUP.name.toString());
+                            try {
+                              targetMenu = widget.menuList.firstWhere(
+                                  (element) =>
+                                      element.tag?.toString() ==
+                                      MenuTags.PICKUP.name.toString());
+                              {
                                 {
-                                  {
-                                    menuCode = targetMenu.menuCode.toString();
-                                  }
+                                  menuCode = targetMenu.menuCode.toString();
                                 }
-                                {}
-                              } catch (e) {
-                                targetMenu = null;
                               }
-
-                              String fileName =
-                                  targetMenu?.fileName?.toLowerCase() ??
-                                      'pickup';
-
-                              if (fileName == 'OtexPickupScreen' ||
-                                  fileName == 'otexpickupscreen') {
-                                if (widget.model.reached == 'N') {
-                                  failToast("Not reached");
-                                  return;
-                                }
-                                Get.to(
-                                  OtexPickupScreen(
-                                      transactionId: isNullOrEmpty(widget
-                                              .model.transactionid
-                                              .toString())
-                                          ? '0'
-                                          : widget.model.transactionid
-                                              .toString(),
-                                      grno: widget.model.grno.toString(),
-                                      orderid: isNullOrEmpty(
-                                              widget.model.orderid.toString())
-                                          ? '0'
-                                          : widget.model.orderid.toString()),
-                                )?.then((_) {
-                                  widget.onRefresh();
-                                });
-                              } else if (fileName == 'Pickup' ||
-                                  fileName == 'pickup') {
-                                if (widget.model.reached == 'N') {
-                                  failToast("Not reached");
-                                  return;
-                                }
-                                Get.to(Pickup(details: widget.model))
-                                    ?.then((_) {
-                                  widget.onRefresh();
-                                });
-                              } else {
-                                failToast("Screen $fileName not mapped.");
+                              {}
+                            } catch (e) {
+                              targetMenu = null;
+                            }
+                                                
+                            String fileName =
+                                targetMenu?.fileName?.toLowerCase() ??
+                                    'pickup';
+                                                
+                            if (fileName == 'OtexPickupScreen' ||
+                                fileName == 'otexpickupscreen') {
+                              if (widget.model.reached == 'N') {
+                                failToast("Not reached");
+                                return;
                               }
-                            },
-                            // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                            label: Text('Pickup',
-                                style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
-                              backgroundColor: CommonColors.colorPrimary,
-                              foregroundColor: CommonColors.White,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
+                              Get.to(
+                                OtexPickupScreen(
+                                    transactionId: isNullOrEmpty(widget
+                                            .model.transactionid
+                                            .toString())
+                                        ? '0'
+                                        : widget.model.transactionid
+                                            .toString(),
+                                    grno: widget.model.grno.toString(),
+                                    orderid: isNullOrEmpty(
+                                            widget.model.orderid.toString())
+                                        ? '0'
+                                        : widget.model.orderid.toString()),
+                              )?.then((_) {
+                                widget.onRefresh();
+                              });
+                            } else if (fileName == 'Pickup' ||
+                                fileName == 'pickup') {
+                              if (widget.model.reached == 'N') {
+                                failToast("Not reached");
+                                return;
+                              }
+                              Get.to(Pickup(details: widget.model))
+                                  ?.then((_) {
+                                widget.onRefresh();
+                              });
+                            } else {
+                              failToast("Screen $fileName not mapped.");
+                            }
+                          },
+                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                          label: Text('Pickup',
+                              style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize)),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            backgroundColor: CommonColors.colorPrimary,
+                            foregroundColor: CommonColors.White,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
-                          //       ElevatedButton.icon(
-                          //   onPressed: () {
-
-                          //   },
-                          //   // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                          //   label: Text('Reject',
-                          //       style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                          //   style: ElevatedButton.styleFrom(
-                          //     padding: EdgeInsets.symmetric(
-                          //         vertical: SizeConfig.verticalPadding),
-                          //     backgroundColor: CommonColors.red600,
-                          //     foregroundColor: CommonColors.White,
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(14),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
+                        ),
                       ),
                     ],
                     Visibility(
@@ -1580,6 +1571,80 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           ),
                           SizedBox(width: SizeConfig.smallHorizontalPadding),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: SizeConfig.smallVerticalSpacing),
+              SizedBox(height: SizeConfig.smallVerticalSpacing),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color:
+                      CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
+                        style: TextStyle(
+                          fontSize: SizeConfig.mediumTextSize,
+                          fontWeight: FontWeight.w600,
+                          color: CommonColors.colorPrimary,
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.pickupdeparted == 'Y',
+                      child: Row(
+                        children: [
+                          Text(
+                            'Pickup Departed',
+                            style: TextStyle(
+                              fontSize: SizeConfig.mediumTextSize,
+                              fontWeight: FontWeight.w600,
+                              color: CommonColors.green600,
+                            ),
+                          ),
+                          Icon(
+                            Icons.check_circle,
+                            color: CommonColors.green600,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.model.pickupdeparted != 'Y',
+                      child: Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                              if (modelDetail.consignmenttype == "P" &&
+                                  modelDetail.pickupstatus == "P") {
+                                  failToast("Please Pick up the consignment first");
+                              return;
+                            }
+                            updatePickupDepartedPosition();
+                          },
+                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                          label: Text('Pickup Departed',
+                              style:
+                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            backgroundColor: CommonColors.colorPrimary,
+                            foregroundColor: CommonColors.White,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -1630,27 +1695,32 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ),
                     Visibility(
                       visible: widget.model.reachedAtDlvPoint != 'Y',
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (modelDetail.consignmenttype == "P" &&
-                              modelDetail.pickupstatus == "P") {
-                            failToast("Please Pick up the consignment first");
-                            return;
-                          }
-                          updateDriverReachedDlvLocation();
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Arrive At Destination',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.colorPrimary,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      child: Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            if (modelDetail.consignmenttype == "P" &&
+                                modelDetail.pickupstatus == "P") {
+                              failToast("Please Pick up the consignment first");
+                              return;
+                            }else if(modelDetail.pickupdeparted != 'Y'){
+                              failToast("Please depart from pickup point first");
+                              return;
+                            }
+                            updateDriverReachedDlvLocation();
+                          },
+                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                          label: Text('Arrive At Destination',
+                              style:
+                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            backgroundColor: CommonColors.colorPrimary,
+                            foregroundColor: CommonColors.White,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                         ),
                       ),

@@ -89,7 +89,7 @@ class _ScanAndLoadState extends State<ScanAndLoad> {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmgrno": modelDetail.grno.toString(),
+      "prmgrno":isNullOrEmpty(modelDetail.generatedGr) ?  modelDetail.grno.toString():modelDetail.generatedGr.toString(),
       "prmstickerno": stickerNoList.join(",") + ",",
       "prmmanifestno": modelDetail.manifestno.toString(),
       "prmsessionid": savedUser.sessionid.toString(),

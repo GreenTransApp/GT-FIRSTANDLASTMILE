@@ -21,6 +21,7 @@ class DeliveryRepository extends BaseRepository {
   StreamController<CurrentDeliveryModel> deliveryData = StreamController();
   StreamController<PunchoutModel> updateDriverPosition = StreamController();
   StreamController<PunchoutModel> driverReachedDlvPoint = StreamController();
+  StreamController<PunchoutModel> pickupDepartedPosition = StreamController();
   Future<void> getDeliveryDetails(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
@@ -153,6 +154,35 @@ class DeliveryRepository extends BaseRepository {
 
         if (response.commandstatus == 1) {
           driverReachedDlvPoint.add(resultList[0]);
+        } else {
+          viewDialog.add(false);
+          isErrorLiveData.add(response.commandmessage ?? "Data Not Found");
+        }
+      } else {
+        viewDialog.add(false);
+        isErrorLiveData.add(resp.commandMessage.toString());
+      }
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
+  Future<void> updatePickupDepartedPosition(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      CommonResponse resp = await apiPostWithModel(
+          "${lmdUrl}UpdateDriverPickupDepartedPosition", params);
+      viewDialog.add(false);
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<PunchoutModel> resultList = List.generate(
+            list.length, (index) => PunchoutModel.fromJson(list[index]));
+        PunchoutModel response = resultList[0];
+
+        if (response.commandstatus == 1) {
+          pickupDepartedPosition.add(resultList[0]);
         } else {
           viewDialog.add(false);
           isErrorLiveData.add(response.commandmessage ?? "Data Not Found");

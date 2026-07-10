@@ -47,6 +47,9 @@ class DeliveryDetailModel {
   String? deliverystatusupdateon;
   String? reachedAtDlvPoint;
   String? reachedAtDlvPointDt;
+  String? pickupdeparted;
+  String? pickupdeparteddattime;
+  
 
   DeliveryDetailModel(
       {this.commandstatus,
@@ -93,7 +96,10 @@ class DeliveryDetailModel {
       this.pickupstatusupdateon,
       this.deliverystatusupdateon,
       this.reachedAtDlvPoint,
-      this.reachedAtDlvPointDt});
+      this.reachedAtDlvPointDt,
+      this.pickupdeparted,
+      this.pickupdeparteddattime,
+      });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
     return DeliveryDetailModel(
@@ -142,6 +148,9 @@ class DeliveryDetailModel {
       deliverystatusupdateon: json['deliverystatusupdateon'],
       reachedAtDlvPoint: json['reacheddlvpoint'],
       reachedAtDlvPointDt: json['reacheddlvpointdt'],
+      pickupdeparted: json['pickupdeparted'],
+      pickupdeparteddattime: json['pickupdeparteddattime'],
+      
     );
   }
 
@@ -192,6 +201,9 @@ class DeliveryDetailModel {
       'deliverystatusupdateon': deliverystatusupdateon,
       'reacheddlvpoint': reachedAtDlvPoint,
       'reacheddlvpointdt': reachedAtDlvPointDt,
+      'pickupdeparted': pickupdeparted,
+      'pickupdeparteddattime': pickupdeparteddattime,
+      
     };
   }
 }

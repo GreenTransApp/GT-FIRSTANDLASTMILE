@@ -21,7 +21,7 @@
 
     
     <application
-        android:label="First2Last Mile"
+        android:label="GTINFINITI APP"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

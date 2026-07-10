@@ -17,6 +17,7 @@ class MidMileTripListModel {
   final String? drivername;
   final String? mobileno;
   final double? rating;
+  final String? startdatetime;
 
   MidMileTripListModel({
     this.tripid,
@@ -37,6 +38,7 @@ class MidMileTripListModel {
     this.drivername,
     this.mobileno,
     this.rating,
+    this.startdatetime,
   });
 
   factory MidMileTripListModel.fromJson(Map<String, dynamic> json) {
@@ -59,6 +61,7 @@ class MidMileTripListModel {
       drivername: json['drivername'] as String?,
       mobileno: json['mobileno'] as String?,
       rating: json['rating'] as double?,
+        startdatetime: json['startdatetime'] as String?
     );
   }
 
@@ -82,6 +85,7 @@ class MidMileTripListModel {
       'drivername': drivername,
       'mobileno': mobileno,
       'rating': rating,
+      'startdatetime': startdatetime,
     };
   }
 
@@ -104,6 +108,7 @@ class MidMileTripListModel {
     String? drivername,
     String? mobileno,
     double? rating,
+    String? startdatetime,
   }) {
     return MidMileTripListModel(
       tripid: tripid ?? this.tripid,
@@ -124,6 +129,7 @@ class MidMileTripListModel {
       drivername: drivername ?? this.drivername,
       mobileno: mobileno ?? this.mobileno,
       rating: rating ?? this.rating,
+      startdatetime: startdatetime ?? this.startdatetime,
     );
   }
 }

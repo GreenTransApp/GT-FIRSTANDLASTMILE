@@ -103,14 +103,17 @@ class _MidMileTripListState extends State<MidMileTripList> {
 
     viewModel.midMileTripsList.stream.listen((listData) {
       if (listData.isNotEmpty) {
+        setState(() {
+          
         tripsList = listData;
         filterList = listData;
+        });
       } else {
         tripsList.clear();
         filterList.clear();
       }
 
-      setState(() {});
+    
     });
   }
 
@@ -163,7 +166,9 @@ class _MidMileTripListState extends State<MidMileTripList> {
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmdrivercode": savedUser.drivercode.toString(),
       "prmusercode": savedUser.usercode.toString(),
-      "prmmenucode": "GTLMD",
+      "prmmenucode": "GTAPP_MIDMILETRIPLIST",
+      "prmfromdt": convert2SmallDateTime(dashboardFromDt.toString()),
+      "prmtodt": convert2SmallDateTime(dashboardToDt.toString()),
       "prmsessionid": savedUser.sessionid.toString(),
     };
     await viewModel.getMidMileTripsList(params);
@@ -369,7 +374,8 @@ class _MidMileTripListState extends State<MidMileTripList> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        "Started : ${trip.startdt ?? "-"} ${trip.starttime ?? ""}",
+                        "Started : ${trip.startdatetime ?? "-"}",
+                        // "Started :test",
                         style: const TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.w600,

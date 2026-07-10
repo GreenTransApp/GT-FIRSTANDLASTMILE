@@ -241,10 +241,11 @@ class _HomeScreen extends State<HomeScreen>
           _updateScreen(context);
           // } else if (validate.executiveid == null ||
           //     validate.employeeid == null) {
-        } else if (validate.executiveid == null) {
-          failToast("Invalid User details");
-          authService.logout(context);
-        } else if (validate.executiveid! > 0) {
+        // } else if (validate.executiveid == null) {
+        //   failToast("Invalid User details");
+        //   authService.logout(context);
+        } 
+        else if (validate.executiveid! > 0) {
           getNotifiocaionCount();
           // getDashboardDetails();
         }

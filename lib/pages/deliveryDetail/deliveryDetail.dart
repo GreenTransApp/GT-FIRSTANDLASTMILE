@@ -18,6 +18,7 @@ import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/tiles/deliveryDetailTile.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class DeliveryDetail extends StatefulWidget {
@@ -41,13 +42,18 @@ class _DeliveryDetailState extends State<DeliveryDetail>
   final DeliveryViewModel viewModel = DeliveryViewModel();
   final BaseRepository _baseRepo = BaseRepository();
   final List<StreamSubscription> _subscription = [];
+ String currentdt =''; 
+ late DateTime todayDateTime;
+  late String smallDateTime;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // deliveryModel = widget.model;
-
+    todayDateTime = DateTime.now();
+    smallDateTime = DateFormat('yyyy-MM-dd').format(todayDateTime);
+    currentdt = smallDateTime.toString();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
 
@@ -63,6 +69,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
               // getBookingPdf()
             }
         });
+
   }
 
   // @override
@@ -169,6 +176,14 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         failToast(resp.commandmessage ?? "Something went wrong");
       }
     }));
+    _subscription.add(viewModel.pickupDepartedPosition.stream.listen((resp) {
+      if (resp.commandstatus == 1) {
+        successToast("Location Update successfull");
+        refreshScreen();
+      } else {
+        failToast(resp.commandmessage ?? "Something went wrong");
+      }
+    }));
   }
 
   getDeliveryDetails() {
@@ -204,6 +219,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   Future<void> updateDriverReached(
       String grno, String indentId, String tripid) async {
+             todayDateTime = DateTime.now();
     // Position position = await Geolocator.getCurrentPosition(
     //     // ignore: deprecated_member_use
     //     desiredAccuracy: LocationAccuracy.high);
@@ -260,6 +276,35 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
       printParams(params);
       viewModel.updateDriverReachedDlvPoint(params);
+    } finally {
+      loadingAlertService.hideLoading();
+    }
+  }
+
+  Future<void> updatePickupDepartedPosition(
+      String grno, String tripid) async {
+    loadingAlertService.showLoading();
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      );
+
+      Map<String, String> params = {
+        "prmusercode": savedUser.usercode.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmtripid": tripid,
+        "prmgrno": grno,
+        "prmpickuplat": position.latitude.toString(),
+        "prmpickuplong": position.longitude.toString(),
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+
+      printParams(params);
+      viewModel.updatePickupDepartedPosition(params);
     } finally {
       loadingAlertService.hideLoading();
     }
@@ -469,7 +514,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                       menuList: menuList,
                                       updateDriverPosition: updateDriverReached,
                                       updateDriverReachedDlvPoint:
-                                          updateDriverReachedDlvPoint);
+                                          updateDriverReachedDlvPoint,
+                                          updatePickupDepartedPosition:updatePickupDepartedPosition);
                                 },
                               ),
                             ),

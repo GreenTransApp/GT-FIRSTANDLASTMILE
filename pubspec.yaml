@@ -138,7 +138,7 @@ flutter_native_splash:
   android: true
   ios: true
   color: "#ffffff"
-  image: assets/icon.png
+  image: assets/images/splash_icon.png
 
 
   # For details regarding adding assets from package dependencies, see

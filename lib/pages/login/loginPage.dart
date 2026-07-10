@@ -314,10 +314,11 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: Column(
                           children: [
-                            const SizedBox(height: 60),
+                            const SizedBox(height: 80),
                             // Logo
                             Image.asset(
-                              'assets/icon.png',
+                              // 'assets/icon.png',
+                              'assets/images/app_icon.png',
                               width: MediaQuery.of(context).size.width * 0.6,
                               height: 80,
                             ),
@@ -346,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               child: TextField(
                                 controller: usermobileController,
-                                keyboardType: TextInputType.number,
+                                // keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   hintText: 'Mobile Number',
