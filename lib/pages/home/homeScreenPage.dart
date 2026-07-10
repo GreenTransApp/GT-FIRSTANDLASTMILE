@@ -245,7 +245,7 @@ class _HomeScreen extends State<HomeScreen>
         //   failToast("Invalid User details");
         //   authService.logout(context);
         } 
-        else if (validate.executiveid! > 0) {
+        else if (isNullOrEmpty(validate.executiveid.toString()) == false && int.parse(validate.executiveid.toString()) > 0) {
           getNotifiocaionCount();
           // getDashboardDetails();
         }

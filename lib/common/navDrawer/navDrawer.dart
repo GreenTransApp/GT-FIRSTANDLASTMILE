@@ -100,7 +100,7 @@ class SideMenu extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        savedUser.displayusername!,
+                        savedUser.displayusername?? '',
                         style: TextStyle(
                           color: CommonColors.white ?? Colors.white,
                           fontSize: SizeConfig.mediumTextSize,
