@@ -93,6 +93,16 @@ class LocationService {
     print('Location permission granted');
   }
 
+  Future<Position> getCurrentLocation() async {
+  await requestPermissions();
+
+  return await Geolocator.getCurrentPosition(
+    locationSettings: const LocationSettings(
+      accuracy: LocationAccuracy.high,
+    ),
+  );
+}
+
   /// Show iOS specific notification
   Future<void> _showIosTrackingNotification() async {
     if (!Platform.isIOS) return;
@@ -293,4 +303,7 @@ class LocationTaskHandler extends TaskHandler {
 
     if (isRetrying) await FlutterForegroundTask.stopService();
   }
+
+
+  
 }

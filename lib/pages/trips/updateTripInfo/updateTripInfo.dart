@@ -17,6 +17,7 @@ import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/trips/updateTripInfo/updateTripViewModel.dart';
 import 'package:gtlmd/service/fireBaseService/firebaseLocationUpload.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:intl/intl.dart';
 
@@ -313,7 +314,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   }
 
   Future<void> updateStartTrip() async {
-    _currentPosition = await Geolocator.getCurrentPosition();
+    // _currentPosition = await Geolocator.getCurrentPosition();
+  _currentPosition = _currentPosition = await LocationService().getCurrentLocation();;
     Map<String, String> params = {
       "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),

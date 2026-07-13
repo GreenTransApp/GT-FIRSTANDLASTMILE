@@ -13,18 +13,19 @@ import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/midmile/midMileTripList/midMileTripListModel.dart';
 import 'package:gtlmd/pages/midmile/midMileTripList/updateMidMileTripInfo/updateMidMileTripInfoViewModel.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class UpdateMidMileTripInfo extends StatefulWidget {
   MidMileTripListModel model;
   // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
-  Future<void> Function()? refresh;
+  Future<void> Function() refresh;
   UpdateMidMileTripInfo({
     super.key,
     required this.model,
     // this.onUpdate,
-    this.refresh,
+    required this.refresh,
   });
 
   @override
@@ -77,13 +78,13 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
 
     viewModel.updateStartTripLiveData.stream.listen((model) async {
       if (model.commandstatus == 1) {
-        successToast(model.commandmessage!);
+        successToast(model.commandmessage?? '');
         if (widget.refresh != null) {
-          widget.refresh!();
+          widget.refresh();
         }
         Get.back();
       } else {
-        failToast(model.commandmessage!);
+        failToast(model.commandmessage?? '');
       }
     });
   }
@@ -178,7 +179,8 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
   }
 
   Future<void> updateStartTrip() async {
-    _currentPosition = await Geolocator.getCurrentPosition();
+    // _currentPosition = await Geolocator.getCurrentPosition();
+    _currentPosition = _currentPosition = await LocationService().getCurrentLocation();;
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
@@ -664,7 +666,7 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
 }
 
 Future<void> openUpdateMidMileTripInfo(BuildContext context,
-    MidMileTripListModel model, Future<void> Function()? onRefresh) {
+    MidMileTripListModel model, Future<void> Function() onRefresh) {
   DraggableScrollableController controller = DraggableScrollableController();
   return showModalBottomSheet(
       context: context,

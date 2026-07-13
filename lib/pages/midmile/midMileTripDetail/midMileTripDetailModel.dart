@@ -28,8 +28,19 @@ class MidMileTripDetailModel {
   final String? transshipmentStation;
   final double? arrivalLat;
   final double? arrivalLong;
-  final double? arrivalKm;
+  final int? arrivalKm;
   final int? arrivalReadingImageId;
+  final String? despatchtype;
+  final String? modecode;
+  final String? pickupdeparteddate;
+  final String? pickupdepartedtime;
+  final String? deliverystatusupdateon;
+  final String? deliverystatus;
+  final String? vehiclearrivalstatus;
+  final String? destcode;
+  final String? orgcode;
+  final String? vehiclearrivalupdateon;
+  
 
   MidMileTripDetailModel({
     this.commandstatus,
@@ -63,6 +74,17 @@ class MidMileTripDetailModel {
     this.arrivalLong,
     this.arrivalKm,
     this.arrivalReadingImageId,
+    this.despatchtype,
+    this.modecode,
+    this.pickupdeparteddate,
+    this.pickupdepartedtime,
+    this.deliverystatusupdateon,
+    this.deliverystatus,
+    this.vehiclearrivalstatus,
+    this.orgcode,
+    this.destcode,
+    this.vehiclearrivalupdateon
+    
   });
 
   factory MidMileTripDetailModel.fromJson(Map<String, dynamic> json) {
@@ -96,8 +118,19 @@ class MidMileTripDetailModel {
       transshipmentStation: json['transshipmentstation'],
       arrivalLat: (json['arrivallat'] as num?)?.toDouble(),
       arrivalLong: (json['arrivallong'] as num?)?.toDouble(),
-      arrivalKm: (json['arrivalkm'] as num?)?.toDouble(),
+      arrivalKm: (json['arrivalkm'])?.toInt(),
       arrivalReadingImageId: json['arrivalreadingimageid'],
+      despatchtype: json['despatchtype'],
+      modecode: json['modecode'],
+      pickupdeparteddate: json['pickupdeparteddate'],
+      pickupdepartedtime: json['pickupdepartedtime'],
+      deliverystatusupdateon: json['deliverystatusupdateon'],
+      deliverystatus: json['deliverystatus'],
+      vehiclearrivalstatus: json['vehiclearrivalstatus'],
+      orgcode: json['orgcode'],
+      destcode: json['destcode'],
+      vehiclearrivalupdateon: json['vehiclearrivalupdateon'],
+      
     );
   }
 
@@ -134,6 +167,18 @@ class MidMileTripDetailModel {
       'arrivallong': arrivalLong,
       'arrivalkm': arrivalKm,
       'arrivalreadingimageid': arrivalReadingImageId,
+      'despatchtype': despatchtype,
+      'modecode': modecode,
+      'pickupdeparteddate': pickupdeparteddate,
+      'pickupdepartedtime': pickupdepartedtime,
+      'deliverystatusupdateon': deliverystatusupdateon,
+      'deliverystatus': deliverystatus,
+      'vehiclearrivalstatus': vehiclearrivalstatus,
+      'orgcode':orgcode,
+      'destcode':destcode,
+      'vehiclearrivalupdateon':vehiclearrivalupdateon,
+      
+
     };
   }
 }
