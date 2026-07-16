@@ -83,7 +83,7 @@ class MidMileTripDetailRepository extends BaseRepository {
     }
   }
 
-  Future<void> UpdateVehicleArrival(Map<String, String> params) async {
+  Future<void> UpdateVehicleArrival(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {

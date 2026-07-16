@@ -89,7 +89,7 @@ class _HomeScreen extends State<HomeScreen>
   GlobalKey<AllocatedRouteWidgetState> allotedRouteKey = GlobalKey();
   GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
-  GlobalKey<RunningTripsState> midMileTripsKey = GlobalKey();
+  GlobalKey<MidMileTripListState> midMileTripsKey = GlobalKey();
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();

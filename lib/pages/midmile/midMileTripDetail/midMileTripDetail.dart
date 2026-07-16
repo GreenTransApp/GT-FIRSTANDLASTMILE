@@ -15,6 +15,7 @@ import 'package:gtlmd/pages/midmile/midMileTripDetail/updateMidMileTripDetailInf
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
@@ -36,9 +37,13 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
   final MidMileTripDetailViewModel viewModel = MidMileTripDetailViewModel();
   late LoadingAlertService loadingAlertService;
 
-  Future<Position> getCurrentLocation() async {
-    return await Geolocator.getCurrentPosition();
-  }
+  // Future<Position> getCurrentLocation() async {
+  //   return await Geolocator.getCurrentPosition();
+  // }
+
+  late DateTime todayDateTime;
+  late String currentdate;
+  late String currentTime;
 
   @override
   void initState() {
@@ -50,6 +55,9 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     // generateDummyData();
     getMidMileTripsDetail();
     filterList = tripsList;
+     todayDateTime = DateTime.now();
+     currentdate = DateFormat('yyyy-MM-dd').format(todayDateTime);
+     currentTime = DateFormat('hh:mm a').format(todayDateTime);
   }
 
   setObserver() {
@@ -64,15 +72,18 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     });
 
     viewModel.tripDetailList.stream.listen((listData) {
-      if (listData.isNotEmpty) {
-        tripsList = listData;
-        filterList = listData;
-      } else {
-        tripsList.clear();
-        filterList.clear();
-      }
+      setState(() {
+        if (listData.isNotEmpty) {
+          tripsList = listData;
+          filterList = listData;
+        } else {
+          tripsList.clear();
+          filterList.clear();
+        }
 
-      setState(() {});
+      });
+
+
     });
 
     viewModel.departedPositionLiveData.stream.listen((data) {
@@ -93,17 +104,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     });
   }
 
-  String convertTo12Hour(String time) {
-    if (isNullOrEmpty(time)) {
-       return '';
-    }
-    final inputFormat = DateFormat("HH:mm");
-    final outputFormat = DateFormat("hh:mm a");
-
-    final dateTime = inputFormat.parse(time);
-    return outputFormat.format(dateTime);
-  }
-
+ 
   void updateSearch(String newQuery) {
     List<MidMileTripDetailModel> newMatchQuery = [];
 
@@ -167,30 +168,36 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
 
   Future<void> updatePickupDepartedPosition(
       String grno, String manifestno) async {
-    loadingAlertService.showLoading();
+   
 
     try {
-      Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 0,
-        ),
-      );
+       loadingAlertService.showLoading();
+      // Position position = await Geolocator.getCurrentPosition(
+      //   locationSettings: const LocationSettings(
+      //     accuracy: LocationAccuracy.high,
+      //     distanceFilter: 0,
+      //   ),
+      // );
+      // Position? currentPosition;
+      await WidgetsBinding.instance.endOfFrame;
+      LocationService().getCurrentLocation().then((position) {
+        // currentPosition = position;
 
-      Map<String, String> params = {
-        "prmusercode": savedUser.usercode.toString(),
-        "prmbranchcode": savedUser.loginbranchcode.toString(),
-        "prmdivisionid": savedUser.logindivisionid.toString(),
-        "prmgrno": grno,
-        "prmmanifestno": manifestno,
-        "prmpickuplat": position.latitude.toString(),
-        "prmpickuplong": position.longitude.toString(),
-        "prmmenucode": "GTAPP_MIDMILEDEPARTPICKUP",
-        "prmsessionid": savedUser.sessionid.toString(),
-      };
+        Map<String, String> params = {
+          "prmusercode": savedUser.usercode.toString(),
+          "prmbranchcode": savedUser.loginbranchcode.toString(),
+          "prmdivisionid": savedUser.logindivisionid.toString(),
+          "prmgrno": grno,
+          "prmmanifestno": manifestno,
+          "prmpickuplat": position.latitude.toString(),
+          "prmpickuplong": position.longitude.toString(),
+          "prmmenucode": "GTAPP_MIDMILEDEPARTPICKUP",
+          "prmsessionid": savedUser.sessionid.toString(),
+        };
 
-      printParams(params);
-      viewModel.updateDepartLocation(params);
+        printParams(params);
+        viewModel.updateDepartLocation(params);
+      });
     } finally {
       loadingAlertService.hideLoading();
     }
@@ -201,47 +208,43 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
   }
 
   Future<void> updateVehicleArrival(MidMileTripDetailModel model) async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 0,
-        ),
-      );
+  try {
+    loadingAlertService.showLoading();
 
-      String? address = await AppLocationService().getCurrentAddress();
-      loadingAlertService.hideLoading();
-      String currentAddress = "";
-      if (address != null) {
-        currentAddress = address;
-        debugPrint("Current Address: $currentAddress");
-      } else {
-        failToast("Could not get your location.");
-      }
-      Map<String, String> params = {
-        "prmusercode": savedUser.companyid.toString(),
-        "prmbranchcode": savedUser.loginbranchcode.toString(),
-        "prmtripid": model.tripId.toString(),
-        "prmgrno": model.grno.toString(),
-        "prmmanifestno": model.manifestNo.toString(),
-        "prmunloaddt": model.arrivalDt.toString(),
-        "prmunloadtime": model.arrivalTime.toString(),
-        "prmentrylocation": currentAddress,
-        "prmunloadlat": position.latitude.toString(),
-        "prmunloadlong": position.longitude.toString(),
-        "prmfromstn": model.orgcode.toString(),
-        "prmtostn": model.destcode.toString(),
-        "prmdrivercode": savedUser.drivercode.toString(),
-        "prmmodecode": model.modecode.toString(),
-        "prmsessionid": savedUser.sessionid.toString(),
-        "prmmenucode": "GTAPP_MIDMILEVEHICLEARRIVAL",
-      };
-      await viewModel.updateArrival(params);
-    } finally {
-      loadingAlertService.hideLoading();
-    }
+    final positionFuture = LocationService().getCurrentLocation();
+    final position = await positionFuture;
+    // final addressFuture = AppLocationService().getCurrentAddress();
+    final  addressFuture = await AppLocationService().getAddressFromLatLng(
+  position.latitude,
+  position.longitude,
+);
+    final currentAddress =  addressFuture;
+
+        Map<String, dynamic> params = {
+          "prmusercode": savedUser.companyid.toString(),
+          "prmbranchcode": savedUser.loginbranchcode.toString(),
+          "prmtripid": int.parse( model.tripId.toString()) ?? 0,
+          "prmtripiddetailid":int.parse( model.tripDetailId.toString() )?? 0,
+          "prmgrno": model.grno.toString(),
+          "prmmanifestno": model.manifestNo.toString(),
+          "prmunloaddt": convert2SmallDateTime(currentdate),
+          "prmunloadtime":convertTo24Hour(currentTime),
+          "prmentrylocation": currentAddress?? '',
+          "prmunloadlat": position.latitude.toString(),
+          "prmunloadlong": position.longitude.toString(),
+          "prmfromstn": model.orgcode.toString(),
+          "prmtostn": model.destcode.toString(),
+          "prmdrivercode": savedUser.drivercode.toString(),
+          "prmmodecode": model.modecode.toString(),
+          "prmsessionid": savedUser.sessionid.toString(),
+          "prmmenucode": "GTAPP_MIDMILEVEHICLEARRIVAL",
+     };
+
+    await viewModel.updateArrival(params);
+  } finally {
+    loadingAlertService.hideLoading();
   }
-
+}
   Widget _infoTile(String label, String? value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +381,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
 
   Widget tripsDetailCard(MidMileTripDetailModel item) {
     String arrivaltime = convertTo12Hour(item.arrivalTime ?? '');
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
@@ -389,6 +392,37 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+               Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.smallHorizontalPadding,
+                    vertical: SizeConfig.smallVerticalPadding,
+                  ),
+                  decoration: BoxDecoration(
+                    color: CommonColors.colorPrimary!
+                        .withAlpha((0.12 * 255).round()),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.local_shipping_outlined,
+                          size: SizeConfig.smallTextSize + 2,
+                          color: CommonColors.colorPrimary),
+                      const SizedBox(width: 4),
+                      Text(
+                        'HUB',
+                        style: TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
+                          fontWeight: FontWeight.bold,
+                          color: CommonColors.colorPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Row(
               children: [
                 const CircleAvatar(
@@ -401,7 +435,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "GR No : ${item.grno}",
+                       "Manifest: ${item.manifestNo ?? "-"}",
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -409,7 +443,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Manifest: ${item.manifestNo ?? "-"}",
+                         "GR No : ${item.grno}",
+                        
                         style: TextStyle(
                           color: Colors.grey.shade700,
                         ),
@@ -444,7 +479,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               child: (!isNullOrEmpty(item.arrivalDt) &&
                       !isNullOrEmpty(item.arrivalTime))
                   ? Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 12),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(10),
@@ -457,10 +493,11 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                         children: [
                           Expanded(
                             child: Text("${item.arrivalDt} $arrivaltime",
-                             style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,)),
+                                style: TextStyle(
+                                  color: Colors.green.shade700,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                )),
                           ),
                           Icon(
                             Icons.check_circle,
@@ -495,124 +532,128 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               height: SizeConfig.mediumVerticalSpacing,
             ),
             if (item.deliverystatus == "P") ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (isNullOrEmpty(item.arrivalDt)) {
-                            failToast("Please Reach At Before Delivering");
-                            return;
-                          }
-                          Get.to(PodEntry(
-                                  deliveryDetailModel: DeliveryDetailModel(
-                                      generatedGr: item.grno)))
-                              ?.then((_) {
-                            onRefresh;
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
+                        Get.to(
+                            () => PodEntry(
+                              deliveryDetailModel: DeliveryDetailModel(
+                                generatedGr: item.grno,
+                              ),
+                            ),
+                          )?.then((_) {
+                            onRefresh(); 
                           });
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Deliver',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.successColor,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                                                },
+                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                      label: Text('Deliver',
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
+                        backgroundColor: CommonColors.successColor,
+                        foregroundColor: CommonColors.White,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: SizeConfig.horizontalPadding,
-                    ),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (isNullOrEmpty(item.arrivalDt)) {
-                            failToast("Please Reach At Before Delivering");
-                            return;
-                          }
-                          Get.to(UnDelivery(
-                                  deliveryDetailModel: DeliveryDetailModel(
-                                      manifestno: item.manifestNo,
-                                      generatedGr: item.grno)))
-                              ?.then((_) {
-                            onRefresh;
-                          });
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Undeliver',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.red600,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                  ),
+                  SizedBox(
+                    width: SizeConfig.horizontalPadding,
+                  ),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
+                        Get.to(UnDelivery(
+                                deliveryDetailModel: DeliveryDetailModel(
+                                    manifestno: item.manifestNo,
+                                    generatedGr: item.grno)))
+                            ?.then((_) {
+                          onRefresh();
+                        });
+                      },
+                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                      label: Text('Undeliver',
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
+                        backgroundColor: CommonColors.red600,
+                        foregroundColor: CommonColors.White,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.green.shade300,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(item.deliverystatusupdateon ?? '',
+                          style: TextStyle(
+                            color: item.deliverystatus == "D"
+                                ? Colors.green.shade700
+                                : Colors.red.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          )),
+                    ),
+                    Icon(
+                      Icons.check_circle,
+                      color: item.deliverystatus == "D"
+                          ? Colors.green.shade700
+                          : Colors.red.shade700,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      item.deliverystatus == "D" ? "Delivered" : "Unde",
+                      style: TextStyle(
+                        color: item.deliverystatus == "D"
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                   ],
                 ),
-              ] else ...[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.green.shade300,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(item.deliverystatusupdateon ?? '',
-                            style: TextStyle(
-                              color: item.deliverystatus == "D"
-                                  ? Colors.green.shade700
-                                  : Colors.red.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            )),
-                      ),
-                      Icon(
-                        Icons.check_circle,
-                        color: item.deliverystatus == "D"
-                            ? Colors.green.shade700
-                            : Colors.red.shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        item.deliverystatus == "D" ? "Delivered" : "Unde",
-                        style: TextStyle(
-                          color: item.deliverystatus == "D"
-                              ? Colors.green.shade700
-                              : Colors.red.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],const SizedBox(height: 18),
+              )
+            ],
+            const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
-              child: (!isNullOrEmpty(item.vehiclearrivalstatus)&& item.vehiclearrivalstatus == "D")
+              child: (!isNullOrEmpty(item.vehiclearrivalstatus) &&
+                      item.vehiclearrivalstatus == "D")
                   ? Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 12),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(10),
@@ -623,14 +664,14 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                           Expanded(
-                             child: Text("${item.vehiclearrivalupdateon}",
-                             style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                             )),
-                           ),
+                          Expanded(
+                            child: Text("${item.vehiclearrivalupdateon}",
+                                style: TextStyle(
+                                  color: Colors.green.shade700,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                )),
+                          ),
                           Icon(
                             Icons.check_circle,
                             color: Colors.green.shade700,
@@ -709,7 +750,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           color: CommonColors.colorPrimary),
                       const SizedBox(width: 4),
                       Text(
-                        'Direct',
+                        'DIRECT',
                         style: TextStyle(
                           fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.bold,
@@ -840,11 +881,14 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                             failToast("Please Reach At Before Delivering");
                             return;
                           }
-                          Get.to(PodEntry(
-                                  deliveryDetailModel: DeliveryDetailModel(
-                                      generatedGr: item.grno)))
-                              ?.then((_) {
-                            onRefresh;
+                          Get.to(
+                                () => PodEntry(
+                              deliveryDetailModel: DeliveryDetailModel(
+                                generatedGr: item.grno,
+                              ),
+                            ),
+                          )?.then((_) {
+                            onRefresh();
                           });
                         },
                         // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
@@ -878,7 +922,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                       manifestno: item.manifestNo,
                                       generatedGr: item.grno)))
                               ?.then((_) {
-                            onRefresh;
+                            onRefresh();
                           });
                         },
                         // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
@@ -944,14 +988,14 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                   ),
                 )
               ],
-
               const SizedBox(height: 18),
               SizedBox(
                 width: double.infinity,
                 child: (!isNullOrEmpty(item.pickupdeparteddate) &&
                         !isNullOrEmpty(item.pickupdepartedtime))
                     ? Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 12),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50,
                           borderRadius: BorderRadius.circular(10),
@@ -962,16 +1006,16 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                             Expanded(
-                               child: Text(
+                            Expanded(
+                              child: Text(
                                 "${item.pickupdeparteddate} ${pickupdepartedtime}",
                                 style: TextStyle(
                                   color: Colors.green.shade700,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
-                               ),
-                             ),
+                              ),
+                            ),
                             Icon(
                               Icons.check_circle,
                               color: Colors.green.shade700,
@@ -1011,7 +1055,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 width: double.infinity,
                 child: (item.vehiclearrivalstatus == 'D')
                     ? Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 12),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50,
                           borderRadius: BorderRadius.circular(10),
@@ -1023,15 +1068,15 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Expanded(
-                              child: Text("${item.vehiclearrivalupdateon}",
-                                 style: TextStyle(
+                              child: Text(
+                                "${item.vehiclearrivalupdateon}",
+                                style: TextStyle(
                                   color: Colors.green.shade700,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
                               ),
                             ),
-
                             Icon(
                               Icons.check_circle,
                               color: Colors.green.shade700,
@@ -1054,7 +1099,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                               if (isNullOrEmpty(item.pickupdeparteddate) &&
                                   isNullOrEmpty(item.pickupdepartedtime)) {
                                 failToast(
-                                    "Please depart loction uptebefore vehicle Arrival.");
+                                    "Please depart location update before vehicle Arrival.");
                                 return;
                               }
                               updateVehicleArrival(item);

@@ -97,8 +97,8 @@ class _SuccessAlertState extends State<SuccessAlert> {
           children: [
             TextButton(
                 onPressed: () {
-                  okayCallBack.call();
                   Navigator.pop(context);
+                  okayCallBack.call();
                 },
                 child: Text(
                   "Okay",

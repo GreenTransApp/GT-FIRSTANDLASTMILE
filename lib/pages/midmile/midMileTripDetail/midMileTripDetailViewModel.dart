@@ -31,7 +31,7 @@ class MidMileTripDetailViewModel extends BaseViewModel {
   Future<void>  updateDepartLocation(Map<String, String> params) async {
     _repository.updateMidMileDepartedPosition(params);
   }
-     Future<void>  updateArrival(Map<String, String> params) async {
+     Future<void>  updateArrival(Map<String, dynamic> params) async {
     _repository.UpdateVehicleArrival(params);
   }
     

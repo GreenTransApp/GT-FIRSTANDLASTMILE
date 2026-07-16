@@ -991,3 +991,26 @@ Future<String> convertBase64ToPdfUrl(
   // 5. Return the usable file path URI scheme (e.g., file:///...)
   return file.uri.toString();
 }
+
+String convertTo12Hour(String time) {
+  if (isNullOrEmpty(time)) {
+    return '';
+  }
+  final inputFormat = DateFormat("HH:mm");
+  final outputFormat = DateFormat("hh:mm a");
+
+  final dateTime = inputFormat.parse(time);
+  return outputFormat.format(dateTime);
+}
+
+String convertTo24Hour(String time) {
+  if (isNullOrEmpty(time)) {
+    return '';
+  }
+
+  final inputFormat = DateFormat("hh:mm a");
+  final outputFormat = DateFormat("HH:mm");
+
+  final dateTime = inputFormat.parse(time);
+  return outputFormat.format(dateTime);
+}

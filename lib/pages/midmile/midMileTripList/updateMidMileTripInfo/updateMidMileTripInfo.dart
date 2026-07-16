@@ -180,7 +180,10 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
 
   Future<void> updateStartTrip() async {
     // _currentPosition = await Geolocator.getCurrentPosition();
-    _currentPosition = _currentPosition = await LocationService().getCurrentLocation();;
+    // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
+      LocationService().getCurrentLocation().then((position) {
+  _currentPosition = position;
+});
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),

@@ -37,7 +37,7 @@ class OtexPickupProvider extends ChangeNotifier {
     _state = OtexPickupState(
         headerStatus: SectionStatus.idle,
         cardListStatus: SectionStatus.idle,
-        info: OtexPickupInfoModel(orderid: orderid),
+        info: OtexPickupInfoModel(orderid: int.parse(orderid.toString())),
         mailDetails: MailDetails(),
         splitInfo: [
           OtexPickupSplitInfo(),
@@ -80,12 +80,13 @@ class OtexPickupProvider extends ChangeNotifier {
         "prmmenucode": menuCode,
         "prmsessionid": savedUser.sessionid.toString(),
         "prmindentid": transactionid,
+        "prmorderid" :orderid ?? '0'
       };
       List<dynamic> result = await _repo.getPickupDetails(params);
 
       OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
       infoData =
-          infoData.copyWith(orderid: isNullOrEmpty(orderid) ? '0' : orderid);
+          infoData.copyWith(orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()));
       OtexPickupSplitInfo? si = null;
       if (result.length > 1) {
         si = result[1][0] as OtexPickupSplitInfo;
@@ -420,21 +421,21 @@ class OtexPickupProvider extends ChangeNotifier {
       int index, List<String> bookingImages, String signImagePath) async {
     if (index >= _state.splitInfo.length) return false;
 
-    // Validate total pieces before saving
-    final maxPcs = _state.info.pcs ?? 0;
-    var totQty = 0;
-    for (var item in _state.splitInfo) {
-      totQty += item.palletQty ?? 0;
-    }
+    // // Validate total pieces before saving
+    // final maxPcs = _state.info.pcs ?? 0;
+    // var totQty = 0;
+    // for (var item in _state.splitInfo) {
+    //   totQty += item.palletQty ?? 0;
+    // }
 
-    if (maxPcs > 0 && totQty > maxPcs) {
-      _state = _state.copyWith(
-          errorMessage:
-              "Total pieces across cards (${_state.totalPalletQty}) exceed the limit ($maxPcs).");
-      notifyListeners();
-      clearError();
-      return false;
-    }
+    // if (maxPcs > 0 && totQty > maxPcs) {
+    //   _state = _state.copyWith(
+    //       errorMessage:
+    //           "Total pieces across cards (${_state.totalPalletQty}) exceed the limit ($maxPcs).");
+    //   notifyListeners();
+    //   clearError();
+    //   return false;
+    // }
 
     // Update the state with the new info object
     String status =

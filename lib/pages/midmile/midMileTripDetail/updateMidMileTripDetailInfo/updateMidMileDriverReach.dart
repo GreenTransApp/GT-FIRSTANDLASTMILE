@@ -110,6 +110,9 @@ class _UpdateMidMileDriverPositionState
     viewModel.arrivalWithOutstandingLiveData.stream.listen((data) {
       if (data.commandstatus == 1) {
         successToast("Update successfull");
+         if (widget.refresh != null) {
+          widget.refresh!();
+        }
         Get.back();
       } else {
         failToast(data.commandmessage ?? "Something went wrong");
@@ -240,10 +243,13 @@ class _UpdateMidMileDriverPositionState
     }
   }
 
-  Future<void> updateDriverReached() async {
+  Future<void> updateDriverReached()  async {
     loadingAlertService.showLoading();
     // _currentPosition = await Geolocator.getCurrentPosition();
-    _currentPosition = _currentPosition = await LocationService().getCurrentLocation();;
+    // _currentPosition = _currentPosition =  LocationService().getCurrentLocation();
+    LocationService().getCurrentLocation().then((position) {
+  _currentPosition = position;
+});
     loadingAlertService.hideLoading();
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
@@ -274,12 +280,16 @@ class _UpdateMidMileDriverPositionState
   Future<void> updateVehicleArrivalWithOutstanding() async {
     loadingAlertService.showLoading();
     // _currentPosition = await Geolocator.getCurrentPosition();
-    _currentPosition = _currentPosition = await LocationService().getCurrentLocation();;
+    // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
+    LocationService().getCurrentLocation().then((position) {
+  _currentPosition = position;
+});
     loadingAlertService.hideLoading();
     Map<String, dynamic> params = {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid":int.parse( widget.model.tripId.toString()),
+      "prmtripdetailid":int.parse( widget.model.tripDetailId.toString()),
       "prmgrno": widget.model.grno.toString(),
       "prmmanifestno": widget.model.manifestNo.toString(),
       "prmunloaddt":

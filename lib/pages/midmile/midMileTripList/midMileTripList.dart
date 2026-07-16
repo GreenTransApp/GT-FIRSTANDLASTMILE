@@ -17,10 +17,10 @@ class MidMileTripList extends StatefulWidget {
   const MidMileTripList({super.key});
 
   @override
-  State<MidMileTripList> createState() => _MidMileTripListState();
+  State<MidMileTripList> createState() => MidMileTripListState();
 }
 
-class _MidMileTripListState extends State<MidMileTripList> {
+class MidMileTripListState extends State<MidMileTripList> {
   List<MidMileTripListModel> tripsList = List.empty(growable: true);
   List<MidMileTripListModel> filterList = List.empty(growable: true);
   final TextEditingController _searchController = TextEditingController();

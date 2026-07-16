@@ -51,7 +51,7 @@ class AppLocationService {
 
       // 5. Reverse Geocoding
       String? address =
-          await _getAddressFromLatLng(position.latitude, position.longitude);
+          await getAddressFromLatLng(position.latitude, position.longitude);
 
       return address;
     } catch (e) {
@@ -78,7 +78,7 @@ class AppLocationService {
   }
 
   /// Reverse geocoding with fallback to Google API
-  Future<String?> _getAddressFromLatLng(double lat, double lng) async {
+  Future<String?> getAddressFromLatLng(double lat, double lng) async {
     // Stage 1: Try with geocoding package
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);

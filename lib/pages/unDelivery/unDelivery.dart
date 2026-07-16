@@ -351,7 +351,8 @@ class _UnDeliveryState extends State<UnDelivery> {
   void saveUndelivery() {
     Map<String, String> params = {
       "prmconnstring": savedLogin.companyid.toString(),
-      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      // "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmbranchcode": widget.deliveryDetailModel.destcode.toString(),
       "prmundeldt":
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
       "prmtime": formatTimeString(_unDeliveryTimeController.text),
@@ -361,7 +362,7 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmactioncode": _selectedAction!.reasoncode.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
-      "prmmenucode": 'GTAPP_DRS',
+      "prmmenucode": menuCode,
       "prmremarks": _remarksController.text.toUpperCase(),
       "prmdrno": "",
       "prmimagepath": _imageFilePathBase64.toString(),

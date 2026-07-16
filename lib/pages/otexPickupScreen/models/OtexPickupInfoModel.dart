@@ -125,7 +125,7 @@ class OtexPickupInfoModel {
   final String? recstatus;
   final String? loadTypeName;
   final String? loadTypeCode;
-  final String? orderid;
+  final int? orderid;
   final double? weight;
   final String? packing;
   final String? packingcode;
@@ -561,7 +561,7 @@ class OtexPickupInfoModel {
     String? documentType,
     String? loadTypeName,
     String? loadType,
-    String? orderid,
+    int? orderid,
     String? packingname,
     String? packingcode,
     String? goods,

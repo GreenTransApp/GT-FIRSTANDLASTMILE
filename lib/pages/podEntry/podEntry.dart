@@ -30,6 +30,7 @@ import 'package:gtlmd/pages/podEntry/podRelationModel.dart';
 import 'package:gtlmd/pages/podEntry/scanAndDeliver.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -150,7 +151,12 @@ class _PodEntryState extends State<PodEntry> {
 
   Future<void> fetchLocationAndSubmit() async {
     loadingAlertService.showLoading();
-    String? address = await AppLocationService().getCurrentAddress();
+   final position = await LocationService().getCurrentLocation();
+
+  final address = await AppLocationService().getAddressFromLatLng(
+    position.latitude,
+    position.longitude,
+  );
     loadingAlertService.hideLoading();
 
     if (address != null) {
@@ -305,12 +311,15 @@ class _PodEntryState extends State<PodEntry> {
     });
 
     viewModel.savePodLiveData.stream.listen((resp) {
+      String grno = isNullOrEmpty(modelDetail.generatedGr.toString())
+          ? modelDetail.grno.toString()
+          : modelDetail.generatedGr.toString();
       if (resp.commandstatus == 1) {
         successToast("POD Upload successful");
         showSuccessAlert(
             context,
             // "POD SUCCESSFULLY\n Consignment# -: ${resp.grNo}",
-            "POD SUCCESSFULLY\n Consignment# -: ${modelDetail.grno}",
+            "POD SUCCESSFULLY\n Consignment# -: ${grno}",
             "",
             backCallBackForAlert);
       } else {
@@ -367,7 +376,8 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   void backCallBackForAlert() {
-    Navigator.pop(context);
+  //    Navigator.pop(context); // Close success dialog
+  Get.back(result: true); // Close PodEntry and return true
   }
 
   getPodLovs() {

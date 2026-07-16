@@ -49,6 +49,10 @@ class DeliveryDetailModel {
   String? reachedAtDlvPointDt;
   String? pickupdeparted;
   String? pickupdeparteddattime;
+  String? orgcode;
+  String? destcode;
+  String? orgname;
+  String? destname;
   
 
   DeliveryDetailModel(
@@ -99,6 +103,10 @@ class DeliveryDetailModel {
       this.reachedAtDlvPointDt,
       this.pickupdeparted,
       this.pickupdeparteddattime,
+      this.orgcode,
+       this.destcode,
+       this.orgname,
+       this.destname
       });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
@@ -150,6 +158,10 @@ class DeliveryDetailModel {
       reachedAtDlvPointDt: json['reacheddlvpointdt'],
       pickupdeparted: json['pickupdeparted'],
       pickupdeparteddattime: json['pickupdeparteddattime'],
+      orgcode: json['orgcode'],
+      orgname: json['orgname'],
+      destcode: json['destcode'],
+      destname: json['destname'],
       
     );
   }
@@ -203,6 +215,10 @@ class DeliveryDetailModel {
       'reacheddlvpointdt': reachedAtDlvPointDt,
       'pickupdeparted': pickupdeparted,
       'pickupdeparteddattime': pickupdeparteddattime,
+      'orgcode': orgcode,
+      'orgname': orgname,
+      'destcode': destcode,
+      'destname': destname,
       
     };
   }
