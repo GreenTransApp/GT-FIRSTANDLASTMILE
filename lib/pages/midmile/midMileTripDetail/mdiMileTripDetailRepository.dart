@@ -24,7 +24,9 @@ class MidMileTripDetailRepository extends BaseRepository {
     if (hasInternet) {
       try {
         CommonResponse resp =
-            await apiGet("${lmdUrl}GetMidMileTripDetail", params);
+            await apiPostWithModel("${lmdUrl}GetMidMileTripDetail_V2", params);
+        // CommonResponse resp =
+        //     await apiGet("${lmdUrl}GetMidMileTripDetail", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());

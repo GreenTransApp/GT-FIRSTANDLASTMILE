@@ -42,8 +42,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
   final DeliveryViewModel viewModel = DeliveryViewModel();
   final BaseRepository _baseRepo = BaseRepository();
   final List<StreamSubscription> _subscription = [];
- String currentdt =''; 
- late DateTime todayDateTime;
+  String currentdt = '';
+  late DateTime todayDateTime;
   late String smallDateTime;
 
   @override
@@ -63,13 +63,12 @@ class _DeliveryDetailState extends State<DeliveryDetail>
           else
             {
               setObservers(),
-              getDeliveryDetails(),
               getMenu(),
-              getBookingMenuCodeFromCompAccPara(),
+              getDeliveryDetails(),
+              // getBookingMenuCodeFromCompAccPara(),
               // getBookingPdf()
             }
         });
-
   }
 
   // @override
@@ -140,12 +139,18 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       failToast(errMsg);
     });
 
-    _subscription.add(viewModel.getMenuLiveData.stream.listen((data) {
-      setState(() {
+    // _subscription.add(viewModel.getMenuLiveData.stream.listen((data) {
+    //   setState(() {
+    //     menuList = data;
+    //   });
+    //   print(data);
+    // }));
+    viewModel.getMenuLiveData.stream.listen((data) {
+   setState(() {
         menuList = data;
       });
       print(data);
-    }));
+    });
 
     _subscription.add(_baseRepo.compAccPara.stream.listen((resp) {
       debugPrint(resp);
@@ -219,7 +224,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   Future<void> updateDriverReached(
       String grno, String indentId, String tripid) async {
-             todayDateTime = DateTime.now();
+    todayDateTime = DateTime.now();
     // Position position = await Geolocator.getCurrentPosition(
     //     // ignore: deprecated_member_use
     //     desiredAccuracy: LocationAccuracy.high);
@@ -281,8 +286,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     }
   }
 
-  Future<void> updatePickupDepartedPosition(
-      String grno, String tripid) async {
+  Future<void> updatePickupDepartedPosition(String grno, String tripid) async {
     loadingAlertService.showLoading();
 
     try {
@@ -515,7 +519,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                       updateDriverPosition: updateDriverReached,
                                       updateDriverReachedDlvPoint:
                                           updateDriverReachedDlvPoint,
-                                          updatePickupDepartedPosition:updatePickupDepartedPosition);
+                                      updatePickupDepartedPosition:
+                                          updatePickupDepartedPosition);
                                 },
                               ),
                             ),

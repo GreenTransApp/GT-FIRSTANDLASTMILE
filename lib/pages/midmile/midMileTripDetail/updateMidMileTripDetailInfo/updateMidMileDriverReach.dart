@@ -22,12 +22,12 @@ class UpdateMidMileDriverPosition extends StatefulWidget {
   MidMileTripDetailModel model;
   final MIDMILETRIPSTATUS status;
   // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
-  Future<void> Function()? refresh;
+  Future<void> Function() refresh;
   UpdateMidMileDriverPosition({
     super.key,
     required this.model,
     // this.onUpdate,
-    this.refresh,
+    required this.refresh,
     required this.status,
   });
 
@@ -111,7 +111,7 @@ class _UpdateMidMileDriverPositionState
       if (data.commandstatus == 1) {
         successToast("Update successfull");
          if (widget.refresh != null) {
-          widget.refresh!();
+          widget.refresh?.call();
         }
         Get.back();
       } else {
@@ -166,7 +166,7 @@ class _UpdateMidMileDriverPositionState
     setState(() {
       if (lastReading > 0 && currentReading < lastReading) {
         _unloadReadingError =
-            "Unload reading  can't be greater than arrival reading.";
+            "Unload reading  can't be greater than start reading.";
       } else {
         _unloadReadingError = '';
       }
@@ -235,7 +235,7 @@ class _UpdateMidMileDriverPositionState
           failToast("Please Select Reading Image.");
           return;
         }else if (lastReading > 0 && lastReading > currentReading) {
-          failToast("Unload reading  can't be greater than arrival reading.");
+          failToast("Unload reading  can't be greater than start reading.");
           return;
         
       }
@@ -290,7 +290,7 @@ class _UpdateMidMileDriverPositionState
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid":int.parse( widget.model.tripId.toString()),
       "prmtripdetailid":int.parse( widget.model.tripDetailId.toString()),
-      "prmgrno": widget.model.grno.toString(),
+      // "prmgrno": widget.model.grno.toString(),
       "prmmanifestno": widget.model.manifestNo.toString(),
       "prmunloaddt":
           convert2SmallDateTime(_unloadDateController.text.toString()),
@@ -307,10 +307,10 @@ class _UpdateMidMileDriverPositionState
       "prmmodecode": widget.model.modecode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
       "prmmenucode": "GTAPP_MIDMILEUNLOAD",
-      "prmpckgs":double.tryParse(widget.model.totpckgs.toString())?.toInt() ?? 0,
-      "prmaweight": isNullOrEmpty(widget.model.aWeight.toString())
-          ? 0.0
-          : double.tryParse(widget.model.aWeight.toString()) ?? 0.0,
+      // "prmpckgs":double.tryParse(widget.model.totpckgs.toString())?.toInt() ?? 0,
+      // "prmaweight": isNullOrEmpty(widget.model.aweight.toString())
+      //     ? 0.0
+      //     : double.tryParse(widget.model.aweight.toString()) ?? 0.0,
     };
     await viewModel.UpdateVehicleArrivalWithOutstanding(params);
   }
@@ -950,7 +950,7 @@ class _UpdateMidMileDriverPositionState
                         ],
                       ),
                       Text(
-                        "Arrival Reading : ${widget.model.arrivalKm} km",
+                        "Start Reading : ${widget.model.arrivalKm} km",
                         style: TextStyle(
                             color: CommonColors.appBarColor,
                             fontSize: SizeConfig.smallTextSize),
@@ -1165,8 +1165,9 @@ class _UpdateMidMileDriverPositionState
 Future<void> openUpdateMidMileDriverPosition(
     BuildContext context,
     MidMileTripDetailModel model,
-    Future<void> Function()? onRefresh,
-    MIDMILETRIPSTATUS status) {
+  
+    MIDMILETRIPSTATUS status,
+      Future<void> Function() onRefresh) {
   DraggableScrollableController controller = DraggableScrollableController();
   return showModalBottomSheet(
       context: context,
