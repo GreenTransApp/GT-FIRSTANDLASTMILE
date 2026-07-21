@@ -57,18 +57,18 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
 
-    getUserData().then((user) => {
-          if (user.commandstatus == null || user.commandstatus == -1)
-            throw Exception("")
-          else
-            {
-              setObservers(),
-              getMenu(),
-              getDeliveryDetails(),
+    // getUserData().then((user) => {
+    //       if (user.commandstatus == null || user.commandstatus == -1)
+    //         throw Exception("")
+    //       else
+    //         {
+              setObservers();
+              getMenu();
+              getDeliveryDetails();
               // getBookingMenuCodeFromCompAccPara(),
               // getBookingPdf()
-            }
-        });
+            // }
+        // });
   }
 
   // @override
@@ -219,7 +219,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   Future<void> refreshScreen() async {
     getDeliveryDetails();
-    getBookingMenuCodeFromCompAccPara();
+    // getBookingMenuCodeFromCompAccPara();
   }
 
   Future<void> updateDriverReached(
@@ -458,7 +458,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${deliveryModel.noofconsign}',
+                                      // '${deliveryModel.noofconsign}',
+                                      '${ widget.tripModel.noofconsign}',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: isSmallDevice ? 14 : 16,

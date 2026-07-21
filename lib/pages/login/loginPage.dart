@@ -58,10 +58,11 @@ class _LoginPageState extends State<LoginPage> {
     } else if (passwordController.text.isEmpty) {
       failToast('Password required');
       return;
-    } else if (usermobileController.text.length < 10) {
-      failToast('Invalid Mobile Number');
-      return;
-    }
+    } 
+    //else if (usermobileController.text.length < 10) {
+    //   failToast('Invalid Mobile Number');
+    //   return;
+    // }
 
     String deviceId = await getDeviceId();
     if (!mounted) return;

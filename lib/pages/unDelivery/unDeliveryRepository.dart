@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/Model/unDeliveryModel.dart';
@@ -90,6 +92,46 @@ class UnDeliveryRepository extends BaseRepository {
       isErrorLiveData.add("No Internet available");
     }
     // saveUnDeliveryLiveData.add(resp);
+  }
+
+
+  Future<List<BranchModel>> getBranchList(Map<String, String> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        viewDialog.add(false);
+
+        CommonResponse resp =
+            await apiGet("${bookingUrl}GetBranchListWithSearchType", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          List<dynamic> list = table.values.first;
+          List<BranchModel> resultList = List.generate(
+              list.length, (index) => BranchModel.fromJson(list[index]));
+          // branchList.add(resultList);
+          return resultList;
+        } else {
+          isErrorLiveData.add(resp.commandMessage!);
+        }
+        viewDialog.add(false);
+        return [];
+      } on SocketException catch (_) {
+        isErrorLiveData.add("No Internet");
+        viewDialog.add(false);
+        return [];
+      } catch (err) {
+        isErrorLiveData.add(err.toString());
+        viewDialog.add(false);
+        return [];
+      }
+      // viewDialog.add(false);
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+      return [];
+    }
   }
 
   // Future<void> updateUndeliveryOffline(Map<String, dynamic> params) async {

@@ -1023,14 +1023,20 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
-                        style: TextStyle(
-                          fontSize: SizeConfig.mediumTextSize,
-                          fontWeight: FontWeight.w600,
-                          color: CommonColors.colorPrimary,
-                        ),
-                      ),
+                      child: 
+                      // Text(
+                      //   modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
+                      //   style: TextStyle(
+                      //     fontSize: SizeConfig.mediumTextSize,
+                      //     fontWeight: FontWeight.w600,
+                      //     color: CommonColors.colorPrimary,
+                      //   ),
+                      // ),
+                      Text(
+                      modelDetail.pickupdeparted == 'Y'
+                      ? (modelDetail.pickupdeparteddattime?.toString() ?? '')
+                      : 'Pending',
+                      )
                     ),
                     Visibility(
                       visible: widget.model.pickupdeparted == 'Y',
@@ -1051,40 +1057,41 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         ],
                       ),
                     ),
-                    Visibility(
-                      visible: widget.model.pickupdeparted != 'Y',
-                      child: Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                              if (modelDetail.consignmenttype == "P" &&
-                                  modelDetail.pickupstatus == "P") {
-                                  failToast("Please update pickup status the consignment first");
-                              return;
-                            }
-                            updatePickupDepartedPosition();
-                          },
-                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                          label: Text('Pickup Departed',
-                              style:
-                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
-                            backgroundColor: CommonColors.colorPrimary,
-                            foregroundColor: CommonColors.White,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                    if (widget.model.pickupdeparted != 'Y')...[
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                            if (modelDetail.consignmenttype == "P" &&
+                                modelDetail.pickupstatus == "P") {
+                                failToast("Please update pickup status the consignment first");
+                            return;
+                          }
+                          updatePickupDepartedPosition();
+                        },
+                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                        label: Text('Pickup Departed',
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize)),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
+                          backgroundColor: CommonColors.colorPrimary,
+                          foregroundColor: CommonColors.White,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
                     ),
+                    ]
                   ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
                 ]
+         
+         
           ],
         ),
       ),
@@ -1629,10 +1636,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         ),
                       ),
                     ],
-                    Visibility(
-                      visible: modelDetail.consignmenttype == "P" &&
-                          (modelDetail.pickupstatus == "D"),
-                      child: Row(
+                    // Visibility(
+                    //   visible:  
+                      if(modelDetail.consignmenttype == "P" &&
+                          (modelDetail.pickupstatus == "D")) ...[
+                      // child:
+                       Row(
                         children: [
                           Text(
                             'Picked',
@@ -1649,8 +1658,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           SizedBox(width: SizeConfig.smallHorizontalPadding),
                         ],
                       ),
-                    ),
-                  ],
+                  ]
+                  // ),
+                  
+            ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),

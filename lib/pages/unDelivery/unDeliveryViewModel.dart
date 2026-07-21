@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:gtlmd/base/baseViewModel.dart';
 import 'package:gtlmd/common/commonResponse.dart';
+import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/Model/unDeliveryModel.dart';
@@ -29,5 +30,10 @@ class UnDeliveryViewModel extends BaseViewModel {
 
   void saveUnDelivery(Map<String, String> params) {
     _repo.updateUndelivery(params);
+  }
+
+  
+  Future<List<BranchModel>> getBranchList(Map<String, String> params) async {
+    return _repo.getBranchList(params);
   }
 }

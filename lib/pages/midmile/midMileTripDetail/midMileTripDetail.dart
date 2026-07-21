@@ -455,7 +455,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Expanded(child: _infoTile("Total GR", item.totgr.toString())),
+                    Expanded(child: _infoTile("Total Consignment", item.totgr.toString())),
                     Expanded(
                         child: _infoTile("Total Pkgs", "${item.totpckgs}")),
                   ],
@@ -494,7 +494,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "Trip Started",
+                            "Arrived AT",
                             style: TextStyle(
                               color: Colors.green.shade700,
                               fontWeight: FontWeight.bold,
@@ -510,7 +510,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                            MIDMILETRIPSTATUS.ARRIVAL,  onRefresh);
                       },
                       icon: const Icon(Icons.location_on),
-                      label: const Text("Start Trip"),
+                      label: const Text("Arrive AT"),
                       style: FilledButton.styleFrom(
                         backgroundColor: CommonColors.colorPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -793,7 +793,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _infoTile("Total GR", item.totgr.toString())),
+                      Expanded(child: _infoTile("Total Consignment", item.totgr.toString())),
                       Expanded(
                           child: _infoTile("Total Pkgs", "${item.totpckgs}")),
                     ],
@@ -909,7 +909,12 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           Get.to(UnDelivery(
                                   deliveryDetailModel: DeliveryDetailModel(
                                       manifestno: item.manifestNo,
-                                      generatedGr: item.grno)))
+                                      generatedGr: item.grno,
+                                      orgcode: item.orgcode,
+                                      orgname: item.orgname,
+                                      destcode: item.destcode,
+                                      destname: item.destname,
+                                      )))
                               ?.then((_) {
                             onRefresh();
                           });

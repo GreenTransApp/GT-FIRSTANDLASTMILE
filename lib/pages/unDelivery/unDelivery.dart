@@ -6,24 +6,25 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/genericBottomSheet.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/pickup/model/branchModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
 import 'package:gtlmd/pages/unDelivery/unDeliveryViewModel.dart';
 import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
 class UnDelivery extends StatefulWidget {
   final DeliveryDetailModel deliveryDetailModel;
-  
 
   const UnDelivery({
     super.key,
     required this.deliveryDetailModel,
-    
   });
 
   @override
@@ -58,6 +59,8 @@ class _UnDeliveryState extends State<UnDelivery> {
   late String smallDateTime;
   late FocusNode remarksFocus;
   String currentAddress = '';
+  final TextEditingController _branchController = TextEditingController();
+  BranchModel? _selectedBranch;
   @override
   void initState() {
     super.initState();
@@ -65,8 +68,10 @@ class _UnDeliveryState extends State<UnDelivery> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
     deliveryDetailModel = widget.deliveryDetailModel;
-    
-    _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr) ? deliveryDetailModel.grno.toString() : deliveryDetailModel.generatedGr.toString();
+
+    _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr)
+        ? deliveryDetailModel.grno.toString()
+        : deliveryDetailModel.generatedGr.toString();
     todayDateTime = DateTime.now();
     smallDateTime = DateFormat('yyyy-MM-dd').format(todayDateTime);
     unDeliverDt = smallDateTime;
@@ -76,6 +81,11 @@ class _UnDeliveryState extends State<UnDelivery> {
     // _unDeliverDateController.text = formatDate(DateTime.now());
     _unDeliveryTimeController.text =
         DateFormat('h:mm a').format(DateTime.now());
+
+    _selectedBranch = BranchModel(
+        stnCode: deliveryDetailModel.destcode,
+        stnName: deliveryDetailModel.destname);
+    _branchController.text = _selectedBranch!.stnName.toString();
     getReasons();
     setObservers();
   }
@@ -202,145 +212,8 @@ class _UnDeliveryState extends State<UnDelivery> {
     );
   }
 
-  _datePicker(
-      String heading, TextEditingController controller, bool isEnabled) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.sizeOf(context).width * 0.02),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.sizeOf(context).width * 0.02,
-              vertical: MediaQuery.sizeOf(context).height * 0.01,
-            ),
-            child: RichText(
-              textAlign: TextAlign.start,
-              text: TextSpan(
-                style: const TextStyle(),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: heading,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                  ),
-                  TextSpan(
-                    text: '*',
-                    style: TextStyle(color: CommonColors.dangerColor),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          TextField(
-            enabled: isEnabled,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.text,
-            ),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              hintText: 'Select date',
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              suffixIcon: Icon(Icons.calendar_month),
-            ),
-            onTap: () {
-              _pickDate(controller);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  _timePicker(
-      String heading, TextEditingController controller, bool isEnabled) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.sizeOf(context).width * 0.02),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.sizeOf(context).width * 0.02,
-                vertical: MediaQuery.sizeOf(context).height * 0.01),
-            child: RichText(
-              textAlign: TextAlign.start,
-              text: TextSpan(
-                style: const TextStyle(),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: heading,
-                    style: const TextStyle(color: CommonColors.appBarColor),
-                  ),
-                  TextSpan(
-                    text: '*',
-                    style: TextStyle(color: CommonColors.dangerColor),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          TextField(
-            enabled: isEnabled,
-            readOnly: true,
-            controller: TextEditingController(
-              text: controller.text,
-            ),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              hintText: 'Select time',
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              suffixIcon: Icon(Icons.alarm_rounded),
-            ),
-            onTap: () {
-              debugPrint('Field');
-              _pickTime(controller);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _pickDate(TextEditingController controller) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    debugPrint("Selected date: $pickedDate");
-    setState(() {
-      unDeliverDt = DateFormat('yyyy-MM-dd').format(pickedDate!);
-      DateTime date = DateTime.parse(unDeliverDt);
-      controller.text = DateFormat('dd-MM-yyyy').format(date);
-
-      // controller.text = formatDate(pickedDate!);
-    });
-  }
-
-  Future<void> _pickTime(TextEditingController controller) async {
-    await showTimePicker(
-      initialTime: TimeOfDay.now(),
-      context: context,
-    );
-  }
-
+  
+  
   getReasons() {
     Map<String, String> params = {
       'prmconnstring': savedLogin.companyid.toString()
@@ -352,12 +225,15 @@ class _UnDeliveryState extends State<UnDelivery> {
     Map<String, String> params = {
       "prmconnstring": savedLogin.companyid.toString(),
       // "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmbranchcode": widget.deliveryDetailModel.destcode.toString(),
+      // "prmbranchcode": widget.deliveryDetailModel.destcode.toString(),
+      "prmbranchcode": _selectedBranch!.stnCode.toString(),
       "prmundeldt":
           convert2SmallDateTime(_unDeliverDateController.text.toString()),
       "prmtime": formatTimeString(_unDeliveryTimeController.text),
       "prmdlvtripsheetno": widget.deliveryDetailModel.manifestno.toString(),
-      "prmgrno": isNullOrEmpty(deliveryDetailModel.generatedGr) ? deliveryDetailModel.grno.toString() : deliveryDetailModel.generatedGr.toString(),
+      "prmgrno": isNullOrEmpty(deliveryDetailModel.generatedGr)
+          ? deliveryDetailModel.grno.toString()
+          : deliveryDetailModel.generatedGr.toString(),
       "prmreasoncode": _selectedReason!.reasoncode.toString(),
       "prmactioncode": _selectedAction!.reasoncode.toString(),
       "prmusercode": savedUser.usercode.toString(),
@@ -374,8 +250,16 @@ class _UnDeliveryState extends State<UnDelivery> {
   }
 
   Future<void> fetchLocationAndSubmit() async {
+    // loadingAlertService.showLoading();
+    // String? address = await AppLocationService().getCurrentAddress();
+    // loadingAlertService.hideLoading();
     loadingAlertService.showLoading();
-    String? address = await AppLocationService().getCurrentAddress();
+   final position = await LocationService().getCurrentLocation();
+
+  final address = await AppLocationService().getAddressFromLatLng(
+    position.latitude,
+    position.longitude,
+  );
     loadingAlertService.hideLoading();
 
     if (address != null) {
@@ -853,6 +737,60 @@ class _UnDeliveryState extends State<UnDelivery> {
                     ),
                   ),
                 ),
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
+                // undeliver  Branch
+
+                _buildFormField(
+                  label: "Undeliver Branch",
+                  isRequired: true,
+                  icon: Icons.location_city,
+                  child: TextFormField(
+                    enabled: true,
+                    readOnly: true,
+                    onTap: () {
+                      showGenericApiBottomSheet<BranchModel>(
+                        context: context,
+                        title: "Search Branch",
+
+                        fetchItems: (query) async {
+                          Map<String, String> params = {
+                            "prmcompanyid": savedUser.companyid.toString(),
+                            "prmbranchcode":
+                                savedUser.loginbranchcode.toString(),
+                            "prmusercode": savedUser.usercode.toString(),
+                            "prmsessionid": savedUser.sessionid.toString(),
+                            "prmcharstr": query,
+                          };
+
+                          return await viewModel.getBranchList(params);
+                        },
+                        itemTitle: (branch) => branch.stnName ?? 'Unknown',
+                        itemSubtitle: (branch) => "",
+                        // "Zipcode: ${branch.zipCode}",
+                        // 3. Receive the selected model back
+                        onSelected: (selectedBranch) {
+                          setState(() {
+                            _selectedBranch = selectedBranch;
+
+                            _branchController.text =
+                                _selectedBranch!.stnName.toString();
+                          });
+                        },
+                      );
+                    },
+                    controller: _branchController,
+                    keyboardType: TextInputType.text,
+                    decoration: _inputDecoration("Branch"),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select Branch';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+
+                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 _buildFormField(
                   label: 'Remarks',
