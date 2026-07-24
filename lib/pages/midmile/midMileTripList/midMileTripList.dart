@@ -86,7 +86,7 @@ class MidMileTripListState extends State<MidMileTripList> {
       loadingAlertService = LoadingAlertService(context: context);
     });
     setObserver();
-    getMidMileTripsList();
+    // getMidMileTripsList();
     // generateDummyData();
   }
 
@@ -104,16 +104,13 @@ class MidMileTripListState extends State<MidMileTripList> {
     viewModel.midMileTripsList.stream.listen((listData) {
       if (listData.isNotEmpty) {
         setState(() {
-          
-        tripsList = listData;
-        filterList = listData;
+          tripsList = listData;
+          filterList = listData;
         });
       } else {
         tripsList.clear();
         filterList.clear();
       }
-
-    
     });
   }
 

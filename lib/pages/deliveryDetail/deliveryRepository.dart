@@ -71,7 +71,7 @@ class DeliveryRepository extends BaseRepository {
   }
 
   Future<void> getMenu(Map<String, String> params) async {
-    viewDialog.add(true);
+    // viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
@@ -93,17 +93,17 @@ class DeliveryRepository extends BaseRepository {
         } else {
           isErrorLiveData.add(resp.commandMessage!);
         }
-        viewDialog.add(false);
+        // viewDialog.add(false);
       } on SocketException catch (_) {
         isErrorLiveData.add("No Internet");
-        viewDialog.add(false);
+        // viewDialog.add(false);
       } catch (err) {
         isErrorLiveData.add(err.toString());
-        viewDialog.add(false);
+        // viewDialog.add(false);
       }
-      viewDialog.add(false);
+      // viewDialog.add(false);
     } else {
-      viewDialog.add(false);
+      // viewDialog.add(false);
       isErrorLiveData.add("No Internet available");
     }
   }
@@ -167,6 +167,7 @@ class DeliveryRepository extends BaseRepository {
       isErrorLiveData.add("No Internet available");
     }
   }
+
   Future<void> updatePickupDepartedPosition(Map<String, String> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;

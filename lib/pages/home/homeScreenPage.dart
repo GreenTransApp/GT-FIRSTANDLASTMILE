@@ -4,18 +4,15 @@ import 'dart:io';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/bottomSheet/NotificationOptionBottomSheet/notificationOptionBottomSheet.dart';
 import 'package:gtlmd/bottomSheet/datePicker.dart';
-import 'package:gtlmd/bottomSheet/multiImageBottomSheet.dart';
 import 'package:gtlmd/common/Environment.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
-
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
@@ -32,19 +29,14 @@ import 'package:gtlmd/pages/midmile/midMileTripList/midMileTripList.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineDrsBottomSheet.dart';
 import 'package:gtlmd/pages/orders/drsSelection/drsSelectionBottomSheet.dart';
-import 'package:gtlmd/pages/profile/profilePage.dart';
 import 'package:gtlmd/pages/routes/routesList/allotedRouteWidget.dart';
 import 'package:gtlmd/pages/runningTrips/runningTrips.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
 import 'package:gtlmd/pages/updateVersionScreen/updateVersionScreen.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
-import 'package:gtlmd/pages/imageEditor/data/image_editing_repository_impl.dart';
-import 'package:gtlmd/pages/imageEditor/presentation/image_editor_controller.dart';
-import 'package:gtlmd/pages/imageEditor/presentation/image_editor_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum DashboardTabs { ALLOTEDROUTES, CURRENTDELIVERY }
@@ -85,7 +77,6 @@ class _HomeScreen extends State<HomeScreen>
   // final authService = AuthenticationService();
   bool showLocationWarning = false;
   int _selectedIndex = 0;
-  final PageController _pageController = PageController();
   GlobalKey<AllocatedRouteWidgetState> allotedRouteKey = GlobalKey();
   GlobalKey<DrsselectionBottomSheetState> drsSelectionKey = GlobalKey();
   GlobalKey<RunningTripsState> runningTripsKey = GlobalKey();
@@ -97,7 +88,7 @@ class _HomeScreen extends State<HomeScreen>
   static const String portalUrl = "https://gtjinni.com/";
   String JINNI_URL = "";
   @override
-  void initState(){
+  void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
