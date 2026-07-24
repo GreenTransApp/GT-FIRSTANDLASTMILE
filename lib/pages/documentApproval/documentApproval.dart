@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gtlmd/bottomSheet/datePicker.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -90,7 +91,7 @@ class _DocumentApprovalState extends State<DocumentApproval> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
-      "prmfromdt": convert2SmallDateTime(this.fromDt),
+      "prmfromdt": convert2SmallDateTime(fromDt),
       "prmtodt": savedUser.usercode.toString(),
       "prmfiltertype": savedUser.usercode.toString(),
       "prmcharstr": savedUser.usercode.toString(),
@@ -182,10 +183,13 @@ class _DocumentApprovalState extends State<DocumentApproval> {
           ],
         ),
         actions: [
-          Icon(
-            Icons.date_range,
+          IconButton(
+            onPressed: (){
+              showDatePickerBottomSheet(context, _dateChanged);
+            },
+            icon :Icon(Icons.date_range,
             color: CommonColors.white,
-          ),
+          )),
         ],
       ),
       body: Container(

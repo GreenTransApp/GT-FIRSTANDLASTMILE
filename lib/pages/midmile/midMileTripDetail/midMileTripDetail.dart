@@ -5,6 +5,7 @@ import 'package:get/route_manager.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
@@ -55,16 +56,18 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     // generateDummyData();
     getMidMileTripsDetail();
     filterList = tripsList;
-     todayDateTime = DateTime.now();
-     currentdate = DateFormat('yyyy-MM-dd').format(todayDateTime);
-     currentTime = DateFormat('hh:mm a').format(todayDateTime);
+    todayDateTime = DateTime.now();
+    currentdate = DateFormat('yyyy-MM-dd').format(todayDateTime);
+    currentTime = DateFormat('hh:mm a').format(todayDateTime);
   }
 
   setObserver() {
     viewModel.loadingDialog.stream.listen((show) {
-      show
-          ? loadingAlertService.showLoading()
-          : loadingAlertService.hideLoading();
+      if (show) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
     });
 
     viewModel.errorDialog.stream.listen((error) {
@@ -80,10 +83,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
           tripsList.clear();
           filterList.clear();
         }
-
       });
-
-
     });
 
     viewModel.departedPositionLiveData.stream.listen((data) {
@@ -104,7 +104,6 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     });
   }
 
- 
   void updateSearch(String newQuery) {
     List<MidMileTripDetailModel> newMatchQuery = [];
 
@@ -121,8 +120,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     .contains(newQuery.toLowerCase()) ??
                 false) ||
             (trip.manifestNo?.toLowerCase().contains(newQuery.toLowerCase()) ??
-                false) 
-           ) {
+                false)) {
           newMatchQuery.add(trip);
         }
       }
@@ -155,38 +153,100 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     // openUpdateMidMileTripInfo(context, tripsList[0], onRefresh);
   }
 
+
+
+  departFromLocationAlert(String grno, String manifestno) async {
+    loadingAlertService.showLoading();
+    String? address = await AppLocationService().getCurrentAddress();
+    loadingAlertService.hideLoading();
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must tap a button to close it!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Departing Location',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Text('$address'),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: CommonColors.appBarColor),
+                        borderRadius: BorderRadius.circular(40)),
+                    child: TextButton(
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: CommonColors.appBarColor),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: CommonColors.appBarColor,
+                        ),
+                        borderRadius: BorderRadius.circular(40)),
+                    child: TextButton(
+                        child: const Text(
+                          'Okay',
+                          style: TextStyle(color: CommonColors.appBarColor),
+                        ),
+                        onPressed: () {
+                          updatePickupDepartedPosition(grno, manifestno);
+                          Navigator.of(context).pop();
+                        }),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> updatePickupDepartedPosition(
       String grno, String manifestno) async {
-   
-
     try {
-       loadingAlertService.showLoading();
-      // Position position = await Geolocator.getCurrentPosition(
-      //   locationSettings: const LocationSettings(
-      //     accuracy: LocationAccuracy.high,
-      //     distanceFilter: 0,
-      //   ),
-      // );
-      // Position? currentPosition;
-      await WidgetsBinding.instance.endOfFrame;
-      LocationService().getCurrentLocation().then((position) {
-        // currentPosition = position;
+      loadingAlertService.showLoading();
 
-        Map<String, String> params = {
-          "prmusercode": savedUser.usercode.toString(),
-          "prmbranchcode": savedUser.loginbranchcode.toString(),
-          "prmdivisionid": savedUser.logindivisionid.toString(),
-          "prmgrno": grno,
-          "prmmanifestno": manifestno,
-          "prmpickuplat": position.latitude.toString(),
-          "prmpickuplong": position.longitude.toString(),
-          "prmmenucode": "GTAPP_MIDMILEDEPARTPICKUP",
-          "prmsessionid": savedUser.sessionid.toString(),
-        };
+      final positionFuture = LocationService().getCurrentLocation();
+      final position = await positionFuture;
+      // final addressFuture = AppLocationService().getCurrentAddress();
+      final addressFuture = await AppLocationService().getAddressFromLatLng(
+        position.latitude,
+        position.longitude,
+      );
 
-        printParams(params);
-        viewModel.updateDepartLocation(params);
-      });
+      Map<String, String> params = {
+        "prmusercode": savedUser.usercode.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmdivisionid": savedUser.logindivisionid.toString(),
+        "prmgrno": grno,
+        "prmmanifestno": manifestno,
+        "prmpickuplat": position.latitude.toString(),
+        "prmpickuplong": position.longitude.toString(),
+        "prmmenucode": "GTAPP_MIDMILEDEPARTPICKUP",
+        "prmsessionid": savedUser.sessionid.toString(),
+      };
+
+      printParams(params);
+      await viewModel.updateDepartLocation(params);
+      // });
     } finally {
       loadingAlertService.hideLoading();
     }
@@ -197,43 +257,44 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
   }
 
   Future<void> updateVehicleArrival(MidMileTripDetailModel model) async {
-  try {
-    loadingAlertService.showLoading();
+    try {
+      loadingAlertService.showLoading();
 
-    final positionFuture = LocationService().getCurrentLocation();
-    final position = await positionFuture;
-    // final addressFuture = AppLocationService().getCurrentAddress();
-    final  addressFuture = await AppLocationService().getAddressFromLatLng(
-  position.latitude,
-  position.longitude,
-);
-    final currentAddress =  addressFuture;
+      final positionFuture = LocationService().getCurrentLocation();
+      final position = await positionFuture;
+      // final addressFuture = AppLocationService().getCurrentAddress();
+      final addressFuture = await AppLocationService().getAddressFromLatLng(
+        position.latitude,
+        position.longitude,
+      );
+      final currentAddress = addressFuture;
 
-        Map<String, dynamic> params = {
-          "prmusercode": savedUser.companyid.toString(),
-          "prmbranchcode": savedUser.loginbranchcode.toString(),
-          "prmtripid": int.parse( model.tripId.toString()) ?? 0,
-          "prmtripiddetailid":int.parse( model.tripDetailId.toString() )?? 0,
-          "prmgrno": model.grno.toString(),
-          "prmmanifestno": model.manifestNo.toString(),
-          "prmunloaddt": convert2SmallDateTime(currentdate),
-          "prmunloadtime":convertTo24Hour(currentTime),
-          "prmentrylocation": currentAddress?? '',
-          "prmunloadlat": position.latitude.toString(),
-          "prmunloadlong": position.longitude.toString(),
-          "prmfromstn": model.orgcode.toString(),
-          "prmtostn": model.destcode.toString(),
-          "prmdrivercode": savedUser.drivercode.toString(),
-          "prmmodecode": model.modecode.toString(),
-          "prmsessionid": savedUser.sessionid.toString(),
-          "prmmenucode": "GTAPP_MIDMILEVEHICLEARRIVAL",
-     };
+      Map<String, dynamic> params = {
+        "prmusercode": savedUser.companyid.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmtripid": int.parse(model.tripId.toString()) ?? 0,
+        "prmtripiddetailid": int.parse(model.tripDetailId.toString()) ?? 0,
+        "prmgrno": model.grno.toString(),
+        "prmmanifestno": model.manifestNo.toString(),
+        "prmunloaddt": convert2SmallDateTime(currentdate),
+        "prmunloadtime": convertTo24Hour(currentTime),
+        "prmentrylocation": currentAddress ?? '',
+        "prmunloadlat": position.latitude.toString(),
+        "prmunloadlong": position.longitude.toString(),
+        "prmfromstn": model.orgcode.toString(),
+        "prmtostn": model.destcode.toString(),
+        "prmdrivercode": savedUser.drivercode.toString(),
+        "prmmodecode": model.modecode.toString(),
+        "prmsessionid": savedUser.sessionid.toString(),
+        "prmmenucode": "GTAPP_MIDMILEVEHICLEARRIVAL",
+      };
 
-    await viewModel.updateArrival(params);
-  } finally {
-    loadingAlertService.hideLoading();
+      await viewModel.updateArrival(params);
+    } finally {
+      loadingAlertService.hideLoading();
+    }
   }
-}
+
   Widget _infoTile(String label, String? value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,37 +442,37 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-               Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.smallHorizontalPadding,
-                    vertical: SizeConfig.smallVerticalPadding,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CommonColors.colorPrimary!
-                        .withAlpha((0.12 * 255).round()),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.local_shipping_outlined,
-                          size: SizeConfig.smallTextSize + 2,
-                          color: CommonColors.colorPrimary),
-                      const SizedBox(width: 4),
-                      Text(
-                        'HUB',
-                        style: TextStyle(
-                          fontSize: SizeConfig.smallTextSize,
-                          fontWeight: FontWeight.bold,
-                          color: CommonColors.colorPrimary,
-                        ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.smallHorizontalPadding,
+                  vertical: SizeConfig.smallVerticalPadding,
+                ),
+                decoration: BoxDecoration(
+                  color: CommonColors.colorPrimary!
+                      .withAlpha((0.12 * 255).round()),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.local_shipping_outlined,
+                        size: SizeConfig.smallTextSize + 2,
+                        color: CommonColors.colorPrimary),
+                    const SizedBox(width: 4),
+                    Text(
+                      'HUB',
+                      style: TextStyle(
+                        fontSize: SizeConfig.smallTextSize,
+                        fontWeight: FontWeight.bold,
+                        color: CommonColors.colorPrimary,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+            ),
             Row(
               children: [
                 const CircleAvatar(
@@ -424,7 +485,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                       "Manifest: ${item.manifestNo ?? "-"}",
+                        "Manifest: ${item.manifestNo ?? "-"}",
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -433,7 +494,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       const SizedBox(height: 4),
                       // Text(
                       //    "GR No : ${item.grno}",
-                        
+
                       //   style: TextStyle(
                       //     color: Colors.grey.shade700,
                       //   ),
@@ -455,7 +516,9 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Expanded(child: _infoTile("Total Consignment", item.totgr.toString())),
+                    Expanded(
+                        child: _infoTile(
+                            "Total Consignment", item.totgr.toString())),
                     Expanded(
                         child: _infoTile("Total Pkgs", "${item.totpckgs}")),
                   ],
@@ -494,7 +557,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "Arrived AT",
+                            "Arrived At",
                             style: TextStyle(
                               color: Colors.green.shade700,
                               fontWeight: FontWeight.bold,
@@ -507,7 +570,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                   : FilledButton.icon(
                       onPressed: () {
                         openUpdateMidMileDriverPosition(context, item,
-                           MIDMILETRIPSTATUS.ARRIVAL,  onRefresh);
+                            MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
                       },
                       icon: const Icon(Icons.location_on),
                       label: const Text("Arrive AT"),
@@ -537,7 +600,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
             //                   ),
             //                 ),
             //               )?.then((_) {
-            //                 onRefresh(); 
+            //                 onRefresh();
             //               });
             //                                     },
             //           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
@@ -679,9 +742,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     )
                   : FilledButton.icon(
                       onPressed: () {
-                        if (isNullOrEmpty(item.deliverystatusupdateon)) {
-                          failToast(
-                              "Please Update Delivery Status Before Vehicle Arrival.");
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Arrival.");
                           return;
                         }
                         openUpdateMidMileDriverPosition(
@@ -786,14 +848,15 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                   Row(
                     children: [
                       Expanded(child: _infoTile("Origin", item.orgname)),
-                      Expanded(
-                          child: _infoTile("Destination", item.destname)),
+                      Expanded(child: _infoTile("Destination", item.destname)),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _infoTile("Total Consignment", item.totgr.toString())),
+                      Expanded(
+                          child: _infoTile(
+                              "Total Consignment", item.totgr.toString())),
                       Expanded(
                           child: _infoTile("Total Pkgs", "${item.totpckgs}")),
                     ],
@@ -871,7 +934,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                             return;
                           }
                           Get.to(
-                                () => PodEntry(
+                            () => PodEntry(
                               deliveryDetailModel: DeliveryDetailModel(
                                 generatedGr: item.grno,
                               ),
@@ -907,15 +970,14 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                             return;
                           }
                           Get.to(UnDelivery(
-                                  deliveryDetailModel: DeliveryDetailModel(
-                                      manifestno: item.manifestNo,
-                                      generatedGr: item.grno,
-                                      orgcode: item.orgcode,
-                                      orgname: item.orgname,
-                                      destcode: item.destcode,
-                                      destname: item.destname,
-                                      )))
-                              ?.then((_) {
+                              deliveryDetailModel: DeliveryDetailModel(
+                            manifestno: item.manifestNo,
+                            generatedGr: item.grno,
+                            orgcode: item.orgcode,
+                            orgname: item.orgname,
+                            destcode: item.destcode,
+                            destname: item.destname,
+                          )))?.then((_) {
                             onRefresh();
                           });
                         },
@@ -1035,6 +1097,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           }
                           updatePickupDepartedPosition(
                               item.grno ?? '', item.manifestNo ?? '');
+                          // departFromLocationAlert(
+                          //     item.grno ?? '', item.manifestNo ?? '');
                         },
                         icon: const Icon(Icons.location_on),
                         label: const Text("Departed From Location"),

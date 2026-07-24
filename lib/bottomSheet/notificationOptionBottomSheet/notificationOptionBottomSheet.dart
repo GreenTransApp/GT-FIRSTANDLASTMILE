@@ -23,12 +23,12 @@ class _NotificationOptionBottomSheetState
         title: "Reminder",
         key: "R",
         pageName: "ReminderListPage",
-        count: int.parse(notificationCountModel.remindercount!)),
+        count: int.parse(notificationCountModel.remindercount ?? '')),
     NotificationOptionModel(
         title: "Document Approval",
         key: "D",
         pageName: "DocumentApprovalListPage",
-        count: int.parse(notificationCountModel.approvalcount!)),
+        count: int.parse(notificationCountModel.approvalcount ?? '')),
   ];
 
   IconData getIcon(String key) {
@@ -45,11 +45,11 @@ class _NotificationOptionBottomSheetState
   Color getColor(String key) {
     switch (key) {
       case "R":
-        return CommonColors.orange!;
+        return CommonColors.orange?? Colors.orange;
       case "D":
-        return CommonColors.successColor!;
+        return CommonColors.successColor ?? Colors.green;
       default:
-        return CommonColors.primaryColorShade!;
+        return CommonColors.primaryColorShade  ?? Colors.blue;
     }
   }
 
@@ -59,12 +59,12 @@ class _NotificationOptionBottomSheetState
       case "R":
         Get.to(() => ReminderListPage());
         break;
-      case "J":
-        Get.to(() => ReminderListPage());
+      case "D":
+        Get.to(() => DocumentApproval());
         break;
       default:
     }
-    // Get.to(() => models.pageName);
+    // Get.to(() => models.pageName);`
   }
 
   @override
@@ -118,7 +118,7 @@ class _NotificationOptionBottomSheetState
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: CommonColors.grey200!,
+                        color: CommonColors.grey200 ?? Colors.grey,
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       )
@@ -128,12 +128,12 @@ class _NotificationOptionBottomSheetState
                     leading: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: getColor(item.key!).withOpacity(0.15),
+                        color: getColor(item.key?? '').withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        getIcon(item.key!),
-                        color: getColor(item.key!),
+                        getIcon(item.key ??''),
+                        color: getColor(item.key ?? ''),
                       ),
                     ),
                     title: Row(
@@ -152,7 +152,7 @@ class _NotificationOptionBottomSheetState
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: getColor(item.key!),
+                              color: getColor(item.key?? ''),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(

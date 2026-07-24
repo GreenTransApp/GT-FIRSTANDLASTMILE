@@ -34,12 +34,20 @@ class  ConsignmentEnquiryRepository  extends BaseRepository {
                 List<dynamic> list2 = entry.value;
                 List<ConsignmentEnquiryModel> resultList = List.generate(list2.length,
                     (index) => ConsignmentEnquiryModel.fromJson(list2[index]));
+                     if (resultList.isNotEmpty) {
+                      consignData.add(resultList[0]);
+                    } 
                 consignData.add(resultList[0]);
               } else if (entry.key == "Table1") {
                 List<dynamic> list2 = entry.value;
                 List<ConsignmentImageModel> resultList = List.generate(list2.length,
                     (index) => ConsignmentImageModel.fromJson(list2[index]));
+                if (resultList.isNotEmpty) {
                 consignImgData.add(resultList);
+              } else {
+                consignImgData.add([]);
+              }
+              
               }
             }
           } catch (err) {

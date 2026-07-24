@@ -133,18 +133,18 @@ class SideMenu extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SideMenuItem(
-                    isSmallDevice: isSmallDevice,
-                    title: 'Dashboard',
-                    isSelected: currentRoute == RoutesName.home,
-                    leadingIcon: const Icon(Symbols.dashboard_rounded),
-                    press: () {
-                      Navigator.pop(context);
-                      if (currentRoute != RoutesName.home) {
-                        Routes.goToPage(RoutesName.home, "Dashboard");
-                      }
-                    },
-                  ),
+                  // SideMenuItem(
+                  //   isSmallDevice: isSmallDevice,
+                  //   title: 'Dashboard',
+                  //   isSelected: currentRoute == RoutesName.home,
+                  //   leadingIcon: const Icon(Symbols.dashboard_rounded),
+                  //   press: () {
+                  //     Navigator.pop(context);
+                  //     if (currentRoute != RoutesName.home) {
+                  //       Routes.goToPage(RoutesName.home, "Dashboard");
+                  //     }
+                  //   },
+                  // ),
                   if (employeeid != null) ...[
                     SideMenuItem(
                       isSmallDevice: isSmallDevice,
@@ -187,7 +187,7 @@ class SideMenu extends StatelessWidget {
                   SideMenuItem(
                     isSmallDevice: isSmallDevice,
                     title: 'Delivery Performance',
-                    leadingIcon: const Icon(Symbols.analytics),
+                    leadingIcon: const Icon(Symbols.performance_max_rounded),
                     press: () {
                       Navigator.pop(context);
                       Get.to(const DeliveryPerformancePage());
@@ -196,7 +196,7 @@ class SideMenu extends StatelessWidget {
                   SideMenuItem(
                     isSmallDevice: isSmallDevice,
                     title: 'Sticker Printing',
-                    leadingIcon: const Icon(Symbols.analytics),
+                    leadingIcon: const Icon(Symbols.print),
                     press: () {
                       Navigator.pop(context);
                       Get.to(const GrListPage());
@@ -205,7 +205,7 @@ class SideMenu extends StatelessWidget {
                   SideMenuItem(
                     isSmallDevice: isSmallDevice,
                     title: 'Operations',
-                    leadingIcon: const Icon(Symbols.analytics),
+                    leadingIcon: const Icon(Symbols.delivery_truck_bolt),
                     press: () {
                       Navigator.pop(context);
                       Get.to(const Operations());

@@ -541,6 +541,7 @@ class OtexPickupProvider extends ChangeNotifier {
         'totalcweight': double.tryParse(_state.info.weight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
         'noofbox': _state.info.pcs.toString(),
+        'jobid':_state.info.jobid
       };
     }
 

@@ -93,9 +93,11 @@ class _HomeScreen extends State<HomeScreen>
   final List<StreamSubscription> _subscriptions = [];
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();
-
+  String deviceId = "";
+  static const String portalUrl = "https://gtjinni.com/";
+  String JINNI_URL = "";
   @override
-  void initState() {
+  void initState(){
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
@@ -241,11 +243,11 @@ class _HomeScreen extends State<HomeScreen>
           _updateScreen(context);
           // } else if (validate.executiveid == null ||
           //     validate.employeeid == null) {
-        // } else if (validate.executiveid == null) {
-        //   failToast("Invalid User details");
-        //   authService.logout(context);
-        } 
-        else if (isNullOrEmpty(validate.executiveid.toString()) == false && int.parse(validate.executiveid.toString()) > 0) {
+          // } else if (validate.executiveid == null) {
+          //   failToast("Invalid User details");
+          //   authService.logout(context);
+        } else if (isNullOrEmpty(validate.executiveid.toString()) == false &&
+            int.parse(validate.executiveid.toString()) > 0) {
           getNotifiocaionCount();
           // getDashboardDetails();
         }
@@ -1034,11 +1036,20 @@ class _HomeScreen extends State<HomeScreen>
               repeat: true,
               child: FloatingActionButton(
                 onPressed: () async {
-                  final url = "https://gtjinni.com/";
-                  if (url != null && url.isNotEmpty) {
+                  deviceId = await getDeviceId();
+                  if (isNullOrEmpty(deviceId)) {
+                    // failToast("Unable to get Device ID");
+                    JINNI_URL = portalUrl;
+                  } else {
+                    JINNI_URL =
+                        "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
+                  }
+
+                  // url = "https://gtjinni.com/";
+                  if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
                     try {
                       await launchUrl(
-                        Uri.parse(url),
+                        Uri.parse(JINNI_URL),
                         mode: LaunchMode.externalApplication,
                       );
                     } catch (_) {
