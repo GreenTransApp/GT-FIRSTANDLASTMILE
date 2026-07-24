@@ -9,13 +9,15 @@ import 'package:gtlmd/pages/otexPickupScreen/widgets/otex_pickup_card.dart';
 import 'package:provider/provider.dart';
 
 class OtexPickupScreen extends StatelessWidget {
-  final String? transactionId;
-  final String? grno;
-  final String? orderid;
+  final String transactionId;
+  final String grno;
+  final String orderid;
+  final String jobid;
+  
   final bool isReadOnly;
 
   const OtexPickupScreen(
-      {super.key, this.transactionId, this.grno, this.orderid, this.isReadOnly = false});
+      {super.key, required this.transactionId, required this.grno, required this.orderid,required this.jobid, this.isReadOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class OtexPickupScreen extends StatelessWidget {
         transactionId: transactionId,
         grno: grno,
         orderid: orderid,
+        jobid: jobid,
         isReadOnly: isReadOnly,
       ),
     );
@@ -32,16 +35,19 @@ class OtexPickupScreen extends StatelessWidget {
 }
 
 class _OtexPickupScreenBody extends StatefulWidget {
-  final String? transactionId;
-  final String? grno;
-  final String? orderid;
+  final String transactionId;
+  final String grno;
+  final String orderid;
+  final String jobid;
+  
   final bool isReadOnly;
 
   const _OtexPickupScreenBody({
     super.key,
-    this.transactionId,
-    this.grno,
-    this.orderid,
+    required this.transactionId,
+    required this.grno,
+    required this.orderid,
+    required this.jobid,
     this.isReadOnly = false,
   });
 
@@ -68,6 +74,7 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
           transactionId: widget.transactionId,
           grno: widget.grno,
           orderid: widget.orderid,
+          jobid: widget.jobid,
           isReadOnly: widget.isReadOnly);
     });
   }

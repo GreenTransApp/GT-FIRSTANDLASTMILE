@@ -1,6 +1,7 @@
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/pickupImageModel.dart';
 
 enum SectionStatus { idle, loading, success, failure }
 
@@ -19,6 +20,7 @@ class OtexPickupState {
 
   // All cards — both server-fetched and locally added
   final List<OtexPickupSplitInfo> splitInfo;
+  final List<PickupImageModel> imgData;
 
   // Cards confirmed saved on server — this is the floor,
   // user cannot go below this count
@@ -51,6 +53,7 @@ class OtexPickupState {
     required this.info,
     required this.mailDetails,
     required this.splitInfo,
+    required this.imgData,
     required this.permanentCardCount,
     required this.totalPalletQty,
     required this.hasTransactionId,
@@ -70,6 +73,7 @@ class OtexPickupState {
         info: OtexPickupInfoModel(),
         mailDetails: MailDetails(),
         splitInfo: [OtexPickupSplitInfo()],
+        imgData: [PickupImageModel()],
         permanentCardCount: 0,
         totalPalletQty: 0,
         hasTransactionId: false,
@@ -93,6 +97,7 @@ class OtexPickupState {
       OtexPickupInfoModel? info,
       MailDetails? mailDetails,
       List<OtexPickupSplitInfo>? splitInfo,
+      List<PickupImageModel>? imgData,
       int? permanentCardCount,
       int? totalPalletQty,
       bool? hasTransactionId,
@@ -111,6 +116,7 @@ class OtexPickupState {
         info: info ?? this.info,
         mailDetails: mailDetails ?? this.mailDetails,
         splitInfo: splitInfo ?? this.splitInfo,
+        imgData: imgData ?? this.imgData,
         permanentCardCount: permanentCardCount ?? this.permanentCardCount,
         totalPalletQty: totalPalletQty ?? this.totalPalletQty,
         hasTransactionId: hasTransactionId ?? this.hasTransactionId,

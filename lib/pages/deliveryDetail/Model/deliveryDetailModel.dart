@@ -53,6 +53,7 @@ class DeliveryDetailModel {
   String? destcode;
   String? orgname;
   String? destname;
+  int? jobid;
   
 
   DeliveryDetailModel(
@@ -106,7 +107,8 @@ class DeliveryDetailModel {
       this.orgcode,
        this.destcode,
        this.orgname,
-       this.destname
+       this.destname,
+       this.jobid,
       });
 
   factory DeliveryDetailModel.fromJson(Map<String, dynamic> json) {
@@ -162,6 +164,7 @@ class DeliveryDetailModel {
       orgname: json['orgname'],
       destcode: json['destcode'],
       destname: json['destname'],
+      jobid: json['jobid'],
       
     );
   }
@@ -219,6 +222,7 @@ class DeliveryDetailModel {
       'orgname': orgname,
       'destcode': destcode,
       'destname': destname,
+      'jobid': jobid,
       
     };
   }

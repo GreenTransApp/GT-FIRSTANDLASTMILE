@@ -929,7 +929,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 orderid: isNullOrEmpty(
                                         widget.model.orderid.toString())
                                     ? '0'
-                                    : widget.model.orderid.toString()),
+                                    : widget.model.orderid.toString(),
+                                jobid: isNullOrEmpty(
+                                        widget.model.jobid.toString())
+                                    ? '0'
+                                    : widget.model.jobid.toString(),    
+                                    ),
                           )?.then((_) {
                             widget.onRefresh();
                           });
@@ -1601,7 +1606,12 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     orderid: isNullOrEmpty(
                                             widget.model.orderid.toString())
                                         ? '0'
-                                        : widget.model.orderid.toString()),
+                                        : widget.model.orderid.toString(),
+                                      jobid: isNullOrEmpty(
+                                            widget.model.jobid.toString())
+                                        ? '0'
+                                        : widget.model.jobid.toString() ,  
+                                        ),
                               )?.then((_) {
                                 widget.onRefresh();
                               });
