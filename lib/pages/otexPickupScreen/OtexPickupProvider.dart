@@ -52,7 +52,8 @@ class OtexPickupProvider extends ChangeNotifier {
         errorMessage: null,
         openVehicleArrival: false,
         vehicleArrivalUrl: '',
-        isReadOnly: isReadOnly, imgData: [PickupImageModel()]);
+        isReadOnly: isReadOnly,
+        imgData: [PickupImageModel()]);
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
@@ -93,8 +94,8 @@ class OtexPickupProvider extends ChangeNotifier {
       OtexPickupSplitInfo? si = null;
       List<PickupImageModel> img = [];
       if (result.length > 1) {
-        si = result[1][0] as OtexPickupSplitInfo;
-        img = result[3] as  List< PickupImageModel>;
+        si = result[1] as OtexPickupSplitInfo;
+        img = result[2] as List<PickupImageModel>;
       }
       // List<OtexPickupSplitInfo> splitData =
       //     (result[1] as List).cast<OtexPickupSplitInfo>().toList();

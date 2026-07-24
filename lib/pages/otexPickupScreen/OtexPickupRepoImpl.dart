@@ -368,9 +368,15 @@ class OtexPickupRepoImpl {
       result.add(infoModel);
       if (splitInfo.isNotEmpty) {
         result.add(splitInfo);
-      } else if (imgInfo.isNotEmpty) {
-        result.add(imgInfo);
+      } else {
+        result.add(const OtexPickupSplitInfo());
       }
+      if (imgInfo.isNotEmpty) {
+        result.add(imgInfo);
+      } else {
+        result.add([const PickupImageModel()]);
+      }
+      // }
       return result;
     } on SocketException catch (_) {
       throw Exception("No Internet");
