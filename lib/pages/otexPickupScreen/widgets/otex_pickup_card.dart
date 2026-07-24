@@ -63,7 +63,9 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     // if (_initialSyncDone || !mounted) return;
     final provider = context.read<OtexPickupProvider>();
     final cards = provider.state.splitInfo;
+    final imgData = provider.state.imgData;
     if (widget.index >= cards.length) return;
+  
 
     final card = cards[widget.index];
     _palletQtyController.text = card.palletQty?.toString() ?? "0";

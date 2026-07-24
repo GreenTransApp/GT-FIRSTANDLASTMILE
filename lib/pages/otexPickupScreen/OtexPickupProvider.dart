@@ -9,6 +9,7 @@ import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/packingTypeModel.dart';
+import 'package:gtlmd/pages/otexPickupScreen/models/pickupImageModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupState.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupRepoImpl.dart';
@@ -33,6 +34,7 @@ class OtexPickupProvider extends ChangeNotifier {
       {String? transactionId,
       String? grno,
       String? orderid,
+      String? jobid,
       bool isReadOnly = false}) {
     _state = OtexPickupState(
         headerStatus: SectionStatus.idle,
@@ -50,16 +52,16 @@ class OtexPickupProvider extends ChangeNotifier {
         errorMessage: null,
         openVehicleArrival: false,
         vehicleArrivalUrl: '',
-        isReadOnly: isReadOnly);
+        isReadOnly: isReadOnly, imgData: [PickupImageModel()]);
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
-      fetchBookingDetails(transactionId, orderid); // <-- already here
+      fetchBookingDetails(transactionId, orderid, jobid); // <-- already here
     }
   }
 
   Future<void> fetchBookingDetails(
-      String transactionid, String? orderid) async {
+      String transactionid, String? orderid, String? jobid) async {
     // Set both sections to loading independently
     _state = _state.copyWith(
       headerStatus: SectionStatus.loading,
@@ -80,16 +82,19 @@ class OtexPickupProvider extends ChangeNotifier {
         "prmmenucode": menuCode,
         "prmsessionid": savedUser.sessionid.toString(),
         "prmindentid": transactionid,
-        "prmorderid" :orderid ?? '0'
+        "prmorderid": orderid ?? '0',
+        "prmjobid": (jobid) ?? '0'
       };
       List<dynamic> result = await _repo.getPickupDetails(params);
 
       OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
-      infoData =
-          infoData.copyWith(orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()));
+      infoData = infoData.copyWith(
+          orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()));
       OtexPickupSplitInfo? si = null;
+      List<PickupImageModel> img = [];
       if (result.length > 1) {
         si = result[1][0] as OtexPickupSplitInfo;
+        img = result[3] as  List< PickupImageModel>;
       }
       // List<OtexPickupSplitInfo> splitData =
       //     (result[1] as List).cast<OtexPickupSplitInfo>().toList();
@@ -137,10 +142,12 @@ class OtexPickupProvider extends ChangeNotifier {
         cardListStatus: SectionStatus.success,
         info: infoData,
         splitInfo: splitData,
+        imgData: img,
         // Both cards came from server so permanent count = 2
         permanentCardCount: splitData.where((c) => c.isSaved).length,
         totalPalletQty: infoData.pcs,
       );
+
       notifyListeners();
     } catch (e) {
       _state = _state.copyWith(
@@ -541,7 +548,7 @@ class OtexPickupProvider extends ChangeNotifier {
         'totalcweight': double.tryParse(_state.info.weight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
         'noofbox': _state.info.pcs.toString(),
-        'jobid':_state.info.jobid
+        'jobid': _state.info.jobid
       };
     }
 
