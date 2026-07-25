@@ -12,6 +12,7 @@ import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupProvider.dart';
+
 import 'package:gtlmd/pages/otexPickupScreen/widgets/lovPickerField.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/branchModel.dart';
@@ -63,9 +64,13 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     // if (_initialSyncDone || !mounted) return;
     final provider = context.read<OtexPickupProvider>();
     final cards = provider.state.splitInfo;
-    final imgData = provider.state.imgData;
+
     if (widget.index >= cards.length) return;
-  
+    // if (imgData.length > 0) {
+    //   for (int i = 0; i <= imgData.length; i++) {
+    //     bookingImages.add(imgData[i].imagePath ?? "");
+    //   }
+    // }
 
     final card = cards[widget.index];
     _palletQtyController.text = card.palletQty?.toString() ?? "0";
@@ -119,8 +124,6 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     );
   }
 
- 
-  
   // ── Actions ────────────────────────────────────────────────
 
   Future<void> _handleSave(OtexPickupProvider provider) async {
@@ -234,9 +237,12 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     // Selector: this card only rebuilds when ITS slot in the list changes,
     // or when bookingTypeCode changes (freight visibility).
     // Other cards saving won't cause this card to rebuild.
+
+
     return Selector<OtexPickupProvider,
         ({OtexPickupSplitInfo card, bool isFreightVisible, bool canDelete})>(
       selector: (_, p) {
+        _selectedSignaturePath = p.state.info.signimagepath.toString();
         final cards = p.state.splitInfo;
         final card = widget.index < cards.length
             ? cards[widget.index]
@@ -679,6 +685,119 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
           SizedBox(
             height: SizeConfig.mediumVerticalSpacing,
           ),
+          isNullOrEmpty(_selectedSignaturePath)?
+          Container(
+            padding: EdgeInsets.symmetric(
+                vertical: SizeConfig.verticalPadding,
+                horizontal: SizeConfig.horizontalPadding),
+            decoration: BoxDecoration(
+                border: Border.all(color: CommonColors.grey400!, width: 1),
+                borderRadius:
+                BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Symbols.signature_rounded,
+                      color: Colors.black54,
+                    ),
+                    SizedBox(
+                      width: SizeConfig.mediumHorizontalSpacing,
+                    ),
+                    const Text(
+                      "SIGNATURE UPLOAD",
+                      style: TextStyle(color: Colors.black87),
+                    ),
+
+
+                    Expanded(
+                        child: Align(
+                          alignment: AlignmentGeometry.centerRight,
+                          child: InkWell(
+                            child: const Icon(
+                              Symbols.signature_rounded,
+                              color: Colors.black54,
+                              // size: 24,
+                            ),
+                            onTap: provider.state.isReadOnly
+                                ? null
+                                : () {
+                              showSignatureBottomSheet(context,
+                                      (path, base64) {
+                                    if (!isNullOrEmpty(path)) {
+                                      setState(() {
+                                        _selectedSignaturePath = path;
+                                      });
+                                    } else {
+                                      failToast('Please input signature again.');
+                                    }
+                                  });
+                            },
+                          ),
+                        ))
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
+                  child: SizedBox(
+                    height: 200,
+                    width: MediaQuery.sizeOf(context).width,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: CommonColors.grey300,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeIconSize))),
+                      child: isNullOrEmpty(_selectedSignaturePath)
+                          ? InkWell(
+                        onTap: provider.state.isReadOnly
+                            ? null
+                            : () {
+                          showSignatureBottomSheet(context,
+                                  (path, base64) {
+                                if (!isNullOrEmpty(path)) {
+                                  setState(() {
+                                    _selectedSignaturePath = path;
+                                  });
+                                } else {
+                                  failToast(
+                                      'Please input signature again.');
+                                }
+                              });
+                        },
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.file_upload_outlined,
+                              color: Colors.black54,
+                            ),
+                            Text(
+                              "Click to Sign",
+                              style: TextStyle(color: Colors.black87),
+                            ),
+                            Text(
+                              "Click the signature button above",
+                              style: TextStyle(color: Colors.black87),
+                            )
+                          ],
+                        ),
+                      )
+                          :
+                      Image.file(
+                        File(_selectedSignaturePath),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
+
+          ):
           Container(
             padding: EdgeInsets.symmetric(
                 vertical: SizeConfig.verticalPadding,
@@ -703,32 +822,11 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                       "SIGNATURE UPLOAD",
                       style: TextStyle(color: Colors.black87),
                     ),
-                    Expanded(
-                        child: Align(
-                      alignment: AlignmentGeometry.centerRight,
-                      child: InkWell(
-                        child: const Icon(
-                          Symbols.signature_rounded,
-                          color: Colors.black54,
-                          // size: 24,
-                        ),
-                        onTap: provider.state.isReadOnly
-                            ? null
-                            : () {
-                                showSignatureBottomSheet(context,
-                                    (path, base64) {
-                                  if (!isNullOrEmpty(path)) {
-                                    setState(() {
-                                      _selectedSignaturePath = path;
-                                    });
-                                  } else {
-                                    failToast('Please input signature again.');
-                                  }
-                                });
-                              },
-                      ),
-                    ))
+
+
+
                   ],
+
                 ),
                 Padding(
                   padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
@@ -742,50 +840,56 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                               Radius.circular(SizeConfig.largeIconSize))),
                       child: isNullOrEmpty(_selectedSignaturePath)
                           ? InkWell(
-                              onTap: provider.state.isReadOnly
-                                  ? null
-                                  : () {
-                                      showSignatureBottomSheet(context,
-                                          (path, base64) {
-                                        if (!isNullOrEmpty(path)) {
-                                          setState(() {
-                                            _selectedSignaturePath = path;
-                                          });
-                                        } else {
-                                          failToast(
-                                              'Please input signature again.');
-                                        }
-                                      });
-                                    },
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.file_upload_outlined,
-                                    color: Colors.black54,
-                                  ),
-                                  Text(
-                                    "Click to Sign",
-                                    style: TextStyle(color: Colors.black87),
-                                  ),
-                                  Text(
-                                    "Click the signature button above",
-                                    style: TextStyle(color: Colors.black87),
-                                  )
-                                ],
-                              ),
-                            )
-                          : Image.file(
-                              File(_selectedSignaturePath),
-                              fit: BoxFit.contain,
+                        onTap: provider.state.isReadOnly
+                            ? null
+                            : () {
+                          showSignatureBottomSheet(context,
+                                  (path, base64) {
+                                if (!isNullOrEmpty(path)) {
+                                  setState(() {
+                                    _selectedSignaturePath = path;
+                                  });
+                                } else {
+                                  failToast(
+                                      'Please input signature again.');
+                                }
+                              });
+                        },
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.file_upload_outlined,
+                              color: Colors.black54,
                             ),
+                            Text(
+                              "Click to Sign",
+                              style: TextStyle(color: Colors.black87),
+                            ),
+                            Text(
+                              "Click the signature button above",
+                              style: TextStyle(color: Colors.black87),
+                            )
+                          ],
+                        ),
+                      )
+                          :
+                      Image.network(
+                        _selectedSignaturePath,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
+
               ],
             ),
+
           ),
+
+
+
           SizedBox(
             height: SizeConfig.mediumVerticalSpacing,
           ),
@@ -901,8 +1005,11 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                         size: 16,
                       ),
                 label: Text(
-                
-                isSaved && card.wayBillNo != null ? 'Update Way Bill': _isSaving ? "Saving..." : "Save Way Bill",
+                  isSaved && card.wayBillNo != null
+                      ? 'Update Way Bill'
+                      : _isSaving
+                          ? "Saving..."
+                          : "Save Way Bill",
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 12),
                 ),

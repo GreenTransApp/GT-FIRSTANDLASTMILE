@@ -10,7 +10,7 @@ import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/packingTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/models/pickupImageModel.dart';
+
 import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
 import 'package:gtlmd/pages/pickup/model/bookingTypeModel.dart';
@@ -345,7 +345,7 @@ class OtexPickupRepoImpl {
       Iterable<MapEntry<String, dynamic>> entries = table.entries;
       OtexPickupInfoModel infoModel = OtexPickupInfoModel();
       List<OtexPickupSplitInfo> splitInfo = [];
-      List<PickupImageModel> imgInfo = [];
+    
       for (final entry in entries) {
         if (entry.key == 'Table' || entry.key == 'Table1') {
           List<dynamic> list = entry.value;
@@ -358,11 +358,7 @@ class OtexPickupRepoImpl {
           List<dynamic> list = entry.value;
           splitInfo = List.generate(list.length,
               (index) => OtexPickupSplitInfo.fromJson(list[index]));
-        } else if (entry.key == 'Table3') {
-          List<dynamic> list = entry.value;
-          imgInfo = List.generate(
-              list.length, (index) => PickupImageModel.fromJson(list[index]));
-        }
+        } 
       }
       List<dynamic> result = [];
       result.add(infoModel);
@@ -371,11 +367,7 @@ class OtexPickupRepoImpl {
       } else {
         result.add(const OtexPickupSplitInfo());
       }
-      if (imgInfo.isNotEmpty) {
-        result.add(imgInfo);
-      } else {
-        result.add([const PickupImageModel()]);
-      }
+      
       // }
       return result;
     } on SocketException catch (_) {

@@ -134,6 +134,7 @@ class OtexPickupInfoModel {
   final String? invoiceimage;
   final String? autoSendEmail;
   final int? jobid;
+  final String? signimagepath;
 
   OtexPickupInfoModel({
     this.commandStatus,
@@ -243,7 +244,8 @@ class OtexPickupInfoModel {
     this.grtype,
     this.invoiceimage,
     this.autoSendEmail,
-    this.jobid
+    this.jobid,
+    this.signimagepath,
   });
 
   factory OtexPickupInfoModel.fromJson(Map<String, dynamic> json) {
@@ -356,6 +358,7 @@ class OtexPickupInfoModel {
       invoiceimage: json['invoiceimage'],
       autoSendEmail: json['autosendemail'],
       jobid: json['jobid'],
+      signimagepath: json['signimagepath'],
     );
   }
 
@@ -464,6 +467,7 @@ class OtexPickupInfoModel {
       'invoiceimage': invoiceimage,
       'autosendemail': autoSendEmail,
       'jobid': jobid,
+      'signimagepath': signimagepath,
     };
   }
 
@@ -574,6 +578,7 @@ class OtexPickupInfoModel {
     String? invoiceimage,
     String? autosendemail,
     int? jobid,
+    String? signimagepath,
   }) {
     return OtexPickupInfoModel(
         commandStatus: commandStatus ?? this.commandStatus,
@@ -684,7 +689,8 @@ class OtexPickupInfoModel {
         weight: weight ?? this.weight,
         invoiceimage: invoiceimage ?? this.invoiceimage,
         autoSendEmail: autoSendEmail ?? this.autoSendEmail,
-        jobid: jobid ??this.jobid
+        jobid: jobid ??this.jobid,
+        signimagepath: signimagepath ??this.signimagepath,
         );
   }
 }

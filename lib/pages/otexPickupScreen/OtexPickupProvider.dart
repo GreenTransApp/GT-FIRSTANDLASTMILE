@@ -9,7 +9,7 @@ import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/mailDetails.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/packingTypeModel.dart';
-import 'package:gtlmd/pages/otexPickupScreen/models/pickupImageModel.dart';
+
 import 'package:gtlmd/pages/otexPickupScreen/models/productTypeModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupState.dart';
 import 'package:gtlmd/pages/otexPickupScreen/OtexPickupRepoImpl.dart';
@@ -37,23 +37,23 @@ class OtexPickupProvider extends ChangeNotifier {
       String? jobid,
       bool isReadOnly = false}) {
     _state = OtexPickupState(
-        headerStatus: SectionStatus.idle,
-        cardListStatus: SectionStatus.idle,
-        info: OtexPickupInfoModel(orderid: int.parse(orderid.toString())),
-        mailDetails: MailDetails(),
-        splitInfo: [
-          OtexPickupSplitInfo(),
-        ],
-        isSendingMail: false,
-        permanentCardCount: 0,
-        totalPalletQty: 0,
-        hasTransactionId: transactionId != null && transactionId != "0",
-        isMailDialogOpen: false,
-        errorMessage: null,
-        openVehicleArrival: false,
-        vehicleArrivalUrl: '',
-        isReadOnly: isReadOnly,
-        imgData: [PickupImageModel()]);
+      headerStatus: SectionStatus.idle,
+      cardListStatus: SectionStatus.idle,
+      info: OtexPickupInfoModel(orderid: int.parse(orderid.toString())),
+      mailDetails: MailDetails(),
+      splitInfo: [
+        OtexPickupSplitInfo(),
+      ],
+      isSendingMail: false,
+      permanentCardCount: 0,
+      totalPalletQty: 0,
+      hasTransactionId: transactionId != null && transactionId != "0",
+      isMailDialogOpen: false,
+      errorMessage: null,
+      openVehicleArrival: false,
+      vehicleArrivalUrl: '',
+      isReadOnly: isReadOnly,
+    );
     notifyListeners();
 
     if (transactionId != null && transactionId != "0") {
@@ -92,10 +92,9 @@ class OtexPickupProvider extends ChangeNotifier {
       infoData = infoData.copyWith(
           orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()));
       OtexPickupSplitInfo? si = null;
-      List<PickupImageModel> img = [];
+
       if (result.length > 1) {
         si = result[1] as OtexPickupSplitInfo;
-        img = result[2] as List<PickupImageModel>;
       }
       // List<OtexPickupSplitInfo> splitData =
       //     (result[1] as List).cast<OtexPickupSplitInfo>().toList();
@@ -143,7 +142,6 @@ class OtexPickupProvider extends ChangeNotifier {
         cardListStatus: SectionStatus.success,
         info: infoData,
         splitInfo: splitData,
-        imgData: img,
         // Both cards came from server so permanent count = 2
         permanentCardCount: splitData.where((c) => c.isSaved).length,
         totalPalletQty: infoData.pcs,
@@ -459,6 +457,14 @@ class OtexPickupProvider extends ChangeNotifier {
     }
     bookingImagesBase64 = base64Images.join(',');
 
+String? signImg;
+
+if (signImagePath.startsWith('http')) {
+  signImg = await urlToBase64(signImagePath) ;
+} else {
+  signImg =  convertFilePathToBase64(signImagePath);
+}
+debugPrint("signImg $signImg");
     Map<String, dynamic> buildSaveJson() {
       return {
         // ── Basic Info ────────────────────────────────────────────
@@ -559,9 +565,10 @@ class OtexPickupProvider extends ChangeNotifier {
       "prminvjsondatastr":
           jsonEncode(_state.splitInfo.map((e) => e.toJson()).toList()),
       "prmdocimgpath": bookingImagesBase64,
-      "prmsignimgpath": isNullOrEmpty(signImagePath)
+      "prmsignimgpath": isNullOrEmpty(signImg)
           ? ""
-          : convertFilePathToBase64(signImagePath),
+          // : convertFilePathToBase64(signImagePath),
+          : signImg.toString(),
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmusercode": savedUser.usercode.toString(),
