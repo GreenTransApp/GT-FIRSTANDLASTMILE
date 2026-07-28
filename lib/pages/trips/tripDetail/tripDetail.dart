@@ -121,7 +121,7 @@ class _TripDetailState extends State<TripDetail> {
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
-          'Trip Detail',
+          'Trip ${widget.model.tripid}',
           style: TextStyle(
               color: CommonColors.White, fontSize: isSmallDevice ? 12 : 20),
         ),
