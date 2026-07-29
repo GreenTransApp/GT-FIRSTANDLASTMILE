@@ -286,7 +286,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     }
   }
 
-  Future<void> updatePickupDepartedPosition(String grno, String tripid) async {
+  Future<void> updatePickupDepartedPosition(String grno, String tripid,String jobid) async {
     loadingAlertService.showLoading();
 
     try {
@@ -297,13 +297,14 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         ),
       );
 
-      Map<String, String> params = {
+      Map<String, dynamic> params = {
         "prmusercode": savedUser.usercode.toString(),
         "prmbranchcode": savedUser.loginbranchcode.toString(),
         "prmtripid": tripid,
         "prmgrno": grno,
         "prmpickuplat": position.latitude.toString(),
         "prmpickuplong": position.longitude.toString(),
+        "prmjobid": int.parse(jobid),
         "prmsessionid": savedUser.sessionid.toString(),
       };
 

@@ -90,7 +90,9 @@ class OtexPickupProvider extends ChangeNotifier {
 
       OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
       infoData = infoData.copyWith(
-          orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()));
+          orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()),
+          signimagepath: infoData.signimagepath.toString()
+          );
       OtexPickupSplitInfo? si = null;
 
       if (result.length > 1) {

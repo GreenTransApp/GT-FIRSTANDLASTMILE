@@ -58,13 +58,19 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     super.initState();
     // Sync once after first frame so provider is available
     WidgetsBinding.instance.addPostFrameCallback((_) => _syncFromState());
+    
   }
 
   void _syncFromState() {
+    
     // if (_initialSyncDone || !mounted) return;
     final provider = context.read<OtexPickupProvider>();
     final cards = provider.state.splitInfo;
 
+    if (_selectedSignaturePath.isEmpty &&
+        (provider.state.info.signimagepath?.isNotEmpty ?? false)) {
+      _selectedSignaturePath = provider.state.info.signimagepath!;
+    }
     if (widget.index >= cards.length) return;
     // if (imgData.length > 0) {
     //   for (int i = 0; i <= imgData.length; i++) {
@@ -76,6 +82,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     _palletQtyController.text = card.palletQty?.toString() ?? "0";
     _weightController.text = card.weight?.toString() ?? "";
     _freightController.text = card.freightAmt?.toString() ?? "";
+
+
     _initialSyncDone = true;
   }
 
@@ -242,7 +250,11 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
     return Selector<OtexPickupProvider,
         ({OtexPickupSplitInfo card, bool isFreightVisible, bool canDelete})>(
       selector: (_, p) {
-        _selectedSignaturePath = p.state.info.signimagepath.toString();
+  //       if (isNullOrEmpty(_selectedSignaturePath)&&
+  //     !isNullOrEmpty(p.state.info.signimagepath?.toString())) {
+  //   _selectedSignaturePath = p.state.info.signimagepath!;
+  // }
+        // _selectedSignaturePath = p.state.info.signimagepath.toString();
         final cards = p.state.splitInfo;
         final card = widget.index < cards.length
             ? cards[widget.index]
@@ -271,6 +283,17 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
 
         if (_freightController.text != (card.freightAmt?.toString() ?? "")) {
           _freightController.text = card.freightAmt?.toString() ?? "";
+        }
+
+        if (_selectedSignaturePath.isEmpty &&
+            (provider.state.info.signimagepath?.isNotEmpty ?? false)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+
+            setState(() {
+              _selectedSignaturePath = provider.state.info.signimagepath!;
+            });
+          });
         }
         return Card(
           surfaceTintColor: Colors.white,
@@ -685,7 +708,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
           SizedBox(
             height: SizeConfig.mediumVerticalSpacing,
           ),
-          isNullOrEmpty(_selectedSignaturePath)?
+        
           Container(
             padding: EdgeInsets.symmetric(
                 vertical: SizeConfig.verticalPadding,
@@ -749,146 +772,48 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                           color: CommonColors.grey300,
                           borderRadius: BorderRadius.all(
                               Radius.circular(SizeConfig.largeIconSize))),
-                      child: isNullOrEmpty(_selectedSignaturePath)
-                          ? InkWell(
-                        onTap: provider.state.isReadOnly
-                            ? null
-                            : () {
-                          showSignatureBottomSheet(context,
-                                  (path, base64) {
-                                if (!isNullOrEmpty(path)) {
-                                  setState(() {
-                                    _selectedSignaturePath = path;
-                                  });
-                                } else {
-                                  failToast(
-                                      'Please input signature again.');
-                                }
-                              });
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.file_upload_outlined,
-                              color: Colors.black54,
-                            ),
-                            Text(
-                              "Click to Sign",
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                            Text(
-                              "Click the signature button above",
-                              style: TextStyle(color: Colors.black87),
+                            child: _selectedSignaturePath.isNotEmpty
+                      ? (_selectedSignaturePath.startsWith("http")
+                          ? Image.network(
+                              _selectedSignaturePath,
+                              fit: BoxFit.contain,
                             )
-                          ],
-                        ),
-                      )
-                          :
-                      Image.file(
-                        File(_selectedSignaturePath),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-
-              ],
-            ),
-
-          ):
-          Container(
-            padding: EdgeInsets.symmetric(
-                vertical: SizeConfig.verticalPadding,
-                horizontal: SizeConfig.horizontalPadding),
-            decoration: BoxDecoration(
-                border: Border.all(color: CommonColors.grey400!, width: 1),
-                borderRadius:
-                    BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Symbols.signature_rounded,
-                      color: Colors.black54,
-                    ),
-                    SizedBox(
-                      width: SizeConfig.mediumHorizontalSpacing,
-                    ),
-                    const Text(
-                      "SIGNATURE UPLOAD",
-                      style: TextStyle(color: Colors.black87),
-                    ),
-
-
-
-                  ],
-
-                ),
-                Padding(
-                  padding: EdgeInsets.all(SizeConfig.mediumVerticalSpacing),
-                  child: SizedBox(
-                    height: 200,
-                    width: MediaQuery.sizeOf(context).width,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: CommonColors.grey300,
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(SizeConfig.largeIconSize))),
-                      child: isNullOrEmpty(_selectedSignaturePath)
-                          ? InkWell(
-                        onTap: provider.state.isReadOnly
-                            ? null
-                            : () {
-                          showSignatureBottomSheet(context,
-                                  (path, base64) {
-                                if (!isNullOrEmpty(path)) {
-                                  setState(() {
-                                    _selectedSignaturePath = path;
+                          : Image.file(
+                              File(_selectedSignaturePath),
+                              fit: BoxFit.contain,
+                            ))
+                      : InkWell(
+                          onTap: provider.state.isReadOnly
+                              ? null
+                              : () {
+                                  showSignatureBottomSheet(context, (path, base64) {
+                                    if (!isNullOrEmpty(path)) {
+                                      setState(() {
+                                        _selectedSignaturePath = path;
+                                      });
+                                    }
                                   });
-                                } else {
-                                  failToast(
-                                      'Please input signature again.');
-                                }
-                              });
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.file_upload_outlined,
-                              color: Colors.black54,
-                            ),
-                            Text(
-                              "Click to Sign",
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                            Text(
-                              "Click the signature button above",
-                              style: TextStyle(color: Colors.black87),
-                            )
-                          ],
+                                },
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.file_upload_outlined),
+                              Text("Click to Sign"),
+                              Text("Click the signature button above"),
+                            ],
+                          ),
+                        ),)
+                                  
+                  ,
                         ),
-                      )
-                          :
-                      Image.network(
-                        _selectedSignaturePath,
-                        fit: BoxFit.contain,
                       ),
-                    ),
-                  ),
-                ),
 
-              ],
-            ),
+                    ],
+                  ),
 
           ),
-
-
+         
+         
 
           SizedBox(
             height: SizeConfig.mediumVerticalSpacing,

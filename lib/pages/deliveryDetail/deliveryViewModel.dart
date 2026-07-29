@@ -45,7 +45,7 @@ class DeliveryViewModel extends BaseViewModel {
   updateDriverReachedDlvPoint(Map<String, String> params) {
     _repo.updateDriverReachedDlvPoint(params);
   }
-  updatePickupDepartedPosition(Map<String, String> params) {
+  updatePickupDepartedPosition(Map<String, dynamic> params) {
     _repo.updatePickupDepartedPosition(params);
   }
 }

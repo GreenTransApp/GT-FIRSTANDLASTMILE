@@ -36,7 +36,7 @@ class DeliveryDetailTile extends StatefulWidget {
       updateDriverPosition;
   final Future<void> Function(String grno, String indentId, String tripid)
       updateDriverReachedDlvPoint;
-  final Future<void> Function(String grno, String tripid)
+  final Future<void> Function(String grno, String tripid, String jobid)
       updatePickupDepartedPosition;
   final List<LmdMenuModel> menuList;
 
@@ -72,14 +72,28 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   String? status;
   BaseRepository _baseRepo = BaseRepository();
   List<StreamSubscription> _subscription = [];
-
+  bool showAllCardInfo = true;
   @override
   void initState() {
     super.initState();
     modelDetail = widget.model;
     currentDelivery = widget.currentDeliveryModel;
+    if (modelDetail.showdeparted == 'N' && modelDetail.pickupstatus == 'D') {
+      showAllCardInfo = false;
+    }
     // setObservers();
-
+    // showPickupCardInfo = modelDetail.showdeparted == 'Y' ? true : false;
+    // if (modelDetail.showdeparted == 'Y' &&
+    //     modelDetail.consignmenttype == 'P' &&
+    //     modelDetail.pickupstatus == 'P') {
+    //   showAllCardInfo = true;
+    // } else if (modelDetail.consignmenttype == 'D' ||
+    //     modelDetail.consignmenttype == 'U' &&
+    //         modelDetail.consignmenttype == 'R') {
+    //   showAllCardInfo == true;
+    // } else {
+    //   showAllCardInfo = false;
+    // }
     setState(() {
       // if (widget.model.deliverystatus == 'Y') {
       if (widget.model.deliverystatus == 'P') {
@@ -269,8 +283,14 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   }
 
   updatePickupDepartedPosition() async {
-    await widget.updatePickupDepartedPosition(
-        widget.model.grno.toString(), widget.model.tripid.toString());
+    await widget.updatePickupDepartedPosition(widget.model.grno.toString(),
+        widget.model.tripid.toString(), widget.model.jobid.toString());
+  }
+
+  void _toggleShowAllPickupDetail() {
+    setState(() {
+      showAllCardInfo = !showAllCardInfo;
+    });
   }
 
   @override
@@ -319,784 +339,902 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.horizontalPadding,
-            vertical: SizeConfig.verticalPadding),
+            horizontal: SizeConfig.smallHorizontalPadding,
+            vertical: SizeConfig.smallVerticalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header with ID and Status
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${widget.model.grno}/${isNullOrEmpty(widget.model.orderid.toString()) ? "" : widget.model.orderid}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: SizeConfig.mediumTextSize,
-                        ),
-                      ),
+                Flexible(
+                  child: Text(
+                    '${widget.model.grno}/${isNullOrEmpty(widget.model.orderid.toString()) ? "" : widget.model.orderid}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: SizeConfig.mediumTextSize,
                     ),
-                    const SizedBox(width: 12),
-                    // Stop badge next to GR No
-                    Flexible(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Flexible(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.smallHorizontalPadding,
-                                  vertical: SizeConfig.smallVerticalPadding),
-                              decoration: BoxDecoration(
-                                color: CommonColors.colorPrimary!
-                                    .withAlpha((0.1 * 255).round()),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
-                                style: TextStyle(
-                                  fontSize: SizeConfig.mediumTextSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: CommonColors.colorPrimary,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          PopupMenuButton<String>(
-                            icon: const Icon(Icons.more_vert),
-                            onSelected: (value) {
-                              switch (value) {
-                                case 'enquiry':
-                                  // Get.to(OtexPickupScreen(
-                                  //   transactionId: isNullOrEmpty(widget
-                                  //           .model.transactionid
-                                  //           .toString())
-                                  //       ? '0'
-                                  //       : widget.model.transactionid
-                                  //           .toString(),
-                                  //   grno: widget.model.grno.toString(),
-                                  //   orderid: isNullOrEmpty(widget
-                                  //           .model.orderid
-                                  //           .toString())
-                                  //       ? '0'
-                                  //       : widget.model.orderid.toString(),
-                                  //   isReadOnly: true,
-                                  // ));
-
-                                  LmdMenuModel? targetMenu;
-                                  try {
-                                    targetMenu = widget.menuList.firstWhere(
-                                        (element) =>
-                                            element.tag?.toString() ==
-                                            MenuTags.PICKUP.name.toString());
-                                    {
-                                      {
-                                        menuCode =
-                                            targetMenu.menuCode.toString();
-                                      }
-                                    }
-                                  } catch (e) {
-                                    targetMenu = null;
-                                  }
-
-                                  Get.to(ConsignmentEnquiryPage(
-                                    consignmentNo:
-                                        widget.model.generatedGr.toString(),
-                                  ));
-                                  break;
-                                case 'share':
-                                  getBookingPrintLink();
-                                  break;
-                                case 'map':
-                                  {
-                                    // we have to pass lattitude and longitude of the consignment.
-                                    // used static for testing.
-                                    navigateToLocation(
-                                        latitude:
-                                            widget.model.deliverylat.toString(),
-                                        longitude: widget.model.deliverylong
-                                            .toString());
-                                  }
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              if (widget.model.consignmenttype == 'P' &&
-                                  status == 'Picked')
-                                const PopupMenuItem(
-                                  value: 'enquiry',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.contact_support_rounded,
-                                        size: 20,
-                                      ),
-                                      SizedBox(
-                                        width: 4,
-                                      ),
-                                      Text('Enquiry')
-                                    ],
-                                  ),
-                                ),
-                              if (widget.model.consignmenttype == 'P' &&
-                                  status == 'Picked')
-                                const PopupMenuItem(
-                                  value: 'share',
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.share_rounded,
-                                        size: 20,
-                                      ),
-                                      SizedBox(
-                                        width: 4,
-                                      ),
-                                      Text('Share')
-                                    ],
-                                  ),
-                                ),
-                              const PopupMenuItem(
-                                value: 'map',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_rounded,
-                                      size: 20,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text('Map')
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        SizeConfig.extraSmallHorizontalPadding,
-                                    vertical:
-                                        SizeConfig.extraSmallVerticalPadding),
-                                child: Text(
-                                  status.toString(),
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w500,
-                                    color: statusIconColor,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                statusIcon,
-                                color: statusIconColor,
-                                size: SizeConfig.extraLargeIconSize,
-                              ),
-                            ],
-                          ),
-                          isNullOrEmpty(modelDetail.undeliverreason)
-                              ? const SizedBox.shrink()
-                              : Text('Reason: ${modelDetail.undeliverreason}',
-                                  style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize,
-                                    fontWeight: FontWeight.w800,
-                                    color: CommonColors.colorPrimary,
-                                  )),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.model.reached == 'N',
-                      child: GestureDetector(
-                        onTap: () {
-                          updateDriverReached();
-                        },
+                const SizedBox(width: 12),
+                // Stop badge next to GR No
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Flexible(
                         child: Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
+                              horizontal: SizeConfig.smallHorizontalPadding,
+                              vertical: SizeConfig.smallVerticalPadding),
                           decoration: BoxDecoration(
-                              color: CommonColors.colorPrimary!.withAlpha(
-                                (0.1 * 255).toInt(),
-                              ),
-                              borderRadius: BorderRadius.circular(16)),
+                            color: CommonColors.colorPrimary!
+                                .withAlpha((0.1 * 255).round()),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: Text(
-                            "Arrived At",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: CommonColors.colorPrimary),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: widget.model.reached == 'Y',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: CommonColors.green600,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          const Text("Reached")
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-
-            SizedBox(height: SizeConfig.smallVerticalSpacing),
-
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: modelDetail.consignmenttype == 'P'
-                        ? 'Consignor : '
-                        : 'Consignee : ',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: SizeConfig.smallTextSize,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  TextSpan(
-                    text: modelDetail.cngename ?? '',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: SizeConfig.smallTextSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(
-              height: SizeConfig.smallVerticalSpacing,
-            ),
-
-            // Address Card
-            AddressCard(
-                title: 'Address',
-                address: modelDetail.cngeaddress ?? '',
-                color: statusIconColor.withAlpha((0.1 * 255).toInt())),
-            // Consignment Details
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Pcs',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: SizeConfig.smallTextSize,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${modelDetail.pcs}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: SizeConfig.smallTextSize,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Mobile No.',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: SizeConfig.smallTextSize,
-                        ),
-                      ),
-                      SizedBox(height: SizeConfig.extraSmallVerticalSpacing),
-                      Row(
-                        children: [
-                          Text(
-                            modelDetail.cngemobile ?? '—',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: SizeConfig.smallTextSize,
-                            ),
-                          ),
-                          Visibility(
-                            visible:
-                                status == "Pending" || status == "Un-Picked",
-                            child: const SizedBox(
-                              width: 10,
-                            ),
-                          ),
-                          Visibility(
-                            visible:
-                                status == "Pending" || status == "Un-Picked",
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color:
-                                    status == "Pending" || status == "Un-Picked"
-                                        ? CommonColors.colorPrimary
-                                        : CommonColors.grey400,
-                                borderRadius: BorderRadius.circular(
-                                    SizeConfig.extraLargeRadius),
-                              ),
-                              width: SizeConfig.extraLargeHorizontalPadding,
-                              height: SizeConfig.extraLargeVerticalPadding,
-                              child: Center(
-                                child: GestureDetector(
-                                    onTap: () {
-                                      if (status == 'Pending' ||
-                                          status == 'Un-Picked') {
-                                        if (modelDetail.cngemobile
-                                                .toString()
-                                                .length ==
-                                            10) {
-                                          commonAlertDialog(
-                                              context,
-                                              "Make a phone call?",
-                                              "Are you sure you want to call ${modelDetail.cngemobile}?",
-                                              "",
-                                              Icon(Icons.phone_outlined,
-                                                  size: SizeConfig
-                                                      .extraSmallIconSize), () {
-                                            _makePhoneCall(
-                                                modelDetail.cngemobile);
-                                          });
-                                        } else {
-                                          commonAlertDialog(
-                                              context,
-                                              "Invalid Phone Number",
-                                              "The phone number is not valid",
-                                              'address',
-                                              Icon(
-                                                Icons.phone_outlined,
-                                                size: SizeConfig.smallIconSize,
-                                              ),
-                                              () {});
-                                        }
-                                      }
-                                    },
-                                    child: Icon(
-                                      Icons.call_outlined,
-                                      color: CommonColors.White,
-                                      size: SizeConfig.smallIconSize,
-                                    )),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: SizeConfig.smallVerticalSpacing),
-
-            // Action Buttons for Pending
-            if (modelDetail.consignmenttype == "D" && status == "Pending") ...[
-              SizedBox(height: SizeConfig.smallVerticalSpacing),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        LmdMenuModel? targetMenu;
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() ==
-                              MenuTags.UNDELIVERY.name.toString());
-                          {
-                            menuCode = targetMenu.menuCode.toString();
-                          }
-                        } catch (e) {
-                          targetMenu = null;
-                        }
-
-                        String fileName =
-                            targetMenu?.fileName?.toLowerCase() ?? 'UnDelivery';
-
-                        if (fileName == 'UnDelivery' ||
-                            fileName == 'undelivery') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(UnDelivery(deliveryDetailModel: modelDetail))
-                              ?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                      },
-                      icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                      label: Text('Undeliver',
-                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.extraSmallVerticalSpacing),
-                        backgroundColor: CommonColors.red600,
-                        foregroundColor: CommonColors.White,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        LmdMenuModel? targetMenu;
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() ==
-                              MenuTags.DELIVERY.name.toString());
-                          {
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          }
-                        } catch (e) {
-                          targetMenu = null;
-                        }
-
-                        String fileName =
-                            targetMenu?.fileName?.toLowerCase() ?? 'PodEntry';
-
-                        if (fileName == 'PodEntry' || fileName == 'podentry') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(PodEntry(deliveryDetailModel: modelDetail))
-                              ?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                      },
-                      icon: Icon(Icons.check, size: SizeConfig.mediumIconSize),
-                      label: Text('Deliver',
-                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.extraSmallVerticalSpacing),
-                        backgroundColor: CommonColors.green600,
-                        foregroundColor: CommonColors.White,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            if (modelDetail.consignmenttype == "R" &&
-                modelDetail.pickupstatus == "U") ...[
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        LmdMenuModel? targetMenu;
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() ==
-                              MenuTags.REVERSE_PICKUP.name.toString());
-                          {
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          }
-                        } catch (e) {
-                          targetMenu = null;
-                        }
-
-                        String fileName = targetMenu?.fileName?.toLowerCase() ??
-                            'ReversePickup';
-
-                        if (fileName == 'ReversePickup' ||
-                            fileName == 'reversepickup') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(ReversePickup(
-                            deliveryDetailModel: modelDetail,
-                          ))?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                      },
-                      icon: Icon(Icons.check, size: SizeConfig.mediumIconSize),
-                      label: Text('Reverse Pickup',
-                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.extraSmallVerticalSpacing),
-                        backgroundColor: CommonColors.colorPrimary,
-                        foregroundColor: CommonColors.White,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-            if (modelDetail.consignmenttype == "P" &&
-                (modelDetail.pickupstatus == "P")) ...[
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        LmdMenuModel? targetMenu;
-                        print(MenuTags.PICKUP.name.toString());
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() ==
-                              MenuTags.PICKUP.name.toString());
-                          {
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          }
-                          {}
-                        } catch (e) {
-                          targetMenu = null;
-                        }
-
-                        String fileName =
-                            targetMenu?.fileName?.toLowerCase() ?? 'pickup';
-
-                        if (fileName == 'OtexPickupScreen' ||
-                            fileName == 'otexpickupscreen') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(
-                            OtexPickupScreen(
-                                transactionId: isNullOrEmpty(
-                                        widget.model.transactionid.toString())
-                                    ? '0'
-                                    : widget.model.transactionid.toString(),
-                                grno: widget.model.grno.toString(),
-                                orderid: isNullOrEmpty(
-                                        widget.model.orderid.toString())
-                                    ? '0'
-                                    : widget.model.orderid.toString(),
-                                jobid: isNullOrEmpty(
-                                        widget.model.jobid.toString())
-                                    ? '0'
-                                    : widget.model.jobid.toString(),    
-                                    ),
-                          )?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else if (fileName == 'Pickup' ||
-                            fileName == 'pickup') {
-                          if (widget.model.reached == 'N') {
-                            failToast("Not reached");
-                            return;
-                          }
-                          Get.to(Pickup(details: widget.model))?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                      },
-                      icon: Icon(Icons.check, size: SizeConfig.mediumIconSize),
-                      label: Text('Pickup',
-                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.extraSmallVerticalSpacing),
-                        backgroundColor: CommonColors.colorPrimary,
-                        foregroundColor: CommonColors.White,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: SizeConfig.smallHorizontalPadding,
-                  ),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        LmdMenuModel? targetMenu;
-                        try {
-                          targetMenu = widget.menuList.firstWhere((element) =>
-                              element.tag?.toString() == 'rejectpickup');
-                          {
-                            {
-                              menuCode = targetMenu.menuCode.toString();
-                            }
-                          }
-                        } catch (e) {
-                          targetMenu = null;
-                        }
-
-                        String fileName =
-                            targetMenu?.fileName ?? 'RejectPickup';
-
-                        if (fileName == 'RejectPickup') {
-                          Get.to(RejectPickup(details: widget.model))
-                              ?.then((_) {
-                            widget.onRefresh();
-                          });
-                        } else {
-                          failToast("Screen $fileName not mapped.");
-                        }
-                      },
-                      icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                      label: Text('Reject',
-                          style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: SizeConfig.extraSmallVerticalSpacing),
-                        backgroundColor: CommonColors.dangerColor,
-                        foregroundColor: CommonColors.White,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            
-            ],
-             if (modelDetail.consignmenttype == "P")...[
-               SizedBox(height: SizeConfig.smallVerticalSpacing),
-               Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.horizontalPadding,
-                    vertical: SizeConfig.verticalPadding),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color:
-                      CommonColors.colorPrimary!.withAlpha((0.1 * 255).toInt()),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: 
-                      // Text(
-                      //   modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
-                      //   style: TextStyle(
-                      //     fontSize: SizeConfig.mediumTextSize,
-                      //     fontWeight: FontWeight.w600,
-                      //     color: CommonColors.colorPrimary,
-                      //   ),
-                      // ),
-                      Text(
-                      modelDetail.pickupdeparted == 'Y'
-                      ? (modelDetail.pickupdeparteddattime?.toString() ?? '')
-                      : 'Pending',
-                      )
-                    ),
-                    Visibility(
-                      visible: widget.model.pickupdeparted == 'Y',
-                      child: Row(
-                        children: [
-                          Text(
-                            'Pickup Departed',
+                            'Stop ${modelDetail.sequenceno} / ${modelDetail.consignmenttypeview}',
                             style: TextStyle(
                               fontSize: SizeConfig.mediumTextSize,
-                              fontWeight: FontWeight.w600,
-                              color: CommonColors.green600,
+                              fontWeight: FontWeight.bold,
+                              color: CommonColors.colorPrimary,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          Icon(
-                            Icons.check_circle,
-                            color: CommonColors.green600,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (widget.model.pickupdeparted != 'Y')...[
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                            if (modelDetail.consignmenttype == "P" &&
-                                modelDetail.pickupstatus == "P") {
-                                failToast("Please update pickup status the consignment first");
-                            return;
-                          }
-                          updatePickupDepartedPosition();
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Pickup Departed',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.colorPrimary,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
-                    ),
-                    ]
-                  ],
+                      const SizedBox(width: 4),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert),
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'enquiry':
+                              // Get.to(OtexPickupScreen(
+                              //   transactionId: isNullOrEmpty(widget
+                              //           .model.transactionid
+                              //           .toString())
+                              //       ? '0'
+                              //       : widget.model.transactionid
+                              //           .toString(),
+                              //   grno: widget.model.grno.toString(),
+                              //   orderid: isNullOrEmpty(widget
+                              //           .model.orderid
+                              //           .toString())
+                              //       ? '0'
+                              //       : widget.model.orderid.toString(),
+                              //   isReadOnly: true,
+                              // ));
+
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.PICKUP.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              Get.to(ConsignmentEnquiryPage(
+                                consignmentNo:
+                                    widget.model.generatedGr.toString(),
+                              ));
+                              break;
+                            case 'share':
+                              getBookingPrintLink();
+                              break;
+                            case 'map':
+                              {
+                                // we have to pass lattitude and longitude of the consignment.
+                                // used static for testing.
+                                navigateToLocation(
+                                    latitude:
+                                        widget.model.deliverylat.toString(),
+                                    longitude:
+                                        widget.model.deliverylong.toString());
+                              }
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          if (widget.model.consignmenttype == 'P' &&
+                              status == 'Picked')
+                            const PopupMenuItem(
+                              value: 'enquiry',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.contact_support_rounded,
+                                    size: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text('Enquiry')
+                                ],
+                              ),
+                            ),
+                          if (widget.model.consignmenttype == 'P' &&
+                              status == 'Picked')
+                            const PopupMenuItem(
+                              value: 'share',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.share_rounded,
+                                    size: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text('Share')
+                                ],
+                              ),
+                            ),
+                          const PopupMenuItem(
+                            value: 'map',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_rounded,
+                                  size: 20,
+                                ),
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                Text('Map')
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              ],
+            ),
+
+            Visibility(
+              visible: showAllCardInfo,
+              child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig
+                                          .extraSmallHorizontalPadding,
+                                      vertical:
+                                          SizeConfig.extraSmallVerticalPadding),
+                                  child: Text(
+                                    status.toString(),
+                                    style: TextStyle(
+                                      fontSize: SizeConfig.smallTextSize,
+                                      fontWeight: FontWeight.w500,
+                                      color: statusIconColor,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  statusIcon,
+                                  color: statusIconColor,
+                                  size: SizeConfig.extraLargeIconSize,
+                                ),
+                              ],
+                            ),
+                            isNullOrEmpty(modelDetail.undeliverreason)
+                                ? const SizedBox.shrink()
+                                : Text('Reason: ${modelDetail.undeliverreason}',
+                                    style: TextStyle(
+                                      fontSize: SizeConfig.smallTextSize,
+                                      fontWeight: FontWeight.w800,
+                                      color: CommonColors.colorPrimary,
+                                    )),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: widget.model.reached == 'N',
+                        child: GestureDetector(
+                          onTap: () {
+                            updateDriverReached();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            decoration: BoxDecoration(
+                                color: CommonColors.colorPrimary!.withAlpha(
+                                  (0.1 * 255).toInt(),
+                                ),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Text(
+                              "Arrived At",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: CommonColors.colorPrimary),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: widget.model.reached == 'Y',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: CommonColors.green600,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text("Reached")
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+
+                  SizedBox(height: SizeConfig.smallVerticalSpacing),
+
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: modelDetail.consignmenttype == 'P'
+                              ? 'Consignor : '
+                              : 'Consignee : ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: SizeConfig.smallTextSize,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        TextSpan(
+                          text: modelDetail.cngename ?? '',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: SizeConfig.smallTextSize,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: SizeConfig.smallVerticalSpacing,
+                  ),
+
+                  // Address Card
+                  AddressCard(
+                      title: 'Address',
+                      address: modelDetail.cngeaddress ?? '',
+                      color: statusIconColor.withAlpha((0.1 * 255).toInt())),
+                  // Consignment Details
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Pcs',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${modelDetail.pcs}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Mobile No.',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: SizeConfig.smallTextSize,
+                              ),
+                            ),
+                            SizedBox(
+                                height: SizeConfig.extraSmallVerticalSpacing),
+                            Row(
+                              children: [
+                                Text(
+                                  modelDetail.cngemobile ?? '—',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: SizeConfig.smallTextSize,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: status == "Pending" ||
+                                      status == "Un-Picked",
+                                  child: const SizedBox(
+                                    width: 10,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: status == "Pending" ||
+                                      status == "Un-Picked",
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: status == "Pending" ||
+                                              status == "Un-Picked"
+                                          ? CommonColors.colorPrimary
+                                          : CommonColors.grey400,
+                                      borderRadius: BorderRadius.circular(
+                                          SizeConfig.extraLargeRadius),
+                                    ),
+                                    width:
+                                        SizeConfig.extraLargeHorizontalPadding,
+                                    height:
+                                        SizeConfig.extraLargeVerticalPadding,
+                                    child: Center(
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            if (status == 'Pending' ||
+                                                status == 'Un-Picked') {
+                                              if (modelDetail.cngemobile
+                                                      .toString()
+                                                      .length ==
+                                                  10) {
+                                                commonAlertDialog(
+                                                    context,
+                                                    "Make a phone call?",
+                                                    "Are you sure you want to call ${modelDetail.cngemobile}?",
+                                                    "",
+                                                    Icon(Icons.phone_outlined,
+                                                        size: SizeConfig
+                                                            .extraSmallIconSize),
+                                                    () {
+                                                  _makePhoneCall(
+                                                      modelDetail.cngemobile);
+                                                });
+                                              } else {
+                                                commonAlertDialog(
+                                                    context,
+                                                    "Invalid Phone Number",
+                                                    "The phone number is not valid",
+                                                    'address',
+                                                    Icon(
+                                                      Icons.phone_outlined,
+                                                      size: SizeConfig
+                                                          .smallIconSize,
+                                                    ),
+                                                    () {});
+                                              }
+                                            }
+                                          },
+                                          child: Icon(
+                                            Icons.call_outlined,
+                                            color: CommonColors.White,
+                                            size: SizeConfig.smallIconSize,
+                                          )),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: SizeConfig.smallVerticalSpacing),
+
+                  // Action Buttons for Pending
+                  if (modelDetail.consignmenttype == "D" &&
+                      status == "Pending") ...[
+                    SizedBox(height: SizeConfig.smallVerticalSpacing),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.UNDELIVERY.name.toString());
+                                {
+                                  menuCode = targetMenu.menuCode.toString();
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'UnDelivery';
+
+                              if (fileName == 'UnDelivery' ||
+                                  fileName == 'undelivery') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(UnDelivery(
+                                        deliveryDetailModel: modelDetail))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            icon: Icon(Icons.close,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Undeliver',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.red600,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.DELIVERY.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'PodEntry';
+
+                              if (fileName == 'PodEntry' ||
+                                  fileName == 'podentry') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(PodEntry(
+                                        deliveryDetailModel: modelDetail))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            icon: Icon(Icons.check,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Deliver',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.green600,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (modelDetail.consignmenttype == "R" &&
+                      modelDetail.pickupstatus == "U") ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.REVERSE_PICKUP.name
+                                            .toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'ReversePickup';
+
+                              if (fileName == 'ReversePickup' ||
+                                  fileName == 'reversepickup') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(ReversePickup(
+                                  deliveryDetailModel: modelDetail,
+                                ))?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            icon: Icon(Icons.check,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Reverse Pickup',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.colorPrimary,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (modelDetail.consignmenttype == "P" &&
+                      (modelDetail.pickupstatus == "P")) ...[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              print(MenuTags.PICKUP.name.toString());
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.PICKUP.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                                {}
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName?.toLowerCase() ??
+                                      'pickup';
+
+                              if (fileName == 'OtexPickupScreen' ||
+                                  fileName == 'otexpickupscreen') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(
+                                  OtexPickupScreen(
+                                    transactionId: isNullOrEmpty(widget
+                                            .model.transactionid
+                                            .toString())
+                                        ? '0'
+                                        : widget.model.transactionid.toString(),
+                                    grno: widget.model.grno.toString(),
+                                    orderid: isNullOrEmpty(
+                                            widget.model.orderid.toString())
+                                        ? '0'
+                                        : widget.model.orderid.toString(),
+                                    jobid: isNullOrEmpty(
+                                            widget.model.jobid.toString())
+                                        ? '0'
+                                        : widget.model.jobid.toString(),
+                                  ),
+                                )?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else if (fileName == 'Pickup' ||
+                                  fileName == 'pickup') {
+                                if (widget.model.reached == 'N') {
+                                  failToast("Not reached");
+                                  return;
+                                }
+                                Get.to(Pickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            icon: Icon(Icons.check,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Pickup',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.colorPrimary,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: SizeConfig.smallHorizontalPadding,
+                        ),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        'rejectpickup');
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+
+                              String fileName =
+                                  targetMenu?.fileName ?? 'RejectPickup';
+
+                              if (fileName == 'RejectPickup') {
+                                Get.to(RejectPickup(details: widget.model))
+                                    ?.then((_) {
+                                  widget.onRefresh();
+                                });
+                              } else {
+                                failToast("Screen $fileName not mapped.");
+                              }
+                            },
+                            icon: Icon(Icons.close,
+                                size: SizeConfig.mediumIconSize),
+                            label: Text('Reject',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      SizeConfig.extraSmallVerticalSpacing),
+                              backgroundColor: CommonColors.dangerColor,
+                              foregroundColor: CommonColors.White,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (modelDetail.consignmenttype == "P" &&
+                      modelDetail.showdeparted == "Y") ...[
+                    SizedBox(height: SizeConfig.smallVerticalSpacing),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        color: CommonColors.colorPrimary!
+                            .withAlpha((0.1 * 255).toInt()),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child:
+                                  // Text(
+                                  //   modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
+                                  //   style: TextStyle(
+                                  //     fontSize: SizeConfig.mediumTextSize,
+                                  //     fontWeight: FontWeight.w600,
+                                  //     color: CommonColors.colorPrimary,
+                                  //   ),
+                                  // ),
+                                  Text(
+                            modelDetail.pickupdeparted == 'Y'
+                                ? (modelDetail.pickupdeparteddattime
+                                        ?.toString() ??
+                                    '')
+                                : 'Pending',
+                          )),
+                          Visibility(
+                            visible: widget.model.pickupdeparted == 'Y',
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Pickup Departed',
+                                  style: TextStyle(
+                                    fontSize: SizeConfig.mediumTextSize,
+                                    fontWeight: FontWeight.w600,
+                                    color: CommonColors.green600,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.check_circle,
+                                  color: CommonColors.green600,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (widget.model.pickupdeparted != 'Y') ...[
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  if (modelDetail.consignmenttype == "P" &&
+                                      modelDetail.pickupstatus == "P") {
+                                    failToast(
+                                        "Please update pickup status the consignment first");
+                                    return;
+                                  }
+                                  updatePickupDepartedPosition();
+                                },
+                                // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                label: Text('Pickup Departed',
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.smallTextSize)),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig.horizontalPadding,
+                                      vertical: SizeConfig.verticalPadding),
+                                  backgroundColor: CommonColors.colorPrimary,
+                                  foregroundColor: CommonColors.White,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: SizeConfig.smallVerticalSpacing),
+                  ] else if (modelDetail.consignmenttype == "P" &&
+                      modelDetail.showdeparted == "N") ...[
+                    modelDetail.pickupdeparted == 'Y'
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: SizeConfig.horizontalPadding,
+                                vertical: SizeConfig.verticalPadding),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              color: CommonColors.colorPrimary!
+                                  .withAlpha((0.1 * 255).toInt()),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child:
+                                        // Text(
+                                        //   modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
+                                        //   style: TextStyle(
+                                        //     fontSize: SizeConfig.mediumTextSize,
+                                        //     fontWeight: FontWeight.w600,
+                                        //     color: CommonColors.colorPrimary,
+                                        //   ),
+                                        // ),
+                                        Text(
+                                  modelDetail.pickupdeparted == 'Y'
+                                      ? (modelDetail.pickupdeparteddattime
+                                              ?.toString() ??
+                                          '')
+                                      : '',
+                                )),
+                                Visibility(
+                                  visible: widget.model.pickupdeparted == 'Y',
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Pickup Departed',
+                                        style: TextStyle(
+                                          fontSize: SizeConfig.mediumTextSize,
+                                          fontWeight: FontWeight.w600,
+                                          color: CommonColors.green600,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.check_circle,
+                                        color: CommonColors.green600,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Text(''),
+                  ]
+                ],
               ),
-              SizedBox(height: SizeConfig.smallVerticalSpacing),
-                ]
-         
-         
+            ),
+            Visibility(
+                visible: modelDetail.showdeparted == 'N' &&
+                    modelDetail.consignmenttype == 'P' &&
+                    modelDetail.pickupstatus == 'D',
+                child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: CommonColors.white?.withAlpha((0.5 * 255).round()),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                        onPressed: () {
+                          _toggleShowAllPickupDetail();
+                        },
+                        icon: showAllCardInfo
+                            ? Icon(
+                                Icons.keyboard_arrow_up_outlined,
+                                size: 25,
+                                color: CommonColors.grey600,
+                              )
+                            : Icon(
+                                Icons.keyboard_arrow_down_outlined,
+                                size: 25,
+                                color: CommonColors.grey600,
+                              )))),
           ],
         ),
       ),
@@ -1518,8 +1656,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           },
                           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
                           label: Text('Arrived At',
-                              style:
-                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                              style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize)),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                                 horizontal: SizeConfig.horizontalPadding,
@@ -1536,7 +1674,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                   ],
                 ),
               ),
-              SizedBox(height: SizeConfig.smallVerticalSpacing),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
               Container(
                 padding: EdgeInsets.symmetric(
@@ -1565,93 +1702,145 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     if (modelDetail.consignmenttype == "P" &&
                         (modelDetail.pickupstatus == "P")) ...[
                       Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            LmdMenuModel? targetMenu;
-                            print(MenuTags.PICKUP.name.toString());
-                            try {
-                              targetMenu = widget.menuList.firstWhere(
-                                  (element) =>
-                                      element.tag?.toString() ==
-                                      MenuTags.PICKUP.name.toString());
-                              {
-                                {
-                                  menuCode = targetMenu.menuCode.toString();
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                LmdMenuModel? targetMenu;
+                                print(MenuTags.PICKUP.name.toString());
+                                try {
+                                  targetMenu = widget.menuList.firstWhere(
+                                      (element) =>
+                                          element.tag?.toString() ==
+                                          MenuTags.PICKUP.name.toString());
+                                  {
+                                    {
+                                      menuCode = targetMenu.menuCode.toString();
+                                    }
+                                  }
+                                  {}
+                                } catch (e) {
+                                  targetMenu = null;
                                 }
-                              }
-                              {}
-                            } catch (e) {
-                              targetMenu = null;
-                            }
-                                                
-                            String fileName =
-                                targetMenu?.fileName?.toLowerCase() ??
-                                    'pickup';
-                                                
-                            if (fileName == 'OtexPickupScreen' ||
-                                fileName == 'otexpickupscreen') {
-                              if (widget.model.reached == 'N') {
-                                failToast("Not reached");
-                                return;
-                              }
-                              Get.to(
-                                OtexPickupScreen(
-                                    transactionId: isNullOrEmpty(widget
-                                            .model.transactionid
-                                            .toString())
-                                        ? '0'
-                                        : widget.model.transactionid
-                                            .toString(),
-                                    grno: widget.model.grno.toString(),
-                                    orderid: isNullOrEmpty(
-                                            widget.model.orderid.toString())
-                                        ? '0'
-                                        : widget.model.orderid.toString(),
+
+                                String fileName =
+                                    targetMenu?.fileName?.toLowerCase() ??
+                                        'pickup';
+
+                                if (fileName == 'OtexPickupScreen' ||
+                                    fileName == 'otexpickupscreen') {
+                                  if (widget.model.reached == 'N') {
+                                    failToast("Not reached");
+                                    return;
+                                  }
+                                  Get.to(
+                                    OtexPickupScreen(
+                                      transactionId: isNullOrEmpty(widget
+                                              .model.transactionid
+                                              .toString())
+                                          ? '0'
+                                          : widget.model.transactionid
+                                              .toString(),
+                                      grno: widget.model.grno.toString(),
+                                      orderid: isNullOrEmpty(
+                                              widget.model.orderid.toString())
+                                          ? '0'
+                                          : widget.model.orderid.toString(),
                                       jobid: isNullOrEmpty(
-                                            widget.model.jobid.toString())
-                                        ? '0'
-                                        : widget.model.jobid.toString() ,  
-                                        ),
-                              )?.then((_) {
-                                widget.onRefresh();
-                              });
-                            } else if (fileName == 'Pickup' ||
-                                fileName == 'pickup') {
-                              if (widget.model.reached == 'N') {
-                                failToast("Not reached");
-                                return;
-                              }
-                              Get.to(Pickup(details: widget.model))
-                                  ?.then((_) {
-                                widget.onRefresh();
-                              });
-                            } else {
-                              failToast("Screen $fileName not mapped.");
-                            }
-                          },
-                          // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                          label: Text('Pickup',
-                              style: TextStyle(
-                                  fontSize: SizeConfig.smallTextSize)),
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
-                            backgroundColor: CommonColors.colorPrimary,
-                            foregroundColor: CommonColors.White,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                                              widget.model.jobid.toString())
+                                          ? '0'
+                                          : widget.model.jobid.toString(),
+                                    ),
+                                  )?.then((_) {
+                                    widget.onRefresh();
+                                  });
+                                } else if (fileName == 'Pickup' ||
+                                    fileName == 'pickup') {
+                                  if (widget.model.reached == 'N') {
+                                    failToast("Not reached");
+                                    return;
+                                  }
+                                  Get.to(Pickup(details: widget.model))
+                                      ?.then((_) {
+                                    widget.onRefresh();
+                                  });
+                                } else {
+                                  failToast("Screen $fileName not mapped.");
+                                }
+                              },
+                              // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                              label: Text('Pickup',
+                                  style: TextStyle(
+                                      fontSize: SizeConfig.smallTextSize)),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.horizontalPadding,
+                                    vertical: SizeConfig.verticalPadding),
+                                backgroundColor: CommonColors.colorPrimary,
+                                foregroundColor: CommonColors.White,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                             ),
-                          ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                LmdMenuModel? targetMenu;
+                                try {
+                                  targetMenu = widget.menuList.firstWhere(
+                                      (element) =>
+                                          element.tag?.toString() ==
+                                          'rejectpickup');
+                                  {
+                                    {
+                                      menuCode = targetMenu.menuCode.toString();
+                                    }
+                                  }
+                                } catch (e) {
+                                  targetMenu = null;
+                                }
+
+                                String fileName =
+                                    targetMenu?.fileName ?? 'RejectPickup';
+
+                                if (fileName == 'RejectPickup') {
+                                  Get.to(RejectPickup(details: widget.model))
+                                      ?.then((_) {
+                                    widget.onRefresh();
+                                  });
+                                } else {
+                                  failToast("Screen $fileName not mapped.");
+                                }
+                              },
+                              //  icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                              label: Text('Reject',
+                                  style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
+                                  )),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    vertical:
+                                        SizeConfig.extraSmallVerticalSpacing,
+                                    horizontal:
+                                        SizeConfig.extraSmallHorizontalSpacing),
+                                backgroundColor: CommonColors.dangerColor,
+                                foregroundColor: CommonColors.White,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                     // Visibility(
-                    //   visible:  
-                      if(modelDetail.consignmenttype == "P" &&
-                          (modelDetail.pickupstatus == "D")) ...[
+                    //   visible:
+                    if (modelDetail.consignmenttype == "P" &&
+                        (modelDetail.pickupstatus == "D")) ...[
                       // child:
-                       Row(
+                      Row(
                         children: [
                           Text(
                             'Picked',
@@ -1668,10 +1857,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           SizedBox(width: SizeConfig.smallHorizontalPadding),
                         ],
                       ),
-                  ]
-                  // ),
-                  
-            ],
+                    ]
+                    // ),
+                  ],
                 ),
               ),
               SizedBox(height: SizeConfig.smallVerticalSpacing),
@@ -1689,7 +1877,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                   children: [
                     Expanded(
                       child: Text(
-                        modelDetail.pickupdeparted == 'Y' ? modelDetail.pickupdeparteddattime ?? '': 'Pending',
+                        modelDetail.pickupdeparted == 'Y'
+                            ? modelDetail.pickupdeparteddattime ?? ''
+                            : 'Pending',
                         style: TextStyle(
                           fontSize: SizeConfig.mediumTextSize,
                           fontWeight: FontWeight.w600,
@@ -1721,17 +1911,17 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                       child: Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                              if (modelDetail.consignmenttype == "P" &&
-                                  modelDetail.pickupstatus == "P") {
-                                  failToast("Please Pick up the consignment first");
+                            if (modelDetail.consignmenttype == "P" &&
+                                modelDetail.pickupstatus == "P") {
+                              failToast("Please Pick up the consignment first");
                               return;
                             }
                             updatePickupDepartedPosition();
                           },
                           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
                           label: Text('Pickup Departed',
-                              style:
-                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                              style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize)),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                                 horizontal: SizeConfig.horizontalPadding,
@@ -1800,16 +1990,17 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                 modelDetail.pickupstatus == "P") {
                               failToast("Please Pick up the consignment first");
                               return;
-                            }else if(modelDetail.pickupdeparted != 'Y'){
-                              failToast("Please depart from pickup point first");
+                            } else if (modelDetail.pickupdeparted != 'Y') {
+                              failToast(
+                                  "Please depart from pickup point first");
                               return;
                             }
                             updateDriverReachedDlvLocation();
                           },
                           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
                           label: Text('Arrive At Destination',
-                              style:
-                                  TextStyle(fontSize: SizeConfig.smallTextSize)),
+                              style: TextStyle(
+                                  fontSize: SizeConfig.smallTextSize)),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                                 horizontal: SizeConfig.horizontalPadding,
@@ -1852,129 +2043,133 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                     ),
                     Visibility(
                       visible: widget.model.deliverystatus == 'P',
-                      child: Row(
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              LmdMenuModel? targetMenu;
-                              try {
-                                targetMenu = widget.menuList.firstWhere(
-                                    (element) =>
-                                        element.tag?.toString() ==
-                                        MenuTags.DELIVERY.name.toString());
-                                {
+                      child: Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                LmdMenuModel? targetMenu;
+                                try {
+                                  targetMenu = widget.menuList.firstWhere(
+                                      (element) =>
+                                          element.tag?.toString() ==
+                                          MenuTags.DELIVERY.name.toString());
+                                  {
+                                    {
+                                      menuCode = targetMenu.menuCode.toString();
+                                    }
+                                  }
+                                } catch (e) {
+                                  targetMenu = null;
+                                }
+
+                                String fileName =
+                                    targetMenu?.fileName?.toLowerCase() ??
+                                        'PodEntry';
+
+                                if (fileName == 'PodEntry' ||
+                                    fileName == 'podentry') {
+                                  if (widget.model.reached == 'N') {
+                                    failToast("Not reached");
+                                    return;
+                                  } else if (modelDetail.reachedAtDlvPoint ==
+                                          'Y' &&
+                                      modelDetail.pickupstatus != 'D') {
+                                    failToast("Pickup not done yet.");
+                                    return;
+                                  } else if (modelDetail.reachedAtDlvPoint !=
+                                      'Y') {
+                                    failToast('Not reached delivery point');
+                                    return;
+                                  }
+                                  Get.to(PodEntry(
+                                          deliveryDetailModel: modelDetail))
+                                      ?.then((_) {
+                                    widget.onRefresh();
+                                  });
+                                } else {
+                                  failToast("Screen $fileName not mapped.");
+                                }
+                              },
+                              // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                              label: Text('Deliver',
+                                  style: TextStyle(
+                                      fontSize: SizeConfig.smallTextSize)),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.horizontalPadding,
+                                    vertical: SizeConfig.verticalPadding),
+                                backgroundColor: CommonColors.successColor,
+                                foregroundColor: CommonColors.White,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.horizontalPadding,
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                LmdMenuModel? targetMenu;
+                                try {
+                                  targetMenu = widget.menuList.firstWhere(
+                                      (element) =>
+                                          element.tag?.toString() ==
+                                          MenuTags.UNDELIVERY.name.toString());
                                   {
                                     menuCode = targetMenu.menuCode.toString();
                                   }
+                                } catch (e) {
+                                  targetMenu = null;
                                 }
-                              } catch (e) {
-                                targetMenu = null;
-                              }
 
-                              String fileName =
-                                  targetMenu?.fileName?.toLowerCase() ??
-                                      'PodEntry';
+                                String fileName =
+                                    targetMenu?.fileName?.toLowerCase() ??
+                                        'UnDelivery';
 
-                              if (fileName == 'PodEntry' ||
-                                  fileName == 'podentry') {
-                                if (widget.model.reached == 'N') {
-                                  failToast("Not reached");
-                                  return;
-                                } else if (modelDetail.reachedAtDlvPoint ==
-                                        'Y' &&
-                                    modelDetail.pickupstatus != 'D') {
-                                  failToast("Pickup not done yet.");
-                                  return;
-                                } else if (modelDetail.reachedAtDlvPoint !=
-                                    'Y') {
-                                  failToast('Not reached delivery point');
-                                  return;
+                                if (fileName == 'UnDelivery' ||
+                                    fileName == 'undelivery') {
+                                  if (widget.model.reached == 'N') {
+                                    failToast("Not reached");
+                                    return;
+                                  } else if (modelDetail.directdelivery ==
+                                          'Y' &&
+                                      modelDetail.pickupstatus != 'D') {
+                                    failToast("Pickup not done yet.");
+                                    return;
+                                  } else if (modelDetail.reachedAtDlvPoint !=
+                                      'Y') {
+                                    failToast('Not reached delivery point');
+                                    return;
+                                  }
+                                  Get.to(UnDelivery(
+                                          deliveryDetailModel: modelDetail))
+                                      ?.then((_) {
+                                    widget.onRefresh();
+                                  });
+                                } else {
+                                  failToast("Screen $fileName not mapped.");
                                 }
-                                Get.to(PodEntry(
-                                        deliveryDetailModel: modelDetail))
-                                    ?.then((_) {
-                                  widget.onRefresh();
-                                });
-                              } else {
-                                failToast("Screen $fileName not mapped.");
-                              }
-                            },
-                            // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                            label: Text('Deliver',
-                                style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
-                              backgroundColor: CommonColors.successColor,
-                              foregroundColor: CommonColors.White,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                              },
+                              // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                              label: Text('Undeliver',
+                                  style: TextStyle(
+                                      fontSize: SizeConfig.smallTextSize)),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: SizeConfig.horizontalPadding,
+                                    vertical: SizeConfig.verticalPadding),
+                                backgroundColor: CommonColors.red600,
+                                foregroundColor: CommonColors.White,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: SizeConfig.horizontalPadding,
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              LmdMenuModel? targetMenu;
-                              try {
-                                targetMenu = widget.menuList.firstWhere(
-                                    (element) =>
-                                        element.tag?.toString() ==
-                                        MenuTags.UNDELIVERY.name.toString());
-                                {
-                                  menuCode = targetMenu.menuCode.toString();
-                                }
-                              } catch (e) {
-                                targetMenu = null;
-                              }
-
-                              String fileName =
-                                  targetMenu?.fileName?.toLowerCase() ??
-                                      'UnDelivery';
-
-                              if (fileName == 'UnDelivery' ||
-                                  fileName == 'undelivery') {
-                                if (widget.model.reached == 'N') {
-                                  failToast("Not reached");
-                                  return;
-                                } else if (modelDetail.directdelivery == 'Y' &&
-                                    modelDetail.pickupstatus != 'D') {
-                                  failToast("Pickup not done yet.");
-                                  return;
-                                } else if (modelDetail.reachedAtDlvPoint !=
-                                    'Y') {
-                                  failToast('Not reached delivery point');
-                                  return;
-                                }
-                                Get.to(UnDelivery(
-                                        deliveryDetailModel: modelDetail))
-                                    ?.then((_) {
-                                  widget.onRefresh();
-                                });
-                              } else {
-                                failToast("Screen $fileName not mapped.");
-                              }
-                            },
-                            // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                            label: Text('Undeliver',
-                                style: TextStyle(
-                                    fontSize: SizeConfig.smallTextSize)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
-                              backgroundColor: CommonColors.red600,
-                              foregroundColor: CommonColors.White,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     Visibility(
