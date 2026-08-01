@@ -91,8 +91,7 @@ class OtexPickupProvider extends ChangeNotifier {
       OtexPickupInfoModel infoData = result[0] as OtexPickupInfoModel;
       infoData = infoData.copyWith(
           orderid: isNullOrEmpty(orderid) ? 0 : int.parse(orderid.toString()),
-          signimagepath: infoData.signimagepath.toString()
-          );
+          signimagepath: infoData.signimagepath.toString());
       OtexPickupSplitInfo? si = null;
 
       if (result.length > 1) {
@@ -431,10 +430,10 @@ class OtexPickupProvider extends ChangeNotifier {
 
     // // Validate total pieces before saving
     // final maxPcs = _state.info.pcs ?? 0;
-    // var totQty = 0;
-    // for (var item in _state.splitInfo) {
-    //   totQty += item.palletQty ?? 0;
-    // }
+    var totQty = 0;
+    for (var item in _state.splitInfo) {
+      totQty = item.palletQty ?? 0;
+    }
 
     // if (maxPcs > 0 && totQty > maxPcs) {
     //   _state = _state.copyWith(
@@ -459,14 +458,14 @@ class OtexPickupProvider extends ChangeNotifier {
     }
     bookingImagesBase64 = base64Images.join(',');
 
-String? signImg;
+    String? signImg;
 
-if (signImagePath.startsWith('http')) {
-  signImg = await urlToBase64(signImagePath) ;
-} else {
-  signImg =  convertFilePathToBase64(signImagePath);
-}
-debugPrint("signImg $signImg");
+    if (signImagePath.startsWith('http')) {
+      signImg = await urlToBase64(signImagePath);
+    } else {
+      signImg = convertFilePathToBase64(signImagePath);
+    }
+    debugPrint("signImg $signImg");
     Map<String, dynamic> buildSaveJson() {
       return {
         // ── Basic Info ────────────────────────────────────────────
@@ -556,7 +555,8 @@ debugPrint("signImg $signImg");
         'totalaweight': double.tryParse(_state.info.weight.toString()) ?? 0,
         'totalcweight': double.tryParse(_state.info.weight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
-        'noofbox': _state.info.pcs.toString(),
+        // 'noofbox': _state.info.pcs.toString(),
+        'noofbox': totQty,
         'jobid': _state.info.jobid
       };
     }
@@ -770,10 +770,12 @@ debugPrint("signImg $signImg");
         "prmconnstring": savedUser.companyid.toString(),
         "prmgrno": grno,
         "prmusercode": savedUser.usercode.toString(),
-        "prmmenucode": "GTAPP_BOOKING",
+        // "prmmenucode": "GTAPP_BOOKING",
+        "prmmenucode": menuCode,
         "prmsessionid": savedUser.sessionid.toString(),
       };
       String url = await _baseRepo.getBookingPrint(params);
+      debugPrint("printurl $url");
       if (!isNullOrEmpty(url)) {
         launchUrl(Uri.parse(url));
       }
@@ -782,14 +784,14 @@ debugPrint("signImg $signImg");
     }
   }
 
-  Future<String> getBookingPdf(String grno) async {
+  Future<String> getBookingPdf(String grno, String menucode) async {
     String url = "";
     try {
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
         "prmgrno": grno,
         "prmusercode": savedUser.usercode.toString(),
-        "prmmenucode": "GTAPP_BOOKING",
+        "prmmenucode": menucode,
         "prmsessionid": savedUser.sessionid.toString(),
       };
       url = await _baseRepo.getBookingPrint(params);
@@ -842,8 +844,9 @@ debugPrint("signImg $signImg");
         cc = '';
       }
 
-      String url =
-          await getBookingPdf(_state.splitInfo.first.wayBillNo.toString());
+      String url = await getBookingPdf(
+          _state.splitInfo.first.wayBillNo.toString(),
+          menuCode ?? "GTAPP_BOOKING");
 
       String labels =
           await getStickerData(_state.splitInfo.first.wayBillNo.toString());

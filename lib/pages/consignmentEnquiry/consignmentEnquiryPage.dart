@@ -14,7 +14,8 @@ import 'package:gtlmd/pages/consignmentEnquiry/model/consignmentImageModel.dart'
 
 class ConsignmentEnquiryPage extends StatefulWidget {
   final String consignmentNo;
-  const ConsignmentEnquiryPage({super.key, required this.consignmentNo});
+  final int tripid;
+  const ConsignmentEnquiryPage({super.key, required this.consignmentNo, required this.tripid});
 
   @override
   State<ConsignmentEnquiryPage> createState() => _ConsignmentEnquiryPageState();
@@ -70,6 +71,7 @@ class _ConsignmentEnquiryPageState extends State<ConsignmentEnquiryPage> {
   ConsignmentEnquiry() {
     Map<String, dynamic> params = {
       "prmgrno": widget.consignmentNo,
+      "prmtripid": widget.tripid,
       "prmloginbranchcode": savedUser.loginbranchcode.toString(),
       "prmlogindivisionid": savedUser.logindivisionid.toString(),
       "prmmenucode": menuCode,

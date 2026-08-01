@@ -426,6 +426,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               Get.to(ConsignmentEnquiryPage(
                                 consignmentNo:
                                     widget.model.generatedGr.toString(),
+                                    tripid: widget.model.tripid?? 0 ,
                               ));
                               break;
                             case 'share':
@@ -1340,6 +1341,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   Get.to(ConsignmentEnquiryPage(
                                     consignmentNo:
                                         widget.model.generatedGr.toString(),
+                                        tripid: widget.model.tripid ?? 0 ,
                                   ));
                                   break;
                                 case 'share':
