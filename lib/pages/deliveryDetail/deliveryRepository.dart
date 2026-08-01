@@ -168,7 +168,7 @@ class DeliveryRepository extends BaseRepository {
     }
   }
 
-  Future<void> updatePickupDepartedPosition(Map<String, String> params) async {
+  Future<void> updatePickupDepartedPosition(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
