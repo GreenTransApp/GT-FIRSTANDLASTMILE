@@ -69,10 +69,13 @@ class PodEntryRepository extends BaseRepository {
                 List<PodStickerModel> resultList = List.generate(list2.length,
                     (index) => PodStickerModel.fromJson(list2[index]));
 
-                // var data = resultList;
                 stickerLiveData.add(resultList);
               } catch (e) {
-                debugPrint("Error parsing Table2: $e");
+                // Propagate the error visibly (debugPrint is no-op in release)
+                isErrorLiveData.add("Error loading sticker list: $e");
+                // Emit empty list so the stream always fires and _stickerList
+                // is at least updated (prevents QR button staying hidden silently)
+                stickerLiveData.add([]);
               }
             }
           }
