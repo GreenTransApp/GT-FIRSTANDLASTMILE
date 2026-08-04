@@ -216,6 +216,8 @@ class MidMileTripListState extends State<MidMileTripList> {
         if (trip.tripstart == 'Y') {
           Get.to(MidMileTripDetail(
               tripid: trip.tripid!, tripdetailid: trip.tripdetailid!));
+        }else{
+          failToast("Please start the trip to view details");
         }
       },
       child: Card(
@@ -234,6 +236,9 @@ class MidMileTripListState extends State<MidMileTripList> {
               children: [
                 /// Header
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start
+                  ,
                   children: [
                     Expanded(
                       child: Text(
@@ -244,39 +249,14 @@ class MidMileTripListState extends State<MidMileTripList> {
                         ),
                       ),
                     ),
-                    if (trip.tripstart == 'N')
-                      InkWell(
-                        onTap: () => startTrip(trip),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.mediumHorizontalSpacing,
-                            vertical: SizeConfig.mediumVerticalSpacing,
-                          ),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: SizeConfig.extraLargeIconSize,
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                "Start Trip",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                    Text(
+                      "Trip Detail ID : ${trip.tripdetailid}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                   
                   ],
                 ),
 
@@ -357,6 +337,39 @@ class MidMileTripListState extends State<MidMileTripList> {
                         trip.mobileno ?? "-",
                       ),
                     ),
+                     if (trip.tripstart == 'N')
+                      InkWell(
+                        onTap: () => startTrip(trip),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.mediumHorizontalSpacing,
+                            vertical: SizeConfig.mediumVerticalSpacing,
+                          ),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: SizeConfig.extraLargeIconSize,
+                              ),
+                              const SizedBox(width: 6),
+                              const Text(
+                                "Start Trip",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
 

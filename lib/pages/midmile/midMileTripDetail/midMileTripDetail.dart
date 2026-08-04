@@ -551,10 +551,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                   fontSize: 16,
                                 )),
                           ),
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green.shade700,
-                          ),
+                        
                           const SizedBox(width: 8),
                           Text(
                             "Arrived At",
@@ -563,6 +560,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
+                          ),
+                            Icon(
+                            Icons.check_circle,
+                            color: Colors.green.shade700,
                           ),
                         ],
                       ),
@@ -724,10 +725,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                   fontSize: 16,
                                 )),
                           ),
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green.shade700,
-                          ),
+                        
                           const SizedBox(width: 8),
                           Text(
                             "Vehicle Arrived",
@@ -736,6 +734,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
+                          ),
+                            Icon(
+                            Icons.check_circle,
+                            color: Colors.green.shade700,
                           ),
                         ],
                       ),
@@ -891,10 +893,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 ),
                               ),
                             ),
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
+                          
                             const SizedBox(width: 8),
                             Text(
                               "Reached",
@@ -903,6 +902,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
+                            ),
+                              Icon(
+                              Icons.check_circle,
+                              color: Colors.green.shade700,
                             ),
                           ],
                         ),
@@ -1023,12 +1026,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                               fontSize: 16,
                             )),
                       ),
-                      Icon(
-                        Icons.check_circle,
-                        color: item.deliverystatus == "D"
-                            ? Colors.green.shade700
-                            : Colors.red.shade700,
-                      ),
+                     
                       const SizedBox(width: 8),
                       Text(
                         item.deliverystatus == "D" ? "Delivered" : "Unde",
@@ -1039,6 +1037,12 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
+                      ),
+                       Icon(
+                        Icons.check_circle,
+                        color: item.deliverystatus == "D"
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
                       ),
                     ],
                   ),
@@ -1072,10 +1076,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 ),
                               ),
                             ),
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
+                           
                             const SizedBox(width: 8),
                             Text(
                               "Delivery Departed",
@@ -1084,6 +1085,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
+                            ),
+                             Icon(
+                              Icons.check_circle,
+                              color: Colors.green.shade700,
                             ),
                           ],
                         ),
@@ -1135,10 +1140,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 ),
                               ),
                             ),
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
+                          
                             const SizedBox(width: 8),
                             Text(
                               "Vehicle Arrived",
@@ -1147,6 +1149,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
+                            ),
+                              Icon(
+                              Icons.check_circle,
+                              color: Colors.green.shade700,
                             ),
                           ],
                         ),

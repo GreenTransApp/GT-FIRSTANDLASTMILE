@@ -85,7 +85,7 @@ class _HomeScreen extends State<HomeScreen>
   final BaseRepository _baseRepo = BaseRepository();
   NotificationCountModel countModel = NotificationCountModel();
   String deviceId = "";
-  static const String portalUrl = "https://gtjinni.com/";
+  static const String portalUrl = "https://gtjinni.com";
   String JINNI_URL = "";
   @override
   void initState() {

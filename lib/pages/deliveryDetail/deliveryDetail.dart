@@ -37,7 +37,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     with WidgetsBindingObserver {
   CurrentDeliveryModel deliveryModel = CurrentDeliveryModel();
   List<DeliveryDetailModel> deliveryDetailList = List.empty(growable: true);
-  List<DeliveryDetailModel> filteredList = List.empty(growable: true);
+  // List<DeliveryDetailModel> filteredList = List.empty(growable: true);
   List<LmdMenuModel> menuList = [];
   late LoadingAlertService loadingAlertService;
   final DeliveryViewModel viewModel = DeliveryViewModel();
@@ -97,12 +97,12 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       if (resp.isNotEmpty && resp.elementAt(0).commandstatus == 1) {
         setState(() {
           deliveryDetailList = resp;
-          filteredList = List.from(resp);
+          // filteredList = List.from(resp);
         });
       } else {
         setState(() {
           deliveryDetailList = [];
-          filteredList = [];
+          // filteredList = [];
         });
       }
     });
@@ -303,34 +303,34 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     _baseRepo.getValueFromCompAccPara(params);
   }
 
-  filterList(Filter filter) {
-    switch (filter) {
-      case Filter.all:
-        filteredList = List.from(deliveryDetailList);
-        setState(() {});
-        break;
-      case Filter.pending:
-        debugPrint("Pending");
-        filteredList = List.from(deliveryDetailList.where((e) =>
-            e.deliverystatus == 'P' ||
-            e.pickupstatus == 'P' ||
-            e.reversepickupstatus == 'P'));
-        setState(() {});
-        break;
-      case Filter.delivered:
-        debugPrint("Delivery");
-        break;
-      case Filter.pickup:
-        debugPrint("Pickup");
-        break;
-      case Filter.undelivered:
-        debugPrint("Un-Delivery");
-        break;
-      case Filter.reversepickup:
-        debugPrint("Reverse Pickup");
-        break;
-    }
-  }
+  // filterList(Filter filter) {
+  //   switch (filter) {
+  //     case Filter.all:
+  //       filteredList = List.from(deliveryDetailList);
+  //       setState(() {});
+  //       break;
+  //     case Filter.pending:
+  //       debugPrint("Pending");
+  //       filteredList = List.from(deliveryDetailList.where((e) =>
+  //           e.deliverystatus == 'P' ||
+  //           e.pickupstatus == 'P' ||
+  //           e.reversepickupstatus == 'P'));
+  //       setState(() {});
+  //       break;
+  //     case Filter.delivered:
+  //       debugPrint("Delivery");
+  //       break;
+  //     case Filter.pickup:
+  //       debugPrint("Pickup");
+  //       break;
+  //     case Filter.undelivered:
+  //       debugPrint("Un-Delivery");
+  //       break;
+  //     case Filter.reversepickup:
+  //       debugPrint("Reverse Pickup");
+  //       break;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -397,62 +397,66 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          showMenu(
-                              context: context,
-                              position:
-                                  const RelativeRect.fromLTRB(1, 120, 0.5, 0),
-                              popUpAnimationStyle: const AnimationStyle(
-                                  curve: Curves.easeInCirc,
-                                  duration: Duration(milliseconds: 500)),
-                              items: [
-                                PopupMenuItem(
-                                  child: const Text("All"),
-                                  onTap: () {
-                                    filterList(Filter.all);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Pending"),
-                                  onTap: () {
-                                    filterList(Filter.pending);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Delivery"),
-                                  onTap: () {
-                                    filterList(Filter.delivered);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Un-Delivery"),
-                                  onTap: () {
-                                    filterList(Filter.undelivered);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Pickup"),
-                                  onTap: () {
-                                    filterList(Filter.pickup);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  child: const Text("Reverse Pickup"),
-                                  onTap: () {
-                                    filterList(Filter.reversepickup);
-                                  },
-                                ),
-                              ]);
-                        },
-                        child: const Icon(
-                          Symbols.filter_list_rounded,
-                        ),
-                      )
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     showMenu(
+                      //         initialValue: 1,
+                      //         context: context,
+                      //         position:
+                      //             const RelativeRect.fromLTRB(1, 120, 0.5, 0),
+                      //         popUpAnimationStyle: const AnimationStyle(
+                      //             curve: Curves.easeInCirc,
+                                  
+                      //             ),
+                      //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      //         items: [
+                      //           PopupMenuItem(
+                      //             child: const Text("All"),
+                      //             onTap: () {
+                      //               filterList(Filter.all);
+                      //             },
+                      //           ),
+                      //           PopupMenuItem(
+                      //             child: const Text("Pending"),
+                      //             onTap: () {
+                      //               filterList(Filter.pending);
+                      //             },
+                      //           ),
+                      //           PopupMenuItem(
+                      //             child: const Text("Delivery"),
+                      //             onTap: () {
+                      //               filterList(Filter.delivered);
+                      //             },
+                      //           ),
+                      //           PopupMenuItem(
+                      //             child: const Text("Un-Delivery"),
+                      //             onTap: () {
+                      //               filterList(Filter.undelivered);
+                      //             },
+                      //           ),
+                      //           PopupMenuItem(
+                      //             child: const Text("Pickup"),
+                      //             onTap: () {
+                      //               filterList(Filter.pickup);
+                      //             },
+                      //           ),
+                      //           PopupMenuItem(
+                      //             child: const Text("Reverse Pickup"),
+                      //             onTap: () {
+                      //               filterList(Filter.reversepickup);
+                      //             },
+                      //           ),
+                      //         ]);
+                      //   },
+                      //   child: const Icon(
+                      //     Symbols.filter_list_rounded,
+                      //   ),
+                      // )
                     ],
                   ),
                   const SizedBox(height: 16),
-                  filteredList.isNotEmpty
+                  // filteredList.isNotEmpty
+                  deliveryDetailList.isNotEmpty
                       ? Expanded(
                           child: RefreshIndicator(
                             onRefresh: refreshScreen,
@@ -472,14 +476,14 @@ class _DeliveryDetailState extends State<DeliveryDetail>
                                 ],
                               ),
                               child: ListView.builder(
-                                itemCount: filteredList.length,
+                                itemCount: deliveryDetailList.length,
                                 itemBuilder: (context, index) {
-                                  var data = filteredList[index];
+                                  var data = deliveryDetailList[index];
 
                                   return DeliveryDetailTile(
                                       model: data,
                                       currentDeliveryModel: deliveryModel,
-                                      listLength: filteredList.length,
+                                      listLength: deliveryDetailList.length,
                                       index: index,
                                       onRefresh: refreshScreen,
                                       menuList: menuList,
