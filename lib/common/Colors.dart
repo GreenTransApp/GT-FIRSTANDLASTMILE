@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CommonColors {
-  static Color? colorPrimary = Color.fromARGB(255, 41, 52, 171); // hex #2934AB
-  static Color? colorSecondary = Colors.blue[900];
+  // static Color? colorPrimary = Color.fromARGB(255, 41, 52, 171); // hex #2934AB
+  static Color? colorPrimary = Color.fromARGB(255, 254, 89, 1); // hex #FE5901
+  // static Color? colorSecondary = Colors.blue[900];
+  static Color? colorSecondary = Color.fromARGB(255, 254, 89, 3);
+  static Color? colorBottomNav = Color.fromARGB(255, 245, 245, 245);
   static Color? successColor = Color.fromARGB(255, 20, 160, 15) ?? Colors.green;
   static Color? dangerColor = Color.fromRGBO(208, 32, 16, 1) ?? Colors.red;
   static Color? White = Color.fromARGB(255, 255, 255, 255);

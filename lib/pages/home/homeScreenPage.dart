@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
@@ -87,6 +89,7 @@ class _HomeScreen extends State<HomeScreen>
   String deviceId = "";
   static const String portalUrl = "https://gtjinni.com";
   String JINNI_URL = "";
+  
   @override
   void initState() {
     super.initState();
@@ -308,107 +311,6 @@ class _HomeScreen extends State<HomeScreen>
     }));
   }
 
-  // checkAuthenticatedUserForRunService(List<TripModel> tripData) {
-  //   try {
-  //     if (tripData == null || tripData.isEmpty) {
-  //       debugPrint('Trip data is empty, stopping location service...');
-  //       locationService.stopService();
-  //       // return Future.value();
-  //       return;
-  //     }
-
-  //     if (tripData.elementAt(0).commandstatus == 1) {
-  //       setState(() {
-  //         tripsList = tripData;
-  //       });
-
-  //       bool hasDispatchedTrip = tripsList.any(
-  //         (trip) =>
-  //             trip.tripdispatchdatetime != null &&
-  //             trip.tripdispatchdatetime.toString().isNotEmpty,
-  //       );
-
-  //       if (hasDispatchedTrip) {
-  //         debugPrint(authService.isAuthenticated.value.toString());
-
-  //         authService.isAuthenticated
-  //             .where((val) => val != null)
-  //             .take(1)
-  //             .listen((isAuthenticated) async {
-  //           try {
-  //             if (isAuthenticated == true) {
-  //               if (tripsList.isNotEmpty) {
-  //                 if (savedUser.employeeid != null &&
-  //                     savedUser.employeeid! > 0) {
-  //                   if (attendanceModel.intime != null &&
-  //                       attendanceModel.intime!.isNotEmpty &&
-  //                       (attendanceModel.outtime != null ||
-  //                           attendanceModel.outtime!.isNotEmpty)) {
-  //                     final tripList = tripsList
-  //                         .map((trip) => trip.tripid.toString())
-  //                         .toList();
-  //                     final dataToPass = {
-  //                       'tripList': tripList,
-  //                       'userData': savedUser.toJson(),
-  //                     };
-  //                     bool isRunnig =
-  //                         await FlutterForegroundTask.isRunningService;
-  //                     if (!isRunnig) {
-  //                       locationService.startService(tripData, savedUser);
-  //                     } else {
-  //                       FlutterForegroundTask.sendDataToTask(dataToPass);
-  //                     }
-  //                   }
-  //                 } else {
-  //                   final tripList = tripsList
-  //                       .map((trip) => trip.tripid.toString())
-  //                       .toList();
-  //                   final dataToPass = {
-  //                     'tripList': tripList,
-  //                     'userData': savedUser.toJson(),
-  //                   };
-  //                   bool isRunnig =
-  //                       await FlutterForegroundTask.isRunningService;
-  //                   if (!isRunnig) {
-  //                     locationService.startService(tripData, savedUser);
-  //                   } else {
-  //                     FlutterForegroundTask.sendDataToTask(dataToPass);
-  //                   }
-  //                 }
-  //               } else {
-  //                 debugPrint(' No trips found, service not started.');
-  //                 locationService.stopService();
-  //               }
-  //             } else {
-  //               debugPrint('User logged out, stopping location service...');
-  //               locationService.stopService();
-  //             }
-  //           } catch (innerError, innerStack) {
-  //             debugPrint('Error in authentication listener: $innerError');
-  //             debugPrint(innerStack.toString());
-  //             try {
-  //               locationService.stopService();
-  //             } catch (_) {}
-  //           }
-  //         });
-  //       } else {
-  //         debugPrint(
-  //             ' No dispatched trips found, stopping location service...');
-  //         locationService.stopService();
-  //       }
-  //     } else {
-  //       debugPrint(' Command status not valid, stopping location service...');
-  //       locationService.stopService();
-  //     }
-  //   } catch (error, stackTrace) {
-  //     debugPrint(' Error in handleTripDataUpdate: $error');
-  //     debugPrint(stackTrace.toString());
-  //     try {
-  //       locationService.stopService();
-  //     } catch (_) {}
-  //   }
-  // }
-
   Future<void> checkAuthenticatedUserForRunService(
       List<TripModel> tripData) async {
     try {
@@ -626,204 +528,425 @@ class _HomeScreen extends State<HomeScreen>
     }
   }
 
-  // void _handleDrsUpdateRequest(dynamic model, DrsStatus status) {
-  //   // debugPrint(
-  //   //     'Update requested with Date: $selectedDate, Time: $selectedTime, DRS No: $drsNo');
-
-  //   Map<String, String> params = {
-  //     "prmcompanyid": savedUser.companyid.toString(),
-  //     "prmemployeeid": savedUser.employeeid.toString(),
-  //     "prmdrsno": model.drsno.toString(),
-  //     "prmdispatchdt": convert2SmallDateTime(model.dispatchdt.toString()),
-  //     "prmdispatchtime": model.dispatchtime.toString(),
-  //     "prmmanifestdt": convert2SmallDateTime(model.manifestdate.toString()),
-  //     "prmmanifesttime": model.manifesttime.toString(),
-  //     "prmusercode": savedUser.usercode.toString(),
-  //     "prmsessionid": savedUser.sessionid.toString(),
-  //     "prmstartreading": model.startreadingkm.toString(),
-  //     "prmstartreadimgpath": status == DrsStatus.CLOSE
-  //         ? model.startreadingimgpath
-  //         : convertFilePathToBase64(model.startreadingimgpath.toString()),
-  //     "prmendreadimgpath":
-  //         convertFilePathToBase64(model.closeReadingImagePath.toString()),
-  //     "prmclosetripdt": model.closeTripDate == null
-  //         ? ""
-  //         : convert2SmallDateTime(model.closeTripDate),
-  //     "prmclosetriptime": model.closeTripTime ?? "",
-  //     "prmclosetripreading": model.closeReadingKm?.toString() ?? "",
-  //     "prmdrsstatus": status == DrsStatus.OPEN ? 'O' : 'C'
-
-  //     /// O for open and C for close
-  //   };
-
-  //   viewModel.callDrsDateTimeUpdate(params);
-  //   // Perform your update logic here, e.g., call an API
-  //   // You can also update the state of this screen if needed
-  // }
+  
 
   Widget attendanceInfo() {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSmallDevice = screenWidth <= 360;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.mediumHorizontalSpacing,
-          vertical: SizeConfig.mediumVerticalSpacing),
-      margin: EdgeInsets.only(
-          top: SizeConfig.mediumVerticalSpacing,
-          bottom: SizeConfig.smallVerticalSpacing,
-          left: SizeConfig.mediumHorizontalSpacing,
-          right: SizeConfig.mediumHorizontalSpacing),
       decoration: BoxDecoration(
-        color: CommonColors.colorPrimary,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+        gradient: LinearGradient(
+          begin: Alignment.topCenter, // Starts at the top
+          end: Alignment.bottomCenter, // Ends at the bottom
+          colors: [
+            CommonColors.colorPrimary!, // Top color
+            CommonColors.colorPrimary!
+                .withAlpha((0.50 * 255).toInt()!), // Bottom color
+            // You can add more colors here if needed
+          ],
+        ),
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.horizontalPadding,
+            vertical: SizeConfig.largeVerticalPadding),
+        margin: EdgeInsets.symmetric(
+            horizontal: SizeConfig.horizontalPadding,
+            vertical: SizeConfig.largeVerticalPadding),
+        decoration: BoxDecoration(
+          color: CommonColors.colorPrimary2,
+          borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+        ),
+        child: Column(
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
+                      Icon(Icons.person_pin,color: CommonColors.White,),
+                      SizedBox(width:5),
                       Text(
-                        'Current Date',
+                        'Driver',
                         style: TextStyle(
                           fontSize: SizeConfig.smallTextSize,
-                          color: CommonColors.White,
-                        ),
-                      ),
-                      SizedBox(height: SizeConfig.smallVerticalSpacing),
-                      Text(
-                        formattedDate,
-                        style: TextStyle(
-                          fontSize: SizeConfig.smallTextSize,
-                          fontWeight: FontWeight.w500,
                           color: CommonColors.White,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                  Visibility(
-                    visible: ENV.isDebugging,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Get.to(const BluetoothScreen());
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.smallHorizontalSpacing,
-                            vertical: SizeConfig.smallVerticalSpacing),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: CommonColors.white!),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.bluetooth,
-                            size: SizeConfig.extraLargeIconSize,
-                            color: CommonColors.White),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      showDatePickerBottomSheet(context, _dateChanged);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.mediumHorizontalSpacing,
-                          vertical: SizeConfig.mediumVerticalSpacing),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: CommonColors.colorPrimary,
-                          border: Border.all(color: CommonColors.White!)),
-                      child: Icon(Icons.calendar_today,
-                          size: SizeConfig.largeIconSize,
-                          color: CommonColors.White),
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: SizeConfig.smallVerticalSpacing),
-          Visibility(
-            visible: employeeid != null,
-            child: InkWell(
-              onTap: () {
-                Get.to(() => const AttendanceScreen())?.then((_) {
-                  getDashboardDetails();
-                });
-              },
-              child: Row(
-                children: [
-                  // Punch status indicator with color based on status
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.horizontalPadding,
-                        vertical: SizeConfig.verticalPadding),
-                    decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary,
-                      borderRadius:
-                          BorderRadius.circular(SizeConfig.largeRadius),
-                      border: Border.all(color: Colors.white30),
-                    ),
-                    child: Row(
-                      children: [
-                        // Status indicator dot
-                        Container(
-                          width: isSmallDevice ? 6 : 8,
-                          height: isSmallDevice ? 6 : 8,
-                          margin: const EdgeInsets.only(right: 6),
-                          decoration: BoxDecoration(
-                            color: attendanceModel.attendancestatus == "Absent"
-                                ? CommonColors.dangerColor
-                                : CommonColors.successColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Text(
-                          attendanceModel.attendancestatus == 'Present'
-                              ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                  .toString()
-                                  .toUpperCase()
-                              : "Absent",
-                          style: TextStyle(
-                            fontSize: SizeConfig.smallTextSize,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                  // SizedBox(height: SizeConfig.smallVerticalSpacing),
+                  Text(
+                    // formattedDate,
+                    '  • ${savedLogin.displayname.toString().toUpperCase()}',
+                    style: TextStyle(
+                      fontSize: SizeConfig.smallTextSize,
+                      fontWeight: FontWeight.w800,
+                      color: CommonColors.White,
                     ),
                   ),
-                  // const SizedBox(width: 8),
-                  // Icon(
-                  //   Icons.chevron_right,
-                  //   size: isSmallDevice ? 16 : 20,
-                  //   color: Colors.white,
-                  // ),
                 ],
               ),
-            ),
-          ),
-        ],
+              Visibility(
+                visible: employeeid != null,
+                child: InkWell(
+                  onTap: () {
+                    Get.to(() => const AttendanceScreen())?.then((_) {
+                      getDashboardDetails();
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      // Punch status indicator with color based on status
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: SizeConfig.horizontalPadding,
+                            vertical: SizeConfig.verticalPadding),
+                        decoration: BoxDecoration(
+                          // color: CommonColors.colorPrimary,
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: CommonColors.white!),
+                        ),
+                        child: Row(
+                          children: [
+                            // Status indicator dot
+                            Container(
+                              width: isSmallDevice ? 6 : 8,
+                              height: isSmallDevice ? 6 : 8,
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    attendanceModel.attendancestatus == "Absent"
+                                        ? CommonColors.dangerColor
+                                        : CommonColors.successColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            Text(
+                              attendanceModel.attendancestatus == 'Present'
+                                  // ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                                  ? "Online".toString().toUpperCase()
+                                  : "Offline",
+                              style: TextStyle(
+                                fontSize: SizeConfig.smallTextSize,
+                                color: CommonColors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // const SizedBox(width: 8),
+                      // Icon(
+                      //   Icons.chevron_right,
+                      //   size: isSmallDevice ? 16 : 20,
+                      //   color: Colors.white,
+                      // ),
+                    ],
+                  ),
+                ),
+              )
+            ])
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Row(
+            //       children: [
+            //         Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             Text(
+            //               'Current Date',
+            //               style: TextStyle(
+            //                 fontSize: SizeConfig.smallTextSize,
+            //                 color: CommonColors.White,
+            //               ),
+            //             ),
+            //             SizedBox(height: SizeConfig.smallVerticalSpacing),
+            //             Text(
+            //               formattedDate,
+            //               style: TextStyle(
+            //                 fontSize: SizeConfig.smallTextSize,
+            //                 fontWeight: FontWeight.w500,
+            //                 color: CommonColors.White,
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //         SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+            //         Visibility(
+            //           visible: ENV.isDebugging,
+            //           child: GestureDetector(
+            //             onTap: () {
+            //               // Get.to(const BluetoothScreen());
+            //             },
+            //             child: Container(
+            //               padding: EdgeInsets.symmetric(
+            //                   horizontal: SizeConfig.smallHorizontalSpacing,
+            //                   vertical: SizeConfig.smallVerticalSpacing),
+            //               decoration: BoxDecoration(
+            //                 border: Border.all(color: CommonColors.white!),
+            //                 shape: BoxShape.circle,
+            //               ),
+            //               child: Icon(Icons.bluetooth,
+            //                   size: SizeConfig.extraLargeIconSize,
+            //                   color: CommonColors.White),
+            //             ),
+            //           ),
+            //         )
+            //       ],
+            //     ),
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         GestureDetector(
+            //           onTap: () async {
+            //             showDatePickerBottomSheet(context, _dateChanged);
+            //           },
+            //           child: Container(
+            //             padding: EdgeInsets.symmetric(
+            //                 horizontal: SizeConfig.mediumHorizontalSpacing,
+            //                 vertical: SizeConfig.mediumVerticalSpacing),
+            //             decoration: BoxDecoration(
+            //                 shape: BoxShape.circle,
+            //                 color: CommonColors.colorPrimary,
+            //                 border: Border.all(color: CommonColors.White!)),
+            //             child: Icon(Icons.calendar_today,
+            //                 size: SizeConfig.largeIconSize,
+            //                 color: CommonColors.White),
+            //           ),
+            //         )
+            //       ],
+            //     ),
+            //   ],
+            // ),
+            // SizedBox(height: SizeConfig.smallVerticalSpacing),
+            // Visibility(
+            //   visible: employeeid != null,
+            //   child: InkWell(
+            //     onTap: () {
+            //       Get.to(() => const AttendanceScreen())?.then((_) {
+            //         getDashboardDetails();
+            //       });
+            //     },
+            //     child: Row(
+            //       children: [
+            //         // Punch status indicator with color based on status
+            //         Container(
+            //           padding: EdgeInsets.symmetric(
+            //               horizontal: SizeConfig.horizontalPadding,
+            //               vertical: SizeConfig.verticalPadding),
+            //           decoration: BoxDecoration(
+            //             color: CommonColors.colorPrimary,
+            //             borderRadius:
+            //                 BorderRadius.circular(SizeConfig.largeRadius),
+            //             border: Border.all(color: Colors.white30),
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               // Status indicator dot
+            //               Container(
+            //                 width: isSmallDevice ? 6 : 8,
+            //                 height: isSmallDevice ? 6 : 8,
+            //                 margin: const EdgeInsets.only(right: 6),
+            //                 decoration: BoxDecoration(
+            //                   color: attendanceModel.attendancestatus == "Absent"
+            //                       ? CommonColors.dangerColor
+            //                       : CommonColors.successColor,
+            //                   shape: BoxShape.circle,
+            //                 ),
+            //               ),
+            //               Text(
+            //                 attendanceModel.attendancestatus == 'Present'
+            //                     ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+            //                         .toString()
+            //                         .toUpperCase()
+            //                     : "Absent",
+            //                 style: TextStyle(
+            //                   fontSize: SizeConfig.smallTextSize,
+            //                   color: Colors.white,
+            //                   fontWeight: FontWeight.w500,
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //         // const SizedBox(width: 8),
+            //         // Icon(
+            //         //   Icons.chevron_right,
+            //         //   size: isSmallDevice ? 16 : 20,
+            //         //   color: Colors.white,
+            //         // ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
+
+    // Container(
+    //   padding: EdgeInsets.symmetric(
+    //       horizontal: SizeConfig.mediumHorizontalSpacing,
+    //       vertical: SizeConfig.mediumVerticalSpacing),
+    //   margin: EdgeInsets.only(
+    //       top: SizeConfig.mediumVerticalSpacing,
+    //       bottom: SizeConfig.smallVerticalSpacing,
+    //       left: SizeConfig.mediumHorizontalSpacing,
+    //       right: SizeConfig.mediumHorizontalSpacing),
+    //   decoration: BoxDecoration(
+    //     color: CommonColors.colorPrimary,
+    //     borderRadius: BorderRadius.circular(12),
+    //     boxShadow: const [
+    //       BoxShadow(
+    //         color: Colors.black12,
+    //         blurRadius: 4,
+    //         offset: Offset(0, 2),
+    //       ),
+    //     ],
+    //   ),
+    //   child: Column(
+    //     children: [
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //         children: [
+    //           Row(
+    //             children: [
+    //               Column(
+    //                 crossAxisAlignment: CrossAxisAlignment.start,
+    //                 children: [
+    //                   Text(
+    //                     'Current Date',
+    //                     style: TextStyle(
+    //                       fontSize: SizeConfig.smallTextSize,
+    //                       color: CommonColors.White,
+    //                     ),
+    //                   ),
+    //                   SizedBox(height: SizeConfig.smallVerticalSpacing),
+    //                   Text(
+    //                     formattedDate,
+    //                     style: TextStyle(
+    //                       fontSize: SizeConfig.smallTextSize,
+    //                       fontWeight: FontWeight.w500,
+    //                       color: CommonColors.White,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //               SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+    //               Visibility(
+    //                 visible: ENV.isDebugging,
+    //                 child: GestureDetector(
+    //                   onTap: () {
+    //                     // Get.to(const BluetoothScreen());
+    //                   },
+    //                   child: Container(
+    //                     padding: EdgeInsets.symmetric(
+    //                         horizontal: SizeConfig.smallHorizontalSpacing,
+    //                         vertical: SizeConfig.smallVerticalSpacing),
+    //                     decoration: BoxDecoration(
+    //                       border: Border.all(color: CommonColors.white!),
+    //                       shape: BoxShape.circle,
+    //                     ),
+    //                     child: Icon(Icons.bluetooth,
+    //                         size: SizeConfig.extraLargeIconSize,
+    //                         color: CommonColors.White),
+    //                   ),
+    //                 ),
+    //               )
+    //             ],
+    //           ),
+    //           Row(
+    //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //             children: [
+    //               GestureDetector(
+    //                 onTap: () async {
+    //                   showDatePickerBottomSheet(context, _dateChanged);
+    //                 },
+    //                 child: Container(
+    //                   padding: EdgeInsets.symmetric(
+    //                       horizontal: SizeConfig.mediumHorizontalSpacing,
+    //                       vertical: SizeConfig.mediumVerticalSpacing),
+    //                   decoration: BoxDecoration(
+    //                       shape: BoxShape.circle,
+    //                       color: CommonColors.colorPrimary,
+    //                       border: Border.all(color: CommonColors.White!)),
+    //                   child: Icon(Icons.calendar_today,
+    //                       size: SizeConfig.largeIconSize,
+    //                       color: CommonColors.White),
+    //                 ),
+    //               )
+    //             ],
+    //           ),
+    //         ],
+    //       ),
+    //       SizedBox(height: SizeConfig.smallVerticalSpacing),
+    //       Visibility(
+    //         visible: employeeid != null,
+    //         child: InkWell(
+    //           onTap: () {
+    //             Get.to(() => const AttendanceScreen())?.then((_) {
+    //               getDashboardDetails();
+    //             });
+    //           },
+    //           child: Row(
+    //             children: [
+    //               // Punch status indicator with color based on status
+    //               Container(
+    //                 padding: EdgeInsets.symmetric(
+    //                     horizontal: SizeConfig.horizontalPadding,
+    //                     vertical: SizeConfig.verticalPadding),
+    //                 decoration: BoxDecoration(
+    //                   color: CommonColors.colorPrimary,
+    //                   borderRadius:
+    //                       BorderRadius.circular(SizeConfig.largeRadius),
+    //                   border: Border.all(color: Colors.white30),
+    //                 ),
+    //                 child: Row(
+    //                   children: [
+    //                     // Status indicator dot
+    //                     Container(
+    //                       width: isSmallDevice ? 6 : 8,
+    //                       height: isSmallDevice ? 6 : 8,
+    //                       margin: const EdgeInsets.only(right: 6),
+    //                       decoration: BoxDecoration(
+    //                         color: attendanceModel.attendancestatus == "Absent"
+    //                             ? CommonColors.dangerColor
+    //                             : CommonColors.successColor,
+    //                         shape: BoxShape.circle,
+    //                       ),
+    //                     ),
+    //                     Text(
+    //                       attendanceModel.attendancestatus == 'Present'
+    //                           ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+    //                               .toString()
+    //                               .toUpperCase()
+    //                           : "Absent",
+    //                       style: TextStyle(
+    //                         fontSize: SizeConfig.smallTextSize,
+    //                         color: Colors.white,
+    //                         fontWeight: FontWeight.w500,
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               // const SizedBox(width: 8),
+    //               // Icon(
+    //               //   Icons.chevron_right,
+    //               //   size: isSmallDevice ? 16 : 20,
+    //               //   color: Colors.white,
+    //               // ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override
@@ -871,76 +994,92 @@ class _HomeScreen extends State<HomeScreen>
     } else {
       return Scaffold(
           appBar: AppBar(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(SizeConfig.largeRadius),
-                bottomRight: Radius.circular(SizeConfig.largeRadius),
-              ),
-            ),
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.only(
+            //     bottomLeft: Radius.circular(SizeConfig.largeRadius),
+            //     bottomRight: Radius.circular(SizeConfig.largeRadius),
+            //   ),
+            // ),
             backgroundColor: CommonColors.colorPrimary,
-            title: Text(
-              'Dashboard',
-              style: TextStyle(
-                fontSize: SizeConfig.extraLargeIconSize,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
+            // title: Text(
+            //   'Dashboard',
+            //   style: TextStyle(
+            //     fontSize: SizeConfig.extraLargeIconSize,
+            //     fontWeight: FontWeight.w600,
+            //     color: Colors.white,
+            //   ),
+            // ),
             leading: Builder(builder: (context) {
               return IconButton(
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
                   },
-                  icon: Icon(
-                    Icons.menu,
-                    size: SizeConfig.largeIconSize,
-                    color: CommonColors.white,
+                  icon: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: CommonColors.White,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.menu,
+                        size: SizeConfig.largeIconSize,
+                        color: CommonColors.colorPrimary,
+                      ),
+                    ),
                   ));
             }),
             actions: [
-              Badge(
-                backgroundColor: CommonColors.orange,
-                label: Text('${offlinePodCount + offlineUndeliveryCount}'),
-                offset: const Offset(-3, 5),
-                child: IconButton.outlined(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        CommonColors.White!.withAlpha((255 * 0.2).toInt())),
-                    side: WidgetStatePropertyAll(
-                      BorderSide(
-                          color: CommonColors.White!.withAlpha((255 * 0.2)
-                              .toInt())), // <-- Outline color and width
-                    ),
+              IconButton.outlined(
+                style: ButtonStyle(
+                  minimumSize: const WidgetStatePropertyAll(Size(40, 40)),
+                  padding: const WidgetStatePropertyAll(EdgeInsets.all(12)),
+                  backgroundColor:
+                      WidgetStatePropertyAll(CommonColors.colorPrimary2),
+                  side: WidgetStatePropertyAll(
+                    BorderSide(color: CommonColors.colorPrimary2),
                   ),
-                  color: CommonColors.white,
-                  onPressed: () async {
-                    // Get.to(() => const Offlinedrslist());
-                    await showOfflineDrsBottomSheet(context);
-                    refreshScreen();
-                  },
-                  icon: Icon(
-                    Symbols.autorenew_rounded,
-                    size: SizeConfig.largeIconSize,
-                    color: CommonColors.white,
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
                 ),
+                color: CommonColors.white,
+                onPressed: () async {
+                  showDatePickerBottomSheet(context, _dateChanged);
+                },
+                icon: Icon(
+                  Symbols.calendar_today_rounded,
+                  size: SizeConfig.largeIconSize,
+                  color: CommonColors.white,
+                ),
               ),
-              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+              SizedBox(width: SizeConfig.smallHorizontalSpacing),
               Badge(
-                backgroundColor: CommonColors.orange,
-                label: Text('${countModel.totalcount ?? 0}'),
-                offset: const Offset(-3, 5),
+                backgroundColor: CommonColors.white,
+                label: Text(
+                  // '${countModel.totalcount ?? 0}',
+                  '',
+                  style: TextStyle(color: CommonColors.colorPrimary),
+                ),
+                offset: const Offset(-1, 5),
                 child: IconButton.outlined(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(
-                        CommonColors.White!.withAlpha((255 * 0.2).toInt())),
+                    minimumSize: const WidgetStatePropertyAll(Size(40, 40)),
+                    padding: const WidgetStatePropertyAll(EdgeInsets.all(12)),
+                    backgroundColor:
+                        WidgetStatePropertyAll(CommonColors.colorPrimary2),
                     side: WidgetStatePropertyAll(
-                      BorderSide(
-                          color: CommonColors.White!.withAlpha((255 * 0.2)
-                              .toInt())), // <-- Outline color and width
+                      BorderSide(color: CommonColors.colorPrimary2),
+                    ),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
                     ),
                   ),
-                  color: CommonColors.white,
+                  color: CommonColors.colorPrimary,
                   onPressed: () async {
                     await notificationOptionBottomSheet(context).then((value) {
                       refreshScreen();
@@ -953,131 +1092,368 @@ class _HomeScreen extends State<HomeScreen>
                   ),
                 ),
               ),
-              SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+              SizedBox(width: SizeConfig.smallHorizontalSpacing),
+              // IconButton.outlined(
+              //   style: ButtonStyle(
+              //     minimumSize: const WidgetStatePropertyAll(Size(40, 40)),
+              //     padding: const WidgetStatePropertyAll(EdgeInsets.all(12)),
+              //     backgroundColor:
+              //         WidgetStatePropertyAll(CommonColors.colorPrimary2),
+              //     side: WidgetStatePropertyAll(
+              //       BorderSide(color: CommonColors.colorPrimary2),
+              //     ),
+              //     shape: WidgetStatePropertyAll(
+              //       RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(18),
+              //       ),
+              //     ),
+              //   ),
+              //   color: CommonColors.white,
+              //   onPressed: () async {
+              //     // await showOfflineDrsBottomSheet(context).then((value) {
+              //     //   refreshScreen();
+              //     // });
+              //     homePopupMenu();
+              //   },
+              //   icon: Icon(
+              //     Symbols.more_vert,
+              //     size: SizeConfig.largeIconSize,
+              //     color: CommonColors.white,
+              //   ),
+              // ),
+               Container(
+                margin: EdgeInsets.symmetric(vertical: 6,horizontal: 7),
+                
+                decoration: BoxDecoration(
+                  color: CommonColors.colorPrimary2,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                 child: PopupMenuButton<String>(
+                       icon:  Icon(Icons.more_vert,color: Colors.white,size: SizeConfig.largeIconSize,),
+                       onSelected: (value) {
+                         switch (value) {
+                           case 'offlinesync':
+                             {
+                               showOfflineDrsBottomSheet(context).then((value) {
+                  refreshScreen();
+                               });
+                             }
+                             break;
+                         }
+                       },
+                       itemBuilder: (context) => [
+                         const PopupMenuItem(
+                           value: 'offlinesync',
+                           child: Row(
+                             children: [
+                               Icon(
+                  Icons.sync_rounded,
+                  size: 15,
+                               ),
+                               SizedBox(
+                  width: 4,
+                               ),
+                               Text('Offline Sync')
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
+               )
             ],
           ),
           extendBody: true,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (value) {
-              setState(() {
-                _selectedIndex = value;
-                // _pageController.jumpToPage(value);
-                debugPrint("value $value");
-                if (value == 0) {
-                  allotedRouteKey.currentState?.onRefresh();
-                } else if (value == 1) {
-                  drsSelectionKey.currentState?.refreshScreen();
-                } else if (value == 2) {
-                  runningTripsKey.currentState?.onRefresh();
-                } else if (value == 3) {
-                  midMileTripsKey.currentState?.onRefresh();
-                }
-              });
-            },
-            labelTextStyle: WidgetStatePropertyAll(
-                TextStyle(fontSize: SizeConfig.smallTextSize)),
-            indicatorColor: CommonColors.colorPrimary!
-                .withAlpha((0.15 * 255).toInt()), // light background
-            destinations: [
-              NavigationDestination(
-                icon: Icon(Icons.route, size: SizeConfig.extraLargeIconSize),
-                selectedIcon: Icon(
-                  Icons.route,
-                  size: SizeConfig.extraLargeIconSize,
-                  color: CommonColors.colorPrimary,
-                ),
-                label: "ROUTES",
-              ),
-              NavigationDestination(
-                icon: Icon(Symbols.add_road_rounded,
-                    size: SizeConfig.extraLargeIconSize),
-                selectedIcon: Icon(
-                  Symbols.add_road_rounded,
-                  size: SizeConfig.extraLargeIconSize,
-                  color: CommonColors.colorPrimary,
-                ),
-                label: "CREATE TRIP",
-              ),
-              NavigationDestination(
-                icon: Icon(Symbols.local_shipping,
-                    size: SizeConfig.extraLargeIconSize),
-                selectedIcon: Icon(
-                  Symbols.local_shipping,
-                  size: SizeConfig.extraLargeIconSize,
-                  color: CommonColors.colorPrimary,
-                ),
-                label: "TRIPS",
-              ),
-              NavigationDestination(
-                icon: Icon(Symbols.alt_route_rounded,
-                    size: SizeConfig.extraLargeIconSize),
-                selectedIcon: Icon(
-                  Symbols.alt_route_rounded,
-                  size: SizeConfig.extraLargeIconSize,
-                  color: CommonColors.colorPrimary,
-                ),
-                label: "MMT",
-              ),
-            ],
-          ),
-          drawer: const SideMenu(),
-          floatingActionButton: AvatarGlow(
-              glowColor: CommonColors.colorPrimary ?? Colors.blue,
-              repeat: true,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  deviceId = await getDeviceId();
-                  if (isNullOrEmpty(deviceId)) {
-                    // failToast("Unable to get Device ID");
-                    JINNI_URL = portalUrl;
-                  } else {
-                    JINNI_URL =
-                        "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
-                  }
-
-                  // url = "https://gtjinni.com/";
-                  if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
-                    try {
-                      await launchUrl(
-                        Uri.parse(JINNI_URL),
-                        mode: LaunchMode.externalApplication,
-                      );
-                    } catch (_) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Could not launch URL',
+          bottomNavigationBar:
+              //  NavigationBar(
+              //   selectedIndex: _selectedIndex,
+              //   onDestinationSelected: (value) {
+              //     setState(() {
+              //       _selectedIndex = value;
+              //       // _pageController.jumpToPage(value);
+              //       debugPrint("value $value");
+              //       if (value == 0) {
+              //         allotedRouteKey.currentState?.onRefresh();
+              //       } else if (value == 1) {
+              //         drsSelectionKey.currentState?.refreshScreen();
+              //       } else if (value == 2) {
+              //         runningTripsKey.currentState?.onRefresh();
+              //       } else if (value == 3) {
+              //         midMileTripsKey.currentState?.onRefresh();
+              //       }
+              //     });
+              //   },
+              //   labelTextStyle: WidgetStatePropertyAll(
+              //       TextStyle(fontSize: SizeConfig.smallTextSize)),
+              //   indicatorColor: CommonColors.colorPrimary!
+              //       .withAlpha((0.15 * 255).toInt()), // light background
+              //   destinations: [
+              //     NavigationDestination(
+              //       icon: Icon(Icons.route, size: SizeConfig.extraLargeIconSize),
+              //       selectedIcon: Icon(
+              //         Icons.route,
+              //         size: SizeConfig.extraLargeIconSize,
+              //         color: CommonColors.colorPrimary,
+              //       ),
+              //       label: "ROUTES",
+              //     ),
+              //     NavigationDestination(
+              //       icon: Icon(Symbols.add_road_rounded,
+              //           size: SizeConfig.extraLargeIconSize),
+              //       selectedIcon: Icon(
+              //         Symbols.add_road_rounded,
+              //         size: SizeConfig.extraLargeIconSize,
+              //         color: CommonColors.colorPrimary,
+              //       ),
+              //       label: "CREATE TRIP",
+              //     ),
+              //     NavigationDestination(
+              //       icon: Icon(Symbols.local_shipping,
+              //           size: SizeConfig.extraLargeIconSize),
+              //       selectedIcon: Icon(
+              //         Symbols.local_shipping,
+              //         size: SizeConfig.extraLargeIconSize,
+              //         color: CommonColors.colorPrimary,
+              //       ),
+              //       label: "TRIPS",
+              //     ),
+              //     NavigationDestination(
+              //       icon: Icon(Symbols.alt_route_rounded,
+              //           size: SizeConfig.extraLargeIconSize),
+              //       selectedIcon: Icon(
+              //         Symbols.alt_route_rounded,
+              //         size: SizeConfig.extraLargeIconSize,
+              //         color: CommonColors.colorPrimary,
+              //       ),
+              //       label: "MMT",
+              //     ),
+              //   ],
+              // ),
+              
+              ClipRRect(
+                 borderRadius: BorderRadius.circular(30.0),
+                child: BottomAppBar(
+                            color: CommonColors.colorPrimary2,
+                            shape: const CircularNotchedRectangle(),
+                            // shape: const InvertedCircularNotchedRectangle(),
+                            notchMargin: 10,
+                            elevation: 10,
+                            child: SizedBox(
+                              height: 68,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  
+                                  _navItem(
+                                    // image: 'assets/images/routes.svg',
+                                    image: 'assets/images/routes_icon.png',
+                                    label: "Routes",
+                                    index: 0,
+                                  ),
+                                  _navItem(
+                                    image: 'assets/images/create_trip_icon.png',
+                                    // label: "Create Trip",
+                                    label:  "${"Create Trip".split(' ').join('\n')}",
+                                    index: 1,
+                                  ),
+                                  FloatingActionButton(
+                                          elevation: 2,
+                              
+                                          shape: const CircleBorder(),
+                              
+                                          backgroundColor: Colors.transparent,
+                                          highlightElevation: 10.0,
+                                          child: Transform.scale(
+                              scale: 1.2,
+                              child: Image.asset(
+                                'assets/images/jinni_icon.png',
+                                fit: BoxFit.cover,
+                              ),
+                                          ),
+                                          // Container(
+                                          //   decoration: const BoxDecoration(
+                                          //     shape: BoxShape.circle,
+                                          //     // color:Color.fromARGB(255, 246, 87, 1)
+                                          //     color:Color.fromARGB(255, 254, 89, 1)
+                                          //   ),
+                                          //   child: ClipOval(
+                                          //     child: Image.asset(
+                                          //       'assets/images/jinni_icon.png',
+                                          //       fit: BoxFit.cover,
+                                          //       // width: 50,
+                                          //       // height: 50,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          onPressed: () async {
+                              // center button action
+                              deviceId = await getDeviceId();
+                              if (isNullOrEmpty(deviceId)) {
+                                // failToast("Unable to get Device ID");
+                                JINNI_URL = portalUrl;
+                              } else {
+                                JINNI_URL =
+                                    "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
+                              }
+                              
+                              // url = "https://gtjinni.com/";
+                              if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
+                                try {
+                                  await launchUrl(
+                                    Uri.parse(JINNI_URL),
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                } catch (_) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Could not launch URL',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                                          },
+                                        ),
+                                  _navItem(
+                                    // image: 'assets/images/trip.svg',
+                                    image: 'assets/images/trips_icon.png',
+                                    label: "Trips",
+                                    index: 2,
+                                  ),
+                                  _navItem(
+                                    // image: 'assets/images/mmt.svg',
+                                    image: 'assets/images/mmt_icon.png',
+                                    label: "MMT",
+                                    index: 3,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        );
-                      }
-                    }
-                  }
-                },
-                shape: const CircleBorder(),
-                backgroundColor: CommonColors.indigoshade50,
-                highlightElevation: 20.0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: CommonColors.colorPrimary ??
-                          Colors.blue, // Border color
-                      width: 2, // Border thickness
-                    ),
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/jinnilogo.png',
-                      fit: BoxFit.cover,
-                      // width: 50,
-                      // height: 50,
-                    ),
-                  ),
-                ),
-              )),
+              ),
+          // floatingActionButtonLocation:
+          //     FloatingActionButtonLocation.centerDocked,
+          // floatingActionButton: FloatingActionButton(
+          //   elevation: 2,
+
+          //   shape: const CircleBorder(),
+
+          //   backgroundColor: Colors.transparent,
+          //   highlightElevation: 10.0,
+          //   child: Transform.scale(
+          //     scale: 1.2,
+          //     child: Image.asset(
+          //       'assets/images/jinni_icon.png',
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          //   // Container(
+          //   //   decoration: const BoxDecoration(
+          //   //     shape: BoxShape.circle,
+          //   //     // color:Color.fromARGB(255, 246, 87, 1)
+          //   //     color:Color.fromARGB(255, 254, 89, 1)
+          //   //   ),
+          //   //   child: ClipOval(
+          //   //     child: Image.asset(
+          //   //       'assets/images/jinni_icon.png',
+          //   //       fit: BoxFit.cover,
+          //   //       // width: 50,
+          //   //       // height: 50,
+          //   //     ),
+          //   //   ),
+          //   // ),
+          //   onPressed: () async {
+          //     // center button action
+          //     deviceId = await getDeviceId();
+          //     if (isNullOrEmpty(deviceId)) {
+          //       // failToast("Unable to get Device ID");
+          //       JINNI_URL = portalUrl;
+          //     } else {
+          //       JINNI_URL =
+          //           "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
+          //     }
+
+          //     // url = "https://gtjinni.com/";
+          //     if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
+          //       try {
+          //         await launchUrl(
+          //           Uri.parse(JINNI_URL),
+          //           mode: LaunchMode.externalApplication,
+          //         );
+          //       } catch (_) {
+          //         if (context.mounted) {
+          //           ScaffoldMessenger.of(context).showSnackBar(
+          //             const SnackBar(
+          //               content: Text(
+          //                 'Could not launch URL',
+          //               ),
+          //             ),
+          //           );
+          //         }
+          //       }
+          //     }
+          //   },
+          // ),
+          drawer: const SideMenu(),
+          // floatingActionButton: AvatarGlow(
+          //     glowColor: CommonColors.colorPrimary ?? Colors.blue,
+          //     repeat: true,
+          //     child: FloatingActionButton(
+          //       onPressed: () async {
+          //         deviceId = await getDeviceId();
+          //         if (isNullOrEmpty(deviceId)) {
+          //           // failToast("Unable to get Device ID");
+          //           JINNI_URL = portalUrl;
+          //         } else {
+          //           JINNI_URL =
+          //               "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
+          //         }
+
+          //         // url = "https://gtjinni.com/";
+          //         if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
+          //           try {
+          //             await launchUrl(
+          //               Uri.parse(JINNI_URL),
+          //               mode: LaunchMode.externalApplication,
+          //             );
+          //           } catch (_) {
+          //             if (context.mounted) {
+          //               ScaffoldMessenger.of(context).showSnackBar(
+          //                 const SnackBar(
+          //                   content: Text(
+          //                     'Could not launch URL',
+          //                   ),
+          //                 ),
+          //               );
+          //             }
+          //           }
+          //         }
+          //       },
+          //       shape: const CircleBorder(),
+          //       backgroundColor: CommonColors.indigoshade50,
+          //       highlightElevation: 20.0,
+          //       child: Container(
+          //         decoration: BoxDecoration(
+          //           shape: BoxShape.circle,
+          //           border: Border.all(
+          //             color: CommonColors.colorPrimary ??
+          //                 Colors.blue, // Border color
+          //             width: 2, // Border thickness
+          //           ),
+          //         ),
+          //         child: ClipOval(
+          //           child: Image.asset(
+          //             'assets/images/jinnilogo.png',
+          //             fit: BoxFit.cover,
+          //             // width: 50,
+          //             // height: 50,
+          //           ),
+          //         ),
+          //       ),
+          //     )),
+
           body: Container(
             color: CommonColors.blueGrey?.withOpacity(0.1),
             child: IndexedStack(
@@ -1223,4 +1599,212 @@ class _HomeScreen extends State<HomeScreen>
           );
     }
   }
+
+  Widget _navItem({
+    required String image,
+    required String label,
+    required int index,
+  }) {
+    bool selected = _selectedIndex == index;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      child: SizedBox(
+         width: 65,
+      height: 65,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              image,
+              width: SizeConfig.extraLargeIconSize,
+              height: SizeConfig.largeIconSize,
+              color: selected
+                  ? CommonColors.colorPrimary
+                  : CommonColors
+                      .white, // remove if your image has fixed colors
+            ),
+            const SizedBox(height: 1),
+            Text(
+              label,
+                maxLines: 2,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.clip,
+              style: TextStyle(
+              
+                color: selected
+                    ? CommonColors.colorPrimary
+                    : CommonColors.white,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+//   Widget _navItem({
+//   required String image,
+//   required String label,
+//   required int index,
+// }) {
+//   bool selected = _selectedIndex == index;
+
+//   return InkWell(
+//     onTap: () {
+//       setState(() {
+//         _selectedIndex = index;
+//       });
+//     },
+//     child: Column(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: [
+//         SvgPicture.asset(
+//           image,
+//           width: 20,
+//           height: 20,
+//           colorFilter: ColorFilter.mode(
+//             selected
+//                 ? CommonColors.colorPrimary!
+//                 : CommonColors.blueGrey600!,
+//             BlendMode.srcIn,
+//           ),
+//         ),
+//         // const SizedBox(height: 4),
+//         Text(
+//           label,
+//           style: TextStyle(
+//             color: selected
+//                 ? CommonColors.colorPrimary
+//                 : CommonColors.blueGrey600,
+//             fontSize: 12,
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 }
+
+class InvertedCircularNotchedRectangle extends NotchedShape {
+  const InvertedCircularNotchedRectangle();
+
+  @override
+  Path getOuterPath(Rect host, Rect? guest) {
+    if (guest == null || !host.overlaps(guest)) {
+      return Path()..addRect(host);
+    }
+
+    final double radius = guest.width / 2;
+
+    // FAB center
+    final double centerX = guest.center.dx;
+
+    // How high the inverted curve rises above the bar
+    final double curveHeight = radius * 0.99;
+
+    final Path path = Path();
+
+    path.moveTo(host.left, host.top);
+
+    // Left side before inverted curve
+    path.lineTo(centerX - radius - 20, host.top);
+
+    // Smooth left transition going upward (∩)
+    path.cubicTo(
+      centerX - radius,
+      host.top,
+      centerX - radius,
+      host.top - curveHeight,
+      centerX,
+      host.top - curveHeight,
+    );
+
+    // Top circular curve
+    path.cubicTo(
+      centerX + radius,
+      host.top - curveHeight,
+      centerX + radius,
+      host.top,
+      centerX + radius + 20,
+      host.top,
+    );
+
+    // Right side
+    path.lineTo(host.right, host.top);
+    path.lineTo(host.right, host.bottom);
+    path.lineTo(host.left, host.bottom);
+
+    path.close();
+
+    return path;
+  }
+}
+
+// class InvertedCircularNotchedRectangle extends NotchedShape {
+
+  
+//   const InvertedCircularNotchedRectangle({
+//     this.notchMargin = 8.0,
+//   });
+
+//   final double notchMargin;
+
+//   @override
+//   Path getOuterPath(Rect host, Rect? guest) {
+//     if (guest == null || !host.overlaps(guest)) {
+//       return Path()..addRect(host);
+//     }
+
+//     // Radius of the FAB + margin, so the curve clears the button nicely
+//     final double r = (guest.width / 2.0);
+//     final double cx = guest.center.dx;
+
+//     // How far above the bar's top edge the curve peaks
+//     final double peakOffset = r * 1.15;
+
+//     // Width of the flat shoulders on either side before curving starts
+//     final double shoulder = r * 1.6;
+
+//     return Path()
+//       ..moveTo(host.left, host.top)
+//       ..lineTo(cx - shoulder, host.top)
+//       // Left curve up — cubic bezier for a smoother, rounder shoulder
+//       ..cubicTo(
+//         cx - shoulder + r * 0.60, host.top, // control point 1
+//         cx - r, host.top - peakOffset * 0.85, // control point 2
+//         cx - r * 0.15, host.top - peakOffset, // near peak, left side
+//       )
+//       // Smooth peak/top of the arc
+//       ..cubicTo(
+//         cx - r * 0.15 + r * 0.15,
+//         host.top - peakOffset - r * 0.1,
+//         cx + r * 0.15 - r * 0.15,
+//         host.top - peakOffset - r * 0.1,
+//         cx + r * 0.15,
+//         host.top - peakOffset,
+//       )
+//       // Right curve down — mirrors the left cubic
+//       ..cubicTo(
+//         cx + r,
+//         host.top - peakOffset * 0.85,
+//         cx + shoulder - r * 0.50,
+//         host.top,
+//         cx + shoulder,
+//         host.top,
+//       )
+//       ..lineTo(host.right, host.top)
+//       ..lineTo(host.right, host.bottom)
+//       ..lineTo(host.left, host.bottom)
+//       ..close();
+//   }
+// }
+
+
+

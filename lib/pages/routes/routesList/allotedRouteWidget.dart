@@ -197,7 +197,7 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
                               child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Lottie.asset("assets/map_blue.json",
+                              Lottie.asset("assets/map.json",
                                   height: isSmallDevice ? 80 : 100),
                               Text(
                                 "No Routes",
