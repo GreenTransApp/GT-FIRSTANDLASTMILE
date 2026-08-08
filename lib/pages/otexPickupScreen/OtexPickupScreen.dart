@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/dialogs/mailDialog.dart';
 import 'package:gtlmd/common/dialogs/model/MailDialogResult.dart';
@@ -279,8 +280,10 @@ class _OtexPickupScreenBodyState extends State<_OtexPickupScreenBody> {
 
 // Section 2: Card count input  ← ADD THIS
                               // _buildCardCountRow(provider, state),
-                              SizedBox(height: SizeConfig.smallVerticalPadding),
-
+                              // SizedBox(height: SizeConfig.smallVerticalPadding),
+                            Visibility(
+                              visible: !isNullOrEmpty(state.info.issplitorder) && state.info.issplitorder == 'Y',
+                              child: Text('NOTE: This booking is a split-order WayBill generated through the web portal.',style: TextStyle(color: CommonColors.grey600),)),
                               // Section 2: Dynamically Rendered Card List
                               ListView.builder(
                                 shrinkWrap: true,

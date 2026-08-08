@@ -863,7 +863,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: (isSaved || provider.state.isReadOnly) &&
-                          !_isPrintingWaybill
+                          !_isPrintingWaybill && !isNullOrEmpty(card.wayBillNo)
                       ? () => _handlePrintWaybill(provider)
                       : null,
                   icon: _isPrintingWaybill
@@ -883,7 +883,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                     foregroundColor: CommonColors.colorPrimary,
                     disabledForegroundColor: Colors.grey.shade400,
                     side: BorderSide(
-                        color: (isSaved || provider.state.isReadOnly)
+                        color: (isSaved || provider.state.isReadOnly && !isNullOrEmpty(card.wayBillNo))
                             ? CommonColors.appBarColor
                             : Colors.grey.shade300),
                     shape: RoundedRectangleBorder(
@@ -930,7 +930,7 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
                         size: 16,
                       ),
                 label: Text(
-                  isSaved && card.wayBillNo != null
+                  isSaved 
                       ? 'Update Way Bill'
                       : _isSaving
                           ? "Saving..."

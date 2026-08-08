@@ -59,6 +59,8 @@ class OperationsProvider extends ChangeNotifier {
   }
 
   Future<List<MenuModel>> getMenuList() async {
+     _setStatus(ApiCallingStatus.loading);
+     try{
     Map<String, String> params = {
       "prmconstring": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
@@ -68,6 +70,10 @@ class OperationsProvider extends ChangeNotifier {
     };
 
     return _repo.getMenuList(params);
+     }catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+       return [];
+    }
   }
 
   Future<String?> getSingleOperationDetail(String menuCode) async {

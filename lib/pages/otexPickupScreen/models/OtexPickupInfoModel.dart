@@ -135,6 +135,7 @@ class OtexPickupInfoModel {
   final String? autoSendEmail;
   final int? jobid;
   final String? signimagepath;
+  final String? issplitorder;
 
   OtexPickupInfoModel({
     this.commandStatus,
@@ -246,6 +247,7 @@ class OtexPickupInfoModel {
     this.autoSendEmail,
     this.jobid,
     this.signimagepath,
+    this.issplitorder
   });
 
   factory OtexPickupInfoModel.fromJson(Map<String, dynamic> json) {
@@ -359,6 +361,7 @@ class OtexPickupInfoModel {
       autoSendEmail: json['autosendemail'],
       jobid: json['jobid'],
       signimagepath: json['signimagepath'],
+      issplitorder: json['issplitorder'],
     );
   }
 
@@ -468,6 +471,7 @@ class OtexPickupInfoModel {
       'autosendemail': autoSendEmail,
       'jobid': jobid,
       'signimagepath': signimagepath,
+      'issplitorder': issplitorder,
     };
   }
 
@@ -579,6 +583,7 @@ class OtexPickupInfoModel {
     String? autosendemail,
     int? jobid,
     String? signimagepath,
+    String? issplitorder,
   }) {
     return OtexPickupInfoModel(
         commandStatus: commandStatus ?? this.commandStatus,
@@ -691,6 +696,7 @@ class OtexPickupInfoModel {
         autoSendEmail: autoSendEmail ?? this.autoSendEmail,
         jobid: jobid ??this.jobid,
         signimagepath: signimagepath ??this.signimagepath,
+        issplitorder: issplitorder ??this.issplitorder,
         );
   }
 }

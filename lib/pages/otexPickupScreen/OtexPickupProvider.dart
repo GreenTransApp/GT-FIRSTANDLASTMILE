@@ -603,8 +603,9 @@ class OtexPickupProvider extends ChangeNotifier {
         );
 
         notifyListeners();
-
-        await getMailDetails(updated[index].wayBillNo.toString());
+        if(!isNullOrEmpty(updated[index].wayBillNo)){
+          await getMailDetails(updated[index].wayBillNo.toString());
+        }
 
         return true;
       } else {
