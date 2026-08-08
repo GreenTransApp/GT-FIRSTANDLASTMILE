@@ -15,6 +15,7 @@ class MenuModel {
   String? exestr;
   String? parentcode;
   String? sequenceid;
+  String? menuimage;
 
   MenuModel(
       {this.commandstatus,
@@ -32,7 +33,9 @@ class MenuModel {
       this.printrec,
       this.exestr,
       this.parentcode,
-      this.sequenceid});
+      this.sequenceid,
+      this.menuimage
+      });
 
   MenuModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -51,6 +54,7 @@ class MenuModel {
     exestr = json['exestr'];
     parentcode = json['parentcode'];
     sequenceid = json['sequenceid'];
+    menuimage = json['menuimage'];
   }
 
   MenuModel copyWith({
@@ -73,6 +77,7 @@ class MenuModel {
       exestr: exestr,
       sequenceid: sequenceid,
       parentcode: parentcode,
+      menuimage: menuimage,
     );
   }
 
@@ -94,6 +99,7 @@ class MenuModel {
     data['exestr'] = this.exestr;
     data['parentcode'] = this.parentcode;
     data['sequenceid'] = this.sequenceid;
+    data['menuimage'] = this.menuimage;
     return data;
   }
 }

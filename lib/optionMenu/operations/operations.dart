@@ -315,7 +315,8 @@ class _OperationsState extends State<Operations> {
                                                           vertical: SizeConfig
                                                               .smallVerticalPadding),
                                                       child: Image.network(
-                                                        "${URL.imageBaseUrl}GTINFINITIAPP/${operation.menuname}.png",
+                                                        // "${URL.imageBaseUrl}GTINFINITIAPP/${operation.menuname}.png",
+                                                        "${operation.menuimage}",
                                                         fit: BoxFit.contain,
                                                         loadingBuilder: (
                                                           context,
