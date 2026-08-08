@@ -30,7 +30,8 @@ class CommonColors {
   static Color weeklyOffColor = Color.fromARGB(255, 53, 8, 80);
   static Color? testColor = Color.fromARGB(255, 229, 228, 226);
 
-  static Color? primaryColorShade = const Color(0xFF4F46E5);
+  // static Color? primaryColorShade = const Color(0xFF4F46E5);
+  static Color? primaryColorShade = const Color.fromARGB(255, 254, 89, 1);
   static Color? indigoshade50 = Colors.purple[50];
   static Color? whiteShade = const Color(0xFFF1F5F9);
   static Color? grey = Colors.grey;

@@ -16,6 +16,7 @@ import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
+import 'package:gtlmd/common/commonButton.dart';
 import 'package:gtlmd/common/commonModel/allFormLoadModel.dart';
 import 'package:gtlmd/common/commonViewModel/lovViewModel.dart';
 
@@ -107,10 +108,28 @@ class _PodEntryState extends State<PodEntry> {
   final LovViewModel lovViewModel = LovViewModel();
   List<AllFormLoadModel> _formLoadDataList = List.empty(growable: true);
   // Map<String, AllFormLoadModel> fieldMap = {};
+  late DateTime todayDateTime;
+  late String currentdate;
+  late String currentTime;
+  bool isGrEditable = false;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
+    setintialValue();
+  }
+
+  setintialValue() {
+    getLoginPrefs();
+    setObservers();
+    getPodLovs();
+    todayDateTime = DateTime.now();
+    // currentdate = DateFormat('yyyy-MM-dd').format(todayDateTime);
+    currentdate = DateFormat('dd-MM-yyyy').format(todayDateTime);
+    currentTime = DateFormat('h:mm a').format(todayDateTime);
     receivedByFocus = FocusNode();
     receiverMobileNumFocus = FocusNode();
     dlvPckgsFocus = FocusNode();
@@ -121,18 +140,21 @@ class _PodEntryState extends State<PodEntry> {
         ? modelDetail.grno.toString()
         : modelDetail.generatedGr.toString();
 
-    _podDateController.text = /* formatDate(DateTime.now()); */
-        DateFormat('dd-MM-yyyy').format(DateTime.now());
-    _podTimeController.text = DateFormat('hh:mm').format(DateTime.now());
-    _deliveryDateController.text = /* formatDate(DateTime.now()); */
-        DateFormat('dd-MM-yyyy').format(DateTime.now());
+    _podDateController.text = currentdate;
+    _podTimeController.text = currentTime;
+    _deliveryDateController.text = currentdate;
     // _deliverPckgsController.text = modelDetail.pcs.toString();
     // _damagedPckgsController.text = "0";
-    _deliveryTimeController.text = DateFormat('h:mm a').format(DateTime.now());
+    _deliveryTimeController.text = currentTime;
+    // _deliveryTimeController.text = DateFormat('h:mm a').format(DateTime.now());
     // _deliverByController.text = savedUser.username.toString();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => loadingAlertService = LoadingAlertService(context: context));
-    getLoginPrefs();
+    if (isNullOrEmpty(_grNoController.text.toString())) {
+      _grNoController.text = "";
+      isGrEditable = true;
+    } else {
+      isGrEditable = false;
+      getGrDetail();
+    }
   }
 
   Future<List<AllFormLoadModel>> getFormLoadData() async {
@@ -151,12 +173,12 @@ class _PodEntryState extends State<PodEntry> {
 
   Future<void> fetchLocationAndSubmit() async {
     loadingAlertService.showLoading();
-   final position = await LocationService().getCurrentLocation();
+    final position = await LocationService().getCurrentLocation();
 
-  final address = await AppLocationService().getAddressFromLatLng(
-    position.latitude,
-    position.longitude,
-  );
+    final address = await AppLocationService().getAddressFromLatLng(
+      position.latitude,
+      position.longitude,
+    );
     loadingAlertService.hideLoading();
 
     if (address != null) {
@@ -182,10 +204,10 @@ class _PodEntryState extends State<PodEntry> {
                         throw Exception("")
                       else
                         {
-                          setObservers(),
-                          // getFormLoadData(),
-                          getGrDetail(),
-                          getPodLovs()
+                          // setObservers(),
+                          // // getFormLoadData(),
+                          // getGrDetail(),
+                          // getPodLovs()
                         }
                     })
               }
@@ -196,27 +218,27 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   setPodData(PodEntryModel pod) {
-    _originNameController.text = isNullOrEmpty(pod.origin.toString()) == true
+    _originNameController.text = isNullOrEmpty(pod.origin.toString())
         ? "Data Not Found"
         : pod.origin.toString();
     _destinationNameController.text =
-        isNullOrEmpty(pod.destname.toString()) == true
+        isNullOrEmpty(pod.destname.toString())
             ? "Data Not Found"
             : pod.destname.toString();
     _bookingDateController.text =
-        isNullOrEmpty(pod.grdt.toString()) == true ? "" : pod.grdt.toString();
-    _bookingTimeController.text = isNullOrEmpty(pod.picktime.toString()) == true
+        isNullOrEmpty(pod.grdt.toString()) ? "" : pod.grdt.toString();
+    _bookingTimeController.text = isNullOrEmpty(pod.picktime.toString()) 
         ? ""
         : pod.picktime.toString();
-    _arrivalDateController.text = pod.receivedt == null
+    _arrivalDateController.text = isNullOrEmpty(pod.receivedt)
         ? DateFormat('dd-MM-yyyy').format(DateTime.now())
         : pod.receivedt.toString();
-    _arrivalTimeController.text = pod.receivetime == null
+    _arrivalTimeController.text = isNullOrEmpty(pod.receivetime) 
         ? "${TimeOfDay.now().hour}:${TimeOfDay.now().minute}"
         : pod.receivetime.toString();
     _destinationNameController.text = pod.destname.toString();
-    _receivedByController.text = pod.cnge.toString();
-    _receiverMobileByController.text = pod.cngetelno.toString();
+    _receivedByController.text =isNullOrEmpty(pod.cnge.toString()) ? "" : pod.cnge.toString();
+    _receiverMobileByController.text = isNullOrEmpty(pod.cngetelno.toString())?"" :pod.cngetelno.toString() ;
 
     isSignRequired = pod.sign == "Y" ? true : false;
     isStampRequired = pod.stamp == "Y" ? true : false;
@@ -228,6 +250,33 @@ class _PodEntryState extends State<PodEntry> {
     _deliverPckgsController.text = pod.deliverpckgs.toString() ?? "0";
     _damagedPckgsController.text = pod.damagepckgs.toString() ?? "0";
     totpckgs = pod.pckgs.toString();
+  }
+
+  resetPodData() {
+    _originNameController.text = "";
+    _destinationNameController.text = "";
+    _bookingDateController.text = "";
+    _bookingTimeController.text = "";
+    _arrivalDateController.text = currentdate;
+    _arrivalTimeController.text = currentTime;
+    _destinationNameController.text = "";
+    _receivedByController.text = "";
+    _receiverMobileByController.text = "";
+    _remarksController.text = "";
+    _relationController.text = "";
+    _signatureFilePath = "";
+    _podFilePath = "";
+
+    isSignRequired = false;
+    isStampRequired = false;
+    _totalWeightController.text = '0 Kg';
+
+    _totalPckgsController.text = "0";
+    _deliverPckgsController.text = "0";
+    _damagedPckgsController.text = "0";
+    totpckgs = "0";
+    _deliveryNoteImages = [];
+    _stickerList = [];
   }
 
   setObservers() {
@@ -250,7 +299,9 @@ class _PodEntryState extends State<PodEntry> {
         } else {
           failToast("Something went wrong");
         }
-        Get.back();
+        resetPodData();
+
+        // Get.back();
       }
     });
     lovViewModel.allFormLoadList.stream.listen((data) {
@@ -319,7 +370,7 @@ class _PodEntryState extends State<PodEntry> {
         showSuccessAlert(
             context,
             // "POD SUCCESSFULLY\n Consignment# -: ${resp.grNo}",
-            "POD SUCCESSFULLY\n Consignment# -: ${grno}",
+            "POD SUCCESSFULLY\n Consignment# -: ${_grNoController.text.toString()}",
             "",
             backCallBackForAlert);
       } else {
@@ -376,8 +427,8 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   void backCallBackForAlert() {
-  //    Navigator.pop(context); // Close success dialog
-  Get.back(result: true); // Close PodEntry and return true
+    //    Navigator.pop(context); // Close success dialog
+    Get.back(result: true); // Close PodEntry and return true
   }
 
   getPodLovs() {
@@ -388,11 +439,16 @@ class _PodEntryState extends State<PodEntry> {
   }
 
   getGrDetail() {
+    if (isNullOrEmpty(_grNoController.text.toString())) {
+      failToast("Please Enter Consignment#");
+      return;
+    }
     Map<String, String> params = {
       "prmcompanyid": savedLogin.companyid.toString(),
-      "prmgrno": isNullOrEmpty(modelDetail.generatedGr)
-          ? modelDetail.grno.toString()
-          : modelDetail.generatedGr.toString(),
+      "prmgrno": _grNoController.text.toString(),
+      // "prmgrno": isNullOrEmpty(modelDetail.generatedGr)
+      //     ? modelDetail.grno.toString()
+      //     : modelDetail.generatedGr.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString()
     };
 
@@ -860,10 +916,9 @@ class _PodEntryState extends State<PodEntry> {
     );
   }
 
-  InputDecoration _inputDecoration(
-    String hint,
-  ) {
+  InputDecoration _inputDecoration(String hint, IconButton? suffixIcon) {
     return InputDecoration(
+      suffixIcon: suffixIcon,
       hintText: hint,
       hintStyle: TextStyle(
           color: CommonColors.grey400!, fontSize: SizeConfig.mediumTextSize),
@@ -1021,32 +1076,146 @@ class _PodEntryState extends State<PodEntry> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildFormField(
-                            // label: "Consignment Number",
-                            label: getFormStringValue(
-                                    "grno", RETURN_TYPE.LabelName) ??
-                                "Consignment Number",
-                            isRequired: false,
-                            icon: Icons.inventory_2_outlined,
-                            child: TextFormField(
-                              enabled: false,
-                              controller: _grNoController,
-                              style: TextStyle(
-                                  color: CommonColors.appBarColor,
-                                  fontSize: SizeConfig.mediumTextSize),
-                              decoration: _inputDecoration(
-                                getFormStringValue(
-                                        "grno", RETURN_TYPE.PlaceHolder) ??
-                                    "Consignment Number",
+                          // _buildFormField(
+                          //   // label: "Consignment Number",
+                          //   label: getFormStringValue(
+                          //           "grno", RETURN_TYPE.LabelName) ??
+                          //       "Consignment Number",
+                          //   isRequired: false,
+                          //   icon: Icons.inventory_2_outlined,
+                          //   child: TextFormField(
+                          //     enabled: false,
+                          //     controller: _grNoController,
+                          //     style: TextStyle(
+                          //         color: CommonColors.appBarColor,
+                          //         fontSize: SizeConfig.mediumTextSize),
+                          //     decoration: _inputDecoration(
+                          //       getFormStringValue(
+                          //               "grno", RETURN_TYPE.PlaceHolder) ??
+                          //           "Consignment Number",
+                          //     ),
+                          //     validator: (value) {
+                          //       if (value == null || value.isEmpty) {
+                          //         return 'Please enter consignment number';
+                          //       }
+                          //       return null;
+                          //     },
+                          //   ),
+                          // ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(Icons.inventory_2_outlined,
+                                      size: SizeConfig.mediumIconSize,
+                                      color: const Color(0xFF64748B)),
+                                  SizedBox(
+                                      width: SizeConfig.smallHorizontalSpacing),
+                                  Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: getFormStringValue("grno",
+                                                  RETURN_TYPE.LabelName) ??
+                                              "Consignment Number",
+                                          style: TextStyle(
+                                            fontSize: SizeConfig.smallTextSize,
+                                            fontWeight: FontWeight.w500,
+                                            color: CommonColors.darkCyanBlue!,
+                                          ),
+                                        ),
+                                        if (true)
+                                          TextSpan(
+                                            text: ' *',
+                                            style: TextStyle(
+                                              color: CommonColors.red!,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter consignment number';
-                                }
-                                return null;
-                              },
-                            ),
+                              SizedBox(height: SizeConfig.smallVerticalSpacing),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      enabled: isGrEditable,
+                                      controller: _grNoController,
+                                      style: TextStyle(
+                                          color: CommonColors.appBarColor,
+                                          fontSize: SizeConfig.mediumTextSize),
+                                      decoration: _inputDecoration(
+                                        getFormStringValue("grno",
+                                                RETURN_TYPE.PlaceHolder) ??
+                                            "Consignment Number",
+                                        _grNoController.text.isNotEmpty
+                                            ? IconButton(
+                                                icon: const Icon(Icons.clear),
+                                                onPressed: () {
+                                                  _grNoController.clear();
+                                                  resetPodData();
+                                                  setState(() {});
+                                                },
+                                              )
+                                            : null,
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter consignment number';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: isGrEditable,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          getGrDetail();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          //  backgroundColor: CommonColors.colorPrimary,
+                                          elevation: 0,
+                                          side: BorderSide(
+                                            color: CommonColors.colorPrimary!,
+                                            width: 2,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 18, horizontal: 18),
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: SizeConfig
+                                                .extraSmallHorizontalPadding,
+                                          ),
+                                          child: Text(
+                                            'Varify',
+                                            style: TextStyle(
+                                              color: CommonColors.colorPrimary,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize:
+                                                  SizeConfig.smallTextSize,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
+
                           const SizedBox(height: 20),
                           _buildFormField(
                             // label: "Total Weight",
@@ -1061,7 +1230,18 @@ class _PodEntryState extends State<PodEntry> {
                                   color: CommonColors.appBarColor,
                                   fontSize: SizeConfig.mediumTextSize),
                               controller: _totalWeightController,
-                              decoration: _inputDecoration("Total Weight"),
+                              decoration: _inputDecoration(
+                                "Total Weight",
+                                _totalWeightController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _totalWeightController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter total weight';
@@ -1169,8 +1349,18 @@ class _PodEntryState extends State<PodEntry> {
                               onTapOutside: (event) {
                                 receivedByFocus.unfocus();
                               },
-                              decoration:
-                                  _inputDecoration("Enter recipient's name"),
+                              decoration: _inputDecoration(
+                                "Enter recipient's name",
+                                _receivedByController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _receivedByController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter recipient name';
@@ -1199,8 +1389,18 @@ class _PodEntryState extends State<PodEntry> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               keyboardType: TextInputType.number,
-                              decoration:
-                                  _inputDecoration('Enter mobile number'),
+                              decoration: _inputDecoration(
+                                'Enter mobile number',
+                                _receiverMobileByController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _receiverMobileByController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               validator: (value) {
                                 if (value == null ||
                                     value.isEmpty ||
@@ -1225,7 +1425,8 @@ class _PodEntryState extends State<PodEntry> {
                               style: TextStyle(
                                   fontSize: SizeConfig.mediumTextSize,
                                   color: Colors.black),
-                              decoration: _inputDecoration('Select relation'),
+                              decoration:
+                                  _inputDecoration('Select relation', null),
                               items:
                                   _relations.map((PodRelationsModel relation) {
                                 return DropdownMenuItem<String>(
@@ -1262,7 +1463,18 @@ class _PodEntryState extends State<PodEntry> {
                                 style: TextStyle(
                                     fontSize: SizeConfig.mediumTextSize),
                                 controller: _totalPckgsController,
-                                decoration: _inputDecoration('Total Packages'),
+                                decoration: _inputDecoration(
+                                  'Total Packages',
+                                  _totalPckgsController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear),
+                                          onPressed: () {
+                                            _totalPckgsController.clear();
+                                            setState(() {});
+                                          },
+                                        )
+                                      : null,
+                                ),
                                 onChanged: null),
                           ),
                           SizedBox(height: SizeConfig.mediumVerticalSpacing),
@@ -1298,7 +1510,18 @@ class _PodEntryState extends State<PodEntry> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               keyboardType: TextInputType.number,
-                              decoration: _inputDecoration('Delivery Packages'),
+                              decoration: _inputDecoration(
+                                'Delivery Packages',
+                                _deliverPckgsController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _deliverPckgsController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               validator: (value) {
                                 if (isNullOrEmpty(value)) {
                                   return 'Please enter delivery packages';
@@ -1347,21 +1570,33 @@ class _PodEntryState extends State<PodEntry> {
                               },
                               onChanged: (value) {
                                 _damagedPckgsController.text = value;
-                                setState(() {
+                                  
                                   if (_damagedPckgsController.text
                                           .toString()
                                           .isNotEmpty &&
                                       int.parse(_damagedPckgsController.text
-                                              .toString()) ==
-                                          0) {
+                                              .toString()) == 0) {
                                     // empty the damage reason, damage image 1 and damage image 2 variables
                                     clearDamagedValues();
                                   }
+                                
+                                setState(() {
                                 });
                               },
                               controller: _damagedPckgsController,
                               // keyboardType: TextInputType.phone,
-                              decoration: _inputDecoration('Damaged Packages'),
+                              decoration: _inputDecoration(
+                                'Damaged Packages',
+                                _damagedPckgsController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _damagedPckgsController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               // validator: (value) {
                               //   if (isNullOrEmpty(value)) {
                               //     return 'Please enter damanged packages';
@@ -1404,7 +1639,8 @@ class _PodEntryState extends State<PodEntry> {
                                 style: TextStyle(
                                     fontSize: SizeConfig.mediumTextSize,
                                     color: Colors.black),
-                                decoration: _inputDecoration('Select reason'),
+                                decoration:
+                                    _inputDecoration('Select reason', null),
                                 items: _damageReason.map((ReasonModel reason) {
                                   return DropdownMenuItem<ReasonModel>(
                                     value: reason,
@@ -1724,7 +1960,17 @@ class _PodEntryState extends State<PodEntry> {
                               style: TextStyle(
                                   fontSize: SizeConfig.mediumTextSize),
                               decoration: _inputDecoration(
-                                  'Enter any additional notes (optional)'),
+                                'Enter any additional notes (optional)',
+                                _remarksController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          _remarksController.clear();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                              ),
                               maxLines: 3,
                             ),
                           ),

@@ -1,6 +1,6 @@
 class SESSION {
-  static bool isDebugging = true;
-  // static bool isDebugging = false;
+  // static bool isDebugging = true;
+  static bool isDebugging = false;
 }
 
 class URL {
@@ -32,8 +32,8 @@ class USER {
   // static String debuggingUserName = "7300964400";
   // static String debuggingPassword = "12345678";
 // //--------------GreenTransOtex-----------------
-  static String debuggingUserName = "10082@OTTEXGTI";
-  static String debuggingPassword = "GOHAR123";
+  static String debuggingUserName = "10304@OTTEXGTI";
+  static String debuggingPassword = "IRFAN123";
   // static String debuggingUserName = "8287371289";
   // static String debuggingPassword = "test@123";
 }

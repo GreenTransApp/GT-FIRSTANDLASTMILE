@@ -13,6 +13,8 @@ import 'package:gtlmd/optionMenu/stickerPrinting/grListPage.dart';
 import 'package:gtlmd/pages/attendance/attendanceScreen.dart';
 import 'package:gtlmd/optionMenu/tripMis/tripMis.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
+import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
+import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -209,6 +211,17 @@ class SideMenu extends StatelessWidget {
                     press: () {
                       Navigator.pop(context);
                       Get.to(const Operations());
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'POD Entry',
+                    leadingIcon: const Icon(Symbols.apk_document_rounded),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(PodEntry(
+                              deliveryDetailModel: DeliveryDetailModel(),
+                            ),);
                     },
                   ),
                 ],
