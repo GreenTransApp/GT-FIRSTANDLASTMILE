@@ -9,6 +9,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/login/forgotPassword.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
@@ -138,30 +139,65 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
         _validateUserLogin();
       } else if (provider.userResponse != null) {
         if (provider.userResponse!.commandstatus == 1) {
-          final userResp = provider.userResponse!;
-          // Stop timer after successful validation
+          // final userResp = provider.userResponse!;
+          // // Stop timer after successful validation
           _timer?.cancel();
           _timer = null;
 
-          // _navigate();
-          Map<String, String> params = {
-            "prmcompanyid": savedLogin.companyid.toString(),
-            "prmbranchcode": userResp.loginbranchcode.toString(),
-            "prmusername": userResp.username.toString(),
-          };
-          provider
-              .clearUserResponse(); // Clear to prevent repeated bottom sheet
-          showDivisionSelectionBottomSheet(context, "Select Division",
-              (division) {
+          // // _navigate();
+          // Map<String, String> params = {
+          //   "prmcompanyid": savedLogin.companyid.toString(),
+          //   "prmbranchcode": userResp.loginbranchcode.toString(),
+          //   "prmusername": userResp.username.toString(),
+          // };
+          // provider
+          //     .clearUserResponse(); // Clear to prevent repeated bottom sheet
+          // showDivisionSelectionBottomSheet(context, "Select Division",
+          //     (division) {
+          //   // authService.login(context);
+          //   _validateDivision(
+          //       savedLogin.companyid.toString(),
+          //       userResp.usercode.toString(),
+          //       userResp.loginbranchcode.toString(),
+          //       division.accdivisionid.toString(),
+          //       userResp.sessionid.toString());
+          //   provider.selectedDivision = division;
+          // }, params);
+          if (savedLogin.divisionlogin != null &&
+              savedLogin.divisionlogin == 'Y') {
+            final userResp = provider.userResponse!;
             // authService.login(context);
-            _validateDivision(
-                savedLogin.companyid.toString(),
-                userResp.usercode.toString(),
-                userResp.loginbranchcode.toString(),
-                division.accdivisionid.toString(),
-                userResp.sessionid.toString());
-            provider.selectedDivision = division;
-          }, params);
+            Map<String, String> params = {
+              "prmcompanyid": savedLogin.companyid.toString(),
+              "prmbranchcode": userResp.loginbranchcode.toString(),
+              "prmusername": userResp.username.toString(),
+            };
+            provider.clearUserResponse();
+
+            showDivisionSelectionBottomSheet(context, "Select Division",
+                (division) {
+              // authService.login(context);
+              _validateDivision(
+                  savedLogin.companyid.toString(),
+                  userResp.usercode.toString(),
+                  userResp.loginbranchcode.toString(),
+                  division.accdivisionid.toString(),
+                  userResp.sessionid.toString());
+              provider.selectedDivision = division;
+            }, params);
+          } else {
+            Map<String, dynamic> divisiondata = {
+              "accdivisionid": 0,
+              "accdivisionname": "",
+              "commandstatus": "1",
+              "commandmessage": null
+            };
+            authService.storagePush(
+                ENV.divisionPrefTag, jsonEncode(divisiondata));
+            savedUser.logindivisionid = 0;
+            savedUser.logindivisionname = "";
+            _navigate();
+          }
         }
       } else if (provider.divisionResponse != null) {
         if (provider.divisionResponse!.commandstatus == 1) {
@@ -239,126 +275,222 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
         });
 
         return Scaffold(
+          backgroundColor: CommonColors.grey200,
           resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              color: CommonColors.white,
-              onPressed: () => Get.back(),
-            ),
-            backgroundColor: CommonColors.colorPrimary,
-            title: Text(
-              'Enter OTP',
-              style: TextStyle(color: CommonColors.white),
-            ),
-            elevation: 2,
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Image.asset(
-                "assets/otpIllustration.png",
-                width: MediaQuery.sizeOf(context).width * 0.7,
-                height: MediaQuery.sizeOf(context).height * 0.4,
-              ),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _otpDigitField(first),
-                          const SizedBox(width: 12),
-                          _otpDigitField(second),
-                          const SizedBox(width: 12),
-                          _otpDigitField(third),
-                          const SizedBox(width: 12),
-                          _otpDigitField(fourth),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.sizeOf(context).width * 0.1),
-                            child: Text(
-                              _formatTime(_seconds) == '00:00'
-                                  ? ''
-                                  : _formatTime(_seconds),
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.sizeOf(context).height * 0.01),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Didn't receive any sms? ",
-                      style: TextStyle(fontSize: 16),
+          // appBar: AppBar(
+          //   leading: IconButton(
+          //     icon: const Icon(Icons.arrow_back),
+          //     color: CommonColors.white,
+          //     onPressed: () => Get.back(),
+          //   ),
+          //   backgroundColor: CommonColors.colorPrimary,
+          //   title: Text(
+          //     'Enter OTP',
+          //     style: TextStyle(color: CommonColors.white),
+          //   ),
+          //   elevation: 2,
+          // ),
+          body: Container(
+               width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding,
+                    vertical: SizeConfig.extraLargeVerticalPadding
                     ),
-                    InkWell(
-                      onTap: _showButton ? _getLoginOtp : null,
-                      child: Text(
-                        "Resend Code",
+                    margin: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.sizeOf(context).width * 0.01,
+                      // vertical: MediaQuery.sizeOf(context).height * 0.1,
+                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                // Image.asset(
+                //   "assets/otpIllustration.png",
+                //   width: MediaQuery.sizeOf(context).width * 0.7,
+                //   height: MediaQuery.sizeOf(context).height * 0.4,
+                // ),
+                Text(
+                            'Enter OTP',
+                            style: TextStyle(fontSize: SizeConfig.largeTextSize, color: Colors.black,fontWeight: FontWeight.bold),
+                           softWrap: true,
+                          ),
+                //  Text(
+                //     ""
+                //     "${widget.usermobileno}",
+                //     style: TextStyle(
+                //       fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                //       color: CommonColors.grey600,
+                //       height: 1.4,
+                //     ),
+                //     ),
+                    RichText(
+                      text: TextSpan(
                         style: TextStyle(
-                            fontSize: 16,
-                            color: _showButton
-                                ? CommonColors.colorPrimary
-                                : CommonColors.disabled),
+                                          fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                                          color: CommonColors.grey600,
+                                          height: 1.4,
+                                        ), // Default style
+                        children:  <TextSpan>[
+                          TextSpan(text: 'Please Enter the verification code sent to '),
+                          TextSpan(
+                            text: "${widget.usermobileno}", 
+                            style: TextStyle(fontWeight: FontWeight.bold, color: CommonColors.appBarColor),
+                          ),
+                        
+                        ],
                       ),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-          persistentFooterButtons: [
-            Container(
+                    ),
+                    SizedBox(height: SizeConfig.largeVerticalSpacing,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _otpDigitField(first),
+                        const SizedBox(width: 12),
+                        _otpDigitField(second),
+                        const SizedBox(width: 12),
+                        _otpDigitField(third),
+                        const SizedBox(width: 12),
+                        _otpDigitField(fourth),
+                      ],
+                    ),
+                    
+                     SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                      Text(
+                            _formatTime(_seconds) == '00:00'
+                                ? ''
+                                : _formatTime(_seconds),
+                            style:  TextStyle(
+                                color: CommonColors.colorPrimary!, fontSize: 16),
+                          ),
+                           SizedBox(width: SizeConfig.smallHorizontalSpacing),
+                      InkWell(
+                           onTap: _showButton ? _getLoginOtp : null,
+                        child: RichText(
+                                              text: TextSpan(
+                        style: TextStyle(
+                                          fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                                          color: CommonColors.grey600,
+                                          height: 1.4,
+                                        ), // Default style
+                        children:  <TextSpan>[
+                          TextSpan(text: "Didn't receive OTP code? "),
+                          TextSpan(
+                            text: " Resend Code", 
+                            style:TextStyle(
+                              fontSize: 16,
+                              color: _showButton
+                                  ? CommonColors.colorPrimary
+                                  : CommonColors.grey600),
+                          ),
+                        
+                        ],
+                                              ),
+                                            ),
+                      ),
+                       
+                       
+                    //       const Text(
+                    //   "Didn't receive any sms? ",
+                    //   style: TextStyle(fontSize: 16),
+                    // ),
+                    // InkWell(
+                    //   onTap: _showButton ? _getLoginOtp : null,
+                    //   child: Text(
+                    //     "Resend Code",
+                    //     style: TextStyle(
+                    //         fontSize: 16,
+                    //         color: _showButton
+                    //             ? CommonColors.colorPrimary
+                    //             : CommonColors.disabled),
+                    //   ),
+                    // )
+                        
+                      ],
+                    ),
+SizedBox(height: SizeConfig.mediumVerticalSpacing,),
+                     Container(
               width: double.infinity,
-              height: 69,
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 12, bottom: 6),
+              height: 50,
+              
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32)),
+                        borderRadius: BorderRadius.circular(18)),
                     backgroundColor: CommonColors.colorPrimary,
                   ),
                   onPressed: _onVerifyPressed,
                   child: const Text(
-                    'Verify',
+                    'Verify & Proceeds',
                     style: TextStyle(color: Colors.white),
                   )),
             ),
-          ],
+                  ],
+                ),
+                // Padding(
+                //   padding: EdgeInsets.symmetric(
+                //       vertical: MediaQuery.sizeOf(context).height * 0.01),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+
+                //     children: [
+                //       const Text(
+                //         "Didn't receive any sms? ",
+                //         style: TextStyle(fontSize: 16),
+                //       ),
+                //       InkWell(
+                //         onTap: _showButton ? _getLoginOtp : null,
+                //         child: Text(
+                //           "Resend Code",
+                //           style: TextStyle(
+                //               fontSize: 16,
+                //               color: _showButton
+                //                   ? CommonColors.colorPrimary
+                //                   : CommonColors.disabled),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+          // persistentFooterButtons: [
+          //   Container(
+          //     width: double.infinity,
+          //     height: 69,
+          //     padding: const EdgeInsets.only(
+          //         left: 20, right: 20, top: 12, bottom: 6),
+          //     child: ElevatedButton(
+          //         style: ElevatedButton.styleFrom(
+          //           shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(32)),
+          //           backgroundColor: CommonColors.colorPrimary,
+          //         ),
+          //         onPressed: _onVerifyPressed,
+          //         child: const Text(
+          //           'Verify',
+          //           style: TextStyle(color: Colors.white),
+          //         )),
+          //   ),
+          // ],
         );
       },
     );
   }
 
   Widget _otpDigitField(TextEditingController controller) {
-    return Container(
-      height: 65,
-      width: 65,
-      decoration: BoxDecoration(
-        color: Colors.blueGrey[100],
-        shape: BoxShape.circle,
-      ),
+    return SizedBox(
+       height: 70,
+      width: 70,
       child: Center(
         child: TextField(
           cursorColor: CommonColors.colorPrimary,
@@ -370,18 +502,18 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
           },
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.blueGrey[100],
+            fillColor: CommonColors.white!,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: CommonColors.white!),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: CommonColors.colorPrimary!),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(32),
-              borderSide: BorderSide(color: Colors.blueGrey[100]!),
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: CommonColors.white!),
             ),
             contentPadding: EdgeInsets.zero,
           ),

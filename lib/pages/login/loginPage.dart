@@ -12,6 +12,7 @@ import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
+import 'package:gtlmd/pages/login/usernameInputScreen.dart';
 import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
 import 'package:gtlmd/pages/offlineView/offlinePassword.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
     } else if (passwordController.text.isEmpty) {
       failToast('Password required');
       return;
-    } 
+    }
     //else if (usermobileController.text.length < 10) {
     //   failToast('Invalid Mobile Number');
     //   return;
@@ -450,8 +451,13 @@ class _LoginPageState extends State<LoginPage> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () => _validateUserMobile(
-                                    AuthenticationFlow.forgotPassword),
+                                // onPressed: () => _validateUserMobile(
+                                //     AuthenticationFlow.forgotPassword),
+                                onPressed: () {
+                                  authenticationFlow =
+                                      AuthenticationFlow.forgotPassword;
+                                  Get.off(UsernameInputScreen());
+                                },
                                 child: Text(
                                   'Forgot password?',
                                   style: TextStyle(

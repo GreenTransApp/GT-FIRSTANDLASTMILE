@@ -157,15 +157,19 @@ class _DeliveryPerformancePageState extends State<DeliveryPerformancePage> {
             /// USER IMAGE
             /// USER IMAGE
             CircleAvatar(
-              radius: 42,
-              backgroundColor: CommonColors.White,
-              child: Image.network(
-                savedLogin.logoimage.toString(),
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset("assets/images/defaultimage.png",
-                      fit: BoxFit.cover);
-                },
+              radius: 44,
+              backgroundColor: CommonColors.colorPrimary,
+              child: CircleAvatar(
+                radius: 42,
+                backgroundColor: CommonColors.White,
+                child: Image.network(
+                  savedLogin.logoimage.toString(),
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset("assets/images/defaultimage.png",
+                        fit: BoxFit.cover);
+                  },
+                ),
               ),
             ),
             SizedBox(height: SizeConfig.smallVerticalSpacing),

@@ -149,7 +149,7 @@ class Loginrepository {
 
     try {
       CommonResponse resp =
-          await apiPost("${loginBaseUrl}ValidatedUserMobileNoFomD2d", params);
+          await apiPost("${loginBaseUrl}ValidatedUserMobileNoFromD2d", params);
 
       if (resp.commandStatus != 1) {
         throw Exception(resp.commandMessage ?? "Mobile validation failed");

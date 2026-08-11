@@ -50,7 +50,7 @@ ValidateDeviceModel savedValidateDevice = ValidateDeviceModel();
 String? saveInStorageLogin = "";
 String? saveInStorageUser = "";
 // String? companyId = "";
-AuthenticationFlow authenticaionFlow = AuthenticationFlow.loginWithOtp;
+// AuthenticationFlow authenticaionFlow = AuthenticationFlow.loginWithOtp;
 UserModel savedUser = UserModel();
 AuthenticationFlow authenticationFlow = AuthenticationFlow.loginWithOtp;
 UserCredsModel userCredsModel = UserCredsModel();
@@ -436,7 +436,7 @@ inputField(
 }
 
 updateAuthenticationFlow(AuthenticationFlow flow) {
-  authenticaionFlow = flow;
+  authenticationFlow = flow;
 }
 
 Color StringToHexaColor(String hexColor) {

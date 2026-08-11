@@ -4,6 +4,7 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 
 import 'package:provider/provider.dart';
@@ -82,19 +83,15 @@ class _ForgotpasswordState extends State<Forgotpassword> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: label,
-        prefixIcon: const Icon(Icons.key_rounded),
-        enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(32),
-          ),
-          borderSide: BorderSide(color: Colors.black),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(32),
-          ),
-          borderSide: BorderSide(color: Colors.black),
-        ),
+        suffixIcon: const Icon(Icons.lock_outline),
+        enabledBorder:OutlineInputBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+        borderSide: BorderSide(color: CommonColors.grey300!),
+      ),
+        focusedBorder:OutlineInputBorder(
+        borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+        borderSide: BorderSide(color: CommonColors.grey300!),
+      ),
         contentPadding:
             const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       ),
@@ -111,34 +108,49 @@ class _ForgotpasswordState extends State<Forgotpassword> {
 
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            backgroundColor: CommonColors.colorPrimary,
-            title: const Text(
-              "Forgot Password",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
+          // appBar: AppBar(
+          //   backgroundColor: CommonColors.colorPrimary,
+          //   title: const Text(
+          //     "Forgot Password",
+          //     style:
+          //         TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          //   ),
+          //   leading: IconButton(
+          //     icon: const Icon(Icons.arrow_back, color: Colors.white),
+          //     onPressed: () => Navigator.pop(context),
+          //   ),
+          // ),
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                     EdgeInsets.symmetric(horizontal:SizeConfig.extraLargeHorizontalPadding , vertical: SizeConfig.extraLargeVerticalPadding),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      child: Image.asset(
-                        "assets/forgotPasswordIllustration.png",
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: MediaQuery.of(context).size.height * 0.3,
+                    //   child: Image.asset(
+                    //     "assets/forgotPasswordIllustration.png",
+                    //     fit: BoxFit.contain,
+                    //   ),
+                    // ),
+                       Text(
+                          'Create new password',
+                          style: TextStyle(fontSize: SizeConfig.largeTextSize, color: CommonColors.appBarColor,fontWeight: FontWeight.bold),
+                         softWrap: true,
+                        ),
+                        Text(
+                  "Your password must  be different from "
+                  "previously used password.",
+                  style: TextStyle(
+                    fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                    color: CommonColors.grey600,
+                    height: 1.4,
+                  ),
+                  softWrap: true,
+                              ),
                     const SizedBox(height: 32),
                     _buildPasswordField(
                       controller: newPasswordController,
@@ -152,17 +164,17 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                     const SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
-                      height: 55,
+                      height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: CommonColors.colorPrimary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: validateAndChangePassword,
                         child: const Text(
-                          'UPDATE',
+                          'Save',
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ),
