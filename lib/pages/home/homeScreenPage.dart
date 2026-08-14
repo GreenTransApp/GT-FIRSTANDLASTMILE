@@ -354,6 +354,8 @@ class _HomeScreen extends State<HomeScreen>
                                       }
                                     }
                                   }
+      }else{
+         failToast( "Something went wrong");
       }
     }));
   }

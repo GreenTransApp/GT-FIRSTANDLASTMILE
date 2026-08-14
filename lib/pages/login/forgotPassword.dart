@@ -127,7 +127,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                 padding:
                      EdgeInsets.symmetric(horizontal:SizeConfig.extraLargeHorizontalPadding , vertical: SizeConfig.extraLargeVerticalPadding),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // SizedBox(
                     //   height: MediaQuery.of(context).size.height * 0.3,
@@ -136,7 +136,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                     //     fit: BoxFit.contain,
                     //   ),
                     // ),
-                       Text(
+                      Text(
                           'Create new password',
                           style: TextStyle(fontSize: SizeConfig.largeTextSize, color: CommonColors.appBarColor,fontWeight: FontWeight.bold),
                          softWrap: true,
@@ -152,6 +152,17 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                   softWrap: true,
                               ),
                     const SizedBox(height: 32),
+                     Image.asset(
+                        'assets/images/infinitilogo.png',
+                        width: SizeConfig.extraLargeRadius * 6.9,
+                        height: SizeConfig.extraLargeRadius * 2.9,
+                      ),
+                      Image.asset(
+                  "assets/images/forgotPasswordIllustration.png",
+                  width: MediaQuery.sizeOf(context).width * 0.7,
+                  height: MediaQuery.sizeOf(context).height * 0.4,
+                                    ),
+                     
                     _buildPasswordField(
                       controller: newPasswordController,
                       label: "New Password",
@@ -167,7 +178,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: CommonColors.colorPrimary,
+                          backgroundColor: CommonColors.colorPrimary2,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

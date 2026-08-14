@@ -275,7 +275,7 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
         });
 
         return Scaffold(
-          backgroundColor: CommonColors.grey200,
+          // backgroundColor: ,
           resizeToAvoidBottomInset: false,
           // appBar: AppBar(
           //   leading: IconButton(
@@ -290,177 +290,197 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
           //   ),
           //   elevation: 2,
           // ),
-          body: Container(
-               width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding,
-                    vertical: SizeConfig.extraLargeVerticalPadding
-                    ),
-                    margin: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.sizeOf(context).width * 0.01,
-                      // vertical: MediaQuery.sizeOf(context).height * 0.1,
-                    ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                // Image.asset(
-                //   "assets/otpIllustration.png",
-                //   width: MediaQuery.sizeOf(context).width * 0.7,
-                //   height: MediaQuery.sizeOf(context).height * 0.4,
-                // ),
-                Text(
-                            'Enter OTP',
-                            style: TextStyle(fontSize: SizeConfig.largeTextSize, color: Colors.black,fontWeight: FontWeight.bold),
-                           softWrap: true,
-                          ),
-                //  Text(
-                //     ""
-                //     "${widget.usermobileno}",
-                //     style: TextStyle(
-                //       fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                //       color: CommonColors.grey600,
-                //       height: 1.4,
-                //     ),
-                //     ),
-                    RichText(
-                      text: TextSpan(
-                        style: TextStyle(
-                                          fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                                          color: CommonColors.grey600,
-                                          height: 1.4,
-                                        ), // Default style
-                        children:  <TextSpan>[
-                          TextSpan(text: 'Please Enter the verification code sent to '),
-                          TextSpan(
-                            text: "${widget.usermobileno}", 
-                            style: TextStyle(fontWeight: FontWeight.bold, color: CommonColors.appBarColor),
-                          ),
-                        
-                        ],
+          body: SingleChildScrollView(
+            child: Container(
+                 width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding,
+                      vertical: SizeConfig.extraLargeVerticalPadding
                       ),
-                    ),
-                    SizedBox(height: SizeConfig.largeVerticalSpacing,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _otpDigitField(first),
-                        const SizedBox(width: 12),
-                        _otpDigitField(second),
-                        const SizedBox(width: 12),
-                        _otpDigitField(third),
-                        const SizedBox(width: 12),
-                        _otpDigitField(fourth),
-                      ],
-                    ),
-                    
-                     SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                      Text(
-                            _formatTime(_seconds) == '00:00'
-                                ? ''
-                                : _formatTime(_seconds),
-                            style:  TextStyle(
-                                color: CommonColors.colorPrimary!, fontSize: 16),
-                          ),
-                           SizedBox(width: SizeConfig.smallHorizontalSpacing),
-                      InkWell(
-                           onTap: _showButton ? _getLoginOtp : null,
-                        child: RichText(
-                                              text: TextSpan(
-                        style: TextStyle(
-                                          fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                                          color: CommonColors.grey600,
-                                          height: 1.4,
-                                        ), // Default style
-                        children:  <TextSpan>[
-                          TextSpan(text: "Didn't receive OTP code? "),
-                          TextSpan(
-                            text: " Resend Code", 
-                            style:TextStyle(
-                              fontSize: 16,
-                              color: _showButton
-                                  ? CommonColors.colorPrimary
-                                  : CommonColors.grey600),
-                          ),
-                        
-                        ],
-                                              ),
-                                            ),
+                      margin: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.sizeOf(context).width * 0.01,
+                        // vertical: MediaQuery.sizeOf(context).height * 0.1,
                       ),
-                       
-                       
-                    //       const Text(
-                    //   "Didn't receive any sms? ",
-                    //   style: TextStyle(fontSize: 16),
-                    // ),
-                    // InkWell(
-                    //   onTap: _showButton ? _getLoginOtp : null,
-                    //   child: Text(
-                    //     "Resend Code",
-                    //     style: TextStyle(
-                    //         fontSize: 16,
-                    //         color: _showButton
-                    //             ? CommonColors.colorPrimary
-                    //             : CommonColors.disabled),
-                    //   ),
-                    // )
-                        
-                      ],
-                    ),
-SizedBox(height: SizeConfig.mediumVerticalSpacing,),
-                     Container(
-              width: double.infinity,
-              height: 50,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  // Image.asset(
+                  //   "assets/otpIllustration.png",
+                  //   width: MediaQuery.sizeOf(context).width * 0.7,
+                  //   height: MediaQuery.sizeOf(context).height * 0.4,
+                  // ),
               
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18)),
-                    backgroundColor: CommonColors.colorPrimary,
+                               
+                  Text(
+                              'Enter OTP',
+                              style: TextStyle(fontSize: SizeConfig.largeTextSize, color: Colors.black,fontWeight: FontWeight.bold),
+                             softWrap: true,
+                            ),
+                  //  Text(
+                  //     ""
+                  //     "${widget.usermobileno}",
+                  //     style: TextStyle(
+                  //       fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                  //       color: CommonColors.grey600,
+                  //       height: 1.4,
+                  //     ),
+                  //     ),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                                            fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                                            color: CommonColors.grey600,
+                                            height: 1.4,
+                                          ), // Default style
+                          children:  <TextSpan>[
+                            TextSpan(text: 'Please Enter the verification code sent to '),
+                            TextSpan(
+                              text: "${widget.usermobileno}", 
+                              style: TextStyle(fontWeight: FontWeight.bold, color: CommonColors.appBarColor),
+                            ),
+                          
+                          ],
+                        ),
+                      ),
+                   Image.asset(
+                        'assets/images/infinitilogo.png',
+                        width: SizeConfig.extraLargeRadius * 6.9,
+                        height: SizeConfig.extraLargeRadius * 2.9,
+                      ),
+                      // SizedBox(height: SizeConfig.largeVerticalSpacing,),
+                     Image.asset(
+                  "assets/images/loginwithotpIllustration.png",
+                  width: MediaQuery.sizeOf(context).width * 0.7,
+                  height: MediaQuery.sizeOf(context).height * 0.4,
+                                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                           children: [
+                            Text("Enter OTP",style: TextStyle(  color: CommonColors.grey600,),),
+                             Text(
+                                  _formatTime(_seconds) == '00:00'
+                                      ? ''
+                                      : _formatTime(_seconds),
+                                  style:  TextStyle(
+                                      color: CommonColors.colorPrimary!, fontSize: 16),
+                                ),
+                           ],
+                         ),
+                             SizedBox(width: SizeConfig.smallHorizontalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _otpDigitField(first),
+                          const SizedBox(width: 12),
+                          _otpDigitField(second),
+                          const SizedBox(width: 12),
+                          _otpDigitField(third),
+                          const SizedBox(width: 12),
+                          _otpDigitField(fourth),
+                        ],
+                      ),
+                      
+                       SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                     
+                        InkWell(
+                             onTap: _showButton ? _getLoginOtp : null,
+                          child: RichText(
+                                                text: TextSpan(
+                          style: TextStyle(
+                                            fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                                            color: CommonColors.grey600,
+                                            height: 1.4,
+                                          ), // Default style
+                          children:  <TextSpan>[
+                            TextSpan(text: "Didn't receive OTP code? "),
+                            TextSpan(
+                              text: " Resend Code", 
+                              style:TextStyle(
+                                fontSize: 16,
+                                color: _showButton
+                                    ? CommonColors.colorPrimary
+                                    : CommonColors.grey600),
+                            ),
+                          
+                          ],
+                                                ),
+                                              ),
+                        ),
+                         
+                         
+                      //       const Text(
+                      //   "Didn't receive any sms? ",
+                      //   style: TextStyle(fontSize: 16),
+                      // ),
+                      // InkWell(
+                      //   onTap: _showButton ? _getLoginOtp : null,
+                      //   child: Text(
+                      //     "Resend Code",
+                      //     style: TextStyle(
+                      //         fontSize: 16,
+                      //         color: _showButton
+                      //             ? CommonColors.colorPrimary
+                      //             : CommonColors.disabled),
+                      //   ),
+                      // )
+                          
+                        ],
+                      ),
+            SizedBox(height: SizeConfig.mediumVerticalSpacing,),
+                       Container(
+                width: double.infinity,
+                height: 50,
+                
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18)),
+                      backgroundColor: CommonColors.colorPrimary2,
+                    ),
+                    onPressed: _onVerifyPressed,
+                    child: const Text(
+                      'Verify & Proceeds',
+                      style: TextStyle(color: Colors.white),
+                    )),
+              ),
+                    ],
                   ),
-                  onPressed: _onVerifyPressed,
-                  child: const Text(
-                    'Verify & Proceeds',
-                    style: TextStyle(color: Colors.white),
-                  )),
-            ),
-                  ],
-                ),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(
-                //       vertical: MediaQuery.sizeOf(context).height * 0.01),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-
-                //     children: [
-                //       const Text(
-                //         "Didn't receive any sms? ",
-                //         style: TextStyle(fontSize: 16),
-                //       ),
-                //       InkWell(
-                //         onTap: _showButton ? _getLoginOtp : null,
-                //         child: Text(
-                //           "Resend Code",
-                //           style: TextStyle(
-                //               fontSize: 16,
-                //               color: _showButton
-                //                   ? CommonColors.colorPrimary
-                //                   : CommonColors.disabled),
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // ),
-              ],
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(
+                  //       vertical: MediaQuery.sizeOf(context).height * 0.01),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+            
+                  //     children: [
+                  //       const Text(
+                  //         "Didn't receive any sms? ",
+                  //         style: TextStyle(fontSize: 16),
+                  //       ),
+                  //       InkWell(
+                  //         onTap: _showButton ? _getLoginOtp : null,
+                  //         child: Text(
+                  //           "Resend Code",
+                  //           style: TextStyle(
+                  //               fontSize: 16,
+                  //               color: _showButton
+                  //                   ? CommonColors.colorPrimary
+                  //                   : CommonColors.disabled),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           ),
           // persistentFooterButtons: [
@@ -493,6 +513,7 @@ SizedBox(height: SizeConfig.mediumVerticalSpacing,),
       width: 70,
       child: Center(
         child: TextField(
+            autofocus: true,
           cursorColor: CommonColors.colorPrimary,
           cursorWidth: 1,
           onChanged: (value) {
@@ -501,6 +522,8 @@ SizedBox(height: SizeConfig.mediumVerticalSpacing,),
             }
           },
           decoration: InputDecoration(
+            hintText: "*",
+            hintStyle: TextStyle(color: CommonColors.grey300),
             filled: true,
             fillColor: CommonColors.white!,
             border: OutlineInputBorder(

@@ -42,6 +42,10 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
   }
 
   void _validateUserMobile() {
+    if (usernameController.text.contains(RegExp(r'[a-zA-Z]'))) {
+      failToast("Please Enter Valid Mobile Number");
+      return;
+    }
     debugPrint("Validating Device: ${usernameController.text}");
     Map<String, String> params = {"prmmobileno": usernameController.text};
     context.read<LoginProvider>().validateUserMobileFromD2D(params);
@@ -64,7 +68,8 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
       if (provider.userCredsResponse != null &&
           provider.userCredsResponse!.commandstatus == 1) {
         userCredsModel = provider.userCredsResponse!;
-        Get.to(() => LoginWithOtp(usermobileno: usernameController.text.toString()));
+        Get.to(() =>
+            LoginWithOtp(usermobileno: usernameController.text.toString()));
       } else if (provider.userCredsResponse != null) {
         failToast(provider.userCredsResponse!.commandmessage ??
             "Something went wrong");
@@ -80,152 +85,162 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
           _handleStateChange(provider.status, provider.errorMessage, provider);
         });
 
-        return 
-        Scaffold(
+        return Scaffold(
           body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                      width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding),
-                    margin: EdgeInsets.symmetric(
-                      // horizontal: MediaQuery.sizeOf(context).width * 0.01,
-                      vertical: MediaQuery.sizeOf(context).height * 0.1,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                         Text(
-                          'Forgot  your password?',
-                          style: TextStyle(fontSize: SizeConfig.largeTextSize, color: Colors.black,fontWeight: FontWeight.bold),
-                         softWrap: true,
-                        ),
-                        Text(
-                  "Don't worry! It happens. Please enter the mobile number "
-                  "associated with your account.",
-                  style: TextStyle(
-                    fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                    color: CommonColors.grey600,
-                    height: 1.4,
-                  ),
-                  softWrap: true,
-                              ),
-                  
-                        const SizedBox(height: 12),
-                        // Container(
-                        //   height: 69,
-                        //   margin: EdgeInsets.symmetric(
-                        //       horizontal: MediaQuery.sizeOf(context).width * 0.1),
-                        //   child: inputField(TextInputType.number, usernameController,
-                        //       "username", null, null, true, 32),
-                        // ),
-                  
-                       _buildFormField(
-                                // label: 'Received By',
-                                label: 
-                                    "Mobile Number",
-                                isRequired: true,
-                                icon: Icons.phone_android,
-                                child: TextFormField(
-                                  cursorColor:CommonColors.colorPrimary,
-                                  controller: usernameController,
-                                  keyboardType: TextInputType.number, 
-                                    inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly, 
-                                  ],
-                                  style: TextStyle(
-                                      fontSize: SizeConfig.mediumTextSize),
-
-                                  decoration: _inputDecoration(
-                                    "Enter mobile  number",null
-                                    // usernameController.text.isNotEmpty
-                                    //     ? IconButton(
-                                    //         icon: const Icon(Icons.clear),
-                                    //         onPressed: () {
-                                    //           usernameController.clear();
-                                    //           setState(() {});
-                                    //         },
-                                    //       )
-                                    //     : null,
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter mobile number';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),  
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          // margin: EdgeInsets.symmetric(
-                          //     horizontal: MediaQuery.sizeOf(context).width * 0.1),
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
-                                backgroundColor: CommonColors.colorPrimary,
-                              ),
-                              onPressed: () {
-                                if (usernameController.text.isEmpty) {
-                                  failToast('Please enter mobile No.');
-                                // } else if (usernameController.text.length != 10) {
-                                //   failToast('Please provide a valid username');
-                                }
-                                 else {
-                                  _validateUserMobile();
-                                }
-                              },
-                              child: Text(
-                                'Submit',
-                                style: TextStyle(color: CommonColors.White),
-                              )),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-           
-             Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.sizeOf(context).height * 0.01),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            child: Scaffold(
+              body: SingleChildScrollView(
+                child: Column(
                   children: [
-                    const Text(
-                      "Remember password? ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    InkWell(
-                      onTap: (){
-                         Get.off(() => const LoginPage());
-                      },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color:
-                               CommonColors.colorPrimary
-                               ),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.extraLargeHorizontalPadding),
+                      margin: EdgeInsets.symmetric(
+                        // horizontal: MediaQuery.sizeOf(context).width * 0.01,
+                        vertical: MediaQuery.sizeOf(context).height * 0.1,
                       ),
-                    )
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome Back!',
+                            style: TextStyle(
+                                fontSize: SizeConfig.largeTextSize,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            softWrap: true,
+                          ),
+                          Text(
+                            "Let's login for explore continues",
+                            // "Don't worry! It happens. Please enter the mobile number "
+                            // "associated with your account.",
+                            style: TextStyle(
+                              fontSize: SizeConfig
+                                  .extraSmallTextSize, // smaller than heading
+                              color: CommonColors.grey600,
+                              height: 1.4,
+                            ),
+                            softWrap: true,
+                          ),
+
+                          const SizedBox(height: 12),
+                          // Container(
+                          //   height: 69,
+                          //   margin: EdgeInsets.symmetric(
+                          //       horizontal: MediaQuery.sizeOf(context).width * 0.1),
+                          //   child: inputField(TextInputType.number, usernameController,
+                          //       "username", null, null, true, 32),
+                          // ),
+
+                          Image.asset(
+                            'assets/images/infinitilogo.png',
+                            width: SizeConfig.extraLargeRadius * 6.9,
+                            height: SizeConfig.extraLargeRadius * 2.9,
+                          ),
+
+                          Image.asset(
+                            "assets/images/userInputIllustration.png",
+                            width: MediaQuery.sizeOf(context).width * 0.7,
+                            height: MediaQuery.sizeOf(context).height * 0.4,
+                          ),
+                          _buildFormField(
+                            // label: 'Received By',
+                            label: "Mobile Number",
+                            isRequired: true,
+                            icon: Icons.phone_android,
+                            child: TextFormField(
+                              cursorColor: CommonColors.colorPrimary,
+                              controller: usernameController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              style: TextStyle(
+                                  fontSize: SizeConfig.mediumTextSize),
+                              decoration:
+                                  _inputDecoration("Enter mobile  number", null
+                                      // usernameController.text.isNotEmpty
+                                      //     ? IconButton(
+                                      //         icon: const Icon(Icons.clear),
+                                      //         onPressed: () {
+                                      //           usernameController.clear();
+                                      //           setState(() {});
+                                      //         },
+                                      //       )
+                                      //     : null,
+                                      ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter mobile number';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            height: 50,
+                            // margin: EdgeInsets.symmetric(
+                            //     horizontal: MediaQuery.sizeOf(context).width * 0.1),
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  backgroundColor: CommonColors.colorPrimary2,
+                                ),
+                                onPressed: () {
+                                  if (usernameController.text.isEmpty) {
+                                    failToast('Please enter mobile No.');
+                                    // } else if (usernameController.text.length != 10) {
+                                    //   failToast('Please provide a valid username');
+                                  } else {
+                                    _validateUserMobile();
+                                  }
+                                },
+                                child: Text(
+                                  'Submit',
+                                  style: TextStyle(color: CommonColors.White),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.sizeOf(context).height * 0.01),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Remember password? ",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Get.off(() => const LoginPage());
+                            },
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: CommonColors.colorPrimary),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              ],
-
-              
             ),
           ),
         );
       },
     );
   }
+
   Widget _buildFormField({
     required String label,
     required bool isRequired,
@@ -303,5 +318,4 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
       ),
     );
   }
-
 }

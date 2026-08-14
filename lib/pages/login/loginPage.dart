@@ -534,8 +534,14 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                         elevation: 0,
                                       ),
-                                      onPressed: () => _validateUserMobile(
-                                          AuthenticationFlow.loginWithOtp),
+                                      onPressed: () {
+
+                                      //  _validateUserMobile(
+                                      //     AuthenticationFlow.loginWithOtp),
+                                         authenticationFlow =
+                                      AuthenticationFlow.loginWithOtp;
+                                  Get.off(UsernameInputScreen());
+                                      },
                                       icon: const Icon(
                                         Icons.lock_outline,
                                         color: Colors.white,
