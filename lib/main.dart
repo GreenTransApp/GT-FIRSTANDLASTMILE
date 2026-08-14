@@ -71,7 +71,7 @@ Future<void> requestIosLocationPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String _title = "First2Last Mile";
+  static const String _title = "GT-INFINITI APP";
 
   // This widget is the root of your application.
   @override

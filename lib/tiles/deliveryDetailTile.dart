@@ -426,7 +426,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               Get.to(ConsignmentEnquiryPage(
                                 consignmentNo:
                                     widget.model.generatedGr.toString(),
-                                    tripid: widget.model.tripid?? 0 ,
+                                tripid: widget.model.tripid ?? 0,
                               ));
                               break;
                             case 'share':
@@ -506,7 +506,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
             Visibility(
               visible: showAllCardInfo,
               child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1338,11 +1338,16 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                     targetMenu = null;
                                   }
 
-                                  Get.to(ConsignmentEnquiryPage(
-                                    consignmentNo:
-                                        widget.model.generatedGr.toString(),
-                                        tripid: widget.model.tripid ?? 0 ,
-                                  ));
+                                  if (isNullOrEmpty(widget.model.generatedGr)) {
+                                    failToast("Consignment# is not  found.");
+                                    return;
+                                  } else {
+                                    Get.to(ConsignmentEnquiryPage(
+                                      consignmentNo:
+                                          widget.model.generatedGr.toString(),
+                                      tripid: widget.model.tripid ?? 0,
+                                    ));
+                                  }
                                   break;
                                 case 'share':
                                   getBookingPrintLink();

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/deliveryDetail/deliveryDetail.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
@@ -79,10 +80,16 @@ class RunningTripTile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        CircleAvatar(
+          backgroundColor: CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
+          child: Icon(Icons.contact_mail_outlined, color: CommonColors.colorPrimary,),
+        ),
+        SizedBox(width: SizeConfig.smallHorizontalSpacing,),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              
               Text(
                 'Trip #${model.tripid}',
                 style: TextStyle(
@@ -103,6 +110,50 @@ class RunningTripTile extends StatelessWidget {
           ),
         ),
         _buildActionButton(context, isSmallDevice),
+        if (model.tripdispatchdatetime != null &&
+              model.pendingconsign == 0) ...[
+            const SizedBox(width: 12),
+            InkWell(
+              onTap: () {
+                Get.to(() =>
+                        UpdateTripInfo(model: model, status: TripStatus.close))!
+                    .then((_) {
+                  onRefresh();
+                });
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: isSmallDevice ? 8 : 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: CommonColors.dangerColor ?? Colors.red,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: CommonColors.dangerColor ?? Colors.red,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.cancel_outlined,
+                      size: isSmallDevice ? 14 : 16,
+                      color: CommonColors.White,
+                    ),
+                    SizedBox(width: isSmallDevice ? 4 : 6),
+                    Text(
+                      'Close Trip',
+                      style: TextStyle(
+                        fontSize: isSmallDevice ? 10 : 12,
+                        fontWeight: FontWeight.w600,
+                        color: CommonColors.White,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ]
       ],
     );
   }
@@ -180,59 +231,16 @@ class RunningTripTile extends StatelessWidget {
                   isNullOrEmpty(model.tripdispatchdate.toString())
                       ? "Trip not started"
                       : model.tripdispatchdate.toString(),
-                  isSmallDevice)),
+                  isSmallDevice,Icons.calendar_month)),
           Expanded(
             child: _buildInfoItem(
                 'Starting KM',
                 isNullOrEmpty(model.startreadingkm.toString())
                     ? ""
                     : "${model.startreadingkm} km",
-                isSmallDevice),
+                isSmallDevice,Icons.speed),
           ),
-          if (model.tripdispatchdatetime != null &&
-              model.pendingconsign == 0) ...[
-            const SizedBox(width: 12),
-            InkWell(
-              onTap: () {
-                Get.to(() =>
-                        UpdateTripInfo(model: model, status: TripStatus.close))!
-                    .then((_) {
-                  onRefresh();
-                });
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: isSmallDevice ? 8 : 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: CommonColors.dangerColor ?? Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: CommonColors.dangerColor ?? Colors.red,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.cancel_outlined,
-                      size: isSmallDevice ? 14 : 16,
-                      color: CommonColors.White,
-                    ),
-                    SizedBox(width: isSmallDevice ? 4 : 6),
-                    Text(
-                      'Close Trip',
-                      style: TextStyle(
-                        fontSize: isSmallDevice ? 10 : 12,
-                        fontWeight: FontWeight.w600,
-                        color: CommonColors.White,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ]
+          
           // Expanded(
           //     child: _buildInfoItem(
           //         'Consignments', model.totalconsignment.toString())),
@@ -317,28 +325,39 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(String label, String value, bool isSmallDevice) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoItem(String label, String value, bool isSmallDevice,IconData icon) {
+    return Row(
+      
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isSmallDevice ? 10 : 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[600],
-            letterSpacing: 0.3,
-          ),
+         CircleAvatar(
+          backgroundColor: CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
+          child: Icon(icon, color: CommonColors.colorPrimary,),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isSmallDevice ? 12 : 14,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF1a1a1a),
-          ),
-          overflow: TextOverflow.ellipsis,
+        SizedBox(width: SizeConfig.smallHorizontalSpacing,),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+           
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: isSmallDevice ? 10 : 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+                letterSpacing: 0.3,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: isSmallDevice ? 12 : 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1a1a1a),
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ],
     );
@@ -352,13 +371,27 @@ class RunningTripTile extends StatelessWidget {
         // Title for the status section
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            'Status',
-            style: theme.textTheme.titleSmall?.copyWith(
+          child: 
+          RichText(
+                textAlign: TextAlign.start,
+                text: TextSpan(
+                  style: const TextStyle(),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: "| ",
+                      style:  TextStyle(color: CommonColors.colorPrimary,fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: 'Status Overview',
+                      style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
-              fontSize: isSmallDevice ? 12 : 14,
-            ),
-          ),
+              fontSize: isSmallDevice ? 12 : 14,)
+                    ),
+                  ],
+                ),
+              )
+         
+          
         ),
         Row(
           children: [
@@ -442,8 +475,18 @@ class RunningTripTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //   begin: Alignment.topCenter, // Starts at the top
+        //   end: Alignment.bottomCenter, // Ends at the bottom
+        //   colors: [
+        //    color.withOpacity(0.1), // Top color
+        //     CommonColors.white!, // Bottom color
+        //     // You can add more colors here if needed
+        //   ],
+        // ),
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
+          border: Border(bottom: BorderSide(color: color,width: 3))
         ),
         child: Column(
           children: [
@@ -452,15 +495,18 @@ class RunningTripTile extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: color,
-                fontSize: isSmallDevice ? 12 : 16,
+                // color: CommonColors.white,
+                fontSize: isSmallDevice ? 13 : 16,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                  color: color.withOpacity(0.8),
+                  // color: color.withOpacity(0.8),
+                  color: CommonColors.appBarColor,
                   overflow: TextOverflow.ellipsis,
+                  //  fontWeight: FontWeight.bold,
                   fontSize: isSmallDevice ? 10 : 12),
               // style: theme.textTheme.bodySmall?.copyWith(
               //   color: color.withOpacity(0.8),

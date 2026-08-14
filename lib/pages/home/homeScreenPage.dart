@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -16,6 +17,7 @@ import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/colors.dart';
+import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/navDrawer/navDrawer.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
@@ -89,7 +91,7 @@ class _HomeScreen extends State<HomeScreen>
   String deviceId = "";
   static const String portalUrl = "https://gtjinni.com";
   String JINNI_URL = "";
-  
+
   @override
   void initState() {
     super.initState();
@@ -152,6 +154,25 @@ class _HomeScreen extends State<HomeScreen>
 
     printParams(params);
     _baseRepo.getValueFromCompAccPara(params);
+  }
+
+  openActionCentre() {
+    PageLinkJsonParams param = PageLinkJsonParams(
+      drivercode: savedUser.drivercode.toString(),
+      grno: "",
+    );
+    Map<String, String> params = {
+      "prmlinkpagemenucode": "GTI_LINKPAGEACTIONCENTRE",
+      "prmjsondatastr": jsonEncode(param),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmmenucode": "GTAPP_NOTIFICATIONPANEL",
+      "prmsessionid": savedUser.sessionid.toString(),
+      "prmloginbranchcode": savedUser.loginbranchcode.toString(),
+      "prmloginbranchtype": savedUser.loginbranchtype.toString(),
+    };
+
+    printParams(params);
+    _baseRepo.getInfinitiOpsLink(params);
   }
 
   fetchOfflineDrsCounts() async {
@@ -307,6 +328,32 @@ class _HomeScreen extends State<HomeScreen>
         } else {
           failToast("Something went wrong");
         }
+      }
+    }));
+
+    _subscriptions.add(_baseRepo.urlModel.stream.listen((value) async {
+      if (value != null) {
+        var url = value.pageLink;
+        debugPrint(url);
+           if (url != null && url.isNotEmpty) {
+                                    try {
+                                      await launchUrl(
+                                        Uri.parse(url),
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    } catch (_) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Could not launch URL',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
       }
     }));
   }
@@ -528,8 +575,6 @@ class _HomeScreen extends State<HomeScreen>
     }
   }
 
-  
-
   Widget attendanceInfo() {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSmallDevice = screenWidth <= 360;
@@ -566,8 +611,11 @@ class _HomeScreen extends State<HomeScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.person_pin,color: CommonColors.White,),
-                      SizedBox(width:5),
+                      Icon(
+                        Icons.person_pin,
+                        color: CommonColors.White,
+                      ),
+                      SizedBox(width: 5),
                       Text(
                         'Driver',
                         style: TextStyle(
@@ -1063,7 +1111,7 @@ class _HomeScreen extends State<HomeScreen>
                   '',
                   style: TextStyle(color: CommonColors.colorPrimary),
                 ),
-                offset: const Offset(-1, 5),
+                offset: const Offset(-1,1),
                 child: IconButton.outlined(
                   style: ButtonStyle(
                     minimumSize: const WidgetStatePropertyAll(Size(40, 40)),
@@ -1081,9 +1129,10 @@ class _HomeScreen extends State<HomeScreen>
                   ),
                   color: CommonColors.colorPrimary,
                   onPressed: () async {
-                    await notificationOptionBottomSheet(context).then((value) {
-                      refreshScreen();
-                    });
+                    // await notificationOptionBottomSheet(context).then((value) {
+                    //   refreshScreen();
+                    // });
+                    openActionCentre();
                   },
                   icon: Icon(
                     Symbols.notifications,
@@ -1121,45 +1170,48 @@ class _HomeScreen extends State<HomeScreen>
               //     color: CommonColors.white,
               //   ),
               // ),
-               Container(
-                margin: EdgeInsets.symmetric(vertical: 6,horizontal: 7),
-                
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 6, horizontal: 7),
                 decoration: BoxDecoration(
                   color: CommonColors.colorPrimary2,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                 child: PopupMenuButton<String>(
-                       icon:  Icon(Icons.more_vert,color: Colors.white,size: SizeConfig.largeIconSize,),
-                       onSelected: (value) {
-                         switch (value) {
-                           case 'offlinesync':
-                             {
-                               showOfflineDrsBottomSheet(context).then((value) {
-                  refreshScreen();
-                               });
-                             }
-                             break;
-                         }
-                       },
-                       itemBuilder: (context) => [
-                         const PopupMenuItem(
-                           value: 'offlinesync',
-                           child: Row(
-                             children: [
-                               Icon(
-                  Icons.sync_rounded,
-                  size: 15,
-                               ),
-                               SizedBox(
-                  width: 4,
-                               ),
-                               Text('Offline Sync')
-                             ],
-                           ),
-                         ),
-                       ],
-                     ),
-               )
+                child: PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: Colors.white,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'offlinesync':
+                        {
+                          showOfflineDrsBottomSheet(context).then((value) {
+                            refreshScreen();
+                          });
+                        }
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'offlinesync',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.sync_rounded,
+                            size: 15,
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Text('Offline Sync')
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
           extendBody: true,
@@ -1228,111 +1280,110 @@ class _HomeScreen extends State<HomeScreen>
               //     ),
               //   ],
               // ),
-              
+
               ClipRRect(
-                 borderRadius: BorderRadius.circular(30.0),
-                child: BottomAppBar(
-                            color: CommonColors.colorPrimary2,
-                            shape: const CircularNotchedRectangle(),
-                            // shape: const InvertedCircularNotchedRectangle(),
-                            notchMargin: 10,
-                            elevation: 10,
-                            child: SizedBox(
-                              height: 68,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  
-                                  _navItem(
-                                    // image: 'assets/images/routes.svg',
-                                    image: 'assets/images/routes_icon.png',
-                                    label: "Routes",
-                                    index: 0,
+            borderRadius: BorderRadius.circular(30.0),
+            child: BottomAppBar(
+              color: CommonColors.colorPrimary2,
+              shape: const CircularNotchedRectangle(),
+              // shape: const InvertedCircularNotchedRectangle(),
+              notchMargin: 10,
+              elevation: 10,
+              child: SizedBox(
+                height: 68,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _navItem(
+                      // image: 'assets/images/routes.svg',
+                      image: 'assets/images/routes_icon.png',
+                      label: "Routes",
+                      index: 0,
+                    ),
+                    _navItem(
+                      image: 'assets/images/create_trip_icon.png',
+                      // label: "Create Trip",
+                      label: "${"Create Trip".split(' ').join('\n')}",
+                      index: 1,
+                    ),
+                    FloatingActionButton(
+                      elevation: 2,
+
+                      shape: const CircleBorder(),
+
+                      backgroundColor: Colors.transparent,
+                      highlightElevation: 10.0,
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: Image.asset(
+                          'assets/images/jinni_icon.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      // Container(
+                      //   decoration: const BoxDecoration(
+                      //     shape: BoxShape.circle,
+                      //     // color:Color.fromARGB(255, 246, 87, 1)
+                      //     color:Color.fromARGB(255, 254, 89, 1)
+                      //   ),
+                      //   child: ClipOval(
+                      //     child: Image.asset(
+                      //       'assets/images/jinni_icon.png',
+                      //       fit: BoxFit.cover,
+                      //       // width: 50,
+                      //       // height: 50,
+                      //     ),
+                      //   ),
+                      // ),
+                      onPressed: () async {
+                        // center button action
+                        deviceId = await getDeviceId();
+                        if (isNullOrEmpty(deviceId)) {
+                          // failToast("Unable to get Device ID");
+                          JINNI_URL = portalUrl;
+                        } else {
+                          JINNI_URL =
+                              "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
+                        }
+
+                        // url = "https://gtjinni.com/";
+                        if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
+                          try {
+                            await launchUrl(
+                              Uri.parse(JINNI_URL),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Could not launch URL',
                                   ),
-                                  _navItem(
-                                    image: 'assets/images/create_trip_icon.png',
-                                    // label: "Create Trip",
-                                    label:  "${"Create Trip".split(' ').join('\n')}",
-                                    index: 1,
-                                  ),
-                                  FloatingActionButton(
-                                          elevation: 2,
-                              
-                                          shape: const CircleBorder(),
-                              
-                                          backgroundColor: Colors.transparent,
-                                          highlightElevation: 10.0,
-                                          child: Transform.scale(
-                              scale: 1.2,
-                              child: Image.asset(
-                                'assets/images/jinni_icon.png',
-                                fit: BoxFit.cover,
-                              ),
-                                          ),
-                                          // Container(
-                                          //   decoration: const BoxDecoration(
-                                          //     shape: BoxShape.circle,
-                                          //     // color:Color.fromARGB(255, 246, 87, 1)
-                                          //     color:Color.fromARGB(255, 254, 89, 1)
-                                          //   ),
-                                          //   child: ClipOval(
-                                          //     child: Image.asset(
-                                          //       'assets/images/jinni_icon.png',
-                                          //       fit: BoxFit.cover,
-                                          //       // width: 50,
-                                          //       // height: 50,
-                                          //     ),
-                                          //   ),
-                                          // ),
-                                          onPressed: () async {
-                              // center button action
-                              deviceId = await getDeviceId();
-                              if (isNullOrEmpty(deviceId)) {
-                                // failToast("Unable to get Device ID");
-                                JINNI_URL = portalUrl;
-                              } else {
-                                JINNI_URL =
-                                    "$portalUrl/loginbysessionid?companyid=${savedUser.companyid}&sessionid=${savedUser.sessionid}&id=$deviceId &routename=chat&theme=dark";
-                              }
-                              
-                              // url = "https://gtjinni.com/";
-                              if (JINNI_URL != null && JINNI_URL.isNotEmpty) {
-                                try {
-                                  await launchUrl(
-                                    Uri.parse(JINNI_URL),
-                                    mode: LaunchMode.externalApplication,
-                                  );
-                                } catch (_) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Could not launch URL',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
-                                          },
-                                        ),
-                                  _navItem(
-                                    // image: 'assets/images/trip.svg',
-                                    image: 'assets/images/trips_icon.png',
-                                    label: "Trips",
-                                    index: 2,
-                                  ),
-                                  _navItem(
-                                    // image: 'assets/images/mmt.svg',
-                                    image: 'assets/images/mmt_icon.png',
-                                    label: "MMT",
-                                    index: 3,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
+                    ),
+                    _navItem(
+                      // image: 'assets/images/trip.svg',
+                      image: 'assets/images/trips_icon.png',
+                      label: "Trips",
+                      index: 2,
+                    ),
+                    _navItem(
+                      // image: 'assets/images/mmt.svg',
+                      image: 'assets/images/mmt_icon.png',
+                      label: "MMT",
+                      index: 3,
+                    ),
+                  ],
+                ),
               ),
+            ),
+          ),
           // floatingActionButtonLocation:
           //     FloatingActionButtonLocation.centerDocked,
           // floatingActionButton: FloatingActionButton(
@@ -1611,11 +1662,22 @@ class _HomeScreen extends State<HomeScreen>
       onTap: () {
         setState(() {
           _selectedIndex = index;
+
+          debugPrint("value $_selectedIndex");
+          if (_selectedIndex == 0) {
+            allotedRouteKey.currentState?.onRefresh();
+          } else if (_selectedIndex == 1) {
+            drsSelectionKey.currentState?.refreshScreen();
+          } else if (_selectedIndex == 2) {
+            runningTripsKey.currentState?.onRefresh();
+          } else if (_selectedIndex == 3) {
+            midMileTripsKey.currentState?.onRefresh();
+          }
         });
       },
       child: SizedBox(
-         width: 65,
-      height: 65,
+        width: 65,
+        height: 65,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -1625,21 +1687,18 @@ class _HomeScreen extends State<HomeScreen>
               height: SizeConfig.largeIconSize,
               color: selected
                   ? CommonColors.colorPrimary
-                  : CommonColors
-                      .white, // remove if your image has fixed colors
+                  : CommonColors.white, // remove if your image has fixed colors
             ),
             const SizedBox(height: 1),
             Text(
               label,
-                maxLines: 2,
-            softWrap: true,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.clip,
+              maxLines: 2,
+              softWrap: true,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.clip,
               style: TextStyle(
-              
-                color: selected
-                    ? CommonColors.colorPrimary
-                    : CommonColors.white,
+                color:
+                    selected ? CommonColors.colorPrimary : CommonColors.white,
                 fontSize: 12,
               ),
             ),

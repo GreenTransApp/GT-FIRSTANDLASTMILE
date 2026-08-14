@@ -14,6 +14,8 @@ import 'package:gtlmd/pages/deliveryDetail/deliveryViewModel.dart';
 import 'package:gtlmd/pages/mapView/mapViewPage.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/currentDeliveryModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:gtlmd/tiles/deliveryDetailTile.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -205,17 +207,24 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
   Future<void> updateDriverReached(
       String grno, String indentId, String tripid) async {
-    todayDateTime = DateTime.now();
+   
     loadingAlertService.showLoading();
 
     try {
-      Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 0,
-        ),
-      );
+      // Position position = await Geolocator.getCurrentPosition(
+      //   locationSettings: const LocationSettings(
+      //     accuracy: LocationAccuracy.high,
+      //     distanceFilter: 0,
+      //   ),
+      // ).timeout(const Duration(seconds: 15));
+      
+    final position = await LocationService().getCurrentLocation();
 
+    // final address = await AppLocationService().getAddressFromLatLng(
+    //   position.latitude,
+    //   position.longitude,
+    // );
+ 
       Map<String, String> params = {
         "prmusercode": savedUser.usercode.toString(),
         "prmbranchcode": savedUser.loginbranchcode.toString(),
@@ -229,7 +238,10 @@ class _DeliveryDetailState extends State<DeliveryDetail>
 
       printParams(params);
       viewModel.updateDriverReached(params);
-    } finally {
+    }catch(e, stackTrace) {
+    print("updateDriverReached ERROR: $e");
+    print(stackTrace);
+} finally {
       loadingAlertService.hideLoading();
     }
   }
@@ -239,12 +251,13 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     loadingAlertService.showLoading();
 
     try {
-      Position position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 0,
-        ),
-      );
+      // Position position = await Geolocator.getCurrentPosition(
+      //   locationSettings: const LocationSettings(
+      //     accuracy: LocationAccuracy.high,
+      //     distanceFilter: 0,
+      //   ),
+      // );
+      final position = await LocationService().getCurrentLocation();
 
       Map<String, String> params = {
         "prmusercode": savedUser.usercode.toString(),
@@ -341,7 +354,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
       appBar: AppBar(
         backgroundColor: CommonColors.colorPrimary,
         title: Text(
-          'Trip ${widget.tripModel.tripid}',
+          'Trip# ${widget.tripModel.tripid}',
           style: TextStyle(
               color: CommonColors.White, fontSize: isSmallDevice ? 18 : 20),
         ),
