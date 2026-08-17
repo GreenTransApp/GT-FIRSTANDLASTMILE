@@ -120,6 +120,28 @@ class _ForgotpasswordState extends State<Forgotpassword> {
           //     onPressed: () => Navigator.pop(context),
           //   ),
           // ),
+            appBar: AppBar(
+          
+            backgroundColor: Colors.transparent, 
+            elevation: 0, 
+            flexibleSpace: const Image(
+              image: AssetImage('assets/images/loginHeader.png'),
+              fit: BoxFit.fill, 
+            ),
+          ),
+        bottomNavigationBar: Container(
+        height: 100, // Explicit height for the footer
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+          image: DecorationImage(
+            // Use NetworkImage for testing, or AssetImage for local files
+            image:AssetImage('assets/images/loginFooter.png'), 
+            fit: BoxFit.fill, // Ensures the image stretches to fill the container
+          ),
+        ),
+
+      ),
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
@@ -147,20 +169,20 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                   style: TextStyle(
                     fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
                     color: CommonColors.grey600,
-                    height: 1.4,
+                    // height: 1.4,
                   ),
                   softWrap: true,
                               ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height:10),
                      Image.asset(
                         'assets/images/infinitilogo.png',
-                        width: SizeConfig.extraLargeRadius * 6.9,
-                        height: SizeConfig.extraLargeRadius * 2.9,
+                        width: SizeConfig.extraLargeRadius * 6.4,
+                        height: SizeConfig.extraLargeRadius * 2.5,
                       ),
                       Image.asset(
                   "assets/images/forgotPasswordIllustration.png",
-                  width: MediaQuery.sizeOf(context).width * 0.7,
-                  height: MediaQuery.sizeOf(context).height * 0.4,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
+                  height: MediaQuery.sizeOf(context).height * 0.3,
                                     ),
                      
                     _buildPasswordField(
@@ -172,7 +194,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                       controller: confimPasswordController,
                       label: "Confirm Password",
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       height: 50,

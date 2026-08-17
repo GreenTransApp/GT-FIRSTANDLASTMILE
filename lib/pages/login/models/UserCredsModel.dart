@@ -1,10 +1,11 @@
 class UserCredsModel {
   int? commandstatus;
-  Null? commandmessage;
+  String? commandmessage;
   String? userpassword;
   String? emailid;
   int? companyid;
   String? username; // Added username field
+  String? usermobile; // Added username field
 
   UserCredsModel(
       {this.commandstatus,
@@ -12,7 +13,8 @@ class UserCredsModel {
       this.userpassword,
       this.emailid,
       this.companyid,
-      this.username}); // Included in constructor
+      this.username,
+       this.usermobile}); // Included in constructor
 
   UserCredsModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -21,6 +23,7 @@ class UserCredsModel {
     emailid = json['emailid'];
     companyid = json['companyid'];
     username = json['username']; // Mapped in fromJson
+    usermobile = json['usermobile']; // Mapped in fromJson
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +34,7 @@ class UserCredsModel {
     data['emailid'] = emailid;
     data['companyid'] = companyid;
     data['username'] = username; // Added to toJson
+    data['usermobile'] = usermobile; // Added to toJson
     return data;
   }
 }

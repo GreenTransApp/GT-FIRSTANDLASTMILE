@@ -290,21 +290,43 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
           //   ),
           //   elevation: 2,
           // ),
+            appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent, 
+            elevation: 0, 
+            flexibleSpace: const Image(
+              image: AssetImage('assets/images/loginHeader.png'),
+              fit: BoxFit.fill, 
+            ),
+          ),
+        bottomNavigationBar: Container(
+        height: 100, // Explicit height for the footer
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+          image: DecorationImage(
+            // Use NetworkImage for testing, or AssetImage for local files
+            image:AssetImage('assets/images/loginFooter.png'), 
+            fit: BoxFit.fill, // Ensures the image stretches to fill the container
+          ),
+        ),
+
+      ),
           body: SingleChildScrollView(
             child: Container(
                  width: double.infinity,
                       padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding,
                       vertical: SizeConfig.extraLargeVerticalPadding
                       ),
-                      margin: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.sizeOf(context).width * 0.01,
+                      // margin: EdgeInsets.symmetric(
+                        // horizontal: MediaQuery.sizeOf(context).width * 0.01,
                         // vertical: MediaQuery.sizeOf(context).height * 0.1,
-                      ),
+                      // ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  // const SizedBox(height: 20),
                   // Image.asset(
                   //   "assets/otpIllustration.png",
                   //   width: MediaQuery.sizeOf(context).width * 0.7,
@@ -331,7 +353,7 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
                           style: TextStyle(
                                             fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
                                             color: CommonColors.grey600,
-                                            height: 1.4,
+                                            // height: 1.4,
                                           ), // Default style
                           children:  <TextSpan>[
                             TextSpan(text: 'Please Enter the verification code sent to '),
@@ -345,14 +367,14 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
                       ),
                    Image.asset(
                         'assets/images/infinitilogo.png',
-                        width: SizeConfig.extraLargeRadius * 6.9,
-                        height: SizeConfig.extraLargeRadius * 2.9,
+                        width: SizeConfig.extraLargeRadius * 6.4,
+                        height: SizeConfig.extraLargeRadius * 2.5,
                       ),
                       // SizedBox(height: SizeConfig.largeVerticalSpacing,),
                      Image.asset(
                   "assets/images/loginwithotpIllustration.png",
-                  width: MediaQuery.sizeOf(context).width * 0.7,
-                  height: MediaQuery.sizeOf(context).height * 0.4,
+                  width: MediaQuery.sizeOf(context).width * 0.5,
+                  height: MediaQuery.sizeOf(context).height * 0.3,
                                     ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -512,7 +534,7 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
        height: 70,
       width: 70,
       child: Center(
-        child: TextField(
+        child: TextFormField(
             autofocus: true,
           cursorColor: CommonColors.colorPrimary,
           cursorWidth: 1,

@@ -8,6 +8,7 @@ import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/environment.dart';
 import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
+import 'package:gtlmd/design_system/size_config.dart';
 
 import 'package:gtlmd/pages/login/loginWithOtp.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
@@ -35,10 +36,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    if (ENV.isDebugging) {
-      usermobileController.text = ENV.debuggingUserName.toUpperCase();
-      passwordController.text = ENV.debuggingPassword.toUpperCase();
-    }
+    // if (ENV.isDebugging) {
+    //   usermobileController.text = ENV.debuggingUserName.toUpperCase();
+    //   passwordController.text = ENV.debuggingPassword.toUpperCase();
+    // }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       loadingAlertService = LoadingAlertService(context: context);
@@ -162,7 +163,8 @@ class _LoginPageState extends State<LoginPage> {
         if (provider.userCredsResponse!.commandstatus == 1) {
           userCredsModel = provider.userCredsResponse ?? userCredsModel;
           provider.clearUserCredsResponse();
-          Get.to(() => LoginWithOtp(usermobileno: usermobileController.text));
+          // Get.to(() => LoginWithOtp(usermobileno: usermobileController.text.toString()));
+          Get.to(() => LoginWithOtp(usermobileno: userCredsModel.usermobile.toString()));
         } else {
           failToast(provider.userCredsResponse!.commandmessage ??
               "Something went wrong");
@@ -240,101 +242,150 @@ class _LoginPageState extends State<LoginPage> {
         });
 
         return Scaffold(
+           appBar: AppBar(
+          
+            backgroundColor: Colors.transparent, 
+            elevation: 0, 
+            flexibleSpace: const Image(
+              image: AssetImage('assets/images/loginHeader.png'),
+              fit: BoxFit.fill, 
+            ),
+          ),
+        bottomNavigationBar: Container(
+        height: 100, // Explicit height for the footer
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+          image: DecorationImage(
+            // Use NetworkImage for testing, or AssetImage for local files
+            image:AssetImage('assets/images/loginFooter.png'), 
+            fit: BoxFit.fill, // Ensures the image stretches to fill the container
+          ),
+        ),
+
+      ),
           backgroundColor: Colors.white,
           body: SafeArea(
             child: Stack(
               children: [
                 // Background decorative circles (kept as is)
-                Positioned(
-                  top: -100,
-                  left: -100,
-                  child: Container(
-                    width: 230,
-                    height: 230,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          CommonColors.colorPrimary!,
-                          CommonColors.colorPrimary!
-                              .withAlpha((0.8 * 255).toInt()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: -50,
-                  left: 50,
-                  child: Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: CommonColors.colorPrimary!
-                          .withAlpha((0.5 * 255).toInt()),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: -120,
-                  right: -100,
-                  child: Container(
-                    width: 250,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          CommonColors.colorPrimary!,
-                          CommonColors.colorPrimary!
-                              .withAlpha((0.7 * 255).toInt()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 50,
-                  right: 50,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: CommonColors.colorPrimary!
-                          .withAlpha((0.4 * 255).toInt()),
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   top: -100,
+                //   left: -100,
+                //   child: Container(
+                //     width: 230,
+                //     height: 230,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       gradient: LinearGradient(
+                //         colors: [
+                //           CommonColors.colorPrimary!,
+                //           CommonColors.colorPrimary!
+                //               .withAlpha((0.8 * 255).toInt()),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Positioned(
+                //   top: -50,
+                //   left: 50,
+                //   child: Container(
+                //     width: 130,
+                //     height: 130,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: CommonColors.colorPrimary!
+                //           .withAlpha((0.5 * 255).toInt()),
+                //     ),
+                //   ),
+                // ),
+                // Positioned(
+                //   bottom: -120,
+                //   right: -100,
+                //   child: Container(
+                //     width: 250,
+                //     height: 250,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       gradient: LinearGradient(
+                //         colors: [
+                //           CommonColors.colorPrimary!,
+                //           CommonColors.colorPrimary!
+                //               .withAlpha((0.7 * 255).toInt()),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Positioned(
+                //   bottom: 50,
+                //   right: 50,
+                //   child: Container(
+                //     width: 150,
+                //     height: 150,
+                //     decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: CommonColors.colorPrimary!
+                //           .withAlpha((0.4 * 255).toInt()),
+                //     ),
+                //   ),
+                // ),
 
                 // Main content
                 Column(
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        padding:  EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding),
                         child: Column(
                           children: [
-                            const SizedBox(height: 80),
+                            // const SizedBox(height: 80),
                             // Logo
-                            Image.asset(
-                              // 'assets/icon.png',
-                              'assets/images/app_icon.png',
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              height: 80,
-                            ),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'Login To Your Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 40),
+                            // Image.asset(
+                            //   // 'assets/icon.png',
+                            //   'assets/images/app_icon.png',
+                            //   width: MediaQuery.of(context).size.width * 0.6,
+                            //   height: 80,
+                            // ),
+                            // const SizedBox(height: 20),
+                            // const Text(
+                            //   'Login To Your Account',
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     fontWeight: FontWeight.w500,
+                            //     color: Colors.black87,
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 40),
                             // Phone Number Field
+
+                             Text(
+                          'Login To Account',
+                          style: TextStyle(fontSize: SizeConfig.largeTextSize, color: CommonColors.appBarColor,fontWeight: FontWeight.bold),
+                         softWrap: true,
+                        ),
+                        Text(
+                  "Sign in to continue to your account "
+                  ,
+                  style: TextStyle(
+                    fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
+                    color: CommonColors.grey600,
+                    // height: 1.4,
+                  ),
+                  softWrap: true,
+                              ),
+                    const SizedBox(height:10),
+                     Image.asset(
+                        'assets/images/infinitilogo.png',
+                        width: SizeConfig.extraLargeRadius * 6.4,
+                        height: SizeConfig.extraLargeRadius * 2.5,
+                      ),
+                      Image.asset(
+                  "assets/images/loginIllustration.png",
+                  width: MediaQuery.sizeOf(context).width * 0.5,
+                  height: MediaQuery.sizeOf(context).height * 0.3,
+                                    ),
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -352,7 +403,7 @@ class _LoginPageState extends State<LoginPage> {
                                 // keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
-                                  hintText: 'Mobile Number',
+                                  hintText: 'Mobile Number or User Name',
                                   hintStyle: TextStyle(
                                     color: Colors.grey[400],
                                     fontSize: 14,
@@ -369,17 +420,21 @@ class _LoginPageState extends State<LoginPage> {
                                       size: 20,
                                     ),
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
+                                  border:const OutlineInputBorder(),
                                   filled: true,
                                   fillColor: Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 16,
+                                  contentPadding: const  EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                                    enabledBorder:OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                                    borderSide: BorderSide(color: CommonColors.grey300!),
                                   ),
+                                  focusedBorder:OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                                          borderSide: BorderSide(color: CommonColors.colorPrimary!),
+                                        ),
+                                        
                                 ),
+
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -429,21 +484,27 @@ class _LoginPageState extends State<LoginPage> {
                                       isPasswordVisible
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: Colors.grey[600],
+                                      color: Colors.grey[300],
                                       size: 20,
                                     ),
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
+                                  border: const OutlineInputBorder(),
                                   filled: true,
                                   fillColor: Colors.white,
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 16,
                                   ),
+                                    enabledBorder:OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                                    borderSide: BorderSide(color: CommonColors.grey300!),
+                                  ),
+                                  focusedBorder:OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
+                                  borderSide: BorderSide(color: CommonColors.colorPrimary!),
                                 ),
+                                ),
+                                
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -456,14 +517,15 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: () {
                                   authenticationFlow =
                                       AuthenticationFlow.forgotPassword;
-                                  Get.off(UsernameInputScreen());
+                                  // Get.off(UsernameInputScreen());
+                                  Get.to(UsernameInputScreen());
                                 },
                                 child: Text(
                                   'Forgot password?',
                                   style: TextStyle(
                                     color: CommonColors.colorPrimary!,
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
@@ -475,7 +537,7 @@ class _LoginPageState extends State<LoginPage> {
                               height: 56,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: CommonColors.colorPrimary!,
+                                  backgroundColor: CommonColors.colorPrimary2,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -526,12 +588,18 @@ class _LoginPageState extends State<LoginPage> {
                                     height: 56,
                                     child: ElevatedButton.icon(
                                       style: ElevatedButton.styleFrom(
+                                          side:  BorderSide(
+                                          color: CommonColors.colorPrimary!, 
+                                          width: 2.0,
+                                        ),
                                         backgroundColor:
-                                            CommonColors.colorPrimary!,
+                                            CommonColors.white!,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(12),
+                                            
                                         ),
+                                        
                                         elevation: 0,
                                       ),
                                       onPressed: () {
@@ -540,19 +608,20 @@ class _LoginPageState extends State<LoginPage> {
                                       //     AuthenticationFlow.loginWithOtp),
                                          authenticationFlow =
                                       AuthenticationFlow.loginWithOtp;
-                                  Get.off(UsernameInputScreen());
+                                  // Get.off(UsernameInputScreen());
+                                  Get.to(UsernameInputScreen());
                                       },
                                       icon: const Icon(
                                         Icons.lock_outline,
                                         color: Colors.white,
                                         size: 20,
                                       ),
-                                      label: const Text(
+                                      label:  Text(
                                         'LOGIN WITH OTP',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: CommonColors.colorPrimary,
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -565,14 +634,14 @@ class _LoginPageState extends State<LoginPage> {
                                     child: OutlinedButton.icon(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
-                                          color: Colors.grey[300]!,
-                                          width: 1.5,
+                                          color: CommonColors.colorPrimary2,
+                                          width: 2.0,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
-                                        backgroundColor: Colors.grey[100],
+                                        backgroundColor: CommonColors.white,
                                       ),
                                       onPressed: _goOffline,
                                       icon: Icon(
@@ -583,9 +652,9 @@ class _LoginPageState extends State<LoginPage> {
                                       label: Text(
                                         'OFFLINE MODE',
                                         style: TextStyle(
-                                          color: Colors.grey[700],
+                                          color: CommonColors.colorPrimary2,
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),

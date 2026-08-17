@@ -16,6 +16,7 @@ import 'package:gtlmd/pages/bookingWithEWayBill/bookingWithEwayBill.dart';
 import 'package:gtlmd/pages/deliveryDetail/Model/deliveryDetailModel.dart';
 import 'package:gtlmd/pages/podEntry/podEntry.dart';
 import 'package:gtlmd/pages/trips/closeTrip/closeTrip.dart';
+import 'package:gtlmd/pages/unDelivery/unDelivery.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class SideMenu extends StatelessWidget {
@@ -220,6 +221,17 @@ class SideMenu extends StatelessWidget {
                     press: () {
                       Navigator.pop(context);
                       Get.to(PodEntry(
+                              deliveryDetailModel: DeliveryDetailModel(),
+                            ),);
+                    },
+                  ),
+                  SideMenuItem(
+                    isSmallDevice: isSmallDevice,
+                    title: 'Undelivery',
+                    leadingIcon:  const Icon(Symbols.apk_document_rounded),
+                    press: () {
+                      Navigator.pop(context);
+                      Get.to(UnDelivery(
                               deliveryDetailModel: DeliveryDetailModel(),
                             ),);
                     },

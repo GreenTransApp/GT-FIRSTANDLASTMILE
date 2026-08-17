@@ -1215,27 +1215,29 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                 visible: modelDetail.showdeparted == 'N' &&
                     modelDetail.consignmenttype == 'P' &&
                     modelDetail.pickupstatus == 'D',
-                child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: CommonColors.white?.withAlpha((0.5 * 255).round()),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: IconButton(
-                        onPressed: () {
-                          _toggleShowAllPickupDetail();
-                        },
-                        icon: showAllCardInfo
-                            ? Icon(
-                                Icons.keyboard_arrow_up_outlined,
-                                size: 25,
-                                color: CommonColors.grey600,
-                              )
-                            : Icon(
-                                Icons.keyboard_arrow_down_outlined,
-                                size: 25,
-                                color: CommonColors.grey600,
-                              )))),
+                child: CircleAvatar(
+                  child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: CommonColors.white?.withAlpha((0.5 * 255).round()),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                          onPressed: () {
+                            _toggleShowAllPickupDetail();
+                          },
+                          icon: showAllCardInfo
+                              ? Icon(
+                                  Icons.keyboard_arrow_up_outlined,
+                                  size: 25,
+                                  color: CommonColors.grey600,
+                                )
+                              : Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                  size: 25,
+                                  color: CommonColors.grey600,
+                                ))),
+                )),
           ],
         ),
       ),

@@ -61,6 +61,7 @@ class _UnDeliveryState extends State<UnDelivery> {
   String currentAddress = '';
   final TextEditingController _branchController = TextEditingController();
   BranchModel? _selectedBranch;
+  bool isGrEditable = false;
   @override
   void initState() {
     super.initState();
@@ -69,23 +70,28 @@ class _UnDeliveryState extends State<UnDelivery> {
         (_) => loadingAlertService = LoadingAlertService(context: context));
     deliveryDetailModel = widget.deliveryDetailModel;
 
-    _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr)
+    if (isNullOrEmpty(deliveryDetailModel.generatedGr)) {
+      isGrEditable = true;
+    } else {
+      isGrEditable = false;
+      _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr)
         ? deliveryDetailModel.grno.toString()
         : deliveryDetailModel.generatedGr.toString();
+        _selectedBranch = BranchModel(
+        stnCode: deliveryDetailModel.destcode,
+        stnName: deliveryDetailModel.destname);
+    _branchController.text = _selectedBranch!.stnName.toString();  
+    }
+
+    
     todayDateTime = DateTime.now();
     smallDateTime = DateFormat('yyyy-MM-dd').format(todayDateTime);
     unDeliverDt = smallDateTime;
     DateTime date = DateTime.parse(unDeliverDt);
     _unDeliverDateController.text = DateFormat('dd-MM-yyyy').format(date);
-
     // _unDeliverDateController.text = formatDate(DateTime.now());
     _unDeliveryTimeController.text =
         DateFormat('h:mm a').format(DateTime.now());
-
-    _selectedBranch = BranchModel(
-        stnCode: deliveryDetailModel.destcode,
-        stnName: deliveryDetailModel.destname);
-    _branchController.text = _selectedBranch!.stnName.toString();
     getReasons();
     setObservers();
   }
@@ -212,8 +218,6 @@ class _UnDeliveryState extends State<UnDelivery> {
     );
   }
 
-  
-  
   getReasons() {
     Map<String, String> params = {
       'prmconnstring': savedLogin.companyid.toString()
@@ -254,12 +258,12 @@ class _UnDeliveryState extends State<UnDelivery> {
     // String? address = await AppLocationService().getCurrentAddress();
     // loadingAlertService.hideLoading();
     loadingAlertService.showLoading();
-   final position = await LocationService().getCurrentLocation();
+    final position = await LocationService().getCurrentLocation();
 
-  final address = await AppLocationService().getAddressFromLatLng(
-    position.latitude,
-    position.longitude,
-  );
+    final address = await AppLocationService().getAddressFromLatLng(
+      position.latitude,
+      position.longitude,
+    );
     loadingAlertService.hideLoading();
 
     if (address != null) {
@@ -578,7 +582,8 @@ class _UnDeliveryState extends State<UnDelivery> {
                   isRequired: false,
                   icon: Icons.inventory_2_outlined,
                   child: TextFormField(
-                    enabled: false,
+                    // enabled: false,
+                    enabled: isGrEditable,
                     controller: _grNoController,
                     style: TextStyle(
                         color: CommonColors.appBarColor,
