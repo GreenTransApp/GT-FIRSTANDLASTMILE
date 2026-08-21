@@ -158,8 +158,9 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                   Container(
                     padding: EdgeInsets.all(SizeConfig.smallIconSize),
                     decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary!
+                      color: CommonColors.darkBlue!
                           .withAlpha((0.1 * 255).round()),
+                          
                       borderRadius:
                           BorderRadius.circular(SizeConfig.largeRadius),
                     ),
@@ -178,8 +179,9 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                       vertical:
                                           SizeConfig.smallVerticalPadding),
                                   decoration: BoxDecoration(
-                                    color: CommonColors.colorPrimary!
-                                        .withAlpha((0.1 * 255).round()),
+                                    color: CommonColors.white!,
+                                        // .withAlpha((0.1 * 255).round()),
+                                        border: Border.all(color: CommonColors.darkBlue!),
                                     borderRadius: BorderRadius.circular(
                                         SizeConfig.largeRadius),
                                   ),
@@ -189,7 +191,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     style: TextStyle(
                                       fontSize: SizeConfig.extraSmallTextSize,
                                       fontWeight: FontWeight.bold,
-                                      color: CommonColors.colorPrimary,
+                                      color: CommonColors.darkBlue,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -210,7 +212,7 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                                     isExpanded
                                         ? Icons.keyboard_arrow_up
                                         : Icons.keyboard_arrow_down,
-                                    color: CommonColors.colorPrimary,
+                                    color: CommonColors.darkBlue,
                                   ),
                                 ),
                               ),
@@ -544,20 +546,22 @@ class _RouteDetailTileState extends State<RouteDetailTile> {
                         horizontal: SizeConfig.extraSmallHorizontalPadding,
                         vertical: SizeConfig.extraSmallVerticalPadding),
                     decoration: BoxDecoration(
-                        color: CommonColors.colorPrimary,
+                        color: CommonColors.colorPrimary2,
                         borderRadius: BorderRadius.all(
                             Radius.circular(SizeConfig.mediumRadius)),
                         border: Border.all(
-                            color: CommonColors.colorPrimary!, width: 1)),
-                    child: RotatedBox(
-                      quarterTurns: 3,
-                      child: Text(
-                        "Drag",
-                        style: TextStyle(
-                          color: CommonColors.White,
-                          fontSize: SizeConfig.smallTextSize,
-                        ),
-                      ),
+                            color: CommonColors.colorPrimary2!, width: 1)),
+                    child:  RotatedBox(
+                      quarterTurns: 4,
+                      child: 
+                       ImageIcon(AssetImage('assets/images/touch.png'),color: CommonColors.white,)
+                      // Text(
+                      //   "Drag",
+                      //   style: TextStyle(
+                      //     color: CommonColors.White,
+                      //     fontSize: SizeConfig.smallTextSize,
+                      //   ),
+                      // ),
                     ),
                   ),
                 ),

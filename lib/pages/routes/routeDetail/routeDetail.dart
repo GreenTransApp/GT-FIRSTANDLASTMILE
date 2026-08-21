@@ -568,17 +568,17 @@ class _RoutedetailState extends State<Routedetail> {
                                             SizeConfig.horizontalPadding,
                                         vertical: SizeConfig.verticalPadding),
                                     decoration: BoxDecoration(
-                                      color: CommonColors.colorPrimary!
+                                      color: CommonColors.darkBlue!
                                           .withAlpha((0.3 * 255).round()),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: CommonColors.colorPrimary!
+                                        color: CommonColors.darkBlue!
                                             .withAlpha((0.3 * 255).round()),
                                       ),
                                     ),
                                     child: Icon(
                                       Icons.route,
-                                      color: CommonColors.colorPrimary,
+                                      color: CommonColors.darkBlue,
                                       size: SizeConfig.largeIconSize,
                                     ),
                                   ),
@@ -640,6 +640,7 @@ class _RoutedetailState extends State<Routedetail> {
                                   ),
                                 ],
                               ),
+                              Divider(thickness: 1,color: CommonColors.grey200,),
                               SizedBox(
                                   height: SizeConfig.mediumVerticalSpacing),
                               Container(
@@ -647,13 +648,13 @@ class _RoutedetailState extends State<Routedetail> {
                                     horizontal:
                                         SizeConfig.smallHorizontalPadding,
                                     vertical: SizeConfig.smallVerticalPadding),
-                                decoration: BoxDecoration(
-                                  color: CommonColors.grey200,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: CommonColors.grey200!,
-                                  ),
-                                ),
+                                // decoration: BoxDecoration(
+                                //   color: CommonColors.grey200,
+                                //   borderRadius: BorderRadius.circular(12),
+                                //   border: Border.all(
+                                //     color: CommonColors.grey200!,
+                                //   ),
+                                // ),
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -662,7 +663,7 @@ class _RoutedetailState extends State<Routedetail> {
                                         Icons.calendar_today_outlined,
                                         'Date & Time',
                                         '${modelDetail.planningdt}',
-                                        CommonColors.colorPrimary!,
+                                        CommonColors.red600!,
                                       ),
                                     ),
                                     Container(
@@ -676,7 +677,7 @@ class _RoutedetailState extends State<Routedetail> {
                                         Icons.straighten,
                                         'Total Distance',
                                         '${modelDetail.totdistance}',
-                                        Colors.amber.shade700,
+                                        CommonColors.successColor!,
                                       ),
                                     ),
                                   ],
@@ -694,11 +695,14 @@ class _RoutedetailState extends State<Routedetail> {
                         vertical: SizeConfig.verticalPadding,
                         horizontal: SizeConfig.horizontalPadding),
                     margin: EdgeInsets.symmetric(
-                        vertical: SizeConfig.verticalPadding,
+                        // vertical: SizeConfig.verticalPadding,
                         horizontal: SizeConfig.horizontalPadding),
+                        
                     decoration: BoxDecoration(
-                      color: CommonColors.colorPrimary,
-                      borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!]),
+                      // color: CommonColors.colorPrimary,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight:  Radius.circular(SizeConfig.largeRadius)),
                       boxShadow: [
                         BoxShadow(
                           color: CommonColors.appBarColor
@@ -712,16 +716,18 @@ class _RoutedetailState extends State<Routedetail> {
                       children: [
                         Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.smallHorizontalPadding,
+                              horizontal: SizeConfig.extraSmallHorizontalPadding,
                               vertical: SizeConfig.smallVerticalPadding),
                           decoration: BoxDecoration(
+                            color: CommonColors.white,
                             shape: BoxShape.circle,
                             border: Border.all(color: CommonColors.White!),
                           ),
                           child: Image.asset(
-                            'assets/images/multipointlocation.png',
-                            height: SizeConfig.smallIconSize,
-                            width: SizeConfig.smallIconSize,
+                            // 'assets/images/multipointlocation.png',
+                            'assets/images/multilocation.png',
+                            height: SizeConfig.extraLargeIconSize,
+                            width: SizeConfig.extraLargeIconSize,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -736,7 +742,8 @@ class _RoutedetailState extends State<Routedetail> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                 
+                  // const SizedBox(height: 16),
                   routeDetailList.isEmpty
                       ? Expanded(
                           child: Center(
@@ -765,7 +772,7 @@ class _RoutedetailState extends State<Routedetail> {
                                   const EdgeInsets.symmetric(horizontal: 16),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(SizeConfig.largeRadius),bottomRight: Radius.circular(SizeConfig.largeRadius)),
                                 boxShadow: [
                                   BoxShadow(
                                     color: CommonColors.appBarColor
@@ -847,23 +854,31 @@ class _RoutedetailState extends State<Routedetail> {
           child: Row(
             children: [
               Expanded(
-                  child: ElevatedButton.icon(
-                onPressed: () {
-                  alterForReject();
-                },
-                icon: Icon(Icons.close, size: SizeConfig.smallIconSize),
-                label: Text(
-                  "Reject",
-                  style: TextStyle(fontSize: SizeConfig.smallTextSize),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: CommonColors.red600,
-                  foregroundColor: CommonColors.White,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              )
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                        gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])
+                    ),
+                    child: ElevatedButton.icon(
+                                    onPressed: () {
+                    alterForReject();
+                                    },
+                                    icon: Icon(Icons.close, size: SizeConfig.smallIconSize),
+                                    label: Text(
+                    "Reject",
+                    style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                    backgroundColor: CommonColors.transparent,
+                    shadowColor:  CommonColors.transparent,
+                    foregroundColor: CommonColors.White,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                                    ),
+                                  ),
+                  )
                   //  InkWell(
                   //   onTap: () {
                   //     alterForReject();
@@ -885,46 +900,54 @@ class _RoutedetailState extends State<Routedetail> {
                 width: 12,
               ),
               Expanded(
-                  child: ElevatedButton.icon(
-                onPressed: () {
-                  // alterForAccept();
-                  List<RouteDetailModel> _routeList =
-                      List.empty(growable: true);
-
-                  _routeList.addAll(routeDetailList.where((routeDetailList) =>
-                      !routeDetailList.grno!.contains("Pickup") &&
-                      !routeDetailList.grno!.contains("Final Point")));
-                  if (_routeList.isNotEmpty && hasDeliveries) {
-                    Get.to(() => ReceivedLoadPage(
-                            receivedLoadList: _routeList, model: modelDetail))!
-                        .then(
-                      (value) => {refreshScreen()},
-                    );
-                  } else {
-                    // _acceptRoute();
-                    alterForAccept();
-                  }
-                },
-                icon: Icon(Icons.list, size: SizeConfig.smallIconSize),
-                // label: const Text("Accept"),
-                // label: const Text("Receive Load"),
-                label: hasDeliveries
-                    ? Text(
-                        "Receive Load",
-                        style: TextStyle(fontSize: SizeConfig.smallTextSize),
-                      )
-                    : Text(
-                        "Accept",
-                        style: TextStyle(fontSize: SizeConfig.smallTextSize),
-                      ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: CommonColors.green600,
-                  foregroundColor: CommonColors.White,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              )
+                  child: Container(
+                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                        gradient: LinearGradient(
+                    colors: [CommonColors.whatsapp!, CommonColors.successColor!])
+                    ),
+                    child: ElevatedButton.icon(
+                                    onPressed: () {
+                    // alterForAccept();
+                    List<RouteDetailModel> _routeList =
+                        List.empty(growable: true);
+                    
+                    _routeList.addAll(routeDetailList.where((routeDetailList) =>
+                        !routeDetailList.grno!.contains("Pickup") &&
+                        !routeDetailList.grno!.contains("Final Point")));
+                    if (_routeList.isNotEmpty && hasDeliveries) {
+                      Get.to(() => ReceivedLoadPage(
+                              receivedLoadList: _routeList, model: modelDetail))!
+                          .then(
+                        (value) => {refreshScreen()},
+                      );
+                    } else {
+                      // _acceptRoute();
+                      alterForAccept();
+                    }
+                                    },
+                                    icon: Icon(Icons.list, size: SizeConfig.smallIconSize),
+                                    // label: const Text("Accept"),
+                                    // label: const Text("Receive Load"),
+                                    label: hasDeliveries
+                      ? Text(
+                          "Receive Load",
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                        )
+                      : Text(
+                          "Accept",
+                          style: TextStyle(fontSize: SizeConfig.smallTextSize),
+                        ),
+                                    style: ElevatedButton.styleFrom(
+                                     backgroundColor: CommonColors.transparent,
+                      shadowColor:  CommonColors.transparent,
+                    foregroundColor: CommonColors.White,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                                    ),
+                                  ),
+                  )
                   //  InkWell(
                   //   onTap: () {
                   //     alterForAccept();
@@ -954,49 +977,59 @@ class _RoutedetailState extends State<Routedetail> {
       String value, Color color) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: SizeConfig.horizontalPadding,
-                vertical: SizeConfig.verticalPadding),
-            decoration: BoxDecoration(
-              color: color.withAlpha((0.3 * 255).round()),
-              shape: BoxShape.circle,
-              border: Border.all(
+      child: Container(
+         padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.extraSmallHorizontalPadding,
+                  vertical: SizeConfig.extraSmallVerticalPadding),
+        decoration: BoxDecoration(
+          color: color.withAlpha((0.1 *255).round()),
+          border: Border.all(color:color.withAlpha((0.1 *255).round()) ),
+          borderRadius: BorderRadius.circular(SizeConfig.mediumRadius)
+          ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.horizontalPadding,
+                  vertical: SizeConfig.verticalPadding),
+              decoration: BoxDecoration(
                 color: color.withAlpha((0.3 * 255).round()),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color.withAlpha((0.3 * 255).round()),
+                ),
+              ),
+              child: Icon(
+                icon,
+                size: SizeConfig.smallIconSize,
+                color: color,
               ),
             ),
-            child: Icon(
-              icon,
-              size: SizeConfig.smallIconSize,
-              color: color,
-            ),
-          ),
-          SizedBox(width: SizeConfig.horizontalPadding),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: SizeConfig.smallTextSize,
-                    color: Colors.black54,
+            SizedBox(width: SizeConfig.horizontalPadding),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: SizeConfig.smallTextSize,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: SizeConfig.smallTextSize,
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: SizeConfig.smallTextSize,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
