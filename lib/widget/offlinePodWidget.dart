@@ -199,6 +199,7 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
     List<String> damageReasonList = List.empty(growable: true);
     // List<String> damageImagesList = List.empty(growable: true);
     List<String> damageImage1List = List.empty(growable: true);
+    String currentAddress = "";
     // List<String> damageImage2List = List.empty(growable: true);
     // List<String> damageImagesList = List.empty(growable: true);
     // damageImagesList.addAll(sortedPodDamageImagesList);
@@ -233,6 +234,7 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
         // }
         damageImage1List.add(
             convertFilePathToBase64(offlinePods[i].prmdamageimg1.toString()));
+        currentAddress = offlinePods[i].prmentrylocation.toString();
         // damageImage2List.add(
         //     convertFilePathToBase64(offlinePods[i].prmdamageimg2.toString()));
       }
@@ -267,6 +269,7 @@ class _OfflinePodWidgetState extends State<OfflinePodWidget> {
         "prmdamagereasonid": damageReasonList.join(",") + ",",
         // "prmdamageimgstr": sortedPodDamageImagesList,
         "prmdamageimg1str": damageImage1List,
+        "prmentrylocation": currentAddress
         // "prmdamageimg2str": damageImage2List,
       };
 

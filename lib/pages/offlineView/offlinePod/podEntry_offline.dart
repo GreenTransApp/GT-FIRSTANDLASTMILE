@@ -7,12 +7,15 @@ import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
+import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntry_offlineModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
 class PodEntryOffline extends StatefulWidget {
@@ -56,6 +59,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
   List<String> _damageImages = [];
   List<String> existingGrList = [];
   bool grPodExists = false;
+  String currentAddress = '';
+  late LoadingAlertService loadingAlertService;
   final List<String> _relations = [
     'SELF',
     'BROTHER',
@@ -89,6 +94,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
     _deliveryDateController.text = /* formatDate(DateTime.now()); */
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     _deliveryTimeController.text = DateFormat('hh:mm').format(DateTime.now());
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
     fetchExistingGrList();
     // fetchPod();
   }
@@ -237,7 +244,8 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
       showExistingGrAlert();
       return;
     } else {
-      saveEntry();
+      // saveEntry();
+      fetchLocationAndSubmit();
     }
     //  else if (int.parse(_deliverPckgsController.text) >
     //     int.parse(model.pckgs.toString())) {
@@ -346,6 +354,7 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
             isNullOrEmpty(_damageImg1FilePath) ? '' : _damageImg1FilePath,
         // prmdamageimg2:
         //     isNullOrEmpty(_damageImg2FilePath) ? '' : _damageImg2FilePath,
+        prmentrylocation: currentAddress,
       );
 
       int result = await DBHelper.insertPod(podOfflineModel);
@@ -409,6 +418,25 @@ class _PodEntryOfflineState extends State<PodEntryOffline> {
   void backCallBackForAlert() {
     // Navigator.pop(context);
     Get.back();
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    final position = await LocationService().getCurrentLocation();
+
+    final address = await AppLocationService().getAddressFromLatLng(
+      position.latitude,
+      position.longitude,
+    );
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      saveEntry();
+    } else {
+      failToast("Could not get your location.");
+    }
   }
 
   @override

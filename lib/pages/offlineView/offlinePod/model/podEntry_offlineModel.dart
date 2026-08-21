@@ -28,6 +28,7 @@ class PodEntryOfflineModel {
   String? prmdamageimg1;
   String? prmdamageimg2;
   bool? isSelected = false;
+  String? prmentrylocation;
 
   PodEntryOfflineModel(
       {this.commandstatus,
@@ -57,7 +58,8 @@ class PodEntryOfflineModel {
       this.prmdamagereasonid,
       // this.prmdamageimgstr,
       this.prmdamageimg1,
-      this.prmdamageimg2});
+      this.prmdamageimg2,
+      this.prmentrylocation});
 
   PodEntryOfflineModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -88,6 +90,7 @@ class PodEntryOfflineModel {
     // prmdamageimgstr = json['prmdamageimgstr'];
     prmdamageimg1 = json['prmdamageimg1'];
     prmdamageimg2 = json['prmdamageimg2'];
+    prmentrylocation = json['prmentrylocation'];
   }
 
   Map<String, dynamic> toJson() {
@@ -120,6 +123,7 @@ class PodEntryOfflineModel {
     // data['prmdamageimgstr'] = prmdamageimgstr;
     data['prmdamageimg1'] = prmdamageimg1;
     data['prmdamageimg2'] = prmdamageimg2;
+    data['prmentrylocation'] = prmentrylocation;
     return data;
   }
 }

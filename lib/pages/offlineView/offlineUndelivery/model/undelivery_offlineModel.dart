@@ -17,26 +17,27 @@ class UnDeliveryOfflineModel {
   String? prmreason;
   String? prmaction;
   bool? isSelected = false;
+  String? prmentrylocation;
 
-  UnDeliveryOfflineModel({
-    this.commandstatus,
-    this.commandmessage,
-    this.prmbranchcode,
-    this.prmundeldt,
-    this.prmtime,
-    this.prmdlvtripsheetno,
-    this.prmgrno,
-    this.prmreasoncode,
-    this.prmactioncode,
-    this.prmremarks,
-    this.prmusercode,
-    this.prmmenucode,
-    this.prmsessionid,
-    this.prmdrno,
-    this.prmimagepath,
-    this.prmreason,
-    this.prmaction,
-  });
+  UnDeliveryOfflineModel(
+      {this.commandstatus,
+      this.commandmessage,
+      this.prmbranchcode,
+      this.prmundeldt,
+      this.prmtime,
+      this.prmdlvtripsheetno,
+      this.prmgrno,
+      this.prmreasoncode,
+      this.prmactioncode,
+      this.prmremarks,
+      this.prmusercode,
+      this.prmmenucode,
+      this.prmsessionid,
+      this.prmdrno,
+      this.prmimagepath,
+      this.prmreason,
+      this.prmaction,
+      this.prmentrylocation});
 
   UnDeliveryOfflineModel.fromJson(Map<String, dynamic> json) {
     commandstatus = json['commandstatus'];
@@ -56,6 +57,7 @@ class UnDeliveryOfflineModel {
     prmimagepath = json['prmimagepath'];
     prmreason = json['prmreason'];
     prmaction = json['prmaction'];
+    prmentrylocation = json['prmentrylocation'];
   }
 
   Map<String, dynamic> toJson() {
@@ -77,6 +79,7 @@ class UnDeliveryOfflineModel {
     data['prmimagepath'] = prmimagepath;
     data['prmreason'] = prmreason;
     data['prmaction'] = prmaction;
+    data['prmentrylocation'] = prmentrylocation;
     return data;
   }
 }

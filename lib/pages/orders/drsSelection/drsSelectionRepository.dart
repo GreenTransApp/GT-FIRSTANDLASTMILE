@@ -2,16 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gtlmd/api/ApiResponse.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
-
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/pages/orders/drsSelection/model/DrsListModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
-import 'package:http/http.dart';
 
 class DrsSelectionRepository extends BaseRepository {
   StreamController<UpsertTripResponseModel> upsertTripLiveData =

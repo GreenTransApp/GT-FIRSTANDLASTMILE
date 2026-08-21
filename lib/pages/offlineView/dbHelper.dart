@@ -1,10 +1,10 @@
 import 'dart:io';
+
 import 'package:gtlmd/pages/offlineView/offlinePod/model/podEntry_offlineModel.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/model/undelivery_offlineModel.dart';
-import 'package:gtlmd/pages/podEntry/Model/podEntryModel.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class DBHelper {
   static Database? _db;
@@ -116,6 +116,7 @@ class DBHelper {
       'prmdamagereasonid': model.prmdamagereasonid,
       // 'prmdamageimgstr': model.prmdamageimgstr,
       'prmdamageimg1': model.prmdamageimg1,
+      'prmentrylocation': model.prmentrylocation
       // 'prmdamageimg2': model.prmdamageimg2
     });
   }
@@ -141,6 +142,7 @@ class DBHelper {
       'prmimagepath': model.prmimagepath,
       'prmreason': model.prmreason,
       'prmaction': model.prmaction,
+      'prmentrylocation': model.prmentrylocation
     });
   }
 

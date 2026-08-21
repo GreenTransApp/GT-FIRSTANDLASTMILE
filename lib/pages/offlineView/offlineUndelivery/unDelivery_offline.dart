@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/alertBox/SuccessAlert.dart';
+import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/common/utils.dart';
 import 'package:gtlmd/design_system/size_config.dart';
@@ -12,6 +13,8 @@ import 'package:gtlmd/pages/offlineView/dbHelper.dart';
 import 'package:gtlmd/pages/offlineView/offlineUndelivery/model/undelivery_offlineModel.dart';
 import 'package:gtlmd/pages/unDelivery/actionModel.dart';
 import 'package:gtlmd/pages/unDelivery/reasonModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
 class UndeliveryOffline extends StatefulWidget {
@@ -37,8 +40,11 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
   List<String> existingGrList = [];
   bool grUnDeliveryExists = false;
   late DBHelper dbHelper = DBHelper();
+  late LoadingAlertService loadingAlertService;
+
   // ReasonModel? _selectedReason;
   // ActionModel? _selectedAction;
+  String currentAddress = '';
   String unDeliverDt = "";
   late DateTime todayDateTime;
   late String smallDateTime;
@@ -70,6 +76,8 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
     _unDeliverDateController.text = /* formatDate(DateTime.now()); */
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     _unDeliveryTimeController.text = DateFormat('hh:mm').format(DateTime.now());
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
     fetchExistingGrList();
   }
 
@@ -196,7 +204,8 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
     } else {
       // Save data to database
       // successToast("Everything is fine");
-      saveEntry();
+      // saveEntry();
+      fetchLocationAndSubmit();
       // loadUndeliveryData();
     }
   }
@@ -282,18 +291,18 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
     try {
       final UnDeliveryOfflineModel unDeliveryOfflineModel =
           UnDeliveryOfflineModel(
-        prmundeldt:
-            convert2SmallDateTime(_unDeliverDateController.text.toString()),
-        prmtime: _unDeliveryTimeController.text.toString(),
-        prmgrno: _grNoController.text.toString(),
-        prmreasoncode: _selectedReason!.reasoncode.toString(),
-        prmactioncode: _selectedAction!.reasoncode.toString(),
-        prmdrno: "",
-        prmremarks: _remarksController.text.toString(),
-        prmimagepath: _imageFilePath.toString(),
-        prmreason: _selectedReason!.reasonname.toString(),
-        prmaction: _selectedAction!.reasonname.toString(),
-      );
+              prmundeldt: convert2SmallDateTime(
+                  _unDeliverDateController.text.toString()),
+              prmtime: _unDeliveryTimeController.text.toString(),
+              prmgrno: _grNoController.text.toString(),
+              prmreasoncode: _selectedReason!.reasoncode.toString(),
+              prmactioncode: _selectedAction!.reasoncode.toString(),
+              prmdrno: "",
+              prmremarks: _remarksController.text.toString(),
+              prmimagepath: _imageFilePath.toString(),
+              prmreason: _selectedReason!.reasonname.toString(),
+              prmaction: _selectedAction!.reasonname.toString(),
+              prmentrylocation: currentAddress);
 
       // DBHelper.insertUndelivery(unDeliveryOfflineModel);
       int result = await DBHelper.insertUndelivery(unDeliveryOfflineModel);
@@ -311,6 +320,25 @@ class _UndeliveryOfflineState extends State<UndeliveryOffline> {
     } catch (e, stackTrace) {
       debugPrint("Error saving undelivery entry: $e");
       debugPrint("Stack trace: $stackTrace");
+    }
+  }
+
+  Future<void> fetchLocationAndSubmit() async {
+    loadingAlertService.showLoading();
+    final position = await LocationService().getCurrentLocation();
+
+    final address = await AppLocationService().getAddressFromLatLng(
+      position.latitude,
+      position.longitude,
+    );
+    loadingAlertService.hideLoading();
+
+    if (address != null) {
+      currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+      saveEntry();
+    } else {
+      failToast("Could not get your location.");
     }
   }
 

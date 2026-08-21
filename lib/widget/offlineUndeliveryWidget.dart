@@ -154,6 +154,7 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
       List<String> imageList = List.empty(growable: true);
       List<String> tripsheetnoList = List.empty(growable: true);
       List<String> drnoList = List.empty(growable: true);
+      String entryLocation = "";
       itemsToSync.clear();
       for (int i = 0; i < offlineUndelivery.length; i++) {
         if (offlineUndelivery[i].isSelected!) {
@@ -170,6 +171,7 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
               .add(offlineUndelivery[i].prmdlvtripsheetno.toString());
           imageList.add(convertFilePathToBase64(
               offlineUndelivery[i].prmimagepath.toString()));
+          entryLocation = offlineUndelivery[i].prmentrylocation.toString();
         }
       }
 
@@ -215,7 +217,8 @@ class _OfflineUndeliveryWidgetState extends State<OfflineUndeliveryWidget> {
           "prmmenucode": 'GTAPP_DRS',
           "prmremarks": remarksList.join(",") + ",",
           "prmdrno": drnoList.join(",") + ",",
-          "prmimagesstr": imageList
+          "prmimagesstr": imageList,
+          "prmentrylocation": entryLocation,
         };
 
         viewModel.saveUndeliveryOffline(params);
