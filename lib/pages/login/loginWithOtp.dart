@@ -290,15 +290,15 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
           //   ),
           //   elevation: 2,
           // ),
-            appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.transparent, 
-            elevation: 0, 
-            flexibleSpace: const Image(
-              image: AssetImage('assets/images/loginHeader.png'),
-              fit: BoxFit.fill, 
-            ),
-          ),
+          //   appBar: AppBar(
+          //   automaticallyImplyLeading: false,
+          //   backgroundColor: Colors.transparent, 
+          //   elevation: 0, 
+          //   flexibleSpace: const Image(
+          //     image: AssetImage('assets/images/loginHeader.png'),
+          //     fit: BoxFit.fill, 
+          //   ),
+          // ),
         bottomNavigationBar: Container(
         height: 100, // Explicit height for the footer
         width: double.infinity,
@@ -326,7 +326,7 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // const SizedBox(height: 20),
+                   SizedBox(height: SizeConfig.verticalPadding),
                   // Image.asset(
                   //   "assets/otpIllustration.png",
                   //   width: MediaQuery.sizeOf(context).width * 0.7,

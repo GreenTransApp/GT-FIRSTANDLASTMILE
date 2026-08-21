@@ -89,15 +89,15 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
         return Scaffold(
           body: Scaffold(
             backgroundColor: CommonColors.grey50,
-            appBar: AppBar(
-          automaticallyImplyLeading: false,
-            backgroundColor: Colors.transparent, 
-            elevation: 0, 
-            flexibleSpace: const Image(
-              image: AssetImage('assets/images/loginHeader.png'),
-              fit: BoxFit.fill, 
-            ),
-          ),
+          //   appBar: AppBar(
+          // automaticallyImplyLeading: false,
+          //   backgroundColor: Colors.transparent, 
+          //   elevation: 0, 
+          //   flexibleSpace: const Image(
+          //     image: AssetImage('assets/images/loginHeader.png'),
+          //     fit: BoxFit.fill, 
+          //   ),
+          // ),
         bottomNavigationBar: Container(
         height: 100, // Explicit height for the footer
         width: double.infinity,
@@ -114,9 +114,11 @@ class _UsernameInputScreenState extends State<UsernameInputScreen> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
+                  SizedBox(height: SizeConfig.verticalPadding,),
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(
+                      vertical: SizeConfig.extraLargeVerticalPadding,
                         horizontal: SizeConfig.extraLargeHorizontalPadding),
                     // margin: EdgeInsets.symmetric(
                     //   // horizontal: MediaQuery.sizeOf(context).width * 0.01,

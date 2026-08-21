@@ -83,4 +83,9 @@ class CommonColors {
   static const Color textSecondary = Color.fromARGB(255, 117, 117, 117);
   static const Color dividerColor = Color.fromARGB(255, 224, 224, 224);
   static const Color shadow = Color.fromARGB(30, 0, 0, 0);
+  static const  Color? pendingColor = const Color(0xFFE9B000);
+
+
+
+
 }

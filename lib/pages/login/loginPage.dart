@@ -36,10 +36,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // if (ENV.isDebugging) {
-    //   usermobileController.text = ENV.debuggingUserName.toUpperCase();
-    //   passwordController.text = ENV.debuggingPassword.toUpperCase();
-    // }
+    if (ENV.isDebugging) {
+      usermobileController.text = ENV.debuggingUserName.toUpperCase();
+      passwordController.text = ENV.debuggingPassword.toUpperCase();
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       loadingAlertService = LoadingAlertService(context: context);
@@ -242,15 +242,16 @@ class _LoginPageState extends State<LoginPage> {
         });
 
         return Scaffold(
-           appBar: AppBar(
+          //  appBar: AppBar(
           
-            backgroundColor: Colors.transparent, 
-            elevation: 0, 
-            flexibleSpace: const Image(
-              image: AssetImage('assets/images/loginHeader.png'),
-              fit: BoxFit.fill, 
-            ),
-          ),
+          //   backgroundColor: Colors.transparent, 
+          //   elevation: 0, 
+          //   flexibleSpace: const Image(
+          //     image: AssetImage('assets/images/loginHeader.png'),
+          //     fit: BoxFit.fill, 
+          //   ),
+          // ),
+       
         bottomNavigationBar: Container(
         height: 100, // Explicit height for the footer
         width: double.infinity,
@@ -337,7 +338,9 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        padding:  EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding),
+                        padding:  EdgeInsets.symmetric(
+                          vertical: SizeConfig.verticalPadding,
+                          horizontal: SizeConfig.extraLargeHorizontalPadding),
                         child: Column(
                           children: [
                             // const SizedBox(height: 80),

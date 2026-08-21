@@ -120,15 +120,15 @@ class _ForgotpasswordState extends State<Forgotpassword> {
           //     onPressed: () => Navigator.pop(context),
           //   ),
           // ),
-            appBar: AppBar(
+          //   appBar: AppBar(
           
-            backgroundColor: Colors.transparent, 
-            elevation: 0, 
-            flexibleSpace: const Image(
-              image: AssetImage('assets/images/loginHeader.png'),
-              fit: BoxFit.fill, 
-            ),
-          ),
+          //   backgroundColor: Colors.transparent, 
+          //   elevation: 0, 
+          //   flexibleSpace: const Image(
+          //     image: AssetImage('assets/images/loginHeader.png'),
+          //     fit: BoxFit.fill, 
+          //   ),
+          // ),
         bottomNavigationBar: Container(
         height: 100, // Explicit height for the footer
         width: double.infinity,
@@ -147,7 +147,8 @@ class _ForgotpasswordState extends State<Forgotpassword> {
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
                 padding:
-                     EdgeInsets.symmetric(horizontal:SizeConfig.extraLargeHorizontalPadding , vertical: SizeConfig.extraLargeVerticalPadding),
+                     EdgeInsets.symmetric(horizontal:SizeConfig.extraLargeHorizontalPadding ,
+                      vertical: SizeConfig.extraLargeVerticalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -158,6 +159,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                     //     fit: BoxFit.contain,
                     //   ),
                     // ),
+                      SizedBox(height: SizeConfig.verticalPadding),
                       Text(
                           'Create new password',
                           style: TextStyle(fontSize: SizeConfig.largeTextSize, color: CommonColors.appBarColor,fontWeight: FontWeight.bold),

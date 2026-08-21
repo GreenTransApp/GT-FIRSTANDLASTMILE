@@ -1305,7 +1305,8 @@ class _HomeScreen extends State<HomeScreen>
                     _navItem(
                       image: 'assets/images/create_trip_icon.png',
                       // label: "Create Trip",
-                      label: "${"Create Trip".split(' ').join('\n')}",
+                      // label: "${"Create Trip".split(' ').join('\n')}",
+                      label: "${"CreateTrip".split(' ').join('\n')}",
                       index: 1,
                     ),
                     FloatingActionButton(
@@ -1686,7 +1687,7 @@ class _HomeScreen extends State<HomeScreen>
             Image.asset(
               image,
               width: SizeConfig.extraLargeIconSize,
-              height: SizeConfig.largeIconSize,
+              height: SizeConfig.extraLargeIconSize,
               color: selected
                   ? CommonColors.colorPrimary
                   : CommonColors.white, // remove if your image has fixed colors
@@ -1701,7 +1702,7 @@ class _HomeScreen extends State<HomeScreen>
               style: TextStyle(
                 color:
                     selected ? CommonColors.colorPrimary : CommonColors.white,
-                fontSize: 12,
+                fontSize: 10,
               ),
             ),
           ],

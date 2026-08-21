@@ -1,6 +1,6 @@
 class SESSION {
-  // static bool isDebugging = true;
-  static bool isDebugging = false;
+  static bool isDebugging = true;
+  // static bool isDebugging = false;
 }
 
 class URL {
