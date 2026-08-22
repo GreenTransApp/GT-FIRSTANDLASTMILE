@@ -317,11 +317,12 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
   Future<void> updateStartTrip() async {
     // _currentPosition = await Geolocator.getCurrentPosition();
     // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
-    LocationService().getCurrentLocation().then((position) {
-      _currentPosition = position;
-    });
+    loadingAlertService.showLoading();
+     _currentPosition = await LocationService().getCurrentLocation();
+    loadingAlertService.hideLoading();
+
     Map<String, String> params = {
-      "prmcompanyid": savedUser.companyid.toString(),
+      // "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
@@ -341,16 +342,21 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmsessionid": savedUser.sessionid.toString(),
       'prmentrylocation': currentAddress,
       'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
-      'prmpickatlat': _currentPosition?.latitude.toString() ?? '',
-      'prmpickatlong': _currentPosition?.longitude.toString() ?? '',
+      'prmstarttriplat': _currentPosition?.latitude.toString() ?? '',
+      'prmstarttriplong': _currentPosition?.longitude.toString() ?? '',
     };
 
     viewModel.updateStartTrip(params);
   }
 
-  void updateCloseTrip() {
+  Future<void> updateCloseTrip() 
+  async {
+      loadingAlertService.showLoading();
+     _currentPosition = await LocationService().getCurrentLocation();
+   
+    loadingAlertService.hideLoading();
     Map<String, String> params = {
-      "prmcompanyid": savedUser.companyid.toString(),
+      // "prmcompanyid": savedUser.companyid.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
@@ -368,6 +374,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmsessionid": savedUser.sessionid.toString(),
       'prmentrylocation': currentAddress,
       'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
+      'prmclosetriplat': _currentPosition?.latitude.toString() ?? '',
+      'prmclosetriplong': _currentPosition?.longitude.toString() ?? '',
     };
 
     viewModel.updateCloseTrip(params);

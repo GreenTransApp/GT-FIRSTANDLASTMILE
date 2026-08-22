@@ -137,6 +137,9 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
           showActionBtn = false;
         }
         checkConsignTypeAndStatus();
+      if (modelDetail.showdeparted == 'N' && modelDetail.pickupstatus == 'D') {
+      showAllCardInfo = false;
+    }
       });
     }
   }
@@ -254,7 +257,8 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     try {
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
-        "prmgrno": widget.model.generatedGr.toString(),
+        // "prmgrno": widget.model.generatedGr.toString(),
+        "prmgrno": modelDetail.generatedGr.toString(),
         "prmusercode": savedUser.usercode.toString(),
         "prmmenucode": "GTAPP_BOOKING",
         "prmsessionid": savedUser.sessionid.toString(),
@@ -286,18 +290,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   }
 
   updateDriverReached() async {
-    await widget.updateDriverPosition(widget.model.grno.toString(),
-        widget.model.transactionid.toString(), widget.model.tripid.toString());
+    await widget.updateDriverPosition(modelDetail.grno.toString(),
+       modelDetail.transactionid.toString(), modelDetail.tripid.toString());
   }
 
   updateDriverReachedDlvLocation() async {
-    await widget.updateDriverReachedDlvPoint(widget.model.grno.toString(),
-        widget.model.transactionid.toString(), widget.model.tripid.toString());
+    await widget.updateDriverReachedDlvPoint(modelDetail.grno.toString(),
+       modelDetail.transactionid.toString(), modelDetail.tripid.toString());
   }
 
   updatePickupDepartedPosition() async {
-    await widget.updatePickupDepartedPosition(widget.model.grno.toString(),
-        widget.model.tripid.toString(), widget.model.jobid.toString());
+    await widget.updatePickupDepartedPosition(modelDetail.grno.toString(),
+      modelDetail.tripid.toString(), modelDetail.jobid.toString());
   }
 
   void _toggleShowAllPickupDetail() {
@@ -337,7 +341,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         padding: EdgeInsets.symmetric(
             vertical: SizeConfig.verticalPadding,
             horizontal: SizeConfig.horizontalPadding),
-        child: widget.model.directdelivery == "Y"
+        child: modelDetail.directdelivery == "Y"
             ? directDeliveryConsignmentCard()
             : consignmentCard(),
       ),
@@ -554,95 +558,95 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Visibility(
-                                    visible: widget.model.reached == 'N',
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        updateDriverReached();
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                right: SizeConfig
-                                                    .horizontalPadding),
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: SizeConfig
-                                                  .smallHorizontalSpacing,
-                                              vertical: 5,
-                                            ),
-                                            decoration: BoxDecoration(
-                                                color:
-                                                    CommonColors.colorPrimary2!,
-                                                borderRadius:
-                                                    BorderRadius.circular(16)),
-                                            child: Text(
-                                              "Pending",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize:SizeConfig.extraSmallTextSize,
-                                                  color: CommonColors.white),
-                                            ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: SizeConfig
-                                                  .extraSmallHorizontalSpacing,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                                color: CommonColors.white!,
-                                                border: Border.all(
-                                                    color:
-                                                        CommonColors.grey400!),
-                                                borderRadius:
-                                                    BorderRadius.circular(16)),
-                                            child:  Row(
-                                              children: [
-                                                 Icon(
-                                  Icons.circle,
-                                  color: CommonColors.colorPrimary2,
-                                  size: SizeConfig.extraSmallIconSize,
-                                ),
-                                                Text(
-                                                  "Arrived At",
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: SizeConfig.extraSmallTextSize,
-                                                      color:
-                                                          CommonColors.appBarColor),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: widget.model.reached == 'Y',
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.check_circle,
-                                          color: CommonColors.green600,
-                                        ),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        const Text("Reached")
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: SizeConfig.smallVerticalSpacing,
-                              ),
+                              // Row(
+                              //   children: [
+                              //     Visibility(
+                              //       visible: widget.model.reached == 'N',
+                              //       child: GestureDetector(
+                              //         onTap: () {
+                              //           updateDriverReached();
+                              //         },
+                              //         child: Row(
+                              //           mainAxisAlignment:
+                              //               MainAxisAlignment.spaceEvenly,
+                              //           children: [
+                              //             Container(
+                              //               margin: EdgeInsets.only(
+                              //                   right: SizeConfig
+                              //                       .horizontalPadding),
+                              //               padding: EdgeInsets.symmetric(
+                              //                 horizontal: SizeConfig
+                              //                     .smallHorizontalSpacing,
+                              //                 vertical: 5,
+                              //               ),
+                              //               decoration: BoxDecoration(
+                              //                   color:
+                              //                       CommonColors.colorPrimary2!,
+                              //                   borderRadius:
+                              //                       BorderRadius.circular(16)),
+                              //               child: Text(
+                              //                 "Pending",
+                              //                 style: TextStyle(
+                              //                     fontWeight: FontWeight.w600,
+                              //                     fontSize:SizeConfig.extraSmallTextSize,
+                              //                     color: CommonColors.white),
+                              //               ),
+                              //             ),
+                              //             Container(
+                              //               padding: EdgeInsets.symmetric(
+                              //                 horizontal: SizeConfig
+                              //                     .extraSmallHorizontalSpacing,
+                              //                 vertical: 4,
+                              //               ),
+                              //               decoration: BoxDecoration(
+                              //                   color: CommonColors.white!,
+                              //                   border: Border.all(
+                              //                       color:
+                              //                           CommonColors.grey400!),
+                              //                   borderRadius:
+                              //                       BorderRadius.circular(16)),
+                              //               child:  Row(
+                              //                 children: [
+                              //                    Icon(
+                              //     Icons.circle,
+                              //     color: CommonColors.colorPrimary2,
+                              //     size: SizeConfig.extraSmallIconSize,
+                              //   ),
+                              //                   Text(
+                              //                     "Arrived At",
+                              //                     style: TextStyle(
+                              //                         fontWeight: FontWeight.w600,
+                              //                         fontSize: SizeConfig.extraSmallTextSize,
+                              //                         color:
+                              //                             CommonColors.appBarColor),
+                              //                   ),
+                              //                 ],
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     Visibility(
+                              //       visible: widget.model.reached == 'Y',
+                              //       child: Row(
+                              //         children: [
+                              //           Icon(
+                              //             Icons.check_circle,
+                              //             color: CommonColors.green600,
+                              //           ),
+                              //           const SizedBox(
+                              //             width: 8,
+                              //           ),
+                              //           const Text("Reached")
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // SizedBox(
+                              //   height: SizeConfig.smallVerticalSpacing,
+                              // ),
                               isNullOrEmpty(modelDetail.undeliverreason)
                                   ? const SizedBox.shrink()
                                   : Text(
@@ -685,7 +689,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         ],
                       ),
 
-                      SizedBox(height: SizeConfig.smallVerticalSpacing),
+                      // SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                       Text.rich(
                         TextSpan(
@@ -878,6 +882,93 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                       SizedBox(height: SizeConfig.smallVerticalSpacing),
 
                       // Action Buttons for Pending
+                      Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.smallHorizontalPadding,
+                              vertical: SizeConfig.extraSmallVerticalPadding),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: CommonColors.grey50!
+                                // .withAlpha((0.1 * 255).toInt()),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child:
+                                   
+                                      Row(
+                                        children: [
+                                          // Icon(Icons.watch_later_outlined),
+                                          Text(widget.model.reached == 'Y'?
+                                           (modelDetail.reachedatdatetime
+                                                ?.toString() ??
+                                            '')
+                                                                              : 'Pending',
+                                                                           style: TextStyle(
+                                                                            fontSize: SizeConfig.extraSmallTextSize,
+                                                                            fontWeight: FontWeight.bold),   
+                                                                        ),
+                                     if(widget.model.reached != 'Y')...[
+                                       const ImageIcon(
+                                           AssetImage('assets/images/loading.png'))
+                                          //  AssetImage('assets/images/image.png'))
+                                     ]
+                                        ],
+                                      
+                                      )),
+                              Visibility(
+                                visible: modelDetail.reached == 'Y',
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Arrived At',
+                                      style: TextStyle(
+                                        fontSize: SizeConfig.smallTextSize,
+                                        fontWeight: FontWeight.w600,
+                                        color: CommonColors.green600,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: CommonColors.green600,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (modelDetail.reached != 'Y') ...[
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                     updateDriverReached();
+                                    },
+                                    // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                    icon: const Icon(Icons.arrow_forward_ios),
+                                    iconAlignment: IconAlignment.end,
+                                    label: Text('Arrived At',
+                                        style: TextStyle(
+                                            fontSize:
+                                                SizeConfig.extraSmallTextSize)),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              SizeConfig.smallHorizontalPadding,
+                                          vertical: SizeConfig.smallVerticalPadding),
+                                      backgroundColor:
+                                          CommonColors.colorPrimary2,
+                                      foregroundColor: CommonColors.White,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                        
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]
+                            ],
+                          ),
+                        ),
+                        
+
                       if (modelDetail.consignmenttype == "D" &&
                           status == "Pending") ...[
                         SizedBox(height: SizeConfig.smallVerticalSpacing),
@@ -1327,6 +1418,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                             ],
                           ),
                         ),
+                        
                         SizedBox(height: SizeConfig.smallVerticalSpacing),
                       ] else if (modelDetail.consignmenttype == "P" &&
                           modelDetail.showdeparted == "N") ...[
@@ -1359,10 +1451,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                                   ?.toString() ??
                                               '')
                                           : '',
+                                          style: TextStyle(fontWeight: FontWeight.bold),
                                     )),
                                     Visibility(
                                       visible:
-                                          widget.model.pickupdeparted == 'Y',
+                                          modelDetail.pickupdeparted == 'Y',
                                       child: Row(
                                         children: [
                                           Text(

@@ -112,6 +112,7 @@ class _PodEntryState extends State<PodEntry> {
   late String currentdate;
   late String currentTime;
   bool isGrEditable = false;
+ Position? position;
 
   @override
   void initState() {
@@ -173,11 +174,11 @@ class _PodEntryState extends State<PodEntry> {
 
   Future<void> fetchLocationAndSubmit() async {
     loadingAlertService.showLoading();
-    final position = await LocationService().getCurrentLocation();
+     position = await LocationService().getCurrentLocation();
 
     final address = await AppLocationService().getAddressFromLatLng(
-      position.latitude,
-      position.longitude,
+      position!.latitude,
+      position!.longitude,
     );
     loadingAlertService.hideLoading();
 
@@ -566,7 +567,9 @@ class _PodEntryState extends State<PodEntry> {
       // "prmdamageimgstr": damageImageList,
       "prmdamageimagestr": convertFilePathToBase64(damageImgpdfPath),
       "prmdeliveryimgpath": convertFilePathToBase64(deliveryImgpdfPath),
-      "prmentrylocation": currentAddress
+      "prmentrylocation": currentAddress,
+      "prmentrylocationlat": position?.latitude.toString()?? "",
+      "prmentrylocationlong": position?.longitude.toString() ?? "",
     };
 
     // loadingAlertService.showLoading();

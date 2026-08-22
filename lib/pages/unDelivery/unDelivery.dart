@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Toast.dart';
 import 'package:gtlmd/common/Utils.dart';
@@ -62,6 +63,7 @@ class _UnDeliveryState extends State<UnDelivery> {
   final TextEditingController _branchController = TextEditingController();
   BranchModel? _selectedBranch;
   bool isGrEditable = false;
+  Position? _currentPosition;
   @override
   void initState() {
     super.initState();
@@ -75,15 +77,14 @@ class _UnDeliveryState extends State<UnDelivery> {
     } else {
       isGrEditable = false;
       _grNoController.text = isNullOrEmpty(deliveryDetailModel.generatedGr)
-        ? deliveryDetailModel.grno.toString()
-        : deliveryDetailModel.generatedGr.toString();
-        _selectedBranch = BranchModel(
-        stnCode: deliveryDetailModel.destcode,
-        stnName: deliveryDetailModel.destname);
-    _branchController.text = _selectedBranch!.stnName.toString();  
+          ? deliveryDetailModel.grno.toString()
+          : deliveryDetailModel.generatedGr.toString();
+      _selectedBranch = BranchModel(
+          stnCode: deliveryDetailModel.destcode,
+          stnName: deliveryDetailModel.destname);
+      _branchController.text = _selectedBranch!.stnName.toString();
     }
 
-    
     todayDateTime = DateTime.now();
     smallDateTime = DateFormat('yyyy-MM-dd').format(todayDateTime);
     unDeliverDt = smallDateTime;
@@ -227,7 +228,7 @@ class _UnDeliveryState extends State<UnDelivery> {
 
   void saveUndelivery() {
     Map<String, String> params = {
-      "prmconnstring": savedLogin.companyid.toString(),
+      // "prmconnstring": savedLogin.companyid.toString(),
       // "prmbranchcode": savedUser.loginbranchcode.toString(),
       // "prmbranchcode": widget.deliveryDetailModel.destcode.toString(),
       "prmbranchcode": _selectedBranch!.stnCode.toString(),
@@ -247,6 +248,8 @@ class _UnDeliveryState extends State<UnDelivery> {
       "prmdrno": "",
       "prmimagepath": _imageFilePathBase64.toString(),
       'prmentrylocation': currentAddress,
+      "prmentrylocationlat": _currentPosition?.latitude.toString() ?? "",
+      "prmentrylocationlong": _currentPosition?.longitude.toString() ?? "",
     };
 
     debugPrint("Test");
@@ -258,11 +261,12 @@ class _UnDeliveryState extends State<UnDelivery> {
     // String? address = await AppLocationService().getCurrentAddress();
     // loadingAlertService.hideLoading();
     loadingAlertService.showLoading();
-    final position = await LocationService().getCurrentLocation();
+    // final position = await LocationService().getCurrentLocation();
+    _currentPosition = await LocationService().getCurrentLocation();
 
     final address = await AppLocationService().getAddressFromLatLng(
-      position.latitude,
-      position.longitude,
+      _currentPosition!.latitude ,
+      _currentPosition!.longitude,
     );
     loadingAlertService.hideLoading();
 

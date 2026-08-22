@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gtlmd/api/model/ApiCallParametersModel.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Utils.dart';
+import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupInfoModel.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/OtexPickupSplitInfo.dart';
 import 'package:gtlmd/pages/otexPickupScreen/models/goodsTypeModel.dart';
@@ -21,6 +22,8 @@ import 'package:gtlmd/pages/pickup/model/customerModel.dart';
 import 'package:gtlmd/pages/pickup/model/deliveryTypeModel.dart';
 import 'package:gtlmd/pages/pickup/model/departmentModel.dart';
 import 'package:gtlmd/pages/pickup/model/CngrCngeModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
+import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -466,6 +469,20 @@ class OtexPickupProvider extends ChangeNotifier {
       signImg = convertFilePathToBase64(signImagePath);
     }
     debugPrint("signImg $signImg");
+
+    String currentAddress = "";
+    final position = await LocationService().getCurrentLocation();
+
+    final address = await AppLocationService().getAddressFromLatLng(
+      position.latitude,
+      position.longitude,
+    );
+    if (address != null) {
+       currentAddress = address;
+      debugPrint("Current Address: $currentAddress");
+    } else {
+      failToast("Could not get your location.");
+    }
     Map<String, dynamic> buildSaveJson() {
       return {
         // ── Basic Info ────────────────────────────────────────────
@@ -557,7 +574,10 @@ class OtexPickupProvider extends ChangeNotifier {
         'indentrefrenceno': _state.info.orderid ?? 0,
         // 'noofbox': _state.info.pcs.toString(),
         'noofbox': totQty,
-        'jobid': _state.info.jobid
+        'jobid': _state.info.jobid,
+        "entrylocation": currentAddress,
+        "entrylocationlat": position.latitude.toString()?? "",
+        "entrylocationlong": position.longitude.toString() ?? "",
       };
     }
 

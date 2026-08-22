@@ -526,61 +526,62 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               ],
             ),
             const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              child: (!isNullOrEmpty(item.arrivalDt) &&
-                      !isNullOrEmpty(item.arrivalTime))
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.green.shade300,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text("${item.arrivalDt} $arrivaltime",
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                )),
-                          ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   child: (!isNullOrEmpty(item.arrivalDt) &&
+            //           !isNullOrEmpty(item.arrivalTime))
+            //       ? Container(
+            //           padding: const EdgeInsets.symmetric(
+            //               vertical: 12, horizontal: 12),
+            //           decoration: BoxDecoration(
+            //             color: Colors.green.shade50,
+            //             borderRadius: BorderRadius.circular(10),
+            //             border: Border.all(
+            //               color: Colors.green.shade300,
+            //             ),
+            //           ),
+            //           child: Row(
+            //             mainAxisAlignment: MainAxisAlignment.center,
+            //             children: [
+            //               Expanded(
+            //                 child: Text("${item.arrivalDt} $arrivaltime",
+            //                     style: TextStyle(
+            //                       color: Colors.green.shade700,
+            //                       fontWeight: FontWeight.bold,
+            //                       fontSize: 16,
+            //                     )),
+            //               ),
                         
-                          const SizedBox(width: 8),
-                          Text(
-                            "Arrived At",
-                            style: TextStyle(
-                              color: Colors.green.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                            Icon(
-                            Icons.check_circle,
-                            color: Colors.green.shade700,
-                          ),
-                        ],
-                      ),
-                    )
-                  : FilledButton.icon(
-                      onPressed: () {
-                        openUpdateMidMileDriverPosition(context, item,
-                            MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
-                      },
-                      icon: const Icon(Icons.location_on),
-                      label: const Text("Arrive AT"),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: CommonColors.colorPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                    ),
-            ),
+            //               const SizedBox(width: 8),
+            //               Text(
+            //                 "Arrived At",
+            //                 style: TextStyle(
+            //                   color: Colors.green.shade700,
+            //                   fontWeight: FontWeight.bold,
+            //                   fontSize: 16,
+            //                 ),
+            //               ),
+            //                 Icon(
+            //                 Icons.check_circle,
+            //                 color: Colors.green.shade700,
+            //               ),
+            //             ],
+            //           ),
+            //         )
+            //       : FilledButton.icon(
+            //           onPressed: () {
+            //             openUpdateMidMileDriverPosition(context, item,
+            //                 MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
+            //           },
+            //           icon: const Icon(Icons.location_on),
+            //           label: const Text("Arrive AT"),
+            //           style: FilledButton.styleFrom(
+            //             backgroundColor: CommonColors.colorPrimary,
+            //             padding: const EdgeInsets.symmetric(vertical: 14),
+            //           ),
+            //         ),
+            // ),
+          
             SizedBox(
               height: SizeConfig.mediumVerticalSpacing,
             ),

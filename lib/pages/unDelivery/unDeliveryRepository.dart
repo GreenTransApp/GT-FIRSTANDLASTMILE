@@ -70,7 +70,8 @@ class UnDeliveryRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
 
     if (hasInternet) {
-      CommonResponse resp = await apiPost("${lmdUrl}UpdateUndelivery", params);
+      // CommonResponse resp = await apiPost("${lmdUrl}UpdateUndelivery", params);
+      CommonResponse resp = await apiPostWithModel("${lmdUrl}UpdateUndelivery_NV", params);
       viewDialog.add(false);
       if (resp.commandStatus == 1) {
         Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());

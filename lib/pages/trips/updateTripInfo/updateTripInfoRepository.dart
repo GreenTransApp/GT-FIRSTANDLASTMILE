@@ -70,7 +70,8 @@ class UpdateTripInfoRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp = await apiPost("${lmdUrl}UpdateTripStart", params);
+        // CommonResponse resp = await apiPost("${lmdUrl}UpdateTripStart", params);
+        CommonResponse resp = await apiPostWithModel("${lmdUrl}UpdateTripStart_NV", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
@@ -106,7 +107,8 @@ class UpdateTripInfoRepository extends BaseRepository {
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
       try {
-        CommonResponse resp = await apiPost("${lmdUrl}UpdateTripClose", params);
+        // CommonResponse resp = await apiPost("${lmdUrl}UpdateTripClose", params);
+        CommonResponse resp = await apiPostWithModel("${lmdUrl}UpdateTripClose_NV", params);
 
         if (resp.commandStatus == 1) {
           Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
