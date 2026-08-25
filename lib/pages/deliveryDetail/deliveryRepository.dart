@@ -108,7 +108,7 @@ class DeliveryRepository extends BaseRepository {
     }
   }
 
-  Future<void> updateDriverReached(Map<String, String> params) async {
+  Future<void> updateDriverReached(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {

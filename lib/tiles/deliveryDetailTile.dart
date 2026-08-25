@@ -34,7 +34,7 @@ class DeliveryDetailTile extends StatefulWidget {
   final int index;
   final int listLength;
   final Function() onRefresh;
-  final Future<void> Function(String grno, String indentId, String tripid)
+  final Future<void> Function(String grno, String indentId, String tripid,String jobid)
       updateDriverPosition;
   final Future<void> Function(String grno, String indentId, String tripid)
       updateDriverReachedDlvPoint;
@@ -292,7 +292,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
 
   updateDriverReached() async {
     await widget.updateDriverPosition(modelDetail.grno.toString(),
-        modelDetail.transactionid.toString(), modelDetail.tripid.toString());
+        modelDetail.transactionid.toString(), modelDetail.tripid.toString(),modelDetail.jobid.toString());
   }
 
   updateDriverReachedDlvLocation() async {

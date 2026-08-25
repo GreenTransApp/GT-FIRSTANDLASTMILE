@@ -38,7 +38,7 @@ class DeliveryViewModel extends BaseViewModel {
     _repo.getMenu(params);
   }
 
-  updateDriverReached(Map<String, String> params) {
+  updateDriverReached(Map<String, dynamic> params) {
     _repo.updateDriverReached(params);
   }
 

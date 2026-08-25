@@ -206,7 +206,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
   }
 
   Future<void> updateDriverReached(
-      String grno, String indentId, String tripid) async {
+      String grno, String indentId, String tripid,String jobid) async {
    
     loadingAlertService.showLoading();
 
@@ -225,7 +225,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     //   position.longitude,
     // );
  
-      Map<String, String> params = {
+      Map<String, dynamic> params = {
         "prmusercode": savedUser.usercode.toString(),
         "prmbranchcode": savedUser.loginbranchcode.toString(),
         "prmtripid": tripid,
@@ -233,6 +233,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         "prmindentid": indentId,
         "prmreachedlat": position.latitude.toString(),
         "prmreachedlong": position.longitude.toString(),
+        "prmjobid": int.parse(jobid),
         "prmsessionid": savedUser.sessionid.toString(),
       };
 
