@@ -15,7 +15,8 @@ import 'package:gtlmd/pages/consignmentEnquiry/model/consignmentImageModel.dart'
 class ConsignmentEnquiryPage extends StatefulWidget {
   final String consignmentNo;
   final int tripid;
-  const ConsignmentEnquiryPage({super.key, required this.consignmentNo, required this.tripid});
+  const ConsignmentEnquiryPage(
+      {super.key, required this.consignmentNo, required this.tripid});
 
   @override
   State<ConsignmentEnquiryPage> createState() => _ConsignmentEnquiryPageState();
@@ -58,7 +59,11 @@ class _ConsignmentEnquiryPageState extends State<ConsignmentEnquiryPage> {
 
     viewModel.consignLiveData.stream.listen((data) {
       setState(() {
-        consignData = data;
+        if (data.commandstatus == 1) {
+          consignData = data;
+        } else {
+          failToast(data.commandmessage.toString() ?? "Data Not Found.");
+        }
       });
     });
     viewModel.consignImgLiveData.stream.listen((data) {

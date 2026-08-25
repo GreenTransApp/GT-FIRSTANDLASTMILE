@@ -10,12 +10,12 @@ import 'package:gtlmd/service/connectionCheckService.dart';
 
 import '../../common/commonResponse.dart' show CommonResponse;
 
-class  ConsignmentEnquiryRepository  extends BaseRepository {
-    StreamController<ConsignmentEnquiryModel> consignData = StreamController();
-    StreamController<List<ConsignmentImageModel>> consignImgData = StreamController();
+class ConsignmentEnquiryRepository extends BaseRepository {
+  StreamController<ConsignmentEnquiryModel> consignData = StreamController();
+  StreamController<List<ConsignmentImageModel>> consignImgData =
+      StreamController();
 
-
-     Future<void> consignmentEnquiry(Map<String, dynamic> params) async {
+  Future<void> consignmentEnquiry(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (hasInternet) {
@@ -32,22 +32,25 @@ class  ConsignmentEnquiryRepository  extends BaseRepository {
             for (final entry in entries) {
               if (entry.key == "Table") {
                 List<dynamic> list2 = entry.value;
-                List<ConsignmentEnquiryModel> resultList = List.generate(list2.length,
+                List<ConsignmentEnquiryModel> resultList = List.generate(
+                    list2.length,
                     (index) => ConsignmentEnquiryModel.fromJson(list2[index]));
-                     if (resultList.isNotEmpty) {
-                      consignData.add(resultList[0]);
-                    } 
-                consignData.add(resultList[0]);
+                if (resultList.isNotEmpty) {
+                  consignData.add(resultList[0]);
+                } else {
+                  consignData.add(ConsignmentEnquiryModel());
+                }
+                // consignData.add(resultList[0]);
               } else if (entry.key == "Table1") {
                 List<dynamic> list2 = entry.value;
-                List<ConsignmentImageModel> resultList = List.generate(list2.length,
+                List<ConsignmentImageModel> resultList = List.generate(
+                    list2.length,
                     (index) => ConsignmentImageModel.fromJson(list2[index]));
                 if (resultList.isNotEmpty) {
-                consignImgData.add(resultList);
-              } else {
-                consignImgData.add([]);
-              }
-              
+                  consignImgData.add(resultList);
+                } else {
+                  consignImgData.add([]);
+                }
               }
             }
           } catch (err) {
@@ -70,5 +73,4 @@ class  ConsignmentEnquiryRepository  extends BaseRepository {
       isErrorLiveData.add("No Internet available");
     }
   }
-
 }

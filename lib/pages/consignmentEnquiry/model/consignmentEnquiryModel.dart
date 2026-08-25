@@ -1,5 +1,5 @@
 class ConsignmentEnquiryModel {
-  String? commandstatus;
+  int? commandstatus;
   String? commandmessage;
 
   String? indentId;
@@ -303,7 +303,7 @@ class ConsignmentEnquiryModel {
         double.tryParse(value?.toString() ?? '');
 
     return ConsignmentEnquiryModel(
-      commandstatus: json['commandstatus']?.toString(),
+      commandstatus: json['commandstatus'],
       commandmessage: json['commandmessage'],
       indentId: json['indentid']?.toString(),
       documentType: json['documenttype'],

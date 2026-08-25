@@ -745,10 +745,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     )
                   : FilledButton.icon(
                       onPressed: () {
-                        if (isNullOrEmpty(item.arrivalDt)) {
-                          failToast("Please Reach At Before Arrival.");
-                          return;
-                        }
+                        // if (isNullOrEmpty(item.arrivalDt)) {
+                        //   failToast("Please Reach At Before Arrival.");
+                        //   return;
+                        // }
                         openUpdateMidMileDriverPosition(
                             context, item, MIDMILETRIPSTATUS.UNLOAD, onRefresh);
                       },

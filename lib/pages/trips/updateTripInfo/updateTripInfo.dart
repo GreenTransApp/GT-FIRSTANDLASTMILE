@@ -360,19 +360,19 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmtripid": widget.model.tripid.toString(),
-      "prmclosetripdt": convert2SmallDateTime(widget.model.endtripdate!),
-      "prmclosetriptime":
+      "prmtripdenddt": convert2SmallDateTime(widget.model.endtripdate!),
+      "prmtripendtime":
           formatTimeString(_closeTimeController.text.toString()),
-      "prmclosetripreading": isNullOrEmpty(widget.model.endreadingkm.toString())
+      "prmendreading": isNullOrEmpty(widget.model.endreadingkm.toString())
           ? ''
           : widget.model.endreadingkm.toString(),
-      "prmendreadimgpath": widget.status == TripStatus.open
+      "prmendimgpath": widget.status == TripStatus.open
           ? ""
           : isNullOrEmpty(widget.model.endreadingimg)
               ? ""
               : convertFilePathToBase64(widget.model.endreadingimg),
-      "prmsessionid": savedUser.sessionid.toString(),
       'prmentrylocation': currentAddress,
+      "prmsessionid": savedUser.sessionid.toString(),
       'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
       'prmclosetriplat': _currentPosition?.latitude.toString() ?? '',
       'prmclosetriplong': _currentPosition?.longitude.toString() ?? '',
