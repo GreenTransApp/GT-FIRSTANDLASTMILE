@@ -196,93 +196,102 @@ class RunningTripsState extends State<RunningTrips> {
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: onRefresh,
       child: Scaffold(
-        body: Container(
-          color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.horizontalPadding,
-                    vertical: SizeConfig.verticalPadding),
-                child: TextField(
-                  controller: _searchController,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.done,
-                  cursorColor: CommonColors.appBarColor,
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: CommonColors.appBarColor,
-                      size: SizeConfig.largeIconSize,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchController.clear();
-                          updateSearch('');
-                        });
-                      },
-                      icon: _searchController.text.isNotEmpty
-                          ? const Icon(Icons.clear)
-                          : const Icon(
-                              Icons.clear,
-                              color: Colors.transparent,
-                            ),
-                    ),
-                    hintText: 'Search',
-                    filled: true,
-                    fillColor: CommonColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(10.0), // Set the desired radius
-                      borderSide: BorderSide.none,
-                    ),
+        body: Card(
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.largeRadius), 
+           ),
+          child: Container(
+            color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: CommonColors.colorPrimary2,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius))
                   ),
-                  onChanged: updateSearch,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  child: (filterList.isEmpty) == true
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: [
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Lottie.asset("assets/emptyDelivery.json",
-                                      height: 150),
-                                  Text(
-                                    "No Trips",
-                                    style: TextStyle(
-                                        fontSize: SizeConfig.mediumTextSize,
-                                        color: CommonColors.appBarColor),
-                                  )
-                                ],
+                  padding:EdgeInsets.symmetric(
+                        horizontal: SizeConfig.horizontalPadding,
+                        vertical: SizeConfig.verticalPadding),
+                  child: TextField(
+                    controller: _searchController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    cursorColor: CommonColors.appBarColor,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: CommonColors.appBarColor,
+                        size: SizeConfig.largeIconSize,
+                      ),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchController.clear();
+                            updateSearch('');
+                          });
+                        },
+                        icon: _searchController.text.isNotEmpty
+                            ? const Icon(Icons.clear)
+                            : const Icon(
+                                Icons.clear,
+                                color: Colors.transparent,
                               ),
-                            ),
-                          ],
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: filterList.length,
-                          itemBuilder: (context, index) {
-                            var currentData = filterList[index];
-                            return RunningTripTile(
-                              model: currentData,
-                              attendanceModel: _attendanceModel,
-                              onRefresh: onRefresh,
-                            );
-                          },
-                        ),
+                      ),
+                      hintText: 'Search',
+                      filled: true,
+                      fillColor: CommonColors.white,
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(10.0), // Set the desired radius
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: updateSearch,
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Container(
+                    child: (filterList.isEmpty) == true
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Lottie.asset("assets/emptyDelivery.json",
+                                        height: 150),
+                                    Text(
+                                      "No Trips",
+                                      style: TextStyle(
+                                          fontSize: SizeConfig.mediumTextSize,
+                                          color: CommonColors.appBarColor),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: filterList.length,
+                            itemBuilder: (context, index) {
+                              var currentData = filterList[index];
+                              return RunningTripTile(
+                                model: currentData,
+                                attendanceModel: _attendanceModel,
+                                onRefresh: onRefresh,
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

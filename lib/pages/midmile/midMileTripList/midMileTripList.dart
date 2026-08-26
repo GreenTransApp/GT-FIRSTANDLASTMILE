@@ -221,95 +221,118 @@ class MidMileTripListState extends State<MidMileTripList> {
         }
       },
       child: Card(
+        color:CommonColors.white!,
           elevation: 3,
           margin: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 6,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Header
-                Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header
+              Container(
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius)),
+                 gradient: RadialGradient(
+                   radius: 7,
+                  colors: [CommonColors.colorPrimary!.withAlpha(( 0.2*255 ).toInt()), CommonColors.white!])
+              ),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start
                   ,
                   children: [
-                    Expanded(
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalPadding),
+                      decoration: BoxDecoration(color: CommonColors.white,
+                      border: Border.all(color: CommonColors.colorPrimary!,width: 0.2),
+                      borderRadius: BorderRadius.all(Radius.circular(SizeConfig.smallRadius))
+                      ),
                       child: Text(
                         "Trip ID : ${trip.tripid}",
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style:  TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    Text(
-                      "Trip Detail ID : ${trip.tripdetailid}",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalPadding),
+                      decoration: BoxDecoration(color: CommonColors.white,
+                      border: Border.all(color: CommonColors.colorPrimary!,width: 0.2),
+                      borderRadius: BorderRadius.all(Radius.circular(SizeConfig.smallRadius))),
+                      child: Text(
+                        "Trip Detail ID : ${trip.tripdetailid}",
+                        style:  TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                    
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                /// Origin -> Destination
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Colors.green,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          trip.origin ?? "-",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Icon(Icons.arrow_forward),
-                      ),
-                      Expanded(
-                        child: Text(
-                          trip.destination ?? "-",
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Icon(
-                        Icons.flag,
-                        color: Colors.red,
-                      ),
-                    ],
-                  ),
+              ),
+          
+              const SizedBox(height: 16),
+          
+              /// Origin -> Destination
+              Container(
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
+                margin: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalSpacing),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-
-                const SizedBox(height: 14),
-
-                /// Details
-                Row(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Colors.green,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        trip.origin ?? "-",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Icon(Icons.arrow_forward),
+                    ),
+                    
+                    Expanded(
+                      child: Text(
+                        trip.destination ?? "-",
+                        textAlign: TextAlign.end,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.flag,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+              ),
+          
+              const SizedBox(height: 14),
+          
+              /// Details
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig.smallHorizontalPadding),
+                child: Row(
                   children: [
                     Expanded(
                       child: _infoTile(
@@ -325,10 +348,13 @@ class MidMileTripListState extends State<MidMileTripList> {
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 10),
-
-                Row(
+              ),
+          
+              const SizedBox(height: 10),
+          
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig.smallHorizontalPadding),
+                child: Row(
                   children: [
                     Expanded(
                       child: _infoTile(
@@ -372,10 +398,13 @@ class MidMileTripListState extends State<MidMileTripList> {
                       ),
                   ],
                 ),
-
-                if (trip.tripstart == 'Y') ...[
-                  const Divider(height: 28),
-                  Row(
+              ),
+          
+              if (trip.tripstart == 'Y') ...[
+                const Divider(height: 28),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
+                  child: Row(
                     children: [
                       const Icon(
                         Icons.check_circle,
@@ -393,9 +422,9 @@ class MidMileTripListState extends State<MidMileTripList> {
                       ),
                     ],
                   ),
-                ],
+                ),
               ],
-            ),
+            ],
           )),
     );
   }
@@ -407,14 +436,20 @@ class MidMileTripListState extends State<MidMileTripList> {
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: onRefresh,
       child: Scaffold(
-        body: Container(
-          color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
+        body: Card(
+           shape: RoundedRectangleBorder(
+           borderRadius: BorderRadius.circular(SizeConfig.largeRadius), ),
+          // color: CommonColors.grey200,
           child: Column(
             children: [
-              Padding(
+              Container(
+                decoration: BoxDecoration(color: CommonColors.colorPrimary2,
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius))
+                ),
+                
                 padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.horizontalPadding,
-                    vertical: SizeConfig.verticalPadding),
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding) ,
                 child: TextField(
                   controller: _searchController,
                   keyboardType: TextInputType.text,

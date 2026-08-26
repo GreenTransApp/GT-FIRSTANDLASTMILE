@@ -1516,44 +1516,45 @@ class _HomeScreen extends State<HomeScreen>
                 Column(
                   children: [
                     attendanceInfo(),
-                    const SizedBox(height: 16),
-                    Visibility(
-                      visible: ENV.isDebugging,
-                      child: GestureDetector(
-                        onTap: () async {
-                          Get.to(const MidMileTripList());
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: isSmallDevice ? 8 : 16,
-                              vertical: isSmallDevice ? 8 : 12),
-                          margin: EdgeInsets.only(
-                              top: 16,
-                              bottom: 4,
-                              left: isSmallDevice ? 8 : 16,
-                              right: isSmallDevice ? 8 : 16),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'Test',
-                            style: TextStyle(
-                              fontSize: isSmallDevice ? 12 : 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // const SizedBox(height: 16),
+                    // Visibility(
+                    //   visible: ENV.isDebugging,
+                    //   child: GestureDetector(
+                    //     onTap: () async {
+                    //       Get.to(const MidMileTripList());
+                    //     },
+                    //     child: Container(
+                    //       padding: EdgeInsets.symmetric(
+                    //           horizontal: isSmallDevice ? 8 : 16,
+                    //           vertical: isSmallDevice ? 8 : 12),
+                    //       margin: EdgeInsets.only(
+                    //           top: 16,
+                    //           bottom: 4,
+                    //           left: isSmallDevice ? 8 : 16,
+                    //           right: isSmallDevice ? 8 : 16),
+                    //       decoration: BoxDecoration(
+                    //         color: CommonColors.colorPrimary,
+                    //         borderRadius: BorderRadius.circular(12),
+                    //         boxShadow: const [
+                    //           BoxShadow(
+                    //             color: Colors.black12,
+                    //             blurRadius: 4,
+                    //             offset: Offset(0, 2),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       child: Text(
+                    //         'Test',
+                    //         style: TextStyle(
+                    //           fontSize: isSmallDevice ? 12 : 14,
+                    //           fontWeight: FontWeight.w500,
+                    //           color: Colors.white,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  
                     Expanded(
                       child: AllocatedRouteWidget(
                         key: allotedRouteKey,

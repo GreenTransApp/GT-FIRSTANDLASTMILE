@@ -219,7 +219,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
       onRefresh: refreshScreen,
       child: Scaffold(
         body: Container(
-          color: CommonColors.blueGrey?.withOpacity(0.1),
+          color: CommonColors.white?.withOpacity(0.1),
           child: (_deliveryList.isEmpty) == true
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,149 +249,192 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                     ),
                   ],
                 )
-              : Column(
-                  children: [
-                    const SizedBox(
-                      height: 18,
-                    ),
-                    Visibility(
-                        visible: isLoading,
-                        child: const CupertinoActivityIndicator(
-                          radius: 12,
-                        )),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: SizeConfig.horizontalPadding),
-                              child: Text(
-                                "Total: ${_deliveryList.length}",
-                                style: TextStyle(
-                                    fontSize: SizeConfig.mediumTextSize),
-                              ),
-                            ),
-                            SizedBox(
-                              width: SizeConfig.mediumHorizontalSpacing,
-                            ),
-                            AppTooltip(
-                              items: [
-                                TooltipItem(CommonColors.green200!, "Delivery"),
-                                TooltipItem(CommonColors.amber200!, "Pickup"),
-                              ],
-                              child: const Icon(Icons.info_outline),
-                            )
-                          ],
-                        )),
-                        Expanded(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text("Select All",
-                                style: TextStyle(
-                                    fontSize: SizeConfig.mediumTextSize)),
-                            SizedBox(
-                              width: SizeConfig.smallHorizontalSpacing,
-                            ),
-                            Checkbox(
-                                activeColor: CommonColors.colorPrimary,
-                                value: allSelected,
-                                onChanged: (checked) {
-                                  allSelected = checked;
-                                  _selectedDrsList.clear();
-                                  if (checked == true) {
-                                    for (DrsListModel model in _deliveryList) {
-                                      // model.tripconfirm = true;
-                                      _selectedDrsList.add(model);
-                                    }
-                                  } else {
-                                    for (DrsListModel model in _deliveryList) {
-                                      // model.tripconfirm = false;
-                                      _selectedDrsList.clear();
-                                    }
-                                  }
-                                  setState(() {});
-                                }),
-                          ],
-                        ))
-                      ],
-                    ),
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.horizontalPadding,
-                            vertical: SizeConfig.verticalPadding),
-                        child: TextField(
-                          controller: _searchController,
-                          keyboardType: TextInputType.text,
-                          textInputAction: TextInputAction.done,
-                          cursorColor: CommonColors.appBarColor,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: CommonColors.appBarColor,
-                              size: SizeConfig.largeIconSize,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _searchController.clear();
-                                  updateSearch('');
-                                });
-                              },
-                              icon: _searchController.text.isNotEmpty
-                                  ? const Icon(Icons.clear)
-                                  : const Icon(
-                                      Icons.clear,
-                                      color: Colors.transparent,
-                                    ),
-                            ),
-                            hintText: 'DRS/PRS',
-                            filled: true,
-                            fillColor: CommonColors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10.0), // Set the desired radius
-                              borderSide: BorderSide.none,
-                            ),
+              : Card(
+                margin: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalPadding,vertical: SizeConfig.extraSmallVerticalSpacing),
+                child: Column(
+                    children: [
+                      // const SizedBox(
+                      //   height: 18,
+                      // ),
+                      Visibility(
+                          visible: isLoading,
+                          child: const CupertinoActivityIndicator(
+                            radius: 12,
+                          )),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: SizeConfig.extraSmallVerticalPadding),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(topLeft:Radius.circular(SizeConfig.smallRadius),topRight:Radius.circular(SizeConfig.smallRadius) ),
+                          color: CommonColors.blueGrey!.withAlpha((0.2 * 255).toInt()),
+                          
                           ),
-                          onChanged: updateSearch,
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: SizeConfig.horizontalPadding),
+                                  child: Text(
+                                    "Total: ${_deliveryList.length}",
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: SizeConfig.mediumHorizontalSpacing,
+                                ),
+                                AppTooltip(
+                                  items: [
+                                    TooltipItem(CommonColors.green200!, "Delivery"),
+                                    TooltipItem(CommonColors.amber200!, "Pickup"),
+                                  ],
+                                  child: const Icon(Icons.info_outline),
+                                )
+                              ],
+                            )),
+                            Expanded(
+                                child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text("Select All",
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize)),
+                                SizedBox(
+                                  width: SizeConfig.smallHorizontalSpacing,
+                                ),
+                                Checkbox(
+                                    activeColor: CommonColors.colorPrimary,
+                                    value: allSelected,
+                                    onChanged: (checked) {
+                                      allSelected = checked;
+                                      _selectedDrsList.clear();
+                                      if (checked == true) {
+                                        for (DrsListModel model in _deliveryList) {
+                                          // model.tripconfirm = true;
+                                          _selectedDrsList.add(model);
+                                        }
+                                      } else {
+                                        for (DrsListModel model in _deliveryList) {
+                                          // model.tripconfirm = false;
+                                          _selectedDrsList.clear();
+                                        }
+                                      }
+                                      setState(() {});
+                                    }),
+                              ],
+                            ))
+                          ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        // physics: const AlwaysScrollableScrollPhysics(),
-                        // itemCount: _deliveryList.length,
-                        itemCount: filterList.length,
-                        itemBuilder: (context, index) {
-                          // return manifestCard(_deliveryList[index]);
-                          return manifestCard(filterList[index]);
-                        },
+                      Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: SizeConfig.horizontalPadding,
+                              vertical: SizeConfig.verticalPadding),
+                          child: TextField(
+                            controller: _searchController,
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.done,
+                            cursorColor: CommonColors.appBarColor,
+                            obscureText: false,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: CommonColors.colorPrimary,
+                                size: SizeConfig.largeIconSize,
+                              ),
+                              suffixIcon: IconButton(
+                               
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() {
+                                    _searchController.clear();
+                                    updateSearch('');
+                                  });
+                                },
+                                icon: _searchController.text.isNotEmpty
+                                    ? const Icon(Icons.clear)
+                                    : const Icon(
+                                        Icons.clear,
+                                        color: Colors.transparent,
+                                      ),
+                              ),
+                              hintText: 'DRS/PRS',
+                              filled: true,
+                              fillColor: CommonColors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10  ), // Set the desired radius
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: updateSearch,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          // physics: const AlwaysScrollableScrollPhysics(),
+                          // itemCount: _deliveryList.length,
+                          itemCount: filterList.length,
+                          itemBuilder: (context, index) {
+                            // return manifestCard(_deliveryList[index]);
+                            return manifestCard(filterList[index]);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+              ),
         ),
         persistentFooterButtons: [
           Visibility(
             visible: _selectedDrsList.isNotEmpty,
             child: SizedBox(
               height: 50,
-              child: CommonButton(
-                  title: widget.tripId == 0
-                      ? "Create Trip (${_selectedDrsList.length})"
-                      : "Add DRS (${_selectedDrsList.length})",
-                  color: CommonColors.colorPrimary!,
-                  onTap: () {
-                    submit();
-                  }),
+              child: 
+                Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                 submit();
+                },
+                style: ElevatedButton.styleFrom(
+                  // backgroundColor: CommonColors.colorPrimary,
+                  // foregroundColor: CommonColors.White,
+                   backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  disabledBackgroundColor: CommonColors.grey300,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ), // Disable if not punched in
+                child: Text(
+                widget.tripId == 0
+                                      ? "Create Trip (${_selectedDrsList.length})"
+                                      : "Add DRS (${_selectedDrsList.length})",
+                  style:
+                      TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                ),
+              ),
+            ),
+              // CommonButton(
+              //     title: widget.tripId == 0
+              //         ? "Create Trip (${_selectedDrsList.length})"
+              //         : "Add DRS (${_selectedDrsList.length})",
+              //     color: CommonColors.colorPrimary!,
+              //     onTap: () {
+              //       submit();
+              //     }),
             ),
           ),
         ],
@@ -465,10 +508,10 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
 
     Color backColor = CommonColors.White!;
     if (deliveryModel.manifesttype == 'D') {
-      backColor = CommonColors.green200!;
+      backColor = CommonColors.green500!;
       // .withAlpha((0.3 * 255).toInt());
     } else {
-      backColor = CommonColors.amber200!;
+      backColor = CommonColors.pendingColor!;
       // .withAlpha((0.3 * 255).toInt());
     }
     String manifestType = "";
@@ -500,24 +543,39 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: backColor,
-                  borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+                  // color: backColor,
+                  color: backColor.withAlpha((0.1 * 255).toInt()),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius)),
+                 border: Border(bottom: BorderSide(
+                    color: CommonColors.grey400!, // Choose your border color
+                    width: 0.3,          // Choose your border thickness
+                  ),)
                 ),
                 padding: EdgeInsets.only(
                     left: SizeConfig.smallHorizontalPadding,
                     right: 0,
                     top: SizeConfig.smallVerticalPadding,
-                    bottom: SizeConfig.smallVerticalPadding),
+                    bottom: SizeConfig.smallVerticalPadding
+                    ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "${deliveryModel.manifestno.toString()}/$manifestType",
-                      style: TextStyle(
-                        fontSize: SizeConfig.smallTextSize,
-                        fontWeight: FontWeight.w600,
-                        color: CommonColors.colorPrimary,
-                      ),
+                    
+                    Row(
+                      children: [
+                        CircleAvatar
+                        (backgroundColor: backColor,
+                          child: Icon(Icons.assignment, color: CommonColors.white,)),
+                          SizedBox(width: SizeConfig.extraSmallHorizontalPadding,),
+                        Text(
+                          "${deliveryModel.manifestno.toString()}/$manifestType",
+                          style: TextStyle(
+                            fontSize: SizeConfig.smallTextSize,
+                            fontWeight: FontWeight.w600,
+                            color: CommonColors.appBarColor,
+                          ),
+                        ),
+                      ],
                     ),
                     Container(
                       width: 20,
@@ -527,14 +585,14 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: _selectedDrsList.contains(deliveryModel)
-                              ? CommonColors.colorPrimary!
+                              ? backColor!
                               : const Color(0xFFCBD5E1),
                           width: 2,
                         ),
                         borderRadius:
                             BorderRadius.circular(SizeConfig.smallRadius),
                         color: _selectedDrsList.contains(deliveryModel)
-                            ? CommonColors.colorPrimary!
+                            ? backColor!
                             : Colors.white,
                       ),
                       child: _selectedDrsList.contains(deliveryModel)
@@ -549,12 +607,15 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                   ],
                 ),
               ),
-              SizedBox(height: SizeConfig.mediumVerticalSpacing),
+              
+              // SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: SizeConfig.mediumHorizontalSpacing,
-                    vertical: SizeConfig.mediumVerticalSpacing),
-                child: Row(
+                    vertical: SizeConfig.smallVerticalSpacing
+                    ),
+                child: 
+                Row(
                   children: [
                     Expanded(
                       child: Row(
@@ -569,50 +630,86 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.calendar_today,
+                              Icons.calendar_month_outlined,
                               size: SizeConfig.largeIconSize,
                               color: CommonColors.colorPrimary!,
                             ),
                           ),
                           SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                          Text(
-                            deliveryModel.createddt.toString(),
-                            style: TextStyle(
-                                fontSize: SizeConfig.smallTextSize,
-                                fontWeight: FontWeight.bold
-                                // color: Color(0xFF475569),
-                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Date",
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
+                                    color: CommonColors.grey
+                                    // color: Color(0xFF475569),
+                                    ),
+                              ),
+                              Text(
+                                deliveryModel.createddt.toString(),
+                                style: TextStyle(
+                                    fontSize: SizeConfig.extraSmallTextSize,
+                                    fontWeight: FontWeight.bold
+                                    // color: Color(0xFF475569),
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
+                      SizedBox(
+                          height: 50,
+                          child: VerticalDivider(
+                            color: CommonColors.grey400,
+                            thickness: 0.3,
+                            width: 20,
+                            indent: 5,
+                            endIndent: 5,
+                          ),
+                        ),
                     Expanded(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: SizeConfig.horizontalPadding,
                                 vertical: SizeConfig.verticalPadding),
                             decoration: BoxDecoration(
-                              color: CommonColors.colorPrimary!
+                              color: CommonColors.darkBlue!
                                   .withAlpha((255 * 0.2).toInt()),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Symbols.package_2_rounded,
                               size: SizeConfig.largeIconSize,
-                              color: CommonColors.colorPrimary!,
+                              color: CommonColors.darkBlue!,
                             ),
                           ),
                           SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                          Text(
-                            '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
-                            style: TextStyle(
-                                fontSize: SizeConfig.smallTextSize,
-                                fontWeight: FontWeight.bold
-                                // color: Color(0xFF475569),
-                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                               Text(
+                                "pcs",
+                                style: TextStyle(
+                                    fontSize: SizeConfig.smallTextSize,
+                                    color: CommonColors.grey
+                                    // color: Color(0xFF475569),
+                                    ),
+                              ),
+                              Text(
+                                '${deliveryModel.noofconsign} ${deliveryModel.noofconsign == 1 ? 'item' : 'items'}',
+                                style: TextStyle(
+                                    fontSize: SizeConfig.extraSmallTextSize,
+                                    fontWeight: FontWeight.bold
+                                    // color: Color(0xFF475569),
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

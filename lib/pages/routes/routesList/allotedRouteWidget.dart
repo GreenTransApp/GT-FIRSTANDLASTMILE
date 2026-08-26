@@ -138,95 +138,105 @@ class AllocatedRouteWidgetState extends State<AllocatedRouteWidget> {
       color: Colors.white,
       backgroundColor: CommonColors.colorPrimary,
       onRefresh: onRefresh,
-      child: Column(
-        children: [
-          Container(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.horizontalPadding,
-                  vertical: SizeConfig.verticalPadding),
-              child: TextField(
-                controller: _searchController,
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.done,
-                cursorColor: CommonColors.appBarColor,
-                obscureText: false,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: CommonColors.appBarColor,
-                    size: SizeConfig.largeIconSize,
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      _searchController.clear();
-                      setState(() {
+      child: Card(
+        shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(SizeConfig.largeRadius), 
+  ),
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: CommonColors.colorPrimary2,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius))
+              ),
+              
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                child: TextField(
+                  controller: _searchController,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.done,
+                  cursorColor: CommonColors.appBarColor,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: CommonColors.appBarColor,
+                      size: SizeConfig.largeIconSize,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
                         _searchController.clear();
-                        updateSearch('');
-                      });
-                    },
-                    icon: _searchController.text.isNotEmpty
-                        ? const Icon(Icons.clear)
-                        : const Icon(
-                            Icons.clear,
-                            color: Colors.transparent,
-                          ),
+                        setState(() {
+                          _searchController.clear();
+                          updateSearch('');
+                        });
+                      },
+                      icon: _searchController.text.isNotEmpty
+                          ? const Icon(Icons.clear)
+                          : const Icon(
+                              Icons.clear,
+                              color: Colors.transparent,
+                            ),
+                    ),
+                    hintText: 'Route ID',
+                    filled: true,
+                    fillColor: CommonColors.white,
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(10.0), // Set the desired radius
+                      borderSide: BorderSide.none,
+                    ),
                   ),
-                  hintText: 'Route ID',
-                  filled: true,
-                  fillColor: CommonColors.white,
-                  border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Set the desired radius
-                    borderSide: BorderSide.none,
-                  ),
+                  // onChanged: provider.grSearch,
+                  onChanged: updateSearch,
                 ),
-                // onChanged: provider.grSearch,
-                onChanged: updateSearch,
               ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              // child: (_routeList.isEmpty) == true
-              child: (_routeList.isEmpty) == true
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                          Center(
-                              child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Lottie.asset("assets/map.json",
-                                  height: isSmallDevice ? 80 : 100),
-                              Text(
-                                "No Routes",
-                                style: TextStyle(
-                                    fontSize: isSmallDevice ? 14 : 18,
-                                    color: CommonColors.appBarColor),
-                              )
-                            ],
-                          )),
-                        ])
-                  : ListView.builder(
-                      // physics: const AlwaysScrollableScrollPhysics(),
-                      // shrinkWrap: true,
-                      // itemCount: _routeList.length,
-                      itemCount: filterList.length,
-                      clipBehavior: Clip.antiAlias,
-                      itemBuilder: (context, index) {
-                        // var currentData = _routeList[index];
-                        var currentData = filterList[index];
-                        return DashBoardRouteTile(
-                          model: currentData,
-                          attendanceModel: _attendanceModel,
-                          onRefresh: onRefresh,
-                        );
-                      },
-                    ),
+            Expanded(
+              child: Container(
+                // child: (_routeList.isEmpty) == true
+                child: (_routeList.isEmpty) == true
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                            Center(
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.asset("assets/map.json",
+                                    height: isSmallDevice ? 80 : 100),
+                                Text(
+                                  "No Routes",
+                                  style: TextStyle(
+                                      fontSize: isSmallDevice ? 14 : 18,
+                                      color: CommonColors.appBarColor),
+                                )
+                              ],
+                            )),
+                          ])
+                    : ListView.builder(
+                        // physics: const AlwaysScrollableScrollPhysics(),
+                        // shrinkWrap: true,
+                        // itemCount: _routeList.length,
+                        itemCount: filterList.length,
+                        clipBehavior: Clip.antiAlias,
+                        itemBuilder: (context, index) {
+                          // var currentData = _routeList[index];
+                          var currentData = filterList[index];
+                          return DashBoardRouteTile(
+                            model: currentData,
+                            attendanceModel: _attendanceModel,
+                            onRefresh: onRefresh,
+                          );
+                        },
+                      ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
