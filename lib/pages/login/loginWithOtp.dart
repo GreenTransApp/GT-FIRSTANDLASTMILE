@@ -11,17 +11,25 @@ import 'package:gtlmd/common/selectionBottomSheets/divisionSelection.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/login/forgotPassword.dart';
+import 'package:gtlmd/pages/login/models/UserCredsModel.dart';
 import 'package:gtlmd/pages/login/models/enums.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:get/get.dart';
 
 import 'package:provider/provider.dart';
-import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginWithOtpProvider.dart';
 
 class LoginWithOtp extends StatefulWidget {
   final String usermobileno;
+  final UserCredsModel? userCreds;
+  final AuthenticationFlow? flow;
 
-  const LoginWithOtp({super.key, required this.usermobileno});
+  const LoginWithOtp({
+    super.key,
+    required this.usermobileno,
+    this.userCreds,
+    this.flow,
+  });
 
   @override
   State<LoginWithOtp> createState() => _LoginWithOtpState();
@@ -29,37 +37,54 @@ class LoginWithOtp extends StatefulWidget {
 
 class _LoginWithOtpState extends State<LoginWithOtp> {
   late LoadingAlertService loadingAlertService;
-  TextEditingController first = TextEditingController();
-  TextEditingController second = TextEditingController();
-  TextEditingController third = TextEditingController();
-  TextEditingController fourth = TextEditingController();
+  final TextEditingController first = TextEditingController();
+  final TextEditingController second = TextEditingController();
+  final TextEditingController third = TextEditingController();
+  final TextEditingController fourth = TextEditingController();
 
   int _seconds = 119;
   Timer? _timer;
   bool _showButton = false;
+  LoginWithOtpProvider? _otpProvider;
 
   @override
   void initState() {
     super.initState();
+    loadingAlertService = LoadingAlertService(context: context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadingAlertService = LoadingAlertService(context: context);
+      if (!mounted) return;
+      _otpProvider = context.read<LoginWithOtpProvider>();
+      _otpProvider?.clearStatus();
+      _otpProvider?.addListener(_onStateChanged);
       _getLoginOtp();
     });
+  }
+
+  @override
+  void dispose() {
+    _otpProvider?.removeListener(_onStateChanged);
+    _timer?.cancel();
+    first.dispose();
+    second.dispose();
+    third.dispose();
+    fourth.dispose();
+    super.dispose();
   }
 
   void _getLoginOtp() {
     _resetAndStartTimer();
     debugPrint("_getLoginOtp called");
+    final creds = widget.userCreds ?? userCredsModel;
     Map<String, String> params = {
-      "prmcompanyid": userCredsModel.companyid.toString(),
+      "prmcompanyid": creds.companyid.toString(),
       "prmmobileno": widget.usermobileno
     };
-    context.read<LoginProvider>().validateLoginWithOtp(params);
+    context.read<LoginWithOtpProvider>().validateLoginWithOtp(params);
   }
 
   void _onVerifyPressed() {
     String otp = first.text + second.text + third.text + fourth.text;
-    final provider = context.read<LoginProvider>();
+    final provider = context.read<LoginWithOtpProvider>();
 
     if (otp.length < 4) {
       failToast('Please enter OTP Correctly');
@@ -68,6 +93,16 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
 
     if (otp != provider.otpResponse?.otp) {
       failToast("Entered OTP is Invalid, Please Try Again");
+      return;
+    }
+
+    final activeFlow = widget.flow ?? authenticationFlow;
+    if (activeFlow == AuthenticationFlow.forgotPassword) {
+      _timer?.cancel();
+      _timer = null;
+      provider.clearStatus();
+      Get.off(() =>
+          Forgotpassword(userCreds: widget.userCreds ?? userCredsModel));
     } else {
       _userLogin();
     }
@@ -75,29 +110,29 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
 
   Future<void> _userLogin() async {
     String deviceId = await getDeviceId();
+    final creds = widget.userCreds ?? userCredsModel;
     Map<String, String> params = {
-      "prmusername": userCredsModel.username.toString(),
-      "prmpassword": userCredsModel.userpassword.toString(),
+      "prmusername": creds.username.toString(),
+      "prmpassword": creds.userpassword.toString(),
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
       "prmdevicedt": ENV.appVersionDate,
-      // "prmdeviceid": getUuid()
       "prmdeviceid": deviceId
     };
-    context.read<LoginProvider>().loginUser(params);
+    context.read<LoginWithOtpProvider>().loginUser(params);
   }
 
   Future<void> _validateUserLogin() async {
     String deviceId = await getDeviceId();
+    final creds = widget.userCreds ?? userCredsModel;
     Map<String, String> params = {
-      "prmconstring": userCredsModel.companyid.toString(),
-      "prmusername": userCredsModel.username.toString(),
+      "prmconstring": creds.companyid.toString(),
+      "prmusername": creds.username.toString(),
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
-      // "prmdeviceid": getUuid()
       "prmdeviceid": deviceId
     };
-    context.read<LoginProvider>().validateUserForLogin(params);
+    context.read<LoginWithOtpProvider>().validateUserForLogin(params);
   }
 
   Future<void> _validateDivision(String companyId, String usercode,
@@ -107,121 +142,89 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
       "prmusercode": usercode,
       "prmbranchcode": branchcode,
       "prmdivisionid": divisionid,
-      // "prmdeviceid": getUuid()
       "prmsessionid": sessionid
     };
-    context.read<LoginProvider>().validateDivision(params);
+    context.read<LoginWithOtpProvider>().validateDivision(params);
   }
 
-  void _handleStateChange(
-      LoginStatus status, String? error, LoginProvider provider) {
-    if (status == LoginStatus.loading) {
+  void _onStateChanged() {
+    if (!mounted || _otpProvider == null) return;
+    final status = _otpProvider!.status;
+    final error = _otpProvider!.errorMessage;
+
+    if (status == LoginWithOtpStatus.loading) {
       loadingAlertService.showLoading();
     } else {
       loadingAlertService.hideLoading();
     }
 
-    if (status == LoginStatus.error && error != null) {
+    if (status == LoginWithOtpStatus.error && error != null) {
       failToast(error);
-      provider.clearError();
+      _otpProvider!.clearStatus();
     }
 
-    if (status == LoginStatus.success) {
-      if (provider.otpResponse != null) {
-        // OTP received, already handled in extracting logic if needed or just wait for it
-        // Original code logged: extractLoginOtp(validateotpModel.smstext!)
-      } else if (provider.loginResponse != null) {
-        final resp = provider.loginResponse!;
+    if (status == LoginWithOtpStatus.validatedFromD2d) {
+      final resp = _otpProvider!.loginResponse;
+      if (resp != null) {
         LoginModel loginCredsModel =
             LoginModel(username: resp.username, password: resp.password);
         authService.storagePush(
             ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
         _validateUserLogin();
-      } else if (provider.userResponse != null) {
-        if (provider.userResponse!.commandstatus == 1) {
-          // final userResp = provider.userResponse!;
-          // // Stop timer after successful validation
-          _timer?.cancel();
-          _timer = null;
-
-          // // _navigate();
-          // Map<String, String> params = {
-          //   "prmcompanyid": savedLogin.companyid.toString(),
-          //   "prmbranchcode": userResp.loginbranchcode.toString(),
-          //   "prmusername": userResp.username.toString(),
-          // };
-          // provider
-          //     .clearUserResponse(); // Clear to prevent repeated bottom sheet
-          // showDivisionSelectionBottomSheet(context, "Select Division",
-          //     (division) {
-          //   // authService.login(context);
-          //   _validateDivision(
-          //       savedLogin.companyid.toString(),
-          //       userResp.usercode.toString(),
-          //       userResp.loginbranchcode.toString(),
-          //       division.accdivisionid.toString(),
-          //       userResp.sessionid.toString());
-          //   provider.selectedDivision = division;
-          // }, params);
-          if (savedLogin.divisionlogin != null &&
-              savedLogin.divisionlogin == 'Y') {
-            final userResp = provider.userResponse!;
-            // authService.login(context);
-            Map<String, String> params = {
-              "prmcompanyid": savedLogin.companyid.toString(),
-              "prmbranchcode": userResp.loginbranchcode.toString(),
-              "prmusername": userResp.username.toString(),
-            };
-            provider.clearUserResponse();
-
-            showDivisionSelectionBottomSheet(context, "Select Division",
-                (division) {
-              // authService.login(context);
-              _validateDivision(
-                  savedLogin.companyid.toString(),
-                  userResp.usercode.toString(),
-                  userResp.loginbranchcode.toString(),
-                  division.accdivisionid.toString(),
-                  userResp.sessionid.toString());
-              provider.selectedDivision = division;
-            }, params);
-          } else {
-            Map<String, dynamic> divisiondata = {
-              "accdivisionid": 0,
-              "accdivisionname": "",
-              "commandstatus": "1",
-              "commandmessage": null
-            };
-            authService.storagePush(
-                ENV.divisionPrefTag, jsonEncode(divisiondata));
-            savedUser.logindivisionid = 0;
-            savedUser.logindivisionname = "";
-            _navigate();
-          }
-        }
-      } else if (provider.divisionResponse != null) {
-        if (provider.divisionResponse!.commandstatus == 1) {
-          authService.storagePush(
-              ENV.divisionPrefTag, jsonEncode(provider.selectedDivision));
-          savedUser.logindivisionid = provider.selectedDivision!.accdivisionid;
-          savedUser.logindivisionname =
-              provider.selectedDivision!.accdivisionname;
-          // authService.login(context);
-          provider
-              .clearDivisionResponse(); // Clear to prevent repeated navigation
-          _navigate();
+      }
+    } else if (status == LoginWithOtpStatus.companyValidated) {
+      final userResp = _otpProvider!.userResponse;
+      if (userResp != null && userResp.commandstatus == 1) {
+        _timer?.cancel();
+        _timer = null;
+        final creds = widget.userCreds ?? userCredsModel;
+        if (savedLogin.divisionlogin != null &&
+            savedLogin.divisionlogin == 'Y') {
+          Map<String, String> params = {
+            "prmcompanyid": creds.companyid.toString(),
+            "prmbranchcode": userResp.loginbranchcode.toString(),
+            "prmusername": userResp.username.toString(),
+          };
+          showDivisionSelectionBottomSheet(context, "Select Division",
+              (division) {
+            _validateDivision(
+                creds.companyid.toString(),
+                userResp.usercode.toString(),
+                userResp.loginbranchcode.toString(),
+                division.accdivisionid.toString(),
+                userResp.sessionid.toString());
+          }, params);
         } else {
-          failToast(provider.divisionResponse!.commandmessage ??
-              "Division validation failed");
+          Map<String, dynamic> divisiondata = {
+            "accdivisionid": 0,
+            "accdivisionname": "",
+            "commandstatus": "1",
+            "commandmessage": null
+          };
+          authService.storagePush(
+              ENV.divisionPrefTag, jsonEncode(divisiondata));
+          savedUser.logindivisionid = 0;
+          savedUser.logindivisionname = "";
+          _navigate();
         }
+      }
+    } else if (status == LoginWithOtpStatus.divisionValidated) {
+      final divResp = _otpProvider!.divisionResponse;
+      if (divResp != null && divResp.commandstatus == 1) {
+        _navigate();
+      } else if (divResp != null) {
+        failToast(divResp.commandmessage ?? "Division validation failed");
       }
     }
   }
 
   void _navigate() {
-    switch (authenticationFlow) {
+    final activeFlow = widget.flow ?? authenticationFlow;
+    switch (activeFlow) {
       case AuthenticationFlow.forgotPassword:
-        Get.off(() => const Forgotpassword());
+        _otpProvider?.clearStatus();
+        Get.off(() =>
+            Forgotpassword(userCreds: widget.userCreds ?? userCredsModel));
         break;
       case AuthenticationFlow.loginWithOtp:
         authService.login(context);
@@ -261,139 +264,96 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
   }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Consumer<LoginProvider>(
-      builder: (context, provider, child) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _handleStateChange(provider.status, provider.errorMessage, provider);
-        });
-
-        return Scaffold(
-          // backgroundColor: ,
+    return Scaffold(
           resizeToAvoidBottomInset: false,
-          // appBar: AppBar(
-          //   leading: IconButton(
-          //     icon: const Icon(Icons.arrow_back),
-          //     color: CommonColors.white,
-          //     onPressed: () => Get.back(),
-          //   ),
-          //   backgroundColor: CommonColors.colorPrimary,
-          //   title: Text(
-          //     'Enter OTP',
-          //     style: TextStyle(color: CommonColors.white),
-          //   ),
-          //   elevation: 2,
-          // ),
-          //   appBar: AppBar(
-          //   automaticallyImplyLeading: false,
-          //   backgroundColor: Colors.transparent, 
-          //   elevation: 0, 
-          //   flexibleSpace: const Image(
-          //     image: AssetImage('assets/images/loginHeader.png'),
-          //     fit: BoxFit.fill, 
-          //   ),
-          // ),
-        bottomNavigationBar: Container(
-        height: 100, // Explicit height for the footer
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
-          image: DecorationImage(
-            // Use NetworkImage for testing, or AssetImage for local files
-            image:AssetImage('assets/images/loginFooter.png'), 
-            fit: BoxFit.fill, // Ensures the image stretches to fill the container
+          bottomNavigationBar: Container(
+            height: 100, // Explicit height for the footer
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+              image: DecorationImage(
+                // Use NetworkImage for testing, or AssetImage for local files
+                image: AssetImage('assets/images/loginFooter.png'),
+                fit: BoxFit
+                    .fill, // Ensures the image stretches to fill the container
+              ),
+            ),
           ),
-        ),
-
-      ),
           body: SingleChildScrollView(
             child: Container(
-                 width: double.infinity,
-                      padding: EdgeInsets.symmetric(horizontal: SizeConfig.extraLargeHorizontalPadding,
-                      vertical: SizeConfig.extraLargeVerticalPadding
-                      ),
-                      // margin: EdgeInsets.symmetric(
-                        // horizontal: MediaQuery.sizeOf(context).width * 0.01,
-                        // vertical: MediaQuery.sizeOf(context).height * 0.1,
-                      // ),
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.extraLargeHorizontalPadding,
+                  vertical: SizeConfig.extraLargeVerticalPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                   SizedBox(height: SizeConfig.verticalPadding),
-                  // Image.asset(
-                  //   "assets/otpIllustration.png",
-                  //   width: MediaQuery.sizeOf(context).width * 0.7,
-                  //   height: MediaQuery.sizeOf(context).height * 0.4,
-                  // ),
-              
-                               
+                  SizedBox(height: SizeConfig.verticalPadding),
                   Text(
-                              'Enter OTP',
-                              style: TextStyle(fontSize: SizeConfig.largeTextSize, color: Colors.black,fontWeight: FontWeight.bold),
-                             softWrap: true,
-                            ),
-                  //  Text(
-                  //     ""
-                  //     "${widget.usermobileno}",
-                  //     style: TextStyle(
-                  //       fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                  //       color: CommonColors.grey600,
-                  //       height: 1.4,
-                  //     ),
-                  //     ),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                                            fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                                            color: CommonColors.grey600,
-                                            // height: 1.4,
-                                          ), // Default style
-                          children:  <TextSpan>[
-                            TextSpan(text: 'Please Enter the verification code sent to '),
-                            TextSpan(
-                              text: "${widget.usermobileno}", 
-                              style: TextStyle(fontWeight: FontWeight.bold, color: CommonColors.appBarColor),
-                            ),
-                          
-                          ],
+                    'Enter OTP',
+                    style: TextStyle(
+                        fontSize: SizeConfig.largeTextSize,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                    softWrap: true,
+                  ),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: SizeConfig
+                            .extraSmallTextSize, // smaller than heading
+                        color: CommonColors.grey600,
+                      ), // Default style
+                      children: <TextSpan>[
+                        const TextSpan(
+                            text:
+                                'Please Enter the verification code sent to '),
+                        TextSpan(
+                          text: widget.usermobileno,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: CommonColors.appBarColor),
                         ),
-                      ),
-                   Image.asset(
-                        'assets/images/infinitilogo.png',
-                        width: SizeConfig.extraLargeRadius * 6.4,
-                        height: SizeConfig.extraLargeRadius * 2.5,
-                      ),
-                      // SizedBox(height: SizeConfig.largeVerticalSpacing,),
-                     Image.asset(
-                  "assets/images/loginwithotpIllustration.png",
-                  width: MediaQuery.sizeOf(context).width * 0.5,
-                  height: MediaQuery.sizeOf(context).height * 0.3,
-                                    ),
+                      ],
+                    ),
+                  ),
+                  Image.asset(
+                    'assets/images/infinitilogo.png',
+                    width: SizeConfig.extraLargeRadius * 6.4,
+                    height: SizeConfig.extraLargeRadius * 2.5,
+                  ),
+                  // SizedBox(height: SizeConfig.largeVerticalSpacing,),
+                  Image.asset(
+                    "assets/images/loginwithotpIllustration.png",
+                    width: MediaQuery.sizeOf(context).width * 0.5,
+                    height: MediaQuery.sizeOf(context).height * 0.3,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                           children: [
-                            Text("Enter OTP",style: TextStyle(  color: CommonColors.grey600,),),
-                             Text(
-                                  _formatTime(_seconds) == '00:00'
-                                      ? ''
-                                      : _formatTime(_seconds),
-                                  style:  TextStyle(
-                                      color: CommonColors.colorPrimary!, fontSize: 16),
-                                ),
-                           ],
-                         ),
-                             SizedBox(width: SizeConfig.smallHorizontalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Enter OTP",
+                            style: TextStyle(
+                              color: CommonColors.grey600,
+                            ),
+                          ),
+                          Text(
+                            _formatTime(_seconds) == '00:00'
+                                ? ''
+                                : _formatTime(_seconds),
+                            style: TextStyle(
+                                color: CommonColors.colorPrimary!,
+                                fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: SizeConfig.smallHorizontalSpacing),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,135 +367,71 @@ class _LoginWithOtpState extends State<LoginWithOtp> {
                           _otpDigitField(fourth),
                         ],
                       ),
-                      
-                       SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                     
-                        InkWell(
-                             onTap: _showButton ? _getLoginOtp : null,
-                          child: RichText(
-                                                text: TextSpan(
-                          style: TextStyle(
-                                            fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                                            color: CommonColors.grey600,
-                                            height: 1.4,
-                                          ), // Default style
-                          children:  <TextSpan>[
-                            TextSpan(text: "Didn't receive OTP code? "),
-                            TextSpan(
-                              text: " Resend Code", 
-                              style:TextStyle(
-                                fontSize: 16,
-                                color: _showButton
-                                    ? CommonColors.colorPrimary
-                                    : CommonColors.grey600),
+                          InkWell(
+                            onTap: _showButton ? _getLoginOtp : null,
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontSize: SizeConfig
+                                      .extraSmallTextSize, // smaller than heading
+                                  color: CommonColors.grey600,
+                                  height: 1.4,
+                                ), // Default style
+                                children: <TextSpan>[
+                                  const TextSpan(
+                                      text: "Didn't receive OTP code? "),
+                                  TextSpan(
+                                    text: " Resend Code",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: _showButton
+                                            ? CommonColors.colorPrimary
+                                            : CommonColors.grey600),
+                                  ),
+                                ],
+                              ),
                             ),
-                          
-                          ],
-                                                ),
-                                              ),
-                        ),
-                         
-                         
-                      //       const Text(
-                      //   "Didn't receive any sms? ",
-                      //   style: TextStyle(fontSize: 16),
-                      // ),
-                      // InkWell(
-                      //   onTap: _showButton ? _getLoginOtp : null,
-                      //   child: Text(
-                      //     "Resend Code",
-                      //     style: TextStyle(
-                      //         fontSize: 16,
-                      //         color: _showButton
-                      //             ? CommonColors.colorPrimary
-                      //             : CommonColors.disabled),
-                      //   ),
-                      // )
-                          
+                          ),
                         ],
                       ),
-            SizedBox(height: SizeConfig.mediumVerticalSpacing,),
-                       Container(
-                width: double.infinity,
-                height: 50,
-                
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18)),
-                      backgroundColor: CommonColors.colorPrimary2,
-                    ),
-                    onPressed: _onVerifyPressed,
-                    child: const Text(
-                      'Verify & Proceeds',
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ),
+                      SizedBox(
+                        height: SizeConfig.mediumVerticalSpacing,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18)),
+                              backgroundColor: CommonColors.colorPrimary2,
+                            ),
+                            onPressed: _onVerifyPressed,
+                            child: const Text(
+                              'Verify & Proceeds',
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ),
                     ],
                   ),
-                  // Padding(
-                  //   padding: EdgeInsets.symmetric(
-                  //       vertical: MediaQuery.sizeOf(context).height * 0.01),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-            
-                  //     children: [
-                  //       const Text(
-                  //         "Didn't receive any sms? ",
-                  //         style: TextStyle(fontSize: 16),
-                  //       ),
-                  //       InkWell(
-                  //         onTap: _showButton ? _getLoginOtp : null,
-                  //         child: Text(
-                  //           "Resend Code",
-                  //           style: TextStyle(
-                  //               fontSize: 16,
-                  //               color: _showButton
-                  //                   ? CommonColors.colorPrimary
-                  //                   : CommonColors.disabled),
-                  //         ),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
                 ],
               ),
             ),
           ),
-          // persistentFooterButtons: [
-          //   Container(
-          //     width: double.infinity,
-          //     height: 69,
-          //     padding: const EdgeInsets.only(
-          //         left: 20, right: 20, top: 12, bottom: 6),
-          //     child: ElevatedButton(
-          //         style: ElevatedButton.styleFrom(
-          //           shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(32)),
-          //           backgroundColor: CommonColors.colorPrimary,
-          //         ),
-          //         onPressed: _onVerifyPressed,
-          //         child: const Text(
-          //           'Verify',
-          //           style: TextStyle(color: Colors.white),
-          //         )),
-          //   ),
-          // ],
         );
-      },
-    );
   }
 
   Widget _otpDigitField(TextEditingController controller) {
     return SizedBox(
-       height: 70,
+      height: 70,
       width: 70,
       child: Center(
         child: TextFormField(
-            autofocus: true,
+          autofocus: true,
           cursorColor: CommonColors.colorPrimary,
           cursorWidth: 1,
           onChanged: (value) {

@@ -27,11 +27,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late LoadingAlertService loadingAlertService;
-  TextEditingController usermobileController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController usermobileController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
-  // bool isFaceLogin = false;
+  LoginProvider? _loginProvider;
 
   @override
   void initState() {
@@ -40,14 +40,99 @@ class _LoginPageState extends State<LoginPage> {
       usermobileController.text = ENV.debuggingUserName.toUpperCase();
       passwordController.text = ENV.debuggingPassword.toUpperCase();
     }
+    loadingAlertService = LoadingAlertService(context: context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      loadingAlertService = LoadingAlertService(context: context);
-
-      // Clear any previous errors or state if needed
-      context.read<LoginProvider>().resetState();
-      // checkFaceLogin();
+      _loginProvider = context.read<LoginProvider>();
+      _loginProvider?.resetState();
+      _loginProvider?.addListener(_onStateChanged);
     });
+  }
+
+  @override
+  void dispose() {
+    _loginProvider?.removeListener(_onStateChanged);
+    usermobileController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onStateChanged() {
+    if (!mounted || _loginProvider == null) return;
+    final status = _loginProvider!.status;
+    final error = _loginProvider!.errorMessage;
+
+    if (status == LoginStatus.loading) {
+      loadingAlertService.showLoading();
+    } else {
+      loadingAlertService.hideLoading();
+    }
+
+    if (status == LoginStatus.error && error != null) {
+      failToast(error);
+      _loginProvider!.clearError();
+    }
+
+    if (status == LoginStatus.validatedFromD2d) {
+      final resp = _loginProvider!.loginResponse;
+      if (resp != null) {
+        LoginModel loginCredsModel =
+            LoginModel(username: resp.username, password: resp.password);
+        authService.storagePush(
+            ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
+        _validateUserLogin(resp.companyid.toString(), resp.username.toString());
+      }
+    } else if (status == LoginStatus.companyValidated) {
+      final userResp = _loginProvider!.userResponse;
+      if (userResp != null && userResp.commandstatus == 1) {
+        if (savedLogin.divisionlogin != null &&
+            savedLogin.divisionlogin == 'Y') {
+          Map<String, String> params = {
+            "prmcompanyid": savedLogin.companyid.toString(),
+            "prmbranchcode": userResp.loginbranchcode.toString(),
+            "prmusername": userResp.username.toString(),
+          };
+
+          showDivisionSelectionBottomSheet(context, "Select Division",
+              (division) {
+            _validateDivision(
+                savedLogin.companyid.toString(),
+                userResp.usercode.toString(),
+                userResp.loginbranchcode.toString(),
+                division.accdivisionid.toString(),
+                userResp.sessionid.toString());
+            _loginProvider!.selectedDivision = division;
+          }, params);
+        } else {
+          Map<String, dynamic> divisiondata = {
+            "accdivisionid": 0,
+            "accdivisionname": "",
+            "commandstatus": "1",
+            "commandmessage": null
+          };
+          authService.storagePush(
+              ENV.divisionPrefTag, jsonEncode(divisiondata));
+          savedUser.logindivisionid = 0;
+          savedUser.logindivisionname = "";
+          authService.login(context);
+        }
+      }
+    } else if (status == LoginStatus.divisionValidated) {
+      final divResp = _loginProvider!.divisionResponse;
+      if (divResp != null && divResp.commandstatus == 1) {
+        if (_loginProvider!.selectedDivision != null) {
+          authService.storagePush(ENV.divisionPrefTag,
+              jsonEncode(_loginProvider!.selectedDivision));
+          savedUser.logindivisionid =
+              _loginProvider!.selectedDivision!.accdivisionid;
+          savedUser.logindivisionname =
+              _loginProvider!.selectedDivision!.accdivisionname;
+        }
+        authService.login(context);
+      } else if (divResp != null) {
+        failToast(divResp.commandmessage ?? "Division validation failed");
+      }
+    }
   }
 
   Future<void> _onLoginPressed() async {
@@ -61,10 +146,6 @@ class _LoginPageState extends State<LoginPage> {
       failToast('Password required');
       return;
     }
-    //else if (usermobileController.text.length < 10) {
-    //   failToast('Invalid Mobile Number');
-    //   return;
-    // }
 
     String deviceId = await getDeviceId();
     if (!mounted) return;
@@ -75,115 +156,10 @@ class _LoginPageState extends State<LoginPage> {
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
       "prmdevicedt": ENV.appVersionDate,
-      // "prmdeviceid": getUuid()
       "prmdeviceid": deviceId
     };
 
     context.read<LoginProvider>().loginUser(params);
-  }
-
-  void _validateUserMobile(AuthenticationFlow flow) {
-    if (isNullOrEmpty(usermobileController.text)) {
-      failToast("Please Enter User Mobile Number");
-      return;
-    }
-
-    // Update the flow global variable as needed by existing app logic
-    authenticationFlow = flow;
-
-    Map<String, String> params = {"prmmobileno": usermobileController.text};
-    context.read<LoginProvider>().validateUserMobileFromD2D(params);
-  }
-
-  void _handleStateChange(
-      LoginStatus status, String? error, LoginProvider provider) {
-    if (!mounted) return;
-    if (status == LoginStatus.loading) {
-      loadingAlertService.showLoading();
-    } else {
-      loadingAlertService.hideLoading();
-    }
-
-    if (status == LoginStatus.error && error != null) {
-      failToast(error);
-      provider.clearError();
-    }
-
-    if (status == LoginStatus.success) {
-      // Handle navigation based on which action was performed
-      if (provider.loginResponse != null) {
-        final resp = provider.loginResponse!;
-        LoginModel loginCredsModel =
-            LoginModel(username: resp.username, password: resp.password);
-        authService.storagePush(
-            ENV.loginCredsPrefTag, jsonEncode(loginCredsModel));
-        provider.clearLoginResponse();
-
-        // Following original logic: validateUserLogin after successful login
-        _validateUserLogin(resp.companyid.toString(), resp.username.toString());
-      } else if (provider.userResponse != null) {
-        if (provider.userResponse!.commandstatus == 1) {
-          if (savedLogin.divisionlogin != null &&
-              savedLogin.divisionlogin == 'Y') {
-            final userResp = provider.userResponse!;
-            // authService.login(context);
-            Map<String, String> params = {
-              "prmcompanyid": savedLogin.companyid.toString(),
-              "prmbranchcode": userResp.loginbranchcode.toString(),
-              "prmusername": userResp.username.toString(),
-            };
-            provider.clearUserResponse();
-
-            showDivisionSelectionBottomSheet(context, "Select Division",
-                (division) {
-              // authService.login(context);
-              _validateDivision(
-                  savedLogin.companyid.toString(),
-                  userResp.usercode.toString(),
-                  userResp.loginbranchcode.toString(),
-                  division.accdivisionid.toString(),
-                  userResp.sessionid.toString());
-              provider.selectedDivision = division;
-            }, params);
-          } else {
-            Map<String, dynamic> divisiondata = {
-              "accdivisionid": 0,
-              "accdivisionname": "",
-              "commandstatus": "1",
-              "commandmessage": null
-            };
-            authService.storagePush(
-                ENV.divisionPrefTag, jsonEncode(divisiondata));
-            savedUser.logindivisionid = 0;
-            savedUser.logindivisionname = "";
-            authService.login(context);
-          }
-        }
-      } else if (provider.userCredsResponse != null) {
-        if (provider.userCredsResponse!.commandstatus == 1) {
-          userCredsModel = provider.userCredsResponse ?? userCredsModel;
-          provider.clearUserCredsResponse();
-          // Get.to(() => LoginWithOtp(usermobileno: usermobileController.text.toString()));
-          Get.to(() => LoginWithOtp(usermobileno: userCredsModel.usermobile.toString()));
-        } else {
-          failToast(provider.userCredsResponse!.commandmessage ??
-              "Something went wrong");
-        }
-      } else if (provider.divisionResponse != null) {
-        if (provider.divisionResponse!.commandstatus == 1) {
-          authService.storagePush(
-              ENV.divisionPrefTag, jsonEncode(provider.selectedDivision));
-          savedUser.logindivisionid = provider.selectedDivision!.accdivisionid;
-          savedUser.logindivisionname =
-              provider.selectedDivision!.accdivisionname;
-          provider.clearDivisionResponse();
-          authService.login(context);
-        } else {
-          failToast(provider.divisionResponse!.commandmessage ??
-              "Division validation failed");
-        }
-      }
-    }
   }
 
   Future<void> _validateUserLogin(
@@ -195,7 +171,6 @@ class _LoginPageState extends State<LoginPage> {
       "prmusername": usernameVal,
       "prmappversion": ENV.appVersion,
       "prmappversiondt": ENV.appVersionDate,
-      // "prmdeviceid": getUuid()
       "prmdeviceid": deviceId
     };
     context.read<LoginProvider>().validateUserForLogin(params);
@@ -208,500 +183,336 @@ class _LoginPageState extends State<LoginPage> {
       "prmusercode": usercode,
       "prmbranchcode": branchcode,
       "prmdivisionid": divisionid,
-      // "prmdeviceid": getUuid()
       "prmsessionid": sessionid
     };
     context.read<LoginProvider>().validateDivision(params);
   }
 
-  // void checkFaceLogin() async {
-  //   String? faceID = await authService.storageGet(ENV.faceLoginPrefTag);
-
-  //   if (faceID == null || faceID == "" || faceID.toLowerCase() == "null") {
-  //     setState(() {
-  //       isFaceLogin = false;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       isFaceLogin = true;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // Listen to provider changes for navigation and toasts
-    return Consumer<LoginProvider>(
-      builder: (context, provider, child) {
-        // We use a post frame callback or a listener to handle navigation/toasts
-        // But for simplicity in this refactor, we can handle it here or in a multi-listener
-
-        // Using a scheduler to handle effects
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _handleStateChange(provider.status, provider.errorMessage, provider);
-        });
-
-        return Scaffold(
-          //  appBar: AppBar(
-          
-          //   backgroundColor: Colors.transparent, 
-          //   elevation: 0, 
-          //   flexibleSpace: const Image(
-          //     image: AssetImage('assets/images/loginHeader.png'),
-          //     fit: BoxFit.fill, 
-          //   ),
-          // ),
-       
-        bottomNavigationBar: Container(
+    return Scaffold(
+      bottomNavigationBar: Container(
         height: 100, // Explicit height for the footer
         width: double.infinity,
         decoration: const BoxDecoration(
           color: Colors.transparent,
           image: DecorationImage(
             // Use NetworkImage for testing, or AssetImage for local files
-            image:AssetImage('assets/images/loginFooter.png'), 
-            fit: BoxFit.fill, // Ensures the image stretches to fill the container
+            image: AssetImage('assets/images/loginFooter.png'),
+            fit: BoxFit
+                .fill, // Ensures the image stretches to fill the container
           ),
         ),
-
       ),
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: Stack(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
               children: [
-                // Background decorative circles (kept as is)
-                // Positioned(
-                //   top: -100,
-                //   left: -100,
-                //   child: Container(
-                //     width: 230,
-                //     height: 230,
-                //     decoration: BoxDecoration(
-                //       shape: BoxShape.circle,
-                //       gradient: LinearGradient(
-                //         colors: [
-                //           CommonColors.colorPrimary!,
-                //           CommonColors.colorPrimary!
-                //               .withAlpha((0.8 * 255).toInt()),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Positioned(
-                //   top: -50,
-                //   left: 50,
-                //   child: Container(
-                //     width: 130,
-                //     height: 130,
-                //     decoration: BoxDecoration(
-                //       shape: BoxShape.circle,
-                //       color: CommonColors.colorPrimary!
-                //           .withAlpha((0.5 * 255).toInt()),
-                //     ),
-                //   ),
-                // ),
-                // Positioned(
-                //   bottom: -120,
-                //   right: -100,
-                //   child: Container(
-                //     width: 250,
-                //     height: 250,
-                //     decoration: BoxDecoration(
-                //       shape: BoxShape.circle,
-                //       gradient: LinearGradient(
-                //         colors: [
-                //           CommonColors.colorPrimary!,
-                //           CommonColors.colorPrimary!
-                //               .withAlpha((0.7 * 255).toInt()),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Positioned(
-                //   bottom: 50,
-                //   right: 50,
-                //   child: Container(
-                //     width: 150,
-                //     height: 150,
-                //     decoration: BoxDecoration(
-                //       shape: BoxShape.circle,
-                //       color: CommonColors.colorPrimary!
-                //           .withAlpha((0.4 * 255).toInt()),
-                //     ),
-                //   ),
-                // ),
-
-                // Main content
-                Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding:  EdgeInsets.symmetric(
-                          vertical: SizeConfig.verticalPadding,
-                          horizontal: SizeConfig.extraLargeHorizontalPadding),
-                        child: Column(
-                          children: [
-                            // const SizedBox(height: 80),
-                            // Logo
-                            // Image.asset(
-                            //   // 'assets/icon.png',
-                            //   'assets/images/app_icon.png',
-                            //   width: MediaQuery.of(context).size.width * 0.6,
-                            //   height: 80,
-                            // ),
-                            // const SizedBox(height: 20),
-                            // const Text(
-                            //   'Login To Your Account',
-                            //   style: TextStyle(
-                            //     fontSize: 16,
-                            //     fontWeight: FontWeight.w500,
-                            //     color: Colors.black87,
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 40),
-                            // Phone Number Field
-
-                             Text(
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.verticalPadding,
+                        horizontal: SizeConfig.extraLargeHorizontalPadding),
+                    child: Column(
+                      children: [
+                        Text(
                           'Login To Account',
-                          style: TextStyle(fontSize: SizeConfig.largeTextSize, color: CommonColors.appBarColor,fontWeight: FontWeight.bold),
-                         softWrap: true,
+                          style: TextStyle(
+                              fontSize: SizeConfig.largeTextSize,
+                              color: CommonColors.appBarColor,
+                              fontWeight: FontWeight.bold),
+                          softWrap: true,
                         ),
                         Text(
-                  "Sign in to continue to your account "
-                  ,
-                  style: TextStyle(
-                    fontSize: SizeConfig.extraSmallTextSize, // smaller than heading
-                    color: CommonColors.grey600,
-                    // height: 1.4,
-                  ),
-                  softWrap: true,
+                          "Sign in to continue to your account ",
+                          style: TextStyle(
+                            fontSize: SizeConfig
+                                .extraSmallTextSize, // smaller than heading
+                            color: CommonColors.grey600,
+                            // height: 1.4,
+                          ),
+                          softWrap: true,
+                        ),
+                        const SizedBox(height: 10),
+                        Image.asset(
+                          'assets/images/infinitilogo.png',
+                          width: SizeConfig.extraLargeRadius * 6.4,
+                          height: SizeConfig.extraLargeRadius * 2.5,
+                        ),
+                        Image.asset(
+                          "assets/images/loginIllustration.png",
+                          width: MediaQuery.sizeOf(context).width * 0.5,
+                          height: MediaQuery.sizeOf(context).height * 0.3,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
                               ),
-                    const SizedBox(height:10),
-                     Image.asset(
-                        'assets/images/infinitilogo.png',
-                        width: SizeConfig.extraLargeRadius * 6.4,
-                        height: SizeConfig.extraLargeRadius * 2.5,
-                      ),
-                      Image.asset(
-                  "assets/images/loginIllustration.png",
-                  width: MediaQuery.sizeOf(context).width * 0.5,
-                  height: MediaQuery.sizeOf(context).height * 0.3,
-                                    ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.08),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                            ],
+                          ),
+                          child: TextField(
+                            controller: usermobileController,
+                            // keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              hintText: 'Mobile Number or User Name',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
                               ),
-                              child: TextField(
-                                controller: usermobileController,
-                                // keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  hintText: 'Mobile Number or User Name',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                  prefixIcon: Container(
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: CommonColors.colorPrimary!,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Icon(
-                                      Icons.phone_android,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  border:const OutlineInputBorder(),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  contentPadding: const  EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-                                    enabledBorder:OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
-                                    borderSide: BorderSide(color: CommonColors.grey300!),
-                                  ),
-                                  focusedBorder:OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
-                                          borderSide: BorderSide(color: CommonColors.colorPrimary!),
-                                        ),
-                                        
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: CommonColors.colorPrimary!,
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-
+                                child: const Icon(
+                                  Icons.phone_android,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              border: const OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18, horizontal: 16),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    SizeConfig.mediumRadius),
+                                borderSide:
+                                    BorderSide(color: CommonColors.grey300!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    SizeConfig.mediumRadius),
+                                borderSide: BorderSide(
+                                    color: CommonColors.colorPrimary!),
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            // Password Field
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Password Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
                               ),
-                              child: TextField(
-                                controller: passwordController,
-                                obscureText: !isPasswordVisible,
-                                keyboardType: TextInputType.text,
-                                textInputAction: TextInputAction.go,
-                                decoration: InputDecoration(
-                                  hintText: 'Password',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                  prefixIcon: Container(
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: CommonColors.colorPrimary!,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Icon(
-                                      Icons.lock_outline,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isPasswordVisible = !isPasswordVisible;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      isPasswordVisible
-                                          ? Icons.visibility_outlined
-                                          : Icons.visibility_off_outlined,
-                                      color: Colors.grey[300],
-                                      size: 20,
-                                    ),
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 16,
-                                  ),
-                                    enabledBorder:OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
-                                    borderSide: BorderSide(color: CommonColors.grey300!),
-                                  ),
-                                  focusedBorder:OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
-                                  borderSide: BorderSide(color: CommonColors.colorPrimary!),
-                                ),
-                                ),
-                                
+                            ],
+                          ),
+                          child: TextField(
+                            controller: passwordController,
+                            obscureText: !isPasswordVisible,
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.go,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Forgot Password
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                // onPressed: () => _validateUserMobile(
-                                //     AuthenticationFlow.forgotPassword),
+                              prefixIcon: Container(
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: CommonColors.colorPrimary!,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              suffixIcon: IconButton(
                                 onPressed: () {
-                                  authenticationFlow =
-                                      AuthenticationFlow.forgotPassword;
-                                  // Get.off(UsernameInputScreen());
-                                  Get.to(UsernameInputScreen());
+                                  setState(() {
+                                    isPasswordVisible = !isPasswordVisible;
+                                  });
                                 },
-                                child: Text(
-                                  'Forgot password?',
-                                  style: TextStyle(
-                                    color: CommonColors.colorPrimary!,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                icon: Icon(
+                                  isPasswordVisible
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: Colors.grey[300],
+                                  size: 20,
                                 ),
                               ),
+                              border: const OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    SizeConfig.mediumRadius),
+                                borderSide:
+                                    BorderSide(color: CommonColors.grey300!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                    SizeConfig.mediumRadius),
+                                borderSide: BorderSide(
+                                    color: CommonColors.colorPrimary!),
+                              ),
                             ),
-                            const SizedBox(height: 20),
-                            // Login Button
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: CommonColors.colorPrimary2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // Forgot Password
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            // onPressed: () => _validateUserMobile(
+                            //     AuthenticationFlow.forgotPassword),
+                            onPressed: () {
+                              authenticationFlow =
+                                  AuthenticationFlow.forgotPassword;
+                              Get.to(() => const UsernameInputScreen(
+                                  flow: AuthenticationFlow.forgotPassword));
+                            },
+                            child: Text(
+                              'Forgot password?',
+                              style: TextStyle(
+                                color: CommonColors.colorPrimary!,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: CommonColors.colorPrimary2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: _onLoginPressed,
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 56,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: CommonColors.colorPrimary!,
+                                      width: 2.0,
+                                    ),
+                                    backgroundColor: CommonColors.white!,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
                                   ),
-                                  elevation: 0,
-                                ),
-                                onPressed: _onLoginPressed,
-                                child: const Text(
-                                  'Login',
-                                  style: TextStyle(
+                                  onPressed: () {
+                                    authenticationFlow =
+                                        AuthenticationFlow.loginWithOtp;
+                                    Get.to(() => const UsernameInputScreen(
+                                        flow: AuthenticationFlow.loginWithOtp));
+                                  },
+                                  icon: const Icon(
+                                    Icons.lock_outline,
                                     color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    size: 20,
+                                  ),
+                                  label: Text(
+                                    'LOGIN WITH OTP',
+                                    style: TextStyle(
+                                      color: CommonColors.colorPrimary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 30),
-                            // SizedBox(
-                            //   width: double.infinity,
-                            //   height: 56,
-                            //   child: ElevatedButton(
-                            //     style: ElevatedButton.styleFrom(
-                            //       backgroundColor: CommonColors.colorPrimary!,
-                            //       shape: RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.circular(12),
-                            //       ),
-                            //       elevation: 0,
-                            //     ),
-                            //     onPressed: () {
-                            //       Get.to(() => FaceLogin());
-                            //     },
-                            //     child: const Text(
-                            //       'Login With Face',
-                            //       style: TextStyle(
-                            //         color: Colors.white,
-                            //         fontSize: 16,
-                            //         fontWeight: FontWeight.w600,
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 30),
-                            // Login with OTP and Offline Mode buttons in a row
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 56,
-                                    child: ElevatedButton.icon(
-                                      style: ElevatedButton.styleFrom(
-                                          side:  BorderSide(
-                                          color: CommonColors.colorPrimary!, 
-                                          width: 2.0,
-                                        ),
-                                        backgroundColor:
-                                            CommonColors.white!,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                            
-                                        ),
-                                        
-                                        elevation: 0,
-                                      ),
-                                      onPressed: () {
-
-                                      //  _validateUserMobile(
-                                      //     AuthenticationFlow.loginWithOtp),
-                                         authenticationFlow =
-                                      AuthenticationFlow.loginWithOtp;
-                                  // Get.off(UsernameInputScreen());
-                                  Get.to(UsernameInputScreen());
-                                      },
-                                      icon: const Icon(
-                                        Icons.lock_outline,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                      label:  Text(
-                                        'LOGIN WITH OTP',
-                                        style: TextStyle(
-                                          color: CommonColors.colorPrimary,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: SizedBox(
+                                height: 56,
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: CommonColors.colorPrimary2,
+                                      width: 2.0,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    backgroundColor: CommonColors.white,
+                                  ),
+                                  onPressed: _goOffline,
+                                  icon: Icon(
+                                    Icons.cloud_off_outlined,
+                                    color: Colors.grey[700],
+                                    size: 20,
+                                  ),
+                                  label: Text(
+                                    'OFFLINE MODE',
+                                    style: TextStyle(
+                                      color: CommonColors.colorPrimary2,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 56,
-                                    child: OutlinedButton.icon(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: CommonColors.colorPrimary2,
-                                          width: 2.0,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        backgroundColor: CommonColors.white,
-                                      ),
-                                      onPressed: _goOffline,
-                                      icon: Icon(
-                                        Icons.cloud_off_outlined,
-                                        color: Colors.grey[700],
-                                        size: 20,
-                                      ),
-                                      label: Text(
-                                        'OFFLINE MODE',
-                                        style: TextStyle(
-                                          color: CommonColors.colorPrimary2,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                            const SizedBox(height: 40),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
-                    // Powered by image at bottom
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Image.asset(
-                        'assets/poweredBy.png',
-                        width: 180,
-                        height: 45,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                // Visibility(
-                //   visible: isFaceLogin,
-                //   child: Positioned(
-                //     top: 20,
-                //     right: 20,
-                //     child: InkWell(
-                //       onTap: () {
-                //         Get.to(() => FaceLogin());
-                //       },
-                //       child: Image.asset(
-                //         'assets/images/face-scan.png',
-                //         height: 40,
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                // Powered by image at bottom
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Image.asset(
+                    'assets/poweredBy.png',
+                    width: 180,
+                    height: 45,
+                  ),
+                ),
               ],
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 

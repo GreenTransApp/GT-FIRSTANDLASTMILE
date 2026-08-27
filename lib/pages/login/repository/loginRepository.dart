@@ -15,12 +15,9 @@ import 'package:gtlmd/pages/login/models/divisionModel.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
 import 'package:gtlmd/pages/login/models/userModel.dart';
 import 'package:gtlmd/pages/orders/drsSelection/upsertDrsResponseModel.dart';
-import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/connectionCheckService.dart';
 
 class Loginrepository {
-  // Removed StreamControllers as they belong in the ViewModel/Provider
-
   Future<LoginModel> userLogin(Map<String, String> params) async {
     final hasInternet = await NetworkStatusService().hasConnection;
 

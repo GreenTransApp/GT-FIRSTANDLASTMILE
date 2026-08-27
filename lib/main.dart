@@ -14,7 +14,9 @@ import 'package:gtlmd/pages/bookingList/bookingListProvider.dart';
 import 'package:gtlmd/pages/bookingWithEWayBill/bookingProvider.dart';
 import 'package:gtlmd/pages/login/loginPage.dart';
 import 'package:gtlmd/pages/login/models/loginModel.dart';
+import 'package:gtlmd/pages/login/viewModel/forgotPasswordProvider.dart';
 import 'package:gtlmd/pages/login/viewModel/loginProvider.dart';
+import 'package:gtlmd/pages/login/viewModel/loginWithOtpProvider.dart';
 import 'package:gtlmd/service/authenticationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +31,8 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+        ChangeNotifierProvider(create: (_) => LoginWithOtpProvider()),
         ChangeNotifierProvider(create: (_) => BookingListProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
         ChangeNotifierProvider(create: (_) => StickerPrintingProvider()),
@@ -93,8 +97,6 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  // Removed local LoginViewModel
-
   _goToLogin() {
     debugPrint('go to login');
     Get.off(() => const LoginPage());
@@ -135,7 +137,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
     if (loginProvider.status == LoginStatus.error) {
       _goToLogin();
-    } else if (loginProvider.status == LoginStatus.success) {
+    } else if (loginProvider.status == LoginStatus.validatedFromD2d) {
       if (loginProvider.loginResponse?.commandstatus == 1) {
         debugPrint('Going to HomeScreen');
         getUserData();
