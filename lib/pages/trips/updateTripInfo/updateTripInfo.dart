@@ -171,8 +171,8 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           isOdometerUnAvailable = data.odometerbypass == 'Y' ? true : false;
         });
       } else {
-        debugPrint(data.commandmessage.toString());
-        // failToast(data.commandmessage ?? "Something went wrong");
+        // debugPrint(data.commandmessage.toString());
+        failToast(data.commandmessage ?? "Something went wrong");
       }
     });
   }
@@ -265,10 +265,10 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
       if (isOdometerUnAvailable == false) {
         if (isNullOrEmpty(_dispatchDateController.text)) {
-          failToast("Please Select Dispatch Data.");
+          failToast("Please Select Trip Start Date.");
           return;
         } else if (isNullOrEmpty(_dispatchTimeController.text)) {
-          failToast("Please Select Dispatch Time");
+          failToast("Please Select Trip Start Time");
           return;
         } else if (isNullOrEmpty(_startReadingController.text)) {
           failToast("Please Enter Odometer Value");
@@ -463,7 +463,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             SizeConfig.smallHorizontalSpacing,
                                       ),
                                       Text(
-                                        "DISPATCH DATE",
+                                        "TRIP  START DATE",
                                         style: TextStyle(
                                             color: CommonColors.appBarColor,
                                             fontSize: SizeConfig.smallTextSize,
@@ -524,7 +524,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                             SizeConfig.smallHorizontalSpacing,
                                       ),
                                       Text(
-                                        "DISPATCH TIME",
+                                        "TRIP START TIME",
                                         style: TextStyle(
                                             color: CommonColors.appBarColor,
                                             fontSize: SizeConfig.smallTextSize,
@@ -1077,7 +1077,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                                   .smallHorizontalSpacing,
                                             ),
                                             Text(
-                                              "DISPATCH DATE",
+                                              "TRIP START DATE",
                                               style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize:
@@ -1145,7 +1145,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
                                                   .smallHorizontalSpacing,
                                             ),
                                             Text(
-                                              "DISPATCH TIME",
+                                              "TRIP START TIME",
                                               style: TextStyle(
                                                 color: CommonColors.appBarColor,
                                                 fontSize:

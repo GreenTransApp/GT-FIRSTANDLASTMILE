@@ -495,7 +495,8 @@ class OtexPickupProvider extends ChangeNotifier {
         'picktime': DateFormat('HH:mm').format(DateTime.now()),
         'cnmtno1': '',
         'cnmtno2': '',
-        'grno': '',
+        // 'grno': '',
+        'grno': _state.splitInfo[0].wayBillNo.toString(),
         'contracttype': '',
         'referenceno': _state.info.referenceNo ?? '',
 

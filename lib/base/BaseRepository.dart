@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
+import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/commonResponse.dart';
 import 'package:gtlmd/optionMenu/operations/models/operationsModel.dart';
 import 'package:gtlmd/pages/mapView/models/mapConfigDetailModel.dart';
@@ -139,6 +140,7 @@ class BaseRepository {
   }
 
   Future<void> getInfinitiOpsLink(Map<String, String> params) async {
+    viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (!hasInternet) {
       throw Exception("No Internet available");
@@ -158,17 +160,28 @@ class BaseRepository {
             await compute<String, dynamic>(jsonDecode, resp.dataSet.toString());
         List<dynamic> list = table.values.first;
         OperationsModel result = OperationsModel.fromJson(list[0]);
-        urlModel.add(result);
+        if (result.commandstatus == 1) {
+          urlModel.add(result);
+        } else {
+          isErrorLiveData.add(
+              resp.commandMessage ?? "Something went wrong. Please try again");
+        }
+        viewDialog.add(false);
       } else {
+        isErrorLiveData.add(
+            resp.commandMessage ?? "Something went wrong. Please try again");
         debugPrint('Error in : ${resp.commandMessage}');
+        viewDialog.add(false);
       }
     } catch (err) {
+      viewDialog.add(false);
       debugPrint('Error in getSingleOperation: $err');
       rethrow;
     }
   }
 
   Future<String> getBookingPrint(Map<String, String> params) async {
+    viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
     if (!hasInternet) {
       throw Exception("No Internet available");
@@ -181,12 +194,20 @@ class BaseRepository {
       }
 
       if (resp.commandStatus == 1) {
-        String url = resp.message.toString();
-        return url;
+        String url = "";
+        if (!isNullOrEmpty(resp.message.toString())) {
+          url = resp.message.toString();
+        } else {
+            throw Exception(resp.commandMessage ?? "Error occurred");
+        }
+       return url; 
       } else {
-        debugPrint('Error in : ${resp.commandMessage}');
+        isErrorLiveData.add(
+            resp.commandMessage ?? "Something went wrong. Please try again");
       }
+      viewDialog.add(false);
     } catch (err) {
+      viewDialog.add(false);
       debugPrint('Error in getSingleOperation: $err');
       rethrow;
     }

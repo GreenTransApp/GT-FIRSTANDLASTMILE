@@ -34,7 +34,8 @@ class DeliveryDetailTile extends StatefulWidget {
   final int index;
   final int listLength;
   final Function() onRefresh;
-  final Future<void> Function(String grno, String indentId, String tripid,String jobid)
+  final Future<void> Function(
+          String grno, String indentId, String tripid, String jobid)
       updateDriverPosition;
   final Future<void> Function(String grno, String indentId, String tripid)
       updateDriverReachedDlvPoint;
@@ -265,8 +266,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         "prmsessionid": savedUser.sessionid.toString(),
       };
       String url = await _baseRepo.getBookingPrint(params);
-      if (!isNullOrEmpty(url)) {
+      if (!isNullOrEmpty(url) && url.contains('http')) {
         launchUrl(Uri.parse(url));
+      } else {
+        failToast(url ?? "Invalid URL Please Contact To Administrator.");
       }
     } catch (error) {
       failToast(error.toString());
@@ -291,8 +294,11 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   }
 
   updateDriverReached() async {
-    await widget.updateDriverPosition(modelDetail.grno.toString(),
-        modelDetail.transactionid.toString(), modelDetail.tripid.toString(),modelDetail.jobid.toString());
+    await widget.updateDriverPosition(
+        modelDetail.grno.toString(),
+        modelDetail.transactionid.toString(),
+        modelDetail.tripid.toString(),
+        modelDetail.jobid.toString());
   }
 
   updateDriverReachedDlvLocation() async {
@@ -2473,9 +2479,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   color: CommonColors.colorPrimary2,
                                 ),
                               ),
-                              if( widget.model.deliverystatus == 'P')...[
-                              const ImageIcon(
-                                  AssetImage('assets/images/loading.png'))]
+                              if (widget.model.deliverystatus == 'P') ...[
+                                const ImageIcon(
+                                    AssetImage('assets/images/loading.png'))
+                              ]
                             ],
                           ),
                         ),
@@ -2610,7 +2617,6 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                                     modelDetail))
                                             ?.then((_) {
                                           widget.onRefresh();
-                                          
                                         });
                                       } else {
                                         failToast(

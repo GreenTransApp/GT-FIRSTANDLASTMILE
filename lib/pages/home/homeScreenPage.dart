@@ -272,6 +272,9 @@ class _HomeScreen extends State<HomeScreen>
     _subscriptions.add(viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     }));
+    _subscriptions.add(_baseRepo.isErrorLiveData.stream.listen((errMsg) {
+      failToast(errMsg);
+    }));
 
     _subscriptions.add(
         viewModel.drsDateTimeUpdateLiveData.stream.listen((drsUpdate) async {
@@ -332,7 +335,8 @@ class _HomeScreen extends State<HomeScreen>
     }));
 
     _subscriptions.add(_baseRepo.urlModel.stream.listen((value) async {
-      if (value != null) {
+      // if (value != null) {
+      if (value != null && value.commandstatus == 1) {
         var url = value.pageLink;
         debugPrint(url);
            if (url != null && url.isNotEmpty) {
@@ -355,7 +359,7 @@ class _HomeScreen extends State<HomeScreen>
                                     }
                                   }
       }else{
-         failToast( "Something went wrong");
+         failToast(value.commandmessage??  "Something went wrong");
       }
     }));
   }
