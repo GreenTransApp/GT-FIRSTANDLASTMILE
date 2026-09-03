@@ -15,7 +15,7 @@ import 'package:gtlmd/pages/midmile/midMileTripDetail/updateMidMileTripDetailInf
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
-enum MIDMILETRIPSTATUS { ARRIVAL, UNLOAD }
+enum MIDMILETRIPSTATUS { ARRIVAL, ARRIVAL_WITH_UNLOAD }
 
 // ignore: must_be_immutable
 class UpdateMidMileDriverPosition extends StatefulWidget {
@@ -161,17 +161,17 @@ class _UpdateMidMileDriverPositionState
   }
 
   changeUnloadReading(String value) {
-    int currentReading = int.tryParse(value.trim()) ?? 0;
-    int lastReading = widget.model.arrivalKm ?? 0;
-    setState(() {
-      if (lastReading > 0 && currentReading < lastReading) {
-        _unloadReadingError =
-            "Unload reading  can't be greater than start reading.";
-      } else {
-        _unloadReadingError = '';
-      }
-      _unloadReadingImagePath = null;
-    });
+    // int currentReading = int.tryParse(value.trim()) ?? 0;
+    // int lastReading = widget.model.arrivalKm ?? 0;
+    // setState(() {
+    //   if (lastReading > 0 && currentReading < lastReading) {
+    //     _unloadReadingError =
+    //         "Unload reading  can't be greater than start reading.";
+    //   } else {
+    //     _unloadReadingError = '';
+    //   }
+    //   _unloadReadingImagePath = null;
+    // });
   }
 
   void okayCallBackForAlert() {
@@ -371,7 +371,7 @@ class _UpdateMidMileDriverPositionState
       ),
       body: widget.status == MIDMILETRIPSTATUS.ARRIVAL
           ? arrivalWidget()
-          : unloadWidget(),
+          : arrivalWithUnloadWidget(),
       persistentFooterButtons: [
         SizedBox(
           width: double.infinity,
@@ -772,7 +772,7 @@ class _UpdateMidMileDriverPositionState
     );
   }
 
-  Widget unloadWidget() {
+  Widget arrivalWithUnloadWidget() {
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -818,7 +818,7 @@ class _UpdateMidMileDriverPositionState
                                       width: SizeConfig.smallHorizontalSpacing,
                                     ),
                                     Text(
-                                      "UNLOAD DATE",
+                                      "ARRIVAL DATE",
                                       style: TextStyle(
                                           color: Colors.black87,
                                           fontSize: SizeConfig.smallTextSize,
@@ -877,7 +877,7 @@ class _UpdateMidMileDriverPositionState
                                       width: SizeConfig.smallHorizontalSpacing,
                                     ),
                                     Text(
-                                      "UNLOAD TIME",
+                                      "ARRIVAL TIME",
                                       style: TextStyle(
                                         color: CommonColors.appBarColor,
                                         fontSize: SizeConfig.smallTextSize,
@@ -949,12 +949,12 @@ class _UpdateMidMileDriverPositionState
                           )
                         ],
                       ),
-                      Text(
-                        "Start Reading : ${widget.model.arrivalKm} km",
-                        style: TextStyle(
-                            color: CommonColors.appBarColor,
-                            fontSize: SizeConfig.smallTextSize),
-                      ),
+                      // Text(
+                      //   "Start Reading : ${widget.model.arrivalKm} km",
+                      //   style: TextStyle(
+                      //       color: CommonColors.appBarColor,
+                      //       fontSize: SizeConfig.smallTextSize),
+                      // ),
                       SizedBox(
                         height: SizeConfig.smallVerticalSpacing,
                       ),

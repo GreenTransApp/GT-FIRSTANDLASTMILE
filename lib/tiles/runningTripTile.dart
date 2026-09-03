@@ -15,16 +15,24 @@ class RunningTripTile extends StatelessWidget {
   final TripModel model;
   final AttendanceModel attendanceModel;
   final Future<void> Function() onRefresh;
+  final Future<void> Function(String tripid, String modecode)
+      validateTripBeforeStart;
 
   const RunningTripTile({
     super.key,
     required this.model,
     required this.attendanceModel,
     required this.onRefresh,
+    required this.validateTripBeforeStart,
   });
 
   // Helper getter to clean up the UI logic
   bool get _isTripStarted => model.tripdispatchdatetime != null;
+
+  _validateTripBeforeStart() async {
+    await validateTripBeforeStart(
+        model.tripid.toString(), model.modecode.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,15 +89,20 @@ class RunningTripTile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CircleAvatar(
-          backgroundColor: CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
-          child: Icon(Icons.contact_mail_outlined, color: CommonColors.colorPrimary,),
+          backgroundColor:
+              CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
+          child: Icon(
+            Icons.contact_mail_outlined,
+            color: CommonColors.colorPrimary,
+          ),
         ),
-        SizedBox(width: SizeConfig.smallHorizontalSpacing,),
+        SizedBox(
+          width: SizeConfig.smallHorizontalSpacing,
+        ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Text(
                 'Trip #${model.tripid}',
                 style: TextStyle(
@@ -111,49 +124,49 @@ class RunningTripTile extends StatelessWidget {
         ),
         _buildActionButton(context, isSmallDevice),
         if (model.tripdispatchdatetime != null &&
-              model.pendingconsign == 0) ...[
-            const SizedBox(width: 12),
-            InkWell(
-              onTap: () {
-                Get.to(() =>
-                        UpdateTripInfo(model: model, status: TripStatus.close))!
-                    .then((_) {
-                  onRefresh();
-                });
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: isSmallDevice ? 8 : 12, vertical: 8),
-                decoration: BoxDecoration(
+            model.pendingconsign == 0) ...[
+          const SizedBox(width: 12),
+          InkWell(
+            onTap: () {
+              Get.to(() =>
+                      UpdateTripInfo(model: model, status: TripStatus.close))!
+                  .then((_) {
+                onRefresh();
+              });
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: isSmallDevice ? 8 : 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: CommonColors.dangerColor ?? Colors.red,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
                   color: CommonColors.dangerColor ?? Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: CommonColors.dangerColor ?? Colors.red,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.cancel_outlined,
-                      size: isSmallDevice ? 14 : 16,
-                      color: CommonColors.White,
-                    ),
-                    SizedBox(width: isSmallDevice ? 4 : 6),
-                    Text(
-                      'Close Trip',
-                      style: TextStyle(
-                        fontSize: isSmallDevice ? 10 : 12,
-                        fontWeight: FontWeight.w600,
-                        color: CommonColors.White,
-                      ),
-                    ),
-                  ],
                 ),
               ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.cancel_outlined,
+                    size: isSmallDevice ? 14 : 16,
+                    color: CommonColors.White,
+                  ),
+                  SizedBox(width: isSmallDevice ? 4 : 6),
+                  Text(
+                    'Close Trip',
+                    style: TextStyle(
+                      fontSize: isSmallDevice ? 10 : 12,
+                      fontWeight: FontWeight.w600,
+                      color: CommonColors.White,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ]
+          ),
+        ]
       ],
     );
   }
@@ -164,7 +177,9 @@ class RunningTripTile extends StatelessWidget {
         if (_isTripStarted) {
           Get.to(() => TripORdersSummary(tripModel: model));
         } else {
-          openUpdateTripInfo(context, model, TripStatus.open, onRefresh);
+          _validateTripBeforeStart(
+           );
+          // openUpdateTripInfo(context, model, TripStatus.open, onRefresh);
         }
       },
       borderRadius: BorderRadius.circular(8),
@@ -231,16 +246,18 @@ class RunningTripTile extends StatelessWidget {
                   isNullOrEmpty(model.tripdispatchdate.toString())
                       ? "Trip not started"
                       : model.tripdispatchdate.toString(),
-                  isSmallDevice,Icons.calendar_month)),
+                  isSmallDevice,
+                  Icons.calendar_month)),
           Expanded(
             child: _buildInfoItem(
                 'Starting KM',
                 isNullOrEmpty(model.startreadingkm.toString())
                     ? ""
                     : "${model.startreadingkm} km",
-                isSmallDevice,Icons.speed),
+                isSmallDevice,
+                Icons.speed),
           ),
-          
+
           // Expanded(
           //     child: _buildInfoItem(
           //         'Consignments', model.totalconsignment.toString())),
@@ -285,7 +302,7 @@ class RunningTripTile extends StatelessWidget {
           InkWell(
             onTap: () {
               Get.to(() =>
-                      UpdateTripInfo(model: model, status: TripStatus.close))!
+                      UpdateTripInfo(model: model, status: TripStatus.close,))!
                   .then((_) {
                 onRefresh();
               });
@@ -325,19 +342,24 @@ class RunningTripTile extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoItem(String label, String value, bool isSmallDevice,IconData icon) {
+  Widget _buildInfoItem(
+      String label, String value, bool isSmallDevice, IconData icon) {
     return Row(
-      
       children: [
-         CircleAvatar(
-          backgroundColor: CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
-          child: Icon(icon, color: CommonColors.colorPrimary,),
+        CircleAvatar(
+          backgroundColor:
+              CommonColors.colorPrimary!.withAlpha((255 * 0.2).toInt()),
+          child: Icon(
+            icon,
+            color: CommonColors.colorPrimary,
+          ),
         ),
-        SizedBox(width: SizeConfig.smallHorizontalSpacing,),
+        SizedBox(
+          width: SizeConfig.smallHorizontalSpacing,
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           
             Text(
               label,
               style: TextStyle(
@@ -370,29 +392,27 @@ class RunningTripTile extends StatelessWidget {
       children: [
         // Title for the status section
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: 
-          RichText(
-                textAlign: TextAlign.start,
-                text: TextSpan(
-                  style: const TextStyle(),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: "| ",
-                      style:  TextStyle(color: CommonColors.colorPrimary,fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: RichText(
+              textAlign: TextAlign.start,
+              text: TextSpan(
+                style: const TextStyle(),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: "| ",
+                    style: TextStyle(
+                        color: CommonColors.colorPrimary,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
                       text: 'Status Overview',
                       style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: isSmallDevice ? 12 : 14,)
-                    ),
-                  ],
-                ),
-              )
-         
-          
-        ),
+                        fontWeight: FontWeight.w600,
+                        fontSize: isSmallDevice ? 12 : 14,
+                      )),
+                ],
+              ),
+            )),
         Row(
           children: [
             _buildStatusItem(
@@ -475,19 +495,18 @@ class RunningTripTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-        //     gradient: LinearGradient(
-        //   begin: Alignment.topCenter, // Starts at the top
-        //   end: Alignment.bottomCenter, // Ends at the bottom
-        //   colors: [
-        //    color.withOpacity(0.1), // Top color
-        //     CommonColors.white!, // Bottom color
-        //     // You can add more colors here if needed
-        //   ],
-        // ),
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border(bottom: BorderSide(color: color,width: 3))
-        ),
+            //     gradient: LinearGradient(
+            //   begin: Alignment.topCenter, // Starts at the top
+            //   end: Alignment.bottomCenter, // Ends at the bottom
+            //   colors: [
+            //    color.withOpacity(0.1), // Top color
+            //     CommonColors.white!, // Bottom color
+            //     // You can add more colors here if needed
+            //   ],
+            // ),
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border(bottom: BorderSide(color: color, width: 3))),
         child: Column(
           children: [
             Text(

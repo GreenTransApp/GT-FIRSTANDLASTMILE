@@ -82,13 +82,13 @@ class LocationService {
       return;
     }
 
-    await Geolocator.getCurrentPosition(
-      locationSettings: AppleSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 0,
-        pauseLocationUpdatesAutomatically: false,
-      ),
-    );
+    // await Geolocator.getCurrentPosition(
+    //   locationSettings: AppleSettings(
+    //     accuracy: LocationAccuracy.best,
+    //     distanceFilter: 0,
+    //     pauseLocationUpdatesAutomatically: false,
+    //   ),
+    // );
 
     print('Location permission granted');
   }
@@ -98,7 +98,7 @@ class LocationService {
 
   return await Geolocator.getCurrentPosition(
     locationSettings: const LocationSettings(
-      accuracy: LocationAccuracy.high,
+      accuracy: LocationAccuracy.medium,
     ),
   );
 }

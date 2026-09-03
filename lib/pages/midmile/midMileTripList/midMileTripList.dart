@@ -179,10 +179,14 @@ class MidMileTripListState extends State<MidMileTripList> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 18,
-          color: CommonColors.colorPrimary,
+        CircleAvatar(
+          radius: 15,
+          backgroundColor: CommonColors.colorPrimary!.withAlpha((0.2 * 255).toInt()),
+          child: Icon(
+            icon,
+            size: 18,
+            color: CommonColors.colorPrimary,
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -227,6 +231,7 @@ class MidMileTripListState extends State<MidMileTripList> {
             horizontal: 12,
             vertical: 6,
           ),
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
           ),
@@ -235,7 +240,7 @@ class MidMileTripListState extends State<MidMileTripList> {
             children: [
               /// Header
               Container(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding,horizontal: SizeConfig.horizontalPadding),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius)),
                  gradient: RadialGradient(
@@ -283,7 +288,7 @@ class MidMileTripListState extends State<MidMileTripList> {
           
               /// Origin -> Destination
               Container(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
                 margin: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalSpacing),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
@@ -343,8 +348,31 @@ class MidMileTripListState extends State<MidMileTripList> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
+                      child: _infoTile(Icons.speed, "Vehicle Start KM",
+                          "${trip.vehiclestartkm.toString()} km"),
+                    ),
+                    
+                  ],
+                ),
+              ),
+               const SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: SizeConfig.smallHorizontalPadding),
+                child: Row(
+                  children: [
+                  Expanded(
                       child: _infoTile(Icons.badge_outlined, "Placement",
                           trip.placementid.toString()),
+                    ),
+                    
+                    const SizedBox(width: 12),
+                  
+                     Expanded(
+                      child: _infoTile(
+                        Icons.phone,
+                        "Mobile",
+                        trip.mobileno ?? "-",
+                      ),
                     ),
                   ],
                 ),
@@ -352,57 +380,89 @@ class MidMileTripListState extends State<MidMileTripList> {
           
               const SizedBox(height: 10),
           
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.smallHorizontalPadding),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _infoTile(
-                        Icons.phone,
-                        "Mobile",
-                        trip.mobileno ?? "-",
-                      ),
-                    ),
-                     if (trip.tripstart == 'N')
-                      InkWell(
-                        onTap: () => startTrip(trip),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.mediumHorizontalSpacing,
-                            vertical: SizeConfig.mediumVerticalSpacing,
-                          ),
-                          decoration: BoxDecoration(
-                            color: CommonColors.colorPrimary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: SizeConfig.extraLargeIconSize,
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                "Start Trip",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+                
+                if (trip.tripstart == 'N')... [
+                 // InkWell(
+                 //   onTap: () => startTrip(trip),
+                 //   borderRadius: BorderRadius.circular(8),
+                 //   child: Container(
+                     
+                 //     padding: EdgeInsets.symmetric(
+                 //       horizontal: SizeConfig.mediumHorizontalSpacing,
+                 //       vertical: SizeConfig.smallVerticalSpacing,
+                 //     ),
+                 //     decoration: BoxDecoration(
+                 //       color: CommonColors.colorPrimary,
+                 //       borderRadius: BorderRadius.circular(8),
+                 //     ),
+                 //     child: Row(
+                 //       mainAxisSize: MainAxisSize.min,
+                 //       children: [
+                 //         Icon(
+                 //           Icons.play_arrow_rounded,
+                 //           color: Colors.white,
+                 //           size: SizeConfig.extraLargeIconSize,
+                 //         ),
+                 //         const SizedBox(width: 6),
+                 //         const Text(
+                 //           "Start Trip",
+                 //           style: TextStyle(
+                 //             color: Colors.white,
+                 //             fontWeight: FontWeight.w600,
+                 //           ),
+                 //         ),
+                 //       ],
+                 //     ),
+                 //   ),
+                 // ),
+                
+                  Container(margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
+                       decoration: BoxDecoration(
+                       borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                       gradient: LinearGradient(
+                           colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+                     width: double.infinity,
+                     child: ElevatedButton(
+                       onPressed:() => startTrip(trip),
+                       style: ElevatedButton.styleFrom(
+                         // backgroundColor: CommonColors.colorPrimary,
+                         // foregroundColor: CommonColors.White,
+                         backgroundColor: Colors.transparent,
+                         shadowColor: Colors.transparent,
+                         disabledBackgroundColor: CommonColors.grey300,
+                         padding: const EdgeInsets.symmetric(vertical: 12),
+                         shape: RoundedRectangleBorder(
+                           borderRadius: BorderRadius.circular(18),
+                         ),
+                       ), // Disable if not punched in
+                       child: Row(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 Icon(
+                                   Icons.play_arrow_rounded,
+                                   size: SizeConfig.largeIconSize,
+                                   color: CommonColors.white,
+                                 ),
+                                 SizedBox(width: SizeConfig.horizontalPadding),
+                                 Text(
+                                   "Start Trip",
+                                   style:
+                                       TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                                 ),
+                               ],
+                             ),
+                     ),
+                   ),
+                ],
+              
           
               if (trip.tripstart == 'Y') ...[
-                const Divider(height: 28),
-                Padding(
+                
+                Container(
+                  decoration: BoxDecoration(
+                    color: CommonColors.grey!.withOpacity(0.1),
+                    border:Border(top: BorderSide(color: CommonColors.grey!.withOpacity(0.3),width: 1))
+                  ),
                   padding: EdgeInsets.symmetric(vertical: SizeConfig.smallVerticalPadding,horizontal: SizeConfig.smallHorizontalPadding),
                   child: Row(
                     children: [

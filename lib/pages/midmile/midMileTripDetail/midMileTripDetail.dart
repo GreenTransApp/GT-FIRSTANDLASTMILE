@@ -295,27 +295,43 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     }
   }
 
-  Widget _infoTile(String label, String? value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _infoTile(IconData icon,String label, String? value,Color? color) {
+    return Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w500,
+          CircleAvatar(
+          radius: 15,
+          backgroundColor: color!.withAlpha((0.2 * 255).toInt()),
+          child: Icon(
+            icon,
+            size: 18,
+            color: color ?? CommonColors.darkBlue,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value ?? "-",
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value ?? "-",
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -433,28 +449,90 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     String arrivaltime = convertTo12Hour(item.arrivalTime ?? '');
 
     return Card(
+       color:CommonColors.white!,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
+      child: Column(
+        children: [
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(
+          //       horizontal: SizeConfig.smallHorizontalPadding,
+          //       vertical: SizeConfig.smallVerticalPadding,
+          //     ),
+          //     decoration: BoxDecoration(
+          //       color: CommonColors.colorPrimary!
+          //           .withAlpha((0.12 * 255).round()),
+          //       borderRadius: BorderRadius.circular(20),
+          //     ),
+          //     child: Row(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         Icon(Icons.local_shipping_outlined,
+          //             size: SizeConfig.smallTextSize + 2,
+          //             color: CommonColors.colorPrimary),
+          //         const SizedBox(width: 4),
+          //         Text(
+          //           'HUB',
+          //           style: TextStyle(
+          //             fontSize: SizeConfig.smallTextSize,
+          //             fontWeight: FontWeight.bold,
+          //             color: CommonColors.colorPrimary,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          Container(
+             padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding,horizontal: SizeConfig.horizontalPadding),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius)),
+               gradient: RadialGradient(
+                 radius: 9,
+                colors: [CommonColors.colorPrimary!.withAlpha(( 0.2*255 ).toInt()), CommonColors.white!])
+            ),
+            child: Row(
+              children: [
+                 CircleAvatar(
+                  backgroundColor: CommonColors.white,
+                  child: Icon(Icons.local_shipping,color: CommonColors.colorPrimary,),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: 
+                      Text(
+                        "Manifest: ${item.manifestNo ?? "-"}",
+                        style:  TextStyle(
+                          fontSize: SizeConfig.smallTextSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    
+                      // Text(
+                      //    "GR No : ${item.grno}",
+            
+                      //   style: TextStyle(
+                      //     color: Colors.grey.shade700,
+                      //   ),
+                      // ),
+                  
+                ),
+                 Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: SizeConfig.smallHorizontalPadding,
                   vertical: SizeConfig.smallVerticalPadding,
                 ),
                 decoration: BoxDecoration(
-                  color: CommonColors.colorPrimary!
-                      .withAlpha((0.12 * 255).round()),
+                  color: CommonColors.white!,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
+                child:
+                Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.local_shipping_outlined,
@@ -471,46 +549,23 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     ),
                   ],
                 ),
-              ),
-            ),
-            Row(
-              children: [
-                const CircleAvatar(
-                  radius: 22,
-                  child: Icon(Icons.local_shipping),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Manifest: ${item.manifestNo ?? "-"}",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      // Text(
-                      //    "GR No : ${item.grno}",
-
-                      //   style: TextStyle(
-                      //     color: Colors.grey.shade700,
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
+                 )
               ],
             ),
-            const SizedBox(height: 18),
-            Column(
+          ),
+          const SizedBox(height: 18),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
               children: [
                 Row(
                   children: [
-                    Expanded(child: _infoTile("Origin", item.orgname)),
-                    Expanded(child: _infoTile("Destination", item.destname)),
+                    Expanded(child: _infoTile(
+                      Icons.location_on,
+                      "Origin", item.orgname,CommonColors.colorPrimary)),
+                    Expanded(child: _infoTile(
+                      Icons.location_on,
+                      "Destination", item.destname,CommonColors.darkBlue)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -518,250 +573,295 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                   children: [
                     Expanded(
                         child: _infoTile(
-                            "Total Consignment", item.totgr.toString())),
+                            Icons.local_shipping,
+                            "Total Consignment", item.totgr.toString(),CommonColors.successColor)),
                     Expanded(
-                        child: _infoTile("Total Pkgs", "${item.totpckgs}")),
+                        child: _infoTile(Icons.inventory_2,
+                            "Total Pkgs", "${item.totpckgs}", CommonColors.colorPrimary)),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 18),
-            // SizedBox(
-            //   width: double.infinity,
-            //   child: (!isNullOrEmpty(item.arrivalDt) &&
-            //           !isNullOrEmpty(item.arrivalTime))
-            //       ? Container(
-            //           padding: const EdgeInsets.symmetric(
-            //               vertical: 12, horizontal: 12),
-            //           decoration: BoxDecoration(
-            //             color: Colors.green.shade50,
-            //             borderRadius: BorderRadius.circular(10),
-            //             border: Border.all(
-            //               color: Colors.green.shade300,
-            //             ),
-            //           ),
-            //           child: Row(
-            //             mainAxisAlignment: MainAxisAlignment.center,
-            //             children: [
-            //               Expanded(
-            //                 child: Text("${item.arrivalDt} $arrivaltime",
-            //                     style: TextStyle(
-            //                       color: Colors.green.shade700,
-            //                       fontWeight: FontWeight.bold,
-            //                       fontSize: 16,
-            //                     )),
-            //               ),
-                        
-            //               const SizedBox(width: 8),
-            //               Text(
-            //                 "Arrived At",
-            //                 style: TextStyle(
-            //                   color: Colors.green.shade700,
-            //                   fontWeight: FontWeight.bold,
-            //                   fontSize: 16,
-            //                 ),
-            //               ),
-            //                 Icon(
-            //                 Icons.check_circle,
-            //                 color: Colors.green.shade700,
-            //               ),
-            //             ],
-            //           ),
-            //         )
-            //       : FilledButton.icon(
-            //           onPressed: () {
-            //             openUpdateMidMileDriverPosition(context, item,
-            //                 MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
-            //           },
-            //           icon: const Icon(Icons.location_on),
-            //           label: const Text("Arrive AT"),
-            //           style: FilledButton.styleFrom(
-            //             backgroundColor: CommonColors.colorPrimary,
-            //             padding: const EdgeInsets.symmetric(vertical: 14),
-            //           ),
-            //         ),
-            // ),
-          
-            SizedBox(
-              height: SizeConfig.mediumVerticalSpacing,
-            ),
-            // if (item.deliverystatus == "P") ...[
-            //   Row(
-            //     children: [
-            //       Expanded(
-            //         child: ElevatedButton.icon(
-            //           onPressed: () {
-            //             if (isNullOrEmpty(item.arrivalDt)) {
-            //               failToast("Please Reach At Before Delivering");
-            //               return;
-            //             }
-            //             Get.to(
-            //                 () => PodEntry(
-            //                   deliveryDetailModel: DeliveryDetailModel(
-            //                     generatedGr: item.grno,
-            //                   ),
-            //                 ),
-            //               )?.then((_) {
-            //                 onRefresh();
-            //               });
-            //                                     },
-            //           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-            //           label: Text('Deliver',
-            //               style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-            //           style: ElevatedButton.styleFrom(
-            //             padding: EdgeInsets.symmetric(
-            //                 horizontal: SizeConfig.horizontalPadding,
-            //                 vertical: SizeConfig.verticalPadding),
-            //             backgroundColor: CommonColors.successColor,
-            //             foregroundColor: CommonColors.White,
-            //             shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(14),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //       SizedBox(
-            //         width: SizeConfig.horizontalPadding,
-            //       ),
-            //       Expanded(
-            //         child: ElevatedButton.icon(
-            //           onPressed: () {
-            //             if (isNullOrEmpty(item.arrivalDt)) {
-            //               failToast("Please Reach At Before Delivering");
-            //               return;
-            //             }
-            //             Get.to(UnDelivery(
-            //                     deliveryDetailModel: DeliveryDetailModel(
-            //                         manifestno: item.manifestNo,
-            //                         generatedGr: item.grno)))
-            //                 ?.then((_) {
-            //               onRefresh();
-            //             });
-            //           },
-            //           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-            //           label: Text('Undeliver',
-            //               style: TextStyle(fontSize: SizeConfig.smallTextSize)),
-            //           style: ElevatedButton.styleFrom(
-            //             padding: EdgeInsets.symmetric(
-            //                 horizontal: SizeConfig.horizontalPadding,
-            //                 vertical: SizeConfig.verticalPadding),
-            //             backgroundColor: CommonColors.red600,
-            //             foregroundColor: CommonColors.White,
-            //             shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(14),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ] else ...[
-            //   Container(
-            //     padding:
-            //         const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            //     decoration: BoxDecoration(
-            //       color: Colors.green.shade50,
-            //       borderRadius: BorderRadius.circular(10),
-            //       border: Border.all(
-            //         color: Colors.green.shade300,
-            //       ),
-            //     ),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         Expanded(
-            //           child: Text(item.deliverystatusupdateon ?? '',
-            //               style: TextStyle(
-            //                 color: item.deliverystatus == "D"
-            //                     ? Colors.green.shade700
-            //                     : Colors.red.shade700,
-            //                 fontWeight: FontWeight.bold,
-            //                 fontSize: 16,
-            //               )),
-            //         ),
-            //         Icon(
-            //           Icons.check_circle,
-            //           color: item.deliverystatus == "D"
-            //               ? Colors.green.shade700
-            //               : Colors.red.shade700,
-            //         ),
-            //         const SizedBox(width: 8),
-            //         Text(
-            //           item.deliverystatus == "D" ? "Delivered" : "Unde",
-            //           style: TextStyle(
-            //             color: item.deliverystatus == "D"
-            //                 ? Colors.green.shade700
-            //                 : Colors.red.shade700,
-            //             fontWeight: FontWeight.bold,
-            //             fontSize: 16,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   )
-            // ],
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              child: (!isNullOrEmpty(item.vehiclearrivalstatus) &&
-                      item.vehiclearrivalstatus == "D")
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.green.shade300,
-                        ),
+          ),
+          const SizedBox(height: 18),
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: (!isNullOrEmpty(item.arrivalDt) &&
+          //           !isNullOrEmpty(item.arrivalTime))
+          //       ? Container(
+          //           padding: const EdgeInsets.symmetric(
+          //               vertical: 12, horizontal: 12),
+          //           decoration: BoxDecoration(
+          //             color: Colors.green.shade50,
+          //             borderRadius: BorderRadius.circular(10),
+          //             border: Border.all(
+          //               color: Colors.green.shade300,
+          //             ),
+          //           ),
+          //           child: Row(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //               Expanded(
+          //                 child: Text("${item.arrivalDt} $arrivaltime",
+          //                     style: TextStyle(
+          //                       color: Colors.green.shade700,
+          //                       fontWeight: FontWeight.bold,
+          //                       fontSize: 16,
+          //                     )),
+          //               ),
+                      
+          //               const SizedBox(width: 8),
+          //               Text(
+          //                 "Arrived At",
+          //                 style: TextStyle(
+          //                   color: Colors.green.shade700,
+          //                   fontWeight: FontWeight.bold,
+          //                   fontSize: 16,
+          //                 ),
+          //               ),
+          //                 Icon(
+          //                 Icons.check_circle,
+          //                 color: Colors.green.shade700,
+          //               ),
+          //             ],
+          //           ),
+          //         )
+          //       : FilledButton.icon(
+          //           onPressed: () {
+          //             openUpdateMidMileDriverPosition(context, item,
+          //                 MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
+          //           },
+          //           icon: const Icon(Icons.location_on),
+          //           label: const Text("Arrive AT"),
+          //           style: FilledButton.styleFrom(
+          //             backgroundColor: CommonColors.colorPrimary,
+          //             padding: const EdgeInsets.symmetric(vertical: 14),
+          //           ),
+          //         ),
+          // ),
+        
+          // SizedBox(
+          //   height: SizeConfig.mediumVerticalSpacing,
+          // ),
+          // if (item.deliverystatus == "P") ...[
+          //   Row(
+          //     children: [
+          //       Expanded(
+          //         child: ElevatedButton.icon(
+          //           onPressed: () {
+          //             if (isNullOrEmpty(item.arrivalDt)) {
+          //               failToast("Please Reach At Before Delivering");
+          //               return;
+          //             }
+          //             Get.to(
+          //                 () => PodEntry(
+          //                   deliveryDetailModel: DeliveryDetailModel(
+          //                     generatedGr: item.grno,
+          //                   ),
+          //                 ),
+          //               )?.then((_) {
+          //                 onRefresh();
+          //               });
+          //                                     },
+          //           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+          //           label: Text('Deliver',
+          //               style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+          //           style: ElevatedButton.styleFrom(
+          //             padding: EdgeInsets.symmetric(
+          //                 horizontal: SizeConfig.horizontalPadding,
+          //                 vertical: SizeConfig.verticalPadding),
+          //             backgroundColor: CommonColors.successColor,
+          //             foregroundColor: CommonColors.White,
+          //             shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(14),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       SizedBox(
+          //         width: SizeConfig.horizontalPadding,
+          //       ),
+          //       Expanded(
+          //         child: ElevatedButton.icon(
+          //           onPressed: () {
+          //             if (isNullOrEmpty(item.arrivalDt)) {
+          //               failToast("Please Reach At Before Delivering");
+          //               return;
+          //             }
+          //             Get.to(UnDelivery(
+          //                     deliveryDetailModel: DeliveryDetailModel(
+          //                         manifestno: item.manifestNo,
+          //                         generatedGr: item.grno)))
+          //                 ?.then((_) {
+          //               onRefresh();
+          //             });
+          //           },
+          //           // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+          //           label: Text('Undeliver',
+          //               style: TextStyle(fontSize: SizeConfig.smallTextSize)),
+          //           style: ElevatedButton.styleFrom(
+          //             padding: EdgeInsets.symmetric(
+          //                 horizontal: SizeConfig.horizontalPadding,
+          //                 vertical: SizeConfig.verticalPadding),
+          //             backgroundColor: CommonColors.red600,
+          //             foregroundColor: CommonColors.White,
+          //             shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(14),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ] else ...[
+          //   Container(
+          //     padding:
+          //         const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          //     decoration: BoxDecoration(
+          //       color: Colors.green.shade50,
+          //       borderRadius: BorderRadius.circular(10),
+          //       border: Border.all(
+          //         color: Colors.green.shade300,
+          //       ),
+          //     ),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Expanded(
+          //           child: Text(item.deliverystatusupdateon ?? '',
+          //               style: TextStyle(
+          //                 color: item.deliverystatus == "D"
+          //                     ? Colors.green.shade700
+          //                     : Colors.red.shade700,
+          //                 fontWeight: FontWeight.bold,
+          //                 fontSize: 16,
+          //               )),
+          //         ),
+          //         Icon(
+          //           Icons.check_circle,
+          //           color: item.deliverystatus == "D"
+          //               ? Colors.green.shade700
+          //               : Colors.red.shade700,
+          //         ),
+          //         const SizedBox(width: 8),
+          //         Text(
+          //           item.deliverystatus == "D" ? "Delivered" : "Unde",
+          //           style: TextStyle(
+          //             color: item.deliverystatus == "D"
+          //                 ? Colors.green.shade700
+          //                 : Colors.red.shade700,
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 16,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   )
+          // ],
+          // const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: (!isNullOrEmpty(item.vehiclearrivalstatus) &&
+                    item.vehiclearrivalstatus == "D")
+                ? Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.green.shade300,
                       ),
-                      child: Row(
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text("${item.vehiclearrivalupdateon}",
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              )),
+                        ),
+                      
+                        const SizedBox(width: 8),
+                        Text(
+                          "Vehicle Arrived",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                          Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                      ],
+                    ),
+                  )
+                :
+                //  FilledButton.icon(
+                //     onPressed: () {
+                //       // if (isNullOrEmpty(item.arrivalDt)) {
+                //       //   failToast("Please Reach At Before Arrival.");
+                //       //   return;
+                //       // }
+                //       openUpdateMidMileDriverPosition(
+                //           context, item, MIDMILETRIPSTATUS.ARRIVAL_WITH_UNLOAD, onRefresh);
+                //     },
+                //     icon: const Icon(Icons.location_on),
+                //     label: const Text("Vehicle Arrival "),
+                //     style: FilledButton.styleFrom(
+                //       backgroundColor: CommonColors.colorPrimary,
+                //       padding: const EdgeInsets.symmetric(vertical: 14),
+                //     ),
+                //   ),
+                 Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                   openUpdateMidMileDriverPosition(
+                          context, item, MIDMILETRIPSTATUS.ARRIVAL_WITH_UNLOAD, onRefresh);
+                },
+                style: ElevatedButton.styleFrom(
+                  // backgroundColor: CommonColors.colorPrimary,
+                  // foregroundColor: CommonColors.White,
+                   backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  disabledBackgroundColor: CommonColors.grey300,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ), // Disable if not punched in
+                child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Text("${item.vehiclearrivalupdateon}",
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                )),
+                          Icon(
+                            Icons.location_on,
+                            size: SizeConfig.largeIconSize,
+                            color: CommonColors.white,
                           ),
-                        
-                          const SizedBox(width: 8),
+                          SizedBox(width: SizeConfig.horizontalPadding),
                           Text(
-                            "Vehicle Arrived",
-                            style: TextStyle(
-                              color: Colors.green.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                            Icon(
-                            Icons.check_circle,
-                            color: Colors.green.shade700,
+                            "Vehicle Arrival",
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
                           ),
                         ],
                       ),
-                    )
-                  : FilledButton.icon(
-                      onPressed: () {
-                        // if (isNullOrEmpty(item.arrivalDt)) {
-                        //   failToast("Please Reach At Before Arrival.");
-                        //   return;
-                        // }
-                        openUpdateMidMileDriverPosition(
-                            context, item, MIDMILETRIPSTATUS.UNLOAD, onRefresh);
-                      },
-                      icon: const Icon(Icons.location_on),
-                      label: const Text("Vehicle Arrival "),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: CommonColors.colorPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                    ),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -770,417 +870,621 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
     String arrivaltime = convertTo12Hour(item.arrivalTime ?? '');
     String pickupdepartedtime = convertTo12Hour(item.pickupdepartedtime ?? '');
     return Card(
+      color:CommonColors.white!,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: CommonColors.amber500!.withAlpha((0.1 * 255).round()),
-          borderRadius: BorderRadius.circular(14),
+      child: Column(
+        children: [
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(
+          //       horizontal: SizeConfig.smallHorizontalPadding,
+          //       vertical: SizeConfig.smallVerticalPadding,
+          //     ),
+          //     decoration: BoxDecoration(
+          //       color: CommonColors.colorPrimary!
+          //           .withAlpha((0.12 * 255).round()),
+          //       borderRadius: BorderRadius.circular(20),
+          //     ),
+          //     child: Row(
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: [
+          //         Icon(Icons.local_shipping_outlined,
+          //             size: SizeConfig.smallTextSize ,
+          //             color: CommonColors.colorPrimary),
+          //         const SizedBox(width: 4),
+          //         Text(
+          //           'DIRECT',
+          //           style: TextStyle(
+          //             fontSize: SizeConfig.smallTextSize,
+          //             fontWeight: FontWeight.bold,
+          //             color: CommonColors.colorPrimary,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          Container(
+               padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding,horizontal: SizeConfig.horizontalPadding),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius)),
+           gradient: RadialGradient(
+             radius: 9,
+            colors: [CommonColors.colorPrimary!.withAlpha(( 0.2*255 ).toInt()), CommonColors.white!])
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: SizeConfig.smallHorizontalPadding,
-                    vertical: SizeConfig.smallVerticalPadding,
-                  ),
-                  decoration: BoxDecoration(
-                    color: CommonColors.colorPrimary!
-                        .withAlpha((0.12 * 255).round()),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+            child: Row(
+              children: [
+                 CircleAvatar(
+                  backgroundColor: CommonColors.white,
+                  radius: 22,
+                  child: Icon(Icons.local_shipping,
+                  color: CommonColors.colorPrimary),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.local_shipping_outlined,
-                          size: SizeConfig.smallTextSize + 2,
-                          color: CommonColors.colorPrimary),
-                      const SizedBox(width: 4),
                       Text(
-                        'DIRECT',
-                        style: TextStyle(
-                          fontSize: SizeConfig.smallTextSize,
+                        "Consignment No :${item.grno}",
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: CommonColors.colorPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Manifest :${item.manifestNo ?? "-"}",
+                        style: TextStyle(
+                          color: CommonColors.appBarColor,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 22,
-                    child: Icon(Icons.local_shipping),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Consignment No : ${item.grno}",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Manifest: ${item.manifestNo ?? "-"}",
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: _infoTile("Origin", item.orgname)),
-                      Expanded(child: _infoTile("Destination", item.destname)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: _infoTile(
-                              "Total Consignment", item.totgr.toString())),
-                      Expanded(
-                          child: _infoTile("Total Pkgs", "${item.totpckgs}")),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: (!isNullOrEmpty(item.arrivalDt) &&
-                        !isNullOrEmpty(item.arrivalTime))
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.green.shade300,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${item.arrivalDt}  ${arrivaltime}",
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          
-                            const SizedBox(width: 8),
-                            Text(
-                              "Reached",
-                              style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                              Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
-                          ],
-                        ),
-                      )
-                    : FilledButton.icon(
-                        onPressed: () {
-                          openUpdateMidMileDriverPosition(context, item,
-                              MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
-                        },
-                        icon: const Icon(Icons.location_on),
-                        label: const Text("Reach At"),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: CommonColors.colorPrimary,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                      ),
-              ),
-              SizedBox(
-                height: SizeConfig.mediumVerticalSpacing,
-              ),
-              if (item.deliverystatus == "P") ...[
-                Row(
+                 Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizeConfig.smallHorizontalPadding,
+                  vertical: SizeConfig.smallVerticalPadding,
+                ),
+                decoration: BoxDecoration(
+                  color: CommonColors.white!,
+                      // .withAlpha((0.12 * 255).round())
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (isNullOrEmpty(item.arrivalDt)) {
-                            failToast("Please Reach At Before Delivering");
-                            return;
-                          }
-                          Get.to(
-                            () => PodEntry(
-                              deliveryDetailModel: DeliveryDetailModel(
-                                generatedGr: item.grno,
-                              ),
-                            ),
-                          )?.then((_) {
-                            onRefresh();
-                          });
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Deliver',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.successColor,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: SizeConfig.horizontalPadding,
-                    ),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (isNullOrEmpty(item.arrivalDt)) {
-                            failToast("Please Reach At Before Delivering");
-                            return;
-                          }
-                          Get.to(UnDelivery(
-                              deliveryDetailModel: DeliveryDetailModel(
-                            manifestno: item.manifestNo,
-                            generatedGr: item.grno,
-                            orgcode: item.orgcode,
-                            orgname: item.orgname,
-                            destcode: item.destcode,
-                            destname: item.destname,
-                          )))?.then((_) {
-                            onRefresh();
-                          });
-                        },
-                        // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                        label: Text('Undeliver',
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize)),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          backgroundColor: CommonColors.red600,
-                          foregroundColor: CommonColors.White,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
+                    Icon(Icons.local_shipping_outlined,
+                        size: SizeConfig.smallTextSize ,
+                        color: CommonColors.colorPrimary),
+                    const SizedBox(width: 4),
+                    Text(
+                      'DIRECT',
+                      style: TextStyle(
+                        fontSize: SizeConfig.smallTextSize,
+                        fontWeight: FontWeight.bold,
+                        color: CommonColors.colorPrimary,
                       ),
                     ),
                   ],
                 ),
-              ] else ...[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.green.shade300,
+              ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: _infoTile(
+                      Icons.location_on,
+                      "Origin", item.orgname,CommonColors.colorPrimary)),
+                    Expanded(child: _infoTile(
+                      Icons.location_on,
+                      "Destination", item.destname,CommonColors.colorPrimary)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                        child: _infoTile(
+                            Icons.local_shipping,
+                            "Total Consignment", item.totgr.toString(), CommonColors.successColor)),
+                    Expanded(
+                        child: _infoTile(Icons.inventory_2, "Total Pkgs", "${item.totpckgs}", CommonColors.darkBlue)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: (!isNullOrEmpty(item.arrivalDt) &&
+                    !isNullOrEmpty(item.arrivalTime))
+                ? Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.green.shade300,
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(item.deliverystatusupdateon ?? '',
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${item.arrivalDt}  ${arrivaltime}",
                             style: TextStyle(
-                              color: item.deliverystatus == "D"
-                                  ? Colors.green.shade700
-                                  : Colors.red.shade700,
+                              color: Colors.green.shade700,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                            )),
+                            ),
+                          ),
+                        ),
+                      
+                        const SizedBox(width: 8),
+                        Text(
+                          "Reached",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                          Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                      ],
+                    ),
+                  )
+                : 
+                // FilledButton.icon(
+                //     onPressed: () {
+                //       openUpdateMidMileDriverPosition(context, item,
+                //           MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
+                //     },
+                //     icon: const Icon(Icons.location_on),
+                //     label: const Text("Reach At"),
+                //     style: FilledButton.styleFrom(
+                //       backgroundColor: CommonColors.colorPrimary,
+                //       padding: const EdgeInsets.symmetric(vertical: 14),
+                //     ),
+                //   ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                   openUpdateMidMileDriverPosition(context, item,
+                          MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
+                    
+                },
+                style: ElevatedButton.styleFrom(
+                  // backgroundColor: CommonColors.colorPrimary,
+                  // foregroundColor: CommonColors.White,
+                   backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  disabledBackgroundColor: CommonColors.grey300,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ), // Disable if not punched in
+                child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: SizeConfig.largeIconSize,
+                            color: CommonColors.white,
+                          ),
+                          SizedBox(width: SizeConfig.horizontalPadding),
+                          Text(
+                            "Reach At",
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                          ),
+                        ],
                       ),
-                     
-                      const SizedBox(width: 8),
-                      Text(
-                        item.deliverystatus == "D" ? "Delivered" : "Unde",
+              ),
+            ),
+          ),
+          SizedBox(
+            height: SizeConfig.mediumVerticalSpacing,
+          ),
+          if (item.deliverystatus == "P") ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
+                        Get.to(
+                          () => PodEntry(
+                            deliveryDetailModel: DeliveryDetailModel(
+                              generatedGr: item.grno,
+                            ),
+                          ),
+                        )?.then((_) {
+                          onRefresh();
+                        });
+                      },
+                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                     icon: Icon(
+                                    Icons.check,
+                                    size: SizeConfig.mediumIconSize,
+                                    color: CommonColors.green600,
+                                  ),
+                                  label: Text('Deliver',
+                                      style: TextStyle(
+                                          fontSize: SizeConfig.smallTextSize,
+                                          color: CommonColors.green600)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical:
+                                            SizeConfig.extraSmallVerticalSpacing),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    side: BorderSide(
+                                      color:
+                                          CommonColors.green600!, // Border color
+                                      width: 3.0, // Border thickness
+                                    ),
+                                  
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: SizeConfig.horizontalPadding,
+                  ),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
+                        Get.to(UnDelivery(
+                            deliveryDetailModel: DeliveryDetailModel(
+                          manifestno: item.manifestNo,
+                          generatedGr: item.grno,
+                          orgcode: item.orgcode,
+                          orgname: item.orgname,
+                          destcode: item.destcode,
+                          destname: item.destname,
+                        )))?.then((_) {
+                          onRefresh();
+                        });
+                      },
+                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                      icon: Icon(Icons.close,
+                                      color: CommonColors.red600,
+                                      size: SizeConfig.mediumIconSize),
+                                  label: Text('Undeliver',
+                                      style: TextStyle(
+                                          color: CommonColors.red600,
+                                          fontSize: SizeConfig.smallTextSize)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical:
+                                            SizeConfig.extraSmallVerticalSpacing),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    side: BorderSide(
+                                      color: CommonColors.red600!, // Border color
+                                      width: 3.0, // Border thickness
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.green.shade300,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(item.deliverystatusupdateon ?? '',
                         style: TextStyle(
                           color: item.deliverystatus == "D"
                               ? Colors.green.shade700
                               : Colors.red.shade700,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                        ),
-                      ),
-                       Icon(
-                        Icons.check_circle,
-                        color: item.deliverystatus == "D"
-                            ? Colors.green.shade700
-                            : Colors.red.shade700,
-                      ),
-                    ],
+                        )),
                   ),
-                )
-              ],
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: (!isNullOrEmpty(item.pickupdeparteddate) &&
-                        !isNullOrEmpty(item.pickupdepartedtime))
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.green.shade300,
+                 
+                  const SizedBox(width: 8),
+                  Text(
+                    item.deliverystatus == "D" ? "Delivered" : "Unde",
+                    style: TextStyle(
+                      color: item.deliverystatus == "D"
+                          ? Colors.green.shade700
+                          : Colors.red.shade700,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                   Icon(
+                    Icons.check_circle,
+                    color: item.deliverystatus == "D"
+                        ? Colors.green.shade700
+                        : Colors.red.shade700,
+                  ),
+                ],
+              ),
+            )
+          ],
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: (!isNullOrEmpty(item.pickupdeparteddate) &&
+                    !isNullOrEmpty(item.pickupdepartedtime))
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.green.shade300,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${item.pickupdeparteddate} ${pickupdepartedtime}",
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${item.pickupdeparteddate} ${pickupdepartedtime}",
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                           
-                            const SizedBox(width: 8),
-                            Text(
-                              "Delivery Departed",
-                              style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                             Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
-                          ],
+                       
+                        const SizedBox(width: 8),
+                        Text(
+                          "Delivery Departed",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
-                      )
-                    : FilledButton.icon(
-                        onPressed: () {
-                          if (isNullOrEmpty(item.deliverystatusupdateon)) {
+                         Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                      ],
+                    ),
+                  )
+                : 
+                
+                // FilledButton.icon(
+                //     onPressed: () {
+                //       if (isNullOrEmpty(item.deliverystatusupdateon)) {
+                //         failToast(
+                //             "Please Update Delivery Status Before Departing");
+                //         return;
+                //       }
+                //       updatePickupDepartedPosition(
+                //           item.grno ?? '', item.manifestNo ?? '');
+                //       // departFromLocationAlert(
+                //       //     item.grno ?? '', item.manifestNo ?? '');
+                //     },
+                //     icon: const Icon(Icons.location_on),
+                //     label: const Text("Departed From Location"),
+                //     style: FilledButton.styleFrom(
+                //       backgroundColor: CommonColors.colorPrimary,
+                //       padding: const EdgeInsets.symmetric(vertical: 14),
+                //     ),
+                //   ),
+                   Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                   if (isNullOrEmpty(item.deliverystatusupdateon)) {
+                        failToast(
+                            "Please Update Delivery Status Before Departing");
+                        return;
+                      }
+                      updatePickupDepartedPosition(
+                          item.grno ?? '', item.manifestNo ?? '');
+                      // departFromLocationAlert(
+                      //     item.grno ?? '', item.manifestNo ?? '');
+                },
+                style: ElevatedButton.styleFrom(
+                  // backgroundColor: CommonColors.colorPrimary,
+                  // foregroundColor: CommonColors.White,
+                   backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  disabledBackgroundColor: CommonColors.grey300,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ), // Disable if not punched in
+                child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: SizeConfig.largeIconSize,
+                            color: CommonColors.white,
+                          ),
+                          SizedBox(width: SizeConfig.horizontalPadding),
+                          Text(
+                            "Departed From Location",
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            child: (item.vehiclearrivalstatus == 'D')
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.green.shade300,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${item.vehiclearrivalupdateon}",
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      
+                        const SizedBox(width: 8),
+                        Text(
+                          "Vehicle Arrived",
+                          style: TextStyle(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                          Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                      ],
+                    ),
+                  )
+                : (item.vehiclearrivalstatus == "P")
+                    ?
+                    //  FilledButton.icon(
+                    //     onPressed: () {
+                    //       if (isNullOrEmpty(item.pickupdeparteddate) &&
+                    //           isNullOrEmpty(item.pickupdepartedtime)) {
+                    //         failToast(
+                    //             "Please depart location update before vehicle Arrival.");
+                    //         return;
+                    //       }
+                    //       updateVehicleArrival(item);
+                    //     },
+                    //     icon: const Icon(Icons.location_on),
+                    //     label: const Text("Vehicle Arrival "),
+                    //     style: FilledButton.styleFrom(
+                    //       backgroundColor: CommonColors.colorPrimary,
+                    //       padding: const EdgeInsets.symmetric(vertical: 14),
+                    //     ),
+                    //   )
+                        Container(
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                gradient: LinearGradient(
+                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                   if (isNullOrEmpty(item.pickupdeparteddate) &&
+                              isNullOrEmpty(item.pickupdepartedtime)) {
                             failToast(
-                                "Please Update Delivery Status Before Departing");
+                                "Please depart location update before vehicle Arrival.");
                             return;
                           }
-                          updatePickupDepartedPosition(
-                              item.grno ?? '', item.manifestNo ?? '');
-                          // departFromLocationAlert(
-                          //     item.grno ?? '', item.manifestNo ?? '');
-                        },
-                        icon: const Icon(Icons.location_on),
-                        label: const Text("Departed From Location"),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: CommonColors.colorPrimary,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
+                          updateVehicleArrival(item);
+                },
+                style: ElevatedButton.styleFrom(
+                  // backgroundColor: CommonColors.colorPrimary,
+                  // foregroundColor: CommonColors.White,
+                   backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  disabledBackgroundColor: CommonColors.grey300,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ), // Disable if not punched in
+                child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: SizeConfig.largeIconSize,
+                            color: CommonColors.white,
+                          ),
+                          SizedBox(width: SizeConfig.horizontalPadding),
+                          Text(
+                            "Vehicle Arrival",
+                            style:
+                                TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                          ),
+                        ],
                       ),
               ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: (item.vehiclearrivalstatus == 'D')
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade50,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.green.shade300,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "${item.vehiclearrivalupdateon}",
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          
-                            const SizedBox(width: 8),
-                            Text(
-                              "Vehicle Arrived",
-                              style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                              Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade700,
-                            ),
-                          ],
-                        ),
-                      )
-                    : (item.vehiclearrivalstatus == "P")
-                        ? FilledButton.icon(
-                            onPressed: () {
-                              if (isNullOrEmpty(item.pickupdeparteddate) &&
-                                  isNullOrEmpty(item.pickupdepartedtime)) {
-                                failToast(
-                                    "Please depart location update before vehicle Arrival.");
-                                return;
-                              }
-                              updateVehicleArrival(item);
-                            },
-                            icon: const Icon(Icons.location_on),
-                            label: const Text("Vehicle Arrival "),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: CommonColors.colorPrimary,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                          )
-                        : Text(""),
-              ),
-            ],
+            )
+                    : Text(""),
           ),
-        ),
+        ],
       ),
     );
   }

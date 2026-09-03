@@ -47,7 +47,7 @@ class ApiService {
   ApiService._internal();
 
   // Timeout duration for API calls
-  static const Duration _timeout = Duration(seconds: 120);
+  static const Duration _timeout = Duration(seconds:300);
 
   /// Performs a GET request
   Future<CommonResponse> get(String apiName, Map<String, String> params) async {

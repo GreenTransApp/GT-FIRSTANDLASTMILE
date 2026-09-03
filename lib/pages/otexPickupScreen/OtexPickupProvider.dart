@@ -473,12 +473,12 @@ class OtexPickupProvider extends ChangeNotifier {
     String currentAddress = "";
     final position = await LocationService().getCurrentLocation();
 
-    final address = await AppLocationService().getAddressFromLatLng(
+    final address =  AppLocationService().getAddressFromLatLng(
       position.latitude,
       position.longitude,
     );
     if (address != null) {
-       currentAddress = address;
+       currentAddress = address.toString();
       debugPrint("Current Address: $currentAddress");
     } else {
       failToast("Could not get your location.");

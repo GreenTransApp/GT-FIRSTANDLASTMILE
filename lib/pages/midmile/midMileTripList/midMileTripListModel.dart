@@ -3,7 +3,7 @@ class MidMileTripListModel {
   final int? tripdetailid;
   final String? startdt;
   final String? starttime;
-  final double? vehiclestartkm;
+  final int? vehiclestartkm;
   final String? vehiclestartlocation;
   final double? pickuplatposition;
   final double? pickuplongposition;
@@ -47,7 +47,7 @@ class MidMileTripListModel {
       tripdetailid: json['tripdetailid'] as int?,
       startdt: json['startdt'] as String?,
       starttime: json['starttime'] as String?,
-      vehiclestartkm: (json['vehiclestartkm'] as num?)?.toDouble(),
+      vehiclestartkm: json['vehiclestartkm']as int?,
       vehiclestartlocation: json['vehiclestartlocation'] as String?,
       pickuplatposition: (json['pickuplatposition'] as num?)?.toDouble(),
       pickuplongposition: (json['pickuplongposition'] as num?)?.toDouble(),
@@ -94,7 +94,7 @@ class MidMileTripListModel {
     int? tripdetailid,
     String? startdt,
     String? starttime,
-    double? vehiclestartkm,
+    int? vehiclestartkm,
     String? vehiclestartlocation,
     double? pickuplatposition,
     double? pickuplongposition,

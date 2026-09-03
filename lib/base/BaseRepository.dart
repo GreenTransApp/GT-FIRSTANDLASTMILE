@@ -164,7 +164,7 @@ class BaseRepository {
           urlModel.add(result);
         } else {
           isErrorLiveData.add(
-              resp.commandMessage ?? "Something went wrong. Please try again");
+              result.commandmessage ?? "Something went wrong. Please try again");
         }
         viewDialog.add(false);
       } else {
@@ -192,7 +192,7 @@ class BaseRepository {
       if (resp.commandStatus != 1) {
         throw Exception(resp.commandMessage ?? "Error occurred");
       }
-
+      viewDialog.add(false);
       if (resp.commandStatus == 1) {
         String url = "";
         if (!isNullOrEmpty(resp.message.toString())) {
@@ -205,7 +205,6 @@ class BaseRepository {
         isErrorLiveData.add(
             resp.commandMessage ?? "Something went wrong. Please try again");
       }
-      viewDialog.add(false);
     } catch (err) {
       viewDialog.add(false);
       debugPrint('Error in getSingleOperation: $err');

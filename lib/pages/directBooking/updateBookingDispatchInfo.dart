@@ -173,16 +173,16 @@ void getLastTripInfo() {
           _startReadingError =
               "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.lastendreadingkm}";
           debugPrint(_startReadingError);
-        } else if (currentReading - lastReading >
-            int.parse(lastTripInfo!.readingdiff.toString())) {
-          commonAlertDialog(
-              context,
-              "ALERT!",
-              "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
-              "",
-              const Icon(Icons.info),
-              okayCallBackForAlert,
-              cancelCallBack: () {});
+        // } else if (currentReading - lastReading >
+        //     int.parse(lastTripInfo!.readingdiff.toString())) {
+        //   commonAlertDialog(
+        //       context,
+        //       "ALERT!",
+        //       "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
+        //       "",
+        //       const Icon(Icons.info),
+        //       okayCallBackForAlert,
+        //       cancelCallBack: () {});
         } else {
           _startReadingError = null;
         }

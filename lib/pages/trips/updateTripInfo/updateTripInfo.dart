@@ -26,7 +26,7 @@ class UpdateTripInfo extends StatefulWidget {
   TripModel model;
   // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
   final TripStatus status;
-  Future<void> Function()? refresh;
+  final Future<void> Function()? refresh;
   UpdateTripInfo({
     super.key,
     required this.model,
@@ -125,7 +125,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         }
 
         if (widget.refresh != null) {
-          widget.refresh!();
+          await widget.refresh?.call();
         }
         // Get.back(result: true);
         Get.back();
@@ -205,20 +205,20 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
       int currentReading = int.tryParse(value.trim()) ?? 0;
       int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
       if (value.isNotEmpty) {
-        if (lastTripInfo != null && currentReading <= lastReading) {
+        if (lastTripInfo != null && int.tryParse(value.trim())! <= lastReading) {
           _startReadingError =
               "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.lastendreadingkm}";
           debugPrint(_startReadingError);
-        } else if (currentReading - lastReading >
-            int.parse(lastTripInfo!.readingdiff.toString())) {
-          commonAlertDialog(
-              context,
-              "ALERT!",
-              "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
-              "",
-              const Icon(Icons.info),
-              okayCallBackForAlert,
-              cancelCallBack: () {});
+        // } else if (currentReading - lastReading >
+        //     int.parse(lastTripInfo!.readingdiff.toString())) {
+        //   commonAlertDialog(
+        //       context,
+        //       "ALERT!",
+        //       "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
+        //       "",
+        //       const Icon(Icons.info),
+        //       okayCallBackForAlert,
+        //       cancelCallBack: () {});
         } else {
           _startReadingError = null;
         }
@@ -1454,7 +1454,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
 }
 
 Future<void> openUpdateTripInfo(BuildContext context, TripModel model,
-    TripStatus status, Future<void> Function()? onRefresh) {
+    TripStatus status, Future<void> Function()? refreshCallback) {
   DraggableScrollableController controller = DraggableScrollableController();
   return showModalBottomSheet(
       context: context,
@@ -1472,7 +1472,7 @@ Future<void> openUpdateTripInfo(BuildContext context, TripModel model,
               return Container(
                 color: Colors.white,
                 child: UpdateTripInfo(
-                    model: model, status: status, refresh: onRefresh),
+                    model: model, status: status, refresh: refreshCallback),
               );
             },
           ),

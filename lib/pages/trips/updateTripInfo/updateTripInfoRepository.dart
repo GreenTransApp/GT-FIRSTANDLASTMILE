@@ -158,7 +158,9 @@ class UpdateTripInfoRepository extends BaseRepository {
               }
             } else if (v.key == 'Table1') {
               List<dynamic> list = v.value;
-              // var decodedJson = jso`nDecode(list[0]);
+              // var decodedJson = jso`nDecode(list[0]);z
+              lastTrip.commandstatus = list[0]['commandstatus'];
+              lastTrip.commandmessage = list[0]['commandmessage'].toString();
               lastTrip.readingdiff = list[0]['readingdiff'].toString();
               lastTrip.odometerbypass = list[0]['odometerbypass'].toString();
             }

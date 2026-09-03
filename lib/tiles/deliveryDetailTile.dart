@@ -8,6 +8,7 @@ import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
+import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
 import 'package:gtlmd/common/commonModel/pageLinkJsonParams.dart';
 import 'package:gtlmd/common/toast.dart';
 import 'package:gtlmd/design_system/size_config.dart';
@@ -74,18 +75,21 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
   late IconData statusIcon;
   late Color statusIconColor;
   String? status;
-  BaseRepository _baseRepo = BaseRepository();
+  final BaseRepository _baseRepo = BaseRepository();
   List<StreamSubscription> _subscription = [];
   bool showAllCardInfo = true;
+  late LoadingAlertService loadingAlertService;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => loadingAlertService = LoadingAlertService(context: context));
     modelDetail = widget.model;
     currentDelivery = widget.currentDeliveryModel;
     if (modelDetail.showdeparted == 'N' && modelDetail.pickupstatus == 'D') {
       showAllCardInfo = false;
     }
-    // setObservers();
+    setObservers();
     // showPickupCardInfo = modelDetail.showdeparted == 'Y' ? true : false;
     // if (modelDetail.showdeparted == 'Y' &&
     //     modelDetail.consignmenttype == 'P' &&
@@ -124,6 +128,16 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
       isFirst = false;
       isLast = false;
     }
+  }
+
+  setObservers() {
+    _subscription.add(_baseRepo.viewDialog.stream.listen((showLoading) {
+      if (showLoading) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    }));
   }
 
   @override
@@ -263,6 +277,7 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
         "prmgrno": modelDetail.generatedGr.toString(),
         "prmusercode": savedUser.usercode.toString(),
         "prmmenucode": "GTAPP_BOOKING",
+        // "prmmenucode": menuCode.toString(),
         "prmsessionid": savedUser.sessionid.toString(),
       };
       String url = await _baseRepo.getBookingPrint(params);

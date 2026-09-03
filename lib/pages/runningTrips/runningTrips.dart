@@ -10,7 +10,9 @@ import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/attendance/models/attendanceModel.dart';
 import 'package:gtlmd/pages/runningTrips/runningTripsViewModel.dart';
 import 'package:gtlmd/pages/trips/tripDetail/Model/tripModel.dart';
+import 'package:gtlmd/pages/trips/updateTripInfo/updateTripInfo.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
+import 'package:gtlmd/tiles/dashboardDeliveryTile.dart';
 import 'package:gtlmd/tiles/runningTripTile.dart';
 import 'package:lottie/lottie.dart';
 
@@ -69,6 +71,29 @@ class RunningTripsState extends State<RunningTrips> {
         checkAuthenticatedUserForRunService(_tripList);
       });
     }));
+    _subscription.add(viewModel.validateTripLiveData.stream.listen((resp) {
+      if (resp.commandstatus == 1) {
+        openUpdateInfoForStartTrip(resp);
+        // refreshScreen();
+      } else {
+        failToast(resp.commandmessage ?? "Something went wrong");
+      }
+    }));
+  }
+
+  openUpdateInfoForStartTrip(TripModel model) {
+    openUpdateTripInfo(context, model, TripStatus.open, onRefresh);
+  }
+
+  Future<void> _ValidateTripBeforeStart(String tripId, String modeCode) async {
+    Map<String, String> params = {
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmtripid": tripId,
+      "prmusercode": savedUser.usercode.toString(),
+      "prmvehiclecode": modeCode,
+      "prmsessionid": savedUser.sessionid.toString(),
+    };
+    viewModel.ValidateTripBeforeStart(params);
   }
 
   Future<void> checkAuthenticatedUserForRunService(
@@ -197,21 +222,22 @@ class RunningTripsState extends State<RunningTrips> {
       onRefresh: onRefresh,
       child: Scaffold(
         body: Card(
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SizeConfig.largeRadius), 
-           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+          ),
           child: Container(
             color: CommonColors.blueGrey?.withAlpha((0.1 * 255).toInt()),
             child: Column(
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: CommonColors.colorPrimary2,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(SizeConfig.largeRadius),topRight: Radius.circular(SizeConfig.largeRadius))
-                  ),
-                  padding:EdgeInsets.symmetric(
-                        horizontal: SizeConfig.horizontalPadding,
-                        vertical: SizeConfig.verticalPadding),
+                      color: CommonColors.colorPrimary2,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(SizeConfig.largeRadius),
+                          topRight: Radius.circular(SizeConfig.largeRadius))),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: SizeConfig.horizontalPadding,
+                      vertical: SizeConfig.verticalPadding),
                   child: TextField(
                     controller: _searchController,
                     keyboardType: TextInputType.text,
@@ -243,8 +269,8 @@ class RunningTripsState extends State<RunningTrips> {
                       filled: true,
                       fillColor: CommonColors.white,
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(10.0), // Set the desired radius
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Set the desired radius
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -285,6 +311,8 @@ class RunningTripsState extends State<RunningTrips> {
                                 model: currentData,
                                 attendanceModel: _attendanceModel,
                                 onRefresh: onRefresh,
+                                validateTripBeforeStart:
+                                    _ValidateTripBeforeStart,
                               );
                             },
                           ),

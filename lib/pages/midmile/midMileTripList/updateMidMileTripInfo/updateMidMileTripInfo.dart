@@ -138,10 +138,11 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
     // int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
     if (isOdometerUnAvailable == false) {
       if (isNullOrEmpty(_dispatchDateController.text)) {
-        failToast("Please Select Dispatch Data.");
+        // failToast("Please Select Dispatch Data.");
+        failToast("Please Select Trip Date.");
         return;
       } else if (isNullOrEmpty(_dispatchTimeController.text)) {
-        failToast("Please Select Dispatch Time");
+        failToast("Please Select Trip Time");
         return;
       } else if (isNullOrEmpty(_startReadingController.text)) {
         failToast("Please Enter Odometer Value");
@@ -310,7 +311,8 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
                                             SizeConfig.smallHorizontalSpacing,
                                       ),
                                       Text(
-                                        "DISPATCH DATE",
+                                        // "DISPATCH DATE",
+                                        "TRIP DATE",
                                         style: TextStyle(
                                             color: Colors.black87,
                                             fontSize: SizeConfig.smallTextSize,
@@ -371,7 +373,8 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
                                             SizeConfig.smallHorizontalSpacing,
                                       ),
                                       Text(
-                                        "DISPATCH TIME",
+                                        // "DISPATCH TIME",
+                                        "TRIP TIME",
                                         style: TextStyle(
                                           color: CommonColors.appBarColor,
                                           fontSize: SizeConfig.smallTextSize,

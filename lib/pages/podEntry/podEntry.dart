@@ -363,9 +363,9 @@ class _PodEntryState extends State<PodEntry> {
     });
 
     viewModel.savePodLiveData.stream.listen((resp) {
-      String grno = isNullOrEmpty(modelDetail.generatedGr.toString())
-          ? modelDetail.grno.toString()
-          : modelDetail.generatedGr.toString();
+      // String grno = isNullOrEmpty(modelDetail.generatedGr.toString())
+      //     ? modelDetail.grno.toString()
+      //     : modelDetail.generatedGr.toString();
       if (resp.commandstatus == 1) {
         successToast("POD Upload successful");
         showSuccessAlert(
@@ -379,19 +379,19 @@ class _PodEntryState extends State<PodEntry> {
       }
     });
 
-    viewModel.savePodCommonLiveData.stream.listen((resp) {
-      if (resp.commandstatus == 1) {
-        successToast("POD Upload successful");
-        showSuccessAlert(
-            context,
-            // "POD SUCCESSFULLY\n Consignment# -: ${resp.grNo}",
-            "POD SUCCESSFULLY\n Consignment# -: ${modelDetail.grno}",
-            "",
-            backCallBackForAlert);
-      } else {
-        failToast(resp.commandmessage!.toString() ?? "Something went wrong");
-      }
-    });
+    // viewModel.savePodCommonLiveData.stream.listen((resp) {
+    //   if (resp.commandstatus == 1) {
+    //     successToast("POD Upload successful");
+    //     showSuccessAlert(
+    //         context,
+    //         // "POD SUCCESSFULLY\n Consignment# -: ${resp.grNo}",
+    //         "POD SUCCESSFULLY\n Consignment# -: ${modelDetail.grno}",
+    //         "",
+    //         backCallBackForAlert);
+    //   } else {
+    //     failToast(resp.commandmessage!.toString() ?? "Something went wrong");
+    //   }
+    // });
   }
 
   Future<String> convertImagesToPdf(List<String> imagePaths) async {

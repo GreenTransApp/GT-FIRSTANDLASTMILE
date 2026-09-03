@@ -123,6 +123,13 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         loadingAlertService.hideLoading();
       }
     });
+    _baseRepo.viewDialog.stream.listen((showLoading) {
+      if (showLoading) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    });
 
     viewModel.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
@@ -284,7 +291,8 @@ class _DeliveryDetailState extends State<DeliveryDetail>
     try {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
+          // accuracy: LocationAccuracy.high,
+          accuracy: LocationAccuracy.medium,
           distanceFilter: 0,
         ),
       );

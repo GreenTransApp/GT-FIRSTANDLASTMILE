@@ -1,12 +1,12 @@
 class SESSION {
-  static bool isDebugging = true;
-  // static bool isDebugging = false;
+  // static bool isDebugging = true;
+  static bool isDebugging = false;
 }
 
 class URL {
   static const imageBaseUrl = "https://greentrans.in:446/";
   static const baseUrl = "https://greentrans.in:444/API";
-  // static const baseUrl = "http://192.168.1.252:45459/API";
+  // static const baseUrl = "http://192.168.1.253:45461/API";
   // static const baseUrl = "http://192.168.1.253:45457/API";
 
   static const ewayBillLogin =
@@ -32,8 +32,12 @@ class USER {
   // static String debuggingUserName = "7300964400";
   // static String debuggingPassword = "12345678";
 // //--------------GreenTransOtex-----------------
-  static String debuggingUserName = "10304@OTTEXGTI";
-  static String debuggingPassword = "IRFAN123";
+  // static String debuggingUserName = "10304@OTTEXGTI";
+  // static String debuggingPassword = "IRFAN123";
+  // static String debuggingUserName = "2220569129@OTEX";
+  // static String debuggingPassword = "TASNEEM123";
+  static String debuggingUserName = "10420@OTEX";
+  static String debuggingPassword = "10420@123";
   // static String debuggingUserName = "8287371289";
   // static String debuggingPassword = "test@123";
 }

@@ -143,7 +143,7 @@ class _HomeScreen extends State<HomeScreen>
     // Fluttertoast.showToast(msg: 'Refreshing');
     getDashboardDetails();
     fetchOfflineDrsCounts();
-    getNotifiocaionCount();
+    // getNotifiocaionCount();
   }
 
   fetchLocationStartTimeInterval() {
@@ -359,7 +359,7 @@ class _HomeScreen extends State<HomeScreen>
                                     }
                                   }
       }else{
-         failToast(value.commandmessage??  "Something went wrong");
+         failToast(value.commandmessage??  "Unable To Open Action Centre,INVALID URL");
       }
     }));
   }
