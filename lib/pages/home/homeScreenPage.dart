@@ -275,6 +275,14 @@ class _HomeScreen extends State<HomeScreen>
     _subscriptions.add(_baseRepo.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     }));
+    
+    _subscriptions.add(_baseRepo.viewDialog.stream.listen((showLoading) {
+   if (showLoading) {
+        loadingAlertService.showLoading();
+      } else {
+        loadingAlertService.hideLoading();
+      }
+    }));
 
     _subscriptions.add(
         viewModel.drsDateTimeUpdateLiveData.stream.listen((drsUpdate) async {

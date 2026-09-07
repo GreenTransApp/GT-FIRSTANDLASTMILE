@@ -191,16 +191,17 @@ class _UpdateMidMileDriverPositionState
         //   failToast("Please Select Arrival Time");
         //   return;
         // } else
-         if (isNullOrEmpty(_arrivalReadingController.text)) {
-          failToast("Please Enter Odometer Value");
-          return;
-        } else if (int.tryParse(_arrivalReadingController.text)! <= 0) {
-          failToast("Odometer Value Can't be Zero");
-          return;
-        } else if (_arrivalReadingError != null) {
-          failToast(_arrivalReadingError!);
-          return;
-        }
+        //  if (isNullOrEmpty(_arrivalReadingController.text)) {
+        //   failToast("Please Enter Odometer Value");
+        //   return;
+        // } 
+        //else if (int.tryParse(_arrivalReadingController.text)! <= 0) {
+        //   failToast("Odometer Value Can't be Zero");
+        //   return;
+        // } else if (_arrivalReadingError != null) {
+        //   failToast(_arrivalReadingError!);
+        //   return;
+        // }
         //  else if (lastReading > 0 &&
         //     currentReading - lastReading >
         //         int.parse(lastTripInfo!.readingdiff.toString())) {
@@ -222,23 +223,25 @@ class _UpdateMidMileDriverPositionState
         //   failToast("Please Select Unload Time");
         //   return;
         // } else
-         if (isNullOrEmpty(_unloadReadingController.text)) {
-          failToast("Please Enter Odometer Value");
-          return;
-        } else if (int.tryParse(_unloadReadingController.text)! <= 0) {
-          failToast("Odometer Value Can't be Zero");
-          return;
-        } else if (!isNullOrEmpty(_unloadReadingError)) {
-          failToast(_unloadReadingError!);
-          return;
-        }else if(isNullOrEmpty(_unloadReadingImagePath)) {
-          failToast("Please Select Reading Image.");
-          return;
-        }else if (lastReading > 0 && lastReading > currentReading) {
-          failToast("Unload reading  can't be greater than start reading.");
-          return;
+        //  if (isNullOrEmpty(_unloadReadingController.text)) {
+        //   failToast("Please Enter Odometer Value");
+        //   return;
+        // } else if (int.tryParse(_unloadReadingController.text)! <= 0) {
+        //   failToast("Odometer Value Can't be Zero");
+        //   return;
+        // } else 
+        // if (!isNullOrEmpty(_unloadReadingError)) {
+        //   failToast(_unloadReadingError!);
+        //   return;
+        // }else
+      //    if(isNullOrEmpty(_unloadReadingImagePath)) {
+      //     failToast("Please Select Reading Image.");
+      //     return;
+      //   }else if (lastReading > 0 && lastReading > currentReading) {
+      //     failToast("Unload reading  can't be greater than start reading.");
+      //     return;
         
-      }
+      // }
       updateVehicleArrivalWithOutstanding();
     }
   }
@@ -273,6 +276,7 @@ class _UpdateMidMileDriverPositionState
       // 'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
       'prmarrivallat': _currentPosition?.latitude.toString() ?? '',
       'prmarrivallong': _currentPosition?.longitude.toString() ?? '',
+      'prmmodecode': isNullOrEmpty(widget.model.modecode.toString()) ? '' : widget.model.modecode.toString(),
     };
     viewModel.updateDriverReached(params);
   }

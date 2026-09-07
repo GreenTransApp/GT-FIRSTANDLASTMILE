@@ -269,14 +269,18 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
     }
   }
 
-  getBookingPrintLink() async {
+  getBookingPrintLink(String menuCode) async {
+    if (isNullOrEmpty(menuCode)) {
+      menuCode = "GTAPP_PICKUPBOOKING";
+    }
     try {
       Map<String, String> params = {
         "prmconnstring": savedUser.companyid.toString(),
         // "prmgrno": widget.model.generatedGr.toString(),
         "prmgrno": modelDetail.generatedGr.toString(),
         "prmusercode": savedUser.usercode.toString(),
-        "prmmenucode": "GTAPP_BOOKING",
+        // "prmmenucode": "GTAPP_BOOKING",
+        "prmmenucode": menuCode.toString(),
         // "prmmenucode": menuCode.toString(),
         "prmsessionid": savedUser.sessionid.toString(),
       };
@@ -492,7 +496,21 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                               }
                               break;
                             case 'share':
-                              getBookingPrintLink();
+                              LmdMenuModel? targetMenu;
+                              try {
+                                targetMenu = widget.menuList.firstWhere(
+                                    (element) =>
+                                        element.tag?.toString() ==
+                                        MenuTags.PICKUP.name.toString());
+                                {
+                                  {
+                                    menuCode = targetMenu.menuCode.toString();
+                                  }
+                                }
+                              } catch (e) {
+                                targetMenu = null;
+                              }
+                              getBookingPrintLink(menuCode);
                               break;
                             case 'map':
                               {
@@ -1683,7 +1701,23 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                   }
                                   break;
                                 case 'share':
-                                  getBookingPrintLink();
+                                  LmdMenuModel? targetMenu;
+                                  try {
+                                    targetMenu = widget.menuList.firstWhere(
+                                        (element) =>
+                                            element.tag?.toString() ==
+                                            MenuTags.PICKUP.name.toString());
+                                    {
+                                      {
+                                        menuCode =
+                                            targetMenu.menuCode.toString();
+                                      }
+                                    }
+                                  } catch (e) {
+                                    targetMenu = null;
+                                  }
+
+                                  getBookingPrintLink(menuCode);
                                   break;
                                 case 'map':
                                   {

@@ -206,6 +206,7 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
       // 'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
       'prmpickuplatposition': _currentPosition?.latitude.toString() ?? '',
       'prmpickuplongposition': _currentPosition?.longitude.toString() ?? '',
+      'prmmodecode': widget.model.vehiclecode ?? '',
     };
 
     viewModel.updateStartTrip(params);

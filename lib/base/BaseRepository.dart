@@ -149,6 +149,7 @@ class BaseRepository {
     try {
       CommonResponse resp =
           await apiPostWithModel("${lmdUrl}GetInfinitiPageLink", params);
+           
       if (resp.commandStatus != 1) {
         throw Exception(resp.commandMessage ?? "Single Operation fetch failed");
       }
@@ -166,7 +167,7 @@ class BaseRepository {
           isErrorLiveData.add(
               result.commandmessage ?? "Something went wrong. Please try again");
         }
-        viewDialog.add(false);
+       
       } else {
         isErrorLiveData.add(
             resp.commandMessage ?? "Something went wrong. Please try again");
@@ -177,6 +178,8 @@ class BaseRepository {
       viewDialog.add(false);
       debugPrint('Error in getSingleOperation: $err');
       rethrow;
+    }finally {
+      viewDialog.add(false);
     }
   }
 

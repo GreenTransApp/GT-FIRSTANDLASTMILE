@@ -218,13 +218,14 @@ void getLastTripInfo() {
         } else if (_startReadingError != null) {
           failToast(_startReadingError!);
           return;
-        } else if (lastReading > 0 &&
-            currentReading - lastReading >
-                int.parse(lastTripInfo!.readingdiff.toString())) {
-          failToast(
-              "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
-          return;
-        }
+        } 
+        // else if (lastReading > 0 &&
+        //     currentReading - lastReading >
+        //         int.parse(lastTripInfo!.readingdiff.toString())) {
+        //   failToast(
+        //       "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
+        //   return;
+        // }
         widget.model.startreadingkm =
             int.tryParse(_startReadingController.text);
         widget.model.startreadingimg = _startReadingImagePath;

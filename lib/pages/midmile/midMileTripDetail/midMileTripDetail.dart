@@ -1007,13 +1007,13 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: (!isNullOrEmpty(item.arrivalDt) &&
                     !isNullOrEmpty(item.arrivalTime))
                 ? Container(
-                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 12),
                     decoration: BoxDecoration(
@@ -1109,9 +1109,9 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               ),
             ),
           ),
-          SizedBox(
-            height: SizeConfig.mediumVerticalSpacing,
-          ),
+          // SizedBox(
+          //   height: SizeConfig.mediumVerticalSpacing,
+          // ),
           if (item.deliverystatus == "P") ...[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
@@ -1213,7 +1213,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
             ),
           ] else ...[
             Container(
-              margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+              margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
               padding:
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
               decoration: BoxDecoration(
@@ -1258,14 +1258,15 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               ),
             )
           ],
-          const SizedBox(height: 18),
+          // const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
             child: (!isNullOrEmpty(item.pickupdeparteddate) &&
                     !isNullOrEmpty(item.pickupdepartedtime))
                 ? Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 12),
+                    padding:  EdgeInsets.symmetric(
+                        vertical: SizeConfig.verticalPadding, horizontal: SizeConfig.horizontalPadding,),
+                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(10),
@@ -1373,13 +1374,14 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          // const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
             child: (item.vehiclearrivalstatus == 'D')
                 ? Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 12),
+                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),    
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(10),

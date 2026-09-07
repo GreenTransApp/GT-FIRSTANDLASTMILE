@@ -237,7 +237,7 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
     if (widget.status == TripStatus.close) {
       if (isOdometerUnAvailable == false) {
         if (isNullOrEmpty(_closeDateController.text)) {
-          failToast("Please Select Close Data.");
+          failToast("Please Select Close Date.");
           return;
         } else if (isNullOrEmpty(_closeTimeController.text)) {
           failToast("Please Select Close Time");
@@ -279,13 +279,14 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         } else if (_startReadingError != null) {
           failToast(_startReadingError!);
           return;
-        } else if (lastReading > 0 &&
-            currentReading - lastReading >
-                int.parse(lastTripInfo!.readingdiff.toString())) {
-          failToast(
-              "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
-          return;
-        }
+        } 
+        // else if (lastReading > 0 &&
+        //     currentReading - lastReading >
+        //         int.parse(lastTripInfo!.readingdiff.toString())) {
+        //   failToast(
+        //       "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
+        //   return;
+        // }
         widget.model.startreadingkm =
             int.tryParse(_startReadingController.text);
         widget.model.startreadingimg = _startReadingImagePath;

@@ -569,9 +569,9 @@ class OtexPickupProvider extends ChangeNotifier {
         // ── Settings ──────────────────────────────────────────────
         'recstatus': status,
         'totalpckgs': _state.info.pcs.toString(),
-        'totalvweight': double.tryParse(_state.info.weight.toString()) ?? 0,
-        'totalaweight': double.tryParse(_state.info.weight.toString()) ?? 0,
-        'totalcweight': double.tryParse(_state.info.weight.toString()) ?? 0,
+        'totalvweight': double.tryParse(_state.info.totalVWeight.toString()) ?? 0,
+        'totalaweight': double.tryParse(_state.info.totalAWeight.toString()) ?? 0,
+        'totalcweight': double.tryParse(_state.info.totalCWeight.toString()) ?? 0,
         'indentrefrenceno': _state.info.orderid ?? 0,
         // 'noofbox': _state.info.pcs.toString(),
         'noofbox': totQty,

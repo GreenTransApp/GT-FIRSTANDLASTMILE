@@ -98,77 +98,71 @@ class _OperationsState extends State<Operations> {
               )
             : LayoutBuilder(
                 builder: (context, constraints) {
-                  final width = constraints.maxWidth;
-
-                  final crossAxisCount = width > 1200
-                      ? 4
-                      : width > 700
-                          ? 3
-                          : 2;
-
                   return Column(
                     children: [
                       /// HEADER CARD
                       Container(
-                        margin: const EdgeInsets.all(10),
+                        // margin: const EdgeInsets.all(10),
                         padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              CommonColors.colorPrimary!,
-                              CommonColors.colorPrimary2,
+                       decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter, // Starts at the top
+                              end: Alignment.bottomCenter, // Ends at the bottom
+                              colors: [
+                                CommonColors.colorPrimary!, // Top color
+                                CommonColors.colorPrimary!
+                                    .withAlpha((0.50 * 255).toInt()!), // Bottom color
+                                // You can add more colors here if needed
+                              ],
+                            ),
+                          ),
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: CommonColors.colorPrimary2,
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                // height: 40,
+                                // width: 40,
+                                decoration: BoxDecoration(
+                                  color: CommonColors.White?.withOpacity(.15),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Icon(
+                                  Icons.apps_rounded,
+                                  color: CommonColors.White,
+                                  size: 30,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Choose Operation",
+                                      style: TextStyle(
+                                        color: CommonColors.White,
+                                        fontSize: SizeConfig.mediumTextSize,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      "${provider.menuList.length} Modules Available",
+                                      style: TextStyle(
+                                        color:
+                                            CommonColors.White?.withOpacity(.85),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  CommonColors.colorPrimary!.withOpacity(.20),
-                              blurRadius: 15,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: CommonColors.White?.withOpacity(.15),
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              child: Icon(
-                                Icons.apps_rounded,
-                                color: CommonColors.White,
-                                size: 30,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Choose Operation",
-                                    style: TextStyle(
-                                      color: CommonColors.White,
-                                      fontSize: SizeConfig.mediumTextSize,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    "${provider.menuList.length} Modules Available",
-                                    style: TextStyle(
-                                      color:
-                                          CommonColors.White?.withOpacity(.85),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
                       ),
 
@@ -184,26 +178,21 @@ class _OperationsState extends State<Operations> {
                             itemCount: provider.menuList.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              crossAxisSpacing: SizeConfig.smallTextSize,
-                              mainAxisSpacing: SizeConfig.smallTextSize,
-                              childAspectRatio: 0.92,
+                              //    crossAxisCount: 2,
+                              // crossAxisSpacing: SizeConfig.smallTextSize,
+                              // mainAxisSpacing: SizeConfig.smallTextSize,
+                              // childAspectRatio: 0.92,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: SizeConfig.smallTextSize,
+                            mainAxisSpacing: SizeConfig.smallTextSize,
+                            childAspectRatio: 1.4,
+
+                            // childAspectRatio: 1.1,
                             ),
                             itemBuilder: (context, index) {
                               final operation = provider.menuList[index];
 
-                              final accentColors = [
-                                const Color(0xFF4F46E5),
-                                const Color(0xFF0EA5E9),
-                                const Color(0xFF10B981),
-                                const Color(0xFFF97316),
-                                const Color(0xFFEC4899),
-                                const Color(0xFF8B5CF6),
-                              ];
-
-                              final accentColor =
-                                  accentColors[index % accentColors.length];
-
+                            
                               return InkWell(
                                 borderRadius: BorderRadius.circular(24),
                                 onTap: () async {
@@ -232,186 +221,143 @@ class _OperationsState extends State<Operations> {
                                     }
                                   }
                                 },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(24),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: accentColor.withOpacity(.10),
-                                        blurRadius: 18,
-                                        offset: const Offset(0, 8),
-                                      ),
-                                    ],
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
                                   ),
-                                  child: Column(
-                                    children: [
-                                      /// TOP ACCENT BAR
-                                      Container(
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                          color: accentColor,
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(SizeConfig
-                                                .getExtraExtraLargeRadius()),
-                                            topRight: Radius.circular(SizeConfig
-                                                .getExtraExtraLargeRadius()),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: SizeConfig.smallHorizontalPadding,
+                                      vertical: SizeConfig.smallVerticalPadding,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
+                                     
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        /// HERO IMAGE
+                                        SizedBox(
+                                          height: SizeConfig.deviceType ==
+                                                  DeviceType.smallPhone
+                                              ? 80
+                                              : 100,
+                                          child: Image.network(
+                                            // "${URL.imageBaseUrl}GTINFINITIAPP/${operation.menuname}.png",
+                                            "${operation.menuimage}",
+                                            fit: BoxFit.contain,
+                                            loadingBuilder: (
+                                              context,
+                                              child,
+                                              progress,
+                                            ) {
+                                              if (progress ==
+                                                  null) {
+                                                return child;
+                                              }
+                                                                          
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color:
+                                                      CommonColors.colorPrimary,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              return SizedBox(
+                                                 height: SizeConfig.deviceType ==
+                                                  DeviceType.smallPhone
+                                              ? 80
+                                              : 100,
+                                                child: Image.network(
+                                                  defaultImagePath,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
-                                      ),
-
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                                                  
+                                       
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: SizeConfig
+                                                  .extraSmallHorizontalPadding),
+                                          child: Text(
+                                            operation.menuname ?? '',
+                                            
+                                            textAlign: TextAlign.center,
+                                            maxLines:
+                                                SizeConfig.deviceType ==
+                                                        DeviceType
+                                                            .smallPhone
+                                                    ? 3
+                                                    : 2,
+                                            overflow:
+                                                TextOverflow.ellipsis,
+                                            softWrap: true,
+                                            style: TextStyle(
+                                              fontSize: SizeConfig
+                                                  .smallTextSize,
+                                              fontWeight:
+                                                  FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                                                  
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            top: SizeConfig
+                                                .extraSmallVerticalPadding,
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            
+                                            horizontal: SizeConfig
+                                                .smallHorizontalPadding,
+                                            vertical: SizeConfig
+                                                .extraSmallVerticalPadding,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: CommonColors.colorPrimary
+                                              ,
+                                            borderRadius:
+                                                BorderRadius.circular(SizeConfig.largeRadius),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              /// HERO IMAGE
-                                              Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  /// GLOW
-                                                  Container(
-                                                    width:
-                                                        SizeConfig.screenWidth *
-                                                            .18,
-                                                    height:
-                                                        SizeConfig.screenWidth *
-                                                            .18,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: accentColor
-                                                          .withOpacity(.12),
-                                                    ),
-                                                  ),
-
-                                                  /// IMAGE HOLDER
-                                                  Container(
-                                                    width:
-                                                        SizeConfig.screenWidth *
-                                                            .20,
-                                                    height:
-                                                        SizeConfig.screenWidth *
-                                                            .20,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius: BorderRadius
-                                                          .circular(SizeConfig
-                                                              .getExtraExtraLargeRadius()),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: accentColor
-                                                              .withOpacity(.20),
-                                                          blurRadius: 15,
-                                                          spreadRadius: 2,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          horizontal: SizeConfig
-                                                              .smallHorizontalPadding,
-                                                          vertical: SizeConfig
-                                                              .smallVerticalPadding),
-                                                      child: Image.network(
-                                                        // "${URL.imageBaseUrl}GTINFINITIAPP/${operation.menuname}.png",
-                                                        "${operation.menuimage}",
-                                                        fit: BoxFit.contain,
-                                                        loadingBuilder: (
-                                                          context,
-                                                          child,
-                                                          progress,
-                                                        ) {
-                                                          if (progress ==
-                                                              null) {
-                                                            return child;
-                                                          }
-
-                                                          return Center(
-                                                            child:
-                                                                CircularProgressIndicator(
-                                                              strokeWidth: 2,
-                                                              color:
-                                                                  accentColor,
-                                                            ),
-                                                          );
-                                                        },
-                                                        errorBuilder: (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) {
-                                                          return Image.network(
-                                                            defaultImagePath,
-                                                            fit: BoxFit.contain,
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-
-                                              SizedBox(
-                                                  height: SizeConfig
-                                                      .smallVerticalPadding),
-
-                                              Flexible(
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: SizeConfig
-                                                          .extraSmallHorizontalPadding),
-                                                  child: Text(
-                                                    operation.menuname ?? '',
-                                                    textAlign: TextAlign.center,
-                                                    maxLines:
-                                                        SizeConfig.deviceType ==
-                                                                DeviceType
-                                                                    .smallPhone
-                                                            ? 3
-                                                            : 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    softWrap: true,
-                                                    style: TextStyle(
-                                                      fontSize: SizeConfig
-                                                          .smallTextSize,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    ),
-                                                  ),
+                                              Text(
+                                                "Open Module",
+                                                style: TextStyle(
+                                                  color: CommonColors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: SizeConfig
+                                                      .smallTextSize,
                                                 ),
                                               ),
-
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: SizeConfig
-                                                      .smallHorizontalPadding,
-                                                  vertical: SizeConfig
-                                                      .smallVerticalPadding,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: accentColor
-                                                      .withOpacity(.08),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  "Open Module",
-                                                  style: TextStyle(
-                                                    color: accentColor,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: SizeConfig
-                                                        .smallTextSize,
-                                                  ),
-                                                ),
+                                            CircleAvatar(
+                                              backgroundColor: CommonColors.white,
+                                              
+                                              child: Icon(
+                                                Symbols.arrow_forward_ios,
+                                                size: 16,
+                                                color: CommonColors.colorPrimary,
                                               ),
+                                            )
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
