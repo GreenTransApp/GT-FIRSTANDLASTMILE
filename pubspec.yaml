@@ -78,7 +78,6 @@ dependencies:
   flutter_foreground_task: ^9.1.0
   firebase_core: ^4.2.0
   firebase_database: ^12.0.3
-  change_app_package_name: ^1.5.0
   rxdart: ^0.28.0
   qr_code_scanner_plus: ^2.0.14
   open_file: ^3.5.10
@@ -91,7 +90,6 @@ dependencies:
   image: ^4.1.3
   image_cropper: ^12.2.1
   material_symbols_icons: ^4.2928.1
-  avatar_glow: ^3.0.1
   pdf: ^3.12.0
   flutter_svg: ^2.3.0
   
