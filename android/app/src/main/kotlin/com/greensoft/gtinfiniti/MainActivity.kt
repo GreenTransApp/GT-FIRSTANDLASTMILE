@@ -1,4 +1,4 @@
-package com.greensoft.gtlmd
+package com.greensoft.gtinfiniti
 
 import android.os.Build
 import android.os.Bundle

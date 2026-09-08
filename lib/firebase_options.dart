@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     projectId: 'gtlmd-71281',
     databaseURL: 'https://gtlmd-71281-default-rtdb.firebaseio.com',
     storageBucket: 'gtlmd-71281.firebasestorage.app',
-    iosBundleId: 'com.greensoft.gtlmd',
+    iosBundleId: 'com.greensoft.gtinfiniti',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

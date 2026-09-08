@@ -8,25 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:778115499799:android:ba9a6f43c8b8a2e352d952",
-        "android_client_info": {
-          "package_name": "com.greensoft.gtinfiniti"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyALTdovsT0KQPd1Z2pDrre6xZNUkFSG8dI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:778115499799:android:23b7dd0c4166973f52d952",
         "android_client_info": {
           "package_name": "com.greensoft.gtlmd"
