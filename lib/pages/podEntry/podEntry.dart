@@ -239,18 +239,19 @@ class _PodEntryState extends State<PodEntry> {
         : pod.receivetime.toString();
     _destinationNameController.text = pod.destname.toString();
     _receivedByController.text =isNullOrEmpty(pod.cnge.toString()) ? "" : pod.cnge.toString();
-    _receiverMobileByController.text = isNullOrEmpty(pod.cngetelno.toString())?"" :pod.cngetelno.toString() ;
+    _receiverMobileByController.text = isNullOrEmpty(_receiverMobileByController.text) ?isNullOrEmpty(pod.cngetelno.toString())?"" :pod.cngetelno.toString() :_receiverMobileByController.text;
 
     isSignRequired = pod.sign == "Y" ? true : false;
     isStampRequired = pod.stamp == "Y" ? true : false;
-    model.sign = 'N';
-    model.stamp = 'N';
+  
     _totalWeightController.text = '${pod.cweight.toString()} Kg';
 
     _totalPckgsController.text = pod.pckgs.toString() ?? "0";
     _deliverPckgsController.text = pod.deliverpckgs.toString() ?? "0";
     _damagedPckgsController.text = pod.damagepckgs.toString() ?? "0";
     totpckgs = pod.pckgs.toString();
+    model.sign = isNullOrEmpty(_signatureFilePath) ? 'N' : 'Y';
+    model.stamp = isNullOrEmpty(_podFilePath) ? 'N' : 'Y';
   }
 
   resetPodData() {
@@ -926,8 +927,8 @@ class _PodEntryState extends State<PodEntry> {
       hintStyle: TextStyle(
           color: CommonColors.grey400!, fontSize: SizeConfig.mediumTextSize),
       contentPadding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.horizontalPadding,
-          vertical: SizeConfig.verticalPadding),
+          horizontal: SizeConfig.smallHorizontalPadding,
+          vertical: SizeConfig.smallVerticalPadding),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
@@ -1268,8 +1269,8 @@ class _PodEntryState extends State<PodEntry> {
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              SizeConfig.horizontalPadding,
-                                          vertical: SizeConfig.verticalPadding),
+                                              SizeConfig.smallHorizontalPadding,
+                                          vertical: SizeConfig.smallVerticalPadding),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                             color: CommonColors.grey300!),
@@ -1307,8 +1308,8 @@ class _PodEntryState extends State<PodEntry> {
                                   child: Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal:
-                                            SizeConfig.horizontalPadding,
-                                        vertical: SizeConfig.verticalPadding),
+                                            SizeConfig.smallHorizontalPadding,
+                                        vertical: SizeConfig.smallVerticalPadding),
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                           color: CommonColors.grey300!),
@@ -2032,8 +2033,8 @@ class _PodEntryState extends State<PodEntry> {
                             child: Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
+                                  horizontal: SizeConfig.smallHorizontalPadding,
+                                  vertical: SizeConfig.smallVerticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: BorderRadius.all(
@@ -2065,8 +2066,8 @@ class _PodEntryState extends State<PodEntry> {
                             child: Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
+                                  horizontal: SizeConfig.smallHorizontalPadding,
+                                  vertical: SizeConfig.smallVerticalPadding),
                               decoration: BoxDecoration(
                                   color: CommonColors.primaryColorShade,
                                   borderRadius: BorderRadius.all(
@@ -2112,9 +2113,9 @@ class _PodEntryState extends State<PodEntry> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: SizeConfig.horizontalPadding,
+                                      horizontal: SizeConfig.smallHorizontalPadding,
                                       vertical:
-                                          SizeConfig.extraSmallVerticalPadding),
+                                          SizeConfig.smallVerticalPadding),
                                   child: Text.rich(TextSpan(
                                       text: 'Singnature Image',
                                       children: <InlineSpan>[
@@ -2219,7 +2220,7 @@ class _PodEntryState extends State<PodEntry> {
                                           width: 1,
                                           color: CommonColors.colorPrimary!),
                                     ),
-                                    child: _podFilePath == null
+                                    child:isNullOrEmpty(_podFilePath) 
                                         ? Center(
                                             child: Text(
                                               "Select Image",
@@ -2266,8 +2267,8 @@ class _PodEntryState extends State<PodEntry> {
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
                         padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.horizontalPadding,
-                            vertical: SizeConfig.verticalPadding),
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                            vertical: SizeConfig.smallVerticalPadding),
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(SizeConfig.largeRadius),
@@ -2304,8 +2305,8 @@ class _PodEntryState extends State<PodEntry> {
                         backgroundColor: CommonColors.primaryColorShade,
                         foregroundColor: CommonColors.White,
                         padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.horizontalPadding,
-                            vertical: SizeConfig.verticalPadding),
+                            horizontal: SizeConfig.smallHorizontalPadding,
+                            vertical: SizeConfig.smallVerticalPadding),
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(SizeConfig.largeRadius),

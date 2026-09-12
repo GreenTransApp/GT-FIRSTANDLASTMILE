@@ -491,8 +491,8 @@ class _UnDeliveryState extends State<UnDelivery> {
       hintStyle: TextStyle(
           color: CommonColors.grey400!, fontSize: SizeConfig.smallTextSize),
       contentPadding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.horizontalPadding,
-          vertical: SizeConfig.verticalPadding),
+          horizontal: SizeConfig.smallHorizontalPadding,
+          vertical: SizeConfig.smallVerticalPadding),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(SizeConfig.mediumRadius),
         borderSide: BorderSide(color: CommonColors.grey300!),
@@ -614,8 +614,8 @@ class _UnDeliveryState extends State<UnDelivery> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal:
-                                        SizeConfig.mediumHorizontalSpacing,
-                                    vertical: SizeConfig.mediumVerticalSpacing),
+                                        SizeConfig.smallHorizontalPadding,
+                                    vertical: SizeConfig.smallVerticalPadding),
                                 decoration: BoxDecoration(
                                   border:
                                       Border.all(color: CommonColors.grey300!),
@@ -646,8 +646,8 @@ class _UnDeliveryState extends State<UnDelivery> {
                         icon: Icons.access_time,
                         child: Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.mediumHorizontalSpacing,
-                              vertical: SizeConfig.mediumVerticalSpacing),
+                              horizontal: SizeConfig.smallHorizontalPadding,
+                              vertical: SizeConfig.smallVerticalPadding),
                           decoration: BoxDecoration(
                             border: Border.all(color: CommonColors.grey300!),
                             borderRadius:

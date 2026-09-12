@@ -13,11 +13,32 @@ class DeviceInfo {
     debugPrint('Device Width: $width');
     debugPrint('Device Height: ${MediaQuery.of(context).size.height}');
 
-    if (width < 500) return DeviceType.smallPhone;
-    if (width < 600) return DeviceType.mediumPhone;
-    if (width <= 1024) return DeviceType.largePhone;
-    // if (width > 1024) return DeviceType.largePhone;
-    return DeviceType.tablet; // Tablets only
+     final size = MediaQuery.sizeOf(context);
+    final shortestSide = size.shortestSide;
+
+    debugPrint('Width: ${size.width}');
+    debugPrint('Height: ${size.height}');
+    debugPrint('ShortestSide: $shortestSide');
+
+    // if (width < 500) return DeviceType.smallPhone;
+    // if (width < 600) return DeviceType.mediumPhone;
+    // if (width <= 1024) return DeviceType.largePhone;
+    // // if (width > 1024) return DeviceType.largePhone;
+    // return DeviceType.tablet; // Tablets only
+    if (shortestSide >= 600) {
+      return DeviceType.tablet;
+    }
+
+    if (shortestSide < 360) {
+      return DeviceType.smallPhone;
+    }
+
+    if (shortestSide < 400) {
+      return DeviceType.mediumPhone;
+    }
+
+    return DeviceType.largePhone;
+  
   }
 
   static bool isTablet(BuildContext context) =>

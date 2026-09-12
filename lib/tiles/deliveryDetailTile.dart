@@ -1240,6 +1240,10 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                                       targetMenu?.fileName ?? 'RejectPickup';
 
                                   if (fileName == 'RejectPickup') {
+                                     if (widget.model.reached == 'N') {
+                                      failToast("Not reached");
+                                      return;
+                                    }
                                     Get.to(RejectPickup(details: widget.model))
                                         ?.then((_) {
                                       widget.onRefresh();
@@ -2131,164 +2135,165 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         if (modelDetail.consignmenttype == "P" &&
                             (modelDetail.pickupstatus == "P")) ...[
                           Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            child: Column(
+                  
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      LmdMenuModel? targetMenu;
-                                      print(MenuTags.PICKUP.name.toString());
-                                      try {
-                                        targetMenu = widget.menuList.firstWhere(
-                                            (element) =>
-                                                element.tag?.toString() ==
-                                                MenuTags.PICKUP.name
-                                                    .toString());
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    LmdMenuModel? targetMenu;
+                                    print(MenuTags.PICKUP.name.toString());
+                                    try {
+                                      targetMenu = widget.menuList.firstWhere(
+                                          (element) =>
+                                              element.tag?.toString() ==
+                                              MenuTags.PICKUP.name
+                                                  .toString());
+                                      {
                                         {
-                                          {
-                                            menuCode =
-                                                targetMenu.menuCode.toString();
-                                          }
+                                          menuCode =
+                                              targetMenu.menuCode.toString();
                                         }
-                                        {}
-                                      } catch (e) {
-                                        targetMenu = null;
                                       }
-
-                                      String fileName =
-                                          targetMenu?.fileName?.toLowerCase() ??
-                                              'pickup';
-
-                                      if (fileName == 'OtexPickupScreen' ||
-                                          fileName == 'otexpickupscreen') {
-                                        if (widget.model.reached == 'N') {
-                                          failToast("Not reached");
-                                          return;
-                                        }
-                                        Get.to(
-                                          OtexPickupScreen(
-                                            transactionId: isNullOrEmpty(widget
-                                                    .model.transactionid
-                                                    .toString())
-                                                ? '0'
-                                                : widget.model.transactionid
-                                                    .toString(),
-                                            grno: widget.model.grno.toString(),
-                                            orderid: isNullOrEmpty(widget
-                                                    .model.orderid
-                                                    .toString())
-                                                ? '0'
-                                                : widget.model.orderid
-                                                    .toString(),
-                                            jobid: isNullOrEmpty(widget
-                                                    .model.jobid
-                                                    .toString())
-                                                ? '0'
-                                                : widget.model.jobid.toString(),
-                                          ),
-                                        )?.then((_) {
-                                          widget.onRefresh();
-                                        });
-                                      } else if (fileName == 'Pickup' ||
-                                          fileName == 'pickup') {
-                                        if (widget.model.reached == 'N') {
-                                          failToast("Not reached");
-                                          return;
-                                        }
-                                        Get.to(Pickup(details: widget.model))
-                                            ?.then((_) {
-                                          widget.onRefresh();
-                                        });
-                                      } else {
-                                        failToast(
-                                            "Screen $fileName not mapped.");
+                                      {}
+                                    } catch (e) {
+                                      targetMenu = null;
+                                    }
+                                
+                                    String fileName =
+                                        targetMenu?.fileName?.toLowerCase() ??
+                                            'pickup';
+                                
+                                    if (fileName == 'OtexPickupScreen' ||
+                                        fileName == 'otexpickupscreen') {
+                                      if (widget.model.reached == 'N') {
+                                        failToast("Not reached");
+                                        return;
                                       }
-                                    },
-                                    // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                                    label: Text('Pickup',
-                                        style: TextStyle(
-                                            color: CommonColors.colorPrimary2,
-                                            fontSize:
-                                                SizeConfig.extraSmallTextSize)),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              SizeConfig.horizontalPadding,
-                                          vertical: SizeConfig
-                                              .extraSmallVerticalPadding),
-                                      backgroundColor: CommonColors.white,
-                                      foregroundColor: CommonColors.White,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      side: BorderSide(
-                                        color: CommonColors
-                                            .colorPrimary2, // Border color
-                                        width: 3.0, // Border thickness
-                                      ),
+                                      Get.to(
+                                        OtexPickupScreen(
+                                          transactionId: isNullOrEmpty(widget
+                                                  .model.transactionid
+                                                  .toString())
+                                              ? '0'
+                                              : widget.model.transactionid
+                                                  .toString(),
+                                          grno: widget.model.grno.toString(),
+                                          orderid: isNullOrEmpty(widget
+                                                  .model.orderid
+                                                  .toString())
+                                              ? '0'
+                                              : widget.model.orderid
+                                                  .toString(),
+                                          jobid: isNullOrEmpty(widget
+                                                  .model.jobid
+                                                  .toString())
+                                              ? '0'
+                                              : widget.model.jobid.toString(),
+                                        ),
+                                      )?.then((_) {
+                                        widget.onRefresh();
+                                      });
+                                    } else if (fileName == 'Pickup' ||
+                                        fileName == 'pickup') {
+                                      if (widget.model.reached == 'N') {
+                                        failToast("Not reached");
+                                        return;
+                                      }
+                                      Get.to(Pickup(details: widget.model))
+                                          ?.then((_) {
+                                        widget.onRefresh();
+                                      });
+                                    } else {
+                                      failToast(
+                                          "Screen $fileName not mapped.");
+                                    }
+                                  },
+                                  // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                  label: Text('Pickup',
+                                      style: TextStyle(
+                                          color: CommonColors.colorPrimary2,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding,
+                                        vertical: SizeConfig
+                                            .extraSmallVerticalPadding),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    side: BorderSide(
+                                      color: CommonColors
+                                          .colorPrimary2, // Border color
+                                      width: 3.0, // Border thickness
                                     ),
                                   ),
                                 ),
                                 SizedBox(
                                   width: SizeConfig.extraSmallHorizontalSpacing,
                                 ),
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      LmdMenuModel? targetMenu;
-                                      try {
-                                        targetMenu = widget.menuList.firstWhere(
-                                            (element) =>
-                                                element.tag?.toString() ==
-                                                'rejectpickup');
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    LmdMenuModel? targetMenu;
+                                    try {
+                                      targetMenu = widget.menuList.firstWhere(
+                                          (element) =>
+                                              element.tag?.toString() ==
+                                              'rejectpickup');
+                                      {
                                         {
-                                          {
-                                            menuCode =
-                                                targetMenu.menuCode.toString();
-                                          }
+                                          menuCode =
+                                              targetMenu.menuCode.toString();
                                         }
-                                      } catch (e) {
-                                        targetMenu = null;
                                       }
-
-                                      String fileName = targetMenu?.fileName ??
-                                          'RejectPickup';
-
-                                      if (fileName == 'RejectPickup') {
-                                        Get.to(RejectPickup(
-                                                details: widget.model))
-                                            ?.then((_) {
-                                          widget.onRefresh();
-                                        });
-                                      } else {
-                                        failToast(
-                                            "Screen $fileName not mapped.");
+                                    } catch (e) {
+                                      targetMenu = null;
+                                    }
+                                
+                                    String fileName = targetMenu?.fileName ??
+                                        'RejectPickup';
+                                
+                                    if (fileName == 'RejectPickup') {
+                                       if (widget.model.reached == 'N') {
+                                        failToast("Not reached");
+                                        return;
                                       }
-                                    },
-                                    //  icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                                    label: Text('Reject',
-                                        style: TextStyle(
-                                          color: CommonColors.dangerColor,
-                                          fontSize:
-                                              SizeConfig.extraSmallTextSize,
-                                        )),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                          // vertical:
-                                          //     SizeConfig.extraSmallVerticalSpacing,
-                                          horizontal: SizeConfig
-                                              .extraSmallHorizontalSpacing),
-                                      backgroundColor: CommonColors.white,
-                                      foregroundColor: CommonColors.White,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      side: BorderSide(
-                                        color: CommonColors
-                                            .red600!, // Border color
-                                        width: 3.0, // Border thickness
-                                      ),
+                                      Get.to(RejectPickup(
+                                              details: widget.model))
+                                          ?.then((_) {
+                                        widget.onRefresh();
+                                      });
+                                    } else {
+                                      failToast(
+                                          "Screen $fileName not mapped.");
+                                    }
+                                  },
+                                  //  icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                  label: Text('Reject',
+                                      style: TextStyle(
+                                        color: CommonColors.dangerColor,
+                                        fontSize:
+                                            SizeConfig.extraSmallTextSize,
+                                      )),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        // vertical:
+                                        //     SizeConfig.extraSmallVerticalSpacing,
+                                        horizontal: SizeConfig
+                                            .extraSmallHorizontalSpacing),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    side: BorderSide(
+                                      color: CommonColors
+                                          .red600!, // Border color
+                                      width: 3.0, // Border thickness
                                     ),
                                   ),
                                 ),
@@ -2538,162 +2543,158 @@ class _RouteDetailTileState extends State<DeliveryDetailTile> {
                         Visibility(
                           visible: widget.model.deliverystatus == 'P',
                           child: Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      LmdMenuModel? targetMenu;
-                                      try {
-                                        targetMenu = widget.menuList.firstWhere(
-                                            (element) =>
-                                                element.tag?.toString() ==
-                                                MenuTags.DELIVERY.name
-                                                    .toString());
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    LmdMenuModel? targetMenu;
+                                    try {
+                                      targetMenu = widget.menuList.firstWhere(
+                                          (element) =>
+                                              element.tag?.toString() ==
+                                              MenuTags.DELIVERY.name
+                                                  .toString());
+                                      {
                                         {
-                                          {
-                                            menuCode =
-                                                targetMenu.menuCode.toString();
-                                          }
+                                          menuCode =
+                                              targetMenu.menuCode.toString();
                                         }
-                                      } catch (e) {
-                                        targetMenu = null;
                                       }
-
-                                      String fileName =
-                                          targetMenu?.fileName?.toLowerCase() ??
-                                              'PodEntry';
-
-                                      if (fileName == 'PodEntry' ||
-                                          fileName == 'podentry') {
-                                        if (widget.model.reached == 'N') {
-                                          failToast("Not reached");
-                                          return;
-                                        } else if (modelDetail
-                                                    .reachedAtDlvPoint ==
-                                                'Y' &&
-                                            modelDetail.pickupstatus != 'D') {
-                                          failToast("Pickup not done yet.");
-                                          return;
-                                        } else if (modelDetail
-                                                .reachedAtDlvPoint !=
-                                            'Y') {
-                                          failToast(
-                                              'Not reached delivery point');
-                                          return;
-                                        }
-                                        Get.to(PodEntry(
-                                                deliveryDetailModel:
-                                                    modelDetail))
-                                            ?.then((_) {
-                                          widget.onRefresh();
-                                        });
-                                      } else {
+                                    } catch (e) {
+                                      targetMenu = null;
+                                    }
+                                
+                                    String fileName =
+                                        targetMenu?.fileName?.toLowerCase() ??
+                                            'PodEntry';
+                                
+                                    if (fileName == 'PodEntry' ||
+                                        fileName == 'podentry') {
+                                      if (widget.model.reached == 'N') {
+                                        failToast("Not reached");
+                                        return;
+                                      } else if (modelDetail
+                                                  .reachedAtDlvPoint ==
+                                              'Y' &&
+                                          modelDetail.pickupstatus != 'D') {
+                                        failToast("Pickup not done yet.");
+                                        return;
+                                      } else if (modelDetail
+                                              .reachedAtDlvPoint !=
+                                          'Y') {
                                         failToast(
-                                            "Screen $fileName not mapped.");
+                                            'Not reached delivery point');
+                                        return;
                                       }
-                                    },
-                                    // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                                    label: Text('Deliver',
-                                        style: TextStyle(
-                                            color: CommonColors.successColor,
-                                            fontSize:
-                                                SizeConfig.extraSmallTextSize)),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              SizeConfig.horizontalPadding,
-                                          vertical: SizeConfig
-                                              .extraSmallVerticalPadding),
-                                      backgroundColor: CommonColors.white,
-                                      foregroundColor: CommonColors.White,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      side: BorderSide(
-                                        color: CommonColors
-                                            .successColor!, // Border color
-                                        width: 3.0, // Border thickness
-                                      ),
+                                      Get.to(PodEntry(
+                                              deliveryDetailModel:
+                                                  modelDetail))
+                                          ?.then((_) {
+                                        widget.onRefresh();
+                                      });
+                                    } else {
+                                      failToast(
+                                          "Screen $fileName not mapped.");
+                                    }
+                                  },
+                                  // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                  label: Text('Deliver',
+                                      style: TextStyle(
+                                          color: CommonColors.successColor,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.horizontalPadding,
+                                        vertical: SizeConfig
+                                            .extraSmallVerticalPadding),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    side: BorderSide(
+                                      color: CommonColors
+                                          .successColor!, // Border color
+                                      width: 3.0, // Border thickness
                                     ),
                                   ),
                                 ),
                                 SizedBox(
                                   width: SizeConfig.horizontalPadding,
                                 ),
-                                Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      LmdMenuModel? targetMenu;
-                                      try {
-                                        targetMenu = widget.menuList.firstWhere(
-                                            (element) =>
-                                                element.tag?.toString() ==
-                                                MenuTags.UNDELIVERY.name
-                                                    .toString());
-                                        {
-                                          menuCode =
-                                              targetMenu.menuCode.toString();
-                                        }
-                                      } catch (e) {
-                                        targetMenu = null;
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    LmdMenuModel? targetMenu;
+                                    try {
+                                      targetMenu = widget.menuList.firstWhere(
+                                          (element) =>
+                                              element.tag?.toString() ==
+                                              MenuTags.UNDELIVERY.name
+                                                  .toString());
+                                      {
+                                        menuCode =
+                                            targetMenu.menuCode.toString();
                                       }
-
-                                      String fileName =
-                                          targetMenu?.fileName?.toLowerCase() ??
-                                              'UnDelivery';
-
-                                      if (fileName == 'UnDelivery' ||
-                                          fileName == 'undelivery') {
-                                        if (widget.model.reached == 'N') {
-                                          failToast("Not reached");
-                                          return;
-                                        } else if (modelDetail.directdelivery ==
-                                                'Y' &&
-                                            modelDetail.pickupstatus != 'D') {
-                                          failToast("Pickup not done yet.");
-                                          return;
-                                        } else if (modelDetail
-                                                .reachedAtDlvPoint !=
-                                            'Y') {
-                                          failToast(
-                                              'Not reached delivery point');
-                                          return;
-                                        }
-                                        Get.to(UnDelivery(
-                                                deliveryDetailModel:
-                                                    modelDetail))
-                                            ?.then((_) {
-                                          widget.onRefresh();
-                                        });
-                                      } else {
+                                    } catch (e) {
+                                      targetMenu = null;
+                                    }
+                                
+                                    String fileName =
+                                        targetMenu?.fileName?.toLowerCase() ??
+                                            'UnDelivery';
+                                
+                                    if (fileName == 'UnDelivery' ||
+                                        fileName == 'undelivery') {
+                                      if (widget.model.reached == 'N') {
+                                        failToast("Not reached");
+                                        return;
+                                      } else if (modelDetail.directdelivery ==
+                                              'Y' &&
+                                          modelDetail.pickupstatus != 'D') {
+                                        failToast("Pickup not done yet.");
+                                        return;
+                                      } else if (modelDetail
+                                              .reachedAtDlvPoint !=
+                                          'Y') {
                                         failToast(
-                                            "Screen $fileName not mapped.");
+                                            'Not reached delivery point');
+                                        return;
                                       }
-                                    },
-                                    // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                                    label: Text('Undeliver',
-                                        style: TextStyle(
-                                            color: CommonColors.red600,
-                                            fontSize:
-                                                SizeConfig.extraSmallTextSize)),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              SizeConfig.smallHorizontalPadding,
-                                          vertical: SizeConfig
-                                              .extraSmallVerticalPadding),
-                                      backgroundColor: CommonColors.white,
-                                      foregroundColor: CommonColors.White,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      side: BorderSide(
-                                        color: CommonColors
-                                            .red600!, // Border color
-                                        width: 3.0, // Border thickness
-                                      ),
+                                      Get.to(UnDelivery(
+                                              deliveryDetailModel:
+                                                  modelDetail))
+                                          ?.then((_) {
+                                        widget.onRefresh();
+                                      });
+                                    } else {
+                                      failToast(
+                                          "Screen $fileName not mapped.");
+                                    }
+                                  },
+                                  // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                                  label: Text('Undeliver',
+                                      style: TextStyle(
+                                          color: CommonColors.red600,
+                                          fontSize:
+                                              SizeConfig.extraSmallTextSize)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            SizeConfig.smallHorizontalPadding,
+                                        vertical: SizeConfig
+                                            .extraSmallVerticalPadding),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    side: BorderSide(
+                                      color: CommonColors
+                                          .red600!, // Border color
+                                      width: 3.0, // Border thickness
                                     ),
                                   ),
                                 ),

@@ -119,6 +119,7 @@ class ApiService {
         parameters: params,
         userCode: userData.usercode ?? "",
         loginBranchCode: userData.loginbranchcode ?? "",
+        loginDivisionId: userData.logindivisionid.toString() ?? "",
         sessionId: userData.sessionid,
         spName: spNameToCall,
       );

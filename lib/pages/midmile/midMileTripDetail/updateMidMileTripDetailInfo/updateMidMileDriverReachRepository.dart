@@ -78,15 +78,15 @@ StreamController<PunchoutModel> hubvehicleArrivalData = StreamController();
           hubvehicleArrivalData.add(resultList[0]);
         } else {
           viewDialog.add(false);
-          isErrorLiveData.add(response.commandmessage ?? "Data Not Found");
+          errorDialog.add(response.commandmessage ?? "Data Not Found");
         }
       } else {
         viewDialog.add(false);
-        isErrorLiveData.add(resp.commandMessage.toString());
+        errorDialog.add(resp.commandMessage.toString());
       }
     } else {
       viewDialog.add(false);
-      isErrorLiveData.add("No Internet available");
+      errorDialog.add("No Internet available");
     }
   }
    

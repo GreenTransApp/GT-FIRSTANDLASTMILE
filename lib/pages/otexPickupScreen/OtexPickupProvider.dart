@@ -622,11 +622,11 @@ class OtexPickupProvider extends ChangeNotifier {
           permanentCardCount: permanentCount,
           hasTransactionId: wasFirstSave ? true : _state.hasTransactionId,
         );
-
+        _state = _state.copyWith(successMessage: response.commandMessage);
         notifyListeners();
-        if(!isNullOrEmpty(updated[index].wayBillNo)){
-          await getMailDetails(updated[index].wayBillNo.toString());
-        }
+        // if(!isNullOrEmpty(updated[index].wayBillNo)){
+        //   await getMailDetails(updated[index].wayBillNo.toString());
+        // }
 
         return true;
       } else {

@@ -248,6 +248,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
         } else if (int.parse(_closeReadingController.text) <= 0) {
           failToast("Close Reading Value Can't be Zero");
           return;
+        } else if (isNullOrEmpty(_closeReadingImagePath)) {
+          failToast("Please Upload Close Reading Image");
+          return;
         } else if (int.parse(_closeReadingController.text) <=
             int.parse(widget.model.startreadingkm.toString())) {
           failToast(
@@ -275,6 +278,9 @@ class _UpdateTripInfoState extends State<UpdateTripInfo> {
           return;
         } else if (int.tryParse(_startReadingController.text)! <= 0) {
           failToast("Odometer Value Can't be Zero");
+          return;
+        } else if (isNullOrEmpty(_startReadingImagePath)) {
+          failToast("Please Upload Odometer Image");
           return;
         } else if (_startReadingError != null) {
           failToast(_startReadingError!);

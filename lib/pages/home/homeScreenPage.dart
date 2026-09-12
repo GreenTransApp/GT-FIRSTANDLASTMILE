@@ -263,7 +263,7 @@ class _HomeScreen extends State<HomeScreen>
           //   authService.logout(context);
         } else if (isNullOrEmpty(validate.executiveid.toString()) == false &&
             int.parse(validate.executiveid.toString()) > 0) {
-          getNotifiocaionCount();
+          // getNotifiocaionCount();
           // getDashboardDetails();
         }
       });
@@ -590,8 +590,8 @@ class _HomeScreen extends State<HomeScreen>
   }
 
   Widget attendanceInfo() {
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isSmallDevice = screenWidth <= 360;
+    // double screenWidth = MediaQuery.of(context).size.width;
+    // bool isSmallDevice = screenWidth <= 360;
 
     return Container(
       decoration: BoxDecoration(
@@ -608,50 +608,18 @@ class _HomeScreen extends State<HomeScreen>
       ),
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: SizeConfig.horizontalPadding,
-            vertical: SizeConfig.largeVerticalPadding),
+            horizontal: SizeConfig.smallHorizontalPadding,
+            vertical: SizeConfig.smallVerticalPadding),
         margin: EdgeInsets.symmetric(
             horizontal: SizeConfig.horizontalPadding,
-            vertical: SizeConfig.largeVerticalPadding),
+            vertical: SizeConfig.smallVerticalPadding),
         decoration: BoxDecoration(
           color: CommonColors.colorPrimary2,
           borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
         ),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.person_pin,
-                        color: CommonColors.White,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        'Driver',
-                        style: TextStyle(
-                          fontSize: SizeConfig.smallTextSize,
-                          color: CommonColors.White,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // SizedBox(height: SizeConfig.smallVerticalSpacing),
-                  Text(
-                    // formattedDate,
-                    '  • ${savedLogin.displayname.toString().toUpperCase()}',
-                    style: TextStyle(
-                      fontSize: SizeConfig.smallTextSize,
-                      fontWeight: FontWeight.w800,
-                      color: CommonColors.White,
-                    ),
-                  ),
-                ],
-              ),
-              Visibility(
+                Visibility(
                 visible: employeeid != null,
                 child: InkWell(
                   onTap: () {
@@ -659,58 +627,92 @@ class _HomeScreen extends State<HomeScreen>
                       getDashboardDetails();
                     });
                   },
-                  child: Row(
-                    children: [
-                      // Punch status indicator with color based on status
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: SizeConfig.horizontalPadding,
-                            vertical: SizeConfig.verticalPadding),
-                        decoration: BoxDecoration(
-                          // color: CommonColors.colorPrimary,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: CommonColors.white!),
-                        ),
-                        child: Row(
-                          children: [
-                            // Status indicator dot
-                            Container(
-                              width: isSmallDevice ? 6 : 8,
-                              height: isSmallDevice ? 6 : 8,
-                              margin: const EdgeInsets.only(right: 6),
-                              decoration: BoxDecoration(
-                                color:
-                                    attendanceModel.attendancestatus == "Absent"
-                                        ? CommonColors.dangerColor
-                                        : CommonColors.successColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Text(
-                              attendanceModel.attendancestatus == 'Present'
-                                  // ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                  ? "Online".toString().toUpperCase()
-                                  : "Offline",
-                              style: TextStyle(
-                                fontSize: SizeConfig.smallTextSize,
-                                color: CommonColors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.extraSmallHorizontalPadding,
+                          vertical: SizeConfig.extraSmallVerticalPadding
+                          ),
+                      decoration: BoxDecoration(
+                        // color: CommonColors.colorPrimary,
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: CommonColors.white!),
                       ),
-                      // const SizedBox(width: 8),
-                      // Icon(
-                      //   Icons.chevron_right,
-                      //   size: isSmallDevice ? 16 : 20,
-                      //   color: Colors.white,
-                      // ),
-                    ],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        
+                        children: [
+                          // Status indicator dot
+                          // Container(
+                          //   // width: SizeConfig.smallIconSize,
+                          //   // height: SizeConfig.smallIconSize,
+                          //   margin: const EdgeInsets.only(right: 6),
+                          //   decoration: BoxDecoration(
+                          //     color:
+                          //         attendanceModel.attendancestatus == "Absent"
+                          //             ? CommonColors.dangerColor
+                          //             : CommonColors.successColor,
+                          //     shape: BoxShape.circle,
+                          //   ),
+                          // ),
+                          Icon(Icons.circle,
+                              size: SizeConfig.smallIconSize,
+                              color: attendanceModel.attendancestatus ==
+                                      "Absent"
+                                  ? CommonColors.dangerColor
+                                  : CommonColors.successColor),
+                          Text(
+                            attendanceModel.attendancestatus == 'Present'
+                                // ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                                ? "Online".toString().toUpperCase()
+                                : "Offline",
+                            style: TextStyle(
+                              fontSize: SizeConfig.extraSmallTextSize,
+                              color: CommonColors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              )
-            ])
+              ),
+                  
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Row(
+                  children: [
+                    Icon(
+                      Icons.person_pin,
+                      color: CommonColors.White,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      'Driver',
+                      style: TextStyle(
+                        fontSize: SizeConfig.smallTextSize,
+                        color: CommonColors.White,
+                      ),
+                    ),
+                  ],
+                ),
+                // SizedBox(height: SizeConfig.smallVerticalSpacing),
+                Text(
+                  // formattedDate,
+                  '  • ${savedLogin.displayname.toString().toUpperCase()}',
+                  style: TextStyle(
+                    fontSize: SizeConfig.smallTextSize,
+                    fontWeight: FontWeight.w800,
+                    color: CommonColors.White,
+                  ),
+                ),
+              ],
+            )
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
             //   children: [
@@ -1076,18 +1078,12 @@ class _HomeScreen extends State<HomeScreen>
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
                   },
-                  icon: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: CommonColors.White,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.menu,
-                        size: SizeConfig.largeIconSize,
-                        color: CommonColors.colorPrimary,
-                      ),
+                  icon: CircleAvatar(
+                    backgroundColor: CommonColors.White,
+                    child: Icon(
+                      Icons.menu,
+                      size: SizeConfig.largeIconSize,
+                      color: CommonColors.colorPrimary,
                     ),
                   ));
             }),
@@ -1228,7 +1224,7 @@ class _HomeScreen extends State<HomeScreen>
               )
             ],
           ),
-          extendBody: true,
+          // extendBody: true,
           bottomNavigationBar:
               //  NavigationBar(
               //   selectedIndex: _selectedIndex,
@@ -1304,7 +1300,7 @@ class _HomeScreen extends State<HomeScreen>
               notchMargin: 10,
               elevation: 10,
               child: SizedBox(
-                height: 68,
+                height: 65,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

@@ -182,10 +182,14 @@ class _OperationsState extends State<Operations> {
                               // crossAxisSpacing: SizeConfig.smallTextSize,
                               // mainAxisSpacing: SizeConfig.smallTextSize,
                               // childAspectRatio: 0.92,
-                            crossAxisCount: 2,
-                            crossAxisSpacing: SizeConfig.smallTextSize,
-                            mainAxisSpacing: SizeConfig.smallTextSize,
-                            childAspectRatio: 1.4,
+                            // crossAxisCount: 2,
+                            // crossAxisSpacing: SizeConfig.smallTextSize,
+                            // mainAxisSpacing: SizeConfig.smallTextSize,
+                            // childAspectRatio: 1.4,
+                             crossAxisCount: 2, // 2 items in a row
+                              crossAxisSpacing: 8.0,
+                              mainAxisSpacing: 8.0,
+                              childAspectRatio: 0.8, //
 
                             // childAspectRatio: 1.1,
                             ),

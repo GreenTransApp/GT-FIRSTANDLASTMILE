@@ -240,7 +240,7 @@ class _DeliveryDetailState extends State<DeliveryDetail>
         "prmindentid": indentId,
         "prmreachedlat": position.latitude.toString(),
         "prmreachedlong": position.longitude.toString(),
-        "prmjobid": int.parse(jobid),
+        "prmjobid":isNullOrEmpty(jobid) ? "" : int.parse(jobid),
         "prmsessionid": savedUser.sessionid.toString(),
       };
 

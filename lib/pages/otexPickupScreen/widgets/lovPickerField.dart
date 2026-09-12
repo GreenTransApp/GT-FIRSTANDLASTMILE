@@ -33,8 +33,8 @@ class LovPickerField extends StatelessWidget {
       borderRadius: BorderRadius.circular(SizeConfig.largeRadius),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.mediumHorizontalSpacing,
-          vertical: SizeConfig.mediumVerticalSpacing,
+          horizontal: SizeConfig.smallHorizontalPadding,
+          vertical: SizeConfig.smallVerticalPadding,
         ),
         decoration: BoxDecoration(
           color: bgColor,

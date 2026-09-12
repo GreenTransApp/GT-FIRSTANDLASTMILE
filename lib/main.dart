@@ -80,15 +80,36 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
+    // SizeConfig.init(context);
     return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: _title,
-      home: MyStatefulWidget(),
+      home:  SizeConfigInitializer(
+        child: MyStatefulWidget(),
+      ),
     );
+    // return const GetMaterialApp(
+    //   debugShowCheckedModeBanner: false,
+    //   title: _title,
+    //   home: MyStatefulWidget(),
+    // );
   }
 }
 
+class SizeConfigInitializer extends StatelessWidget {
+  final Widget child;
+
+  const SizeConfigInitializer({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig.init(context);
+    return child;
+  }
+}
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({super.key});
 
@@ -158,8 +179,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
       authService.storageGet(ENV.loginPrefTag).then((login) {
         if (!mounted) return;
-        ScreenDimension.width = MediaQuery.of(context).size.width;
-        ScreenDimension.height = MediaQuery.of(context).size.height;
+        // ScreenDimension.width = MediaQuery.of(context).size.width;
+        // ScreenDimension.height = MediaQuery.of(context).size.height;
+        ScreenDimension.width = SizeConfig.screenWidth;
+        ScreenDimension.height = SizeConfig.screenHeight;
+
         if (login == null) {
           debugPrint('Login data is null');
           _goToLogin();

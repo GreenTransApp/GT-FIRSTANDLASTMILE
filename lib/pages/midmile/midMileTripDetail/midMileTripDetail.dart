@@ -1013,7 +1013,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
             child: (!isNullOrEmpty(item.arrivalDt) &&
                     !isNullOrEmpty(item.arrivalTime))
                 ? Container(
-                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 12),
                     decoration: BoxDecoration(
@@ -1067,7 +1067,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 //     ),
                 //   ),
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
                 gradient: LinearGradient(
@@ -1265,8 +1265,8 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     !isNullOrEmpty(item.pickupdepartedtime))
                 ? Container(
                     padding:  EdgeInsets.symmetric(
-                        vertical: SizeConfig.verticalPadding, horizontal: SizeConfig.horizontalPadding,),
-                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,),
+                        vertical: SizeConfig.extraSmallVerticalPadding, horizontal: SizeConfig.horizontalPadding,),
+                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(10),
@@ -1326,7 +1326,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 //     ),
                 //   ),
                    Container(
-                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
                 gradient: LinearGradient(
@@ -1381,7 +1381,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 ? Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 12),
-                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),    
+                    margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),    
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
                       borderRadius: BorderRadius.circular(10),
@@ -1439,7 +1439,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     //     ),
                     //   )
                         Container(
-                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
+                  margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
                 gradient: LinearGradient(

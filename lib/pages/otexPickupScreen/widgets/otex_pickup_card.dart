@@ -1004,8 +1004,8 @@ class _OtexPickupCardState extends State<OtexPickupCard> {
       hintStyle: TextStyle(
           color: CommonColors.grey400, fontSize: SizeConfig.smallTextSize),
       contentPadding: EdgeInsets.symmetric(
-        horizontal: SizeConfig.mediumHorizontalSpacing,
-        vertical: SizeConfig.mediumVerticalSpacing,
+        horizontal: SizeConfig.smallHorizontalPadding,
+        vertical: SizeConfig.smallVerticalPadding,
       ),
       border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(SizeConfig.largeRadius),

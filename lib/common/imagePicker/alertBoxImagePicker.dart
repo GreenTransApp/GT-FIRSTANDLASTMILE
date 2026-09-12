@@ -118,9 +118,36 @@ Future<void> showImagePickerDialog(
 Future<XFile?> chooseGalleryImg(BuildContext context) async {
   var galleryImg = await _picker.pickImage(source: ImageSource.gallery);
   _image = galleryImg;
-  return askForEdit(context, _image);
+  return editImage(context, _image?? XFile(''));
+  // askForEdit(context, _image);
 }
 
+Future<XFile?> editImage(
+    BuildContext context,
+    XFile path,
+) async {
+  final ImageEditorController ctrl = ImageEditorController(
+    repository: ImageEditingRepositoryImpl(),
+    initialImage: File(path.path),
+  );
+
+  final File? editedFile = await Get.to(
+    () => ChangeNotifierProvider.value(
+      value: ctrl,
+      child: ImageEditorScreen(
+        controller: ctrl,
+      ),
+    ),
+  );
+
+  // If user edited/saved the image
+  if (editedFile != null) {
+    return XFile(editedFile.path);
+  }
+
+  // If editor was closed without editing, return original image
+  return path;
+}
 Future<XFile?> askForEdit(BuildContext context, XFile? path) async {
   if (path == null) return null;
 
@@ -171,5 +198,6 @@ Future<XFile?> askForEdit(BuildContext context, XFile? path) async {
 Future<XFile?> chooseCameraImg(BuildContext context) async {
   var cameraImg = await _picker.pickImage(source: ImageSource.camera);
   _image = cameraImg;
-  return askForEdit(context, _image);
+  // return askForEdit(context, _image);
+  return  editImage(context, _image?? XFile(''));
 }

@@ -4,6 +4,7 @@ class ApiCallParametersModel {
   Map<String, dynamic> parameters;
   String userCode;
   String loginBranchCode;
+  String? loginDivisionId;
   String? sessionId;
 
   ApiCallParametersModel({
@@ -12,6 +13,7 @@ class ApiCallParametersModel {
     Map<String, dynamic>? parameters,
     required this.userCode,
     required this.loginBranchCode,
+    this.loginDivisionId,
     this.sessionId,
   }) : parameters = parameters ?? {};
 
@@ -21,6 +23,7 @@ class ApiCallParametersModel {
         parameters = json['parameters'] ?? {},
         userCode = json['userCode'] ?? '',
         loginBranchCode = json['loginBranchCode'] ?? '',
+        loginDivisionId = json['loginDivisionId']?? '',
         sessionId = json['sessionId'];
 
   Map<String, dynamic> toJson() {
@@ -30,6 +33,7 @@ class ApiCallParametersModel {
     data['parameters'] = parameters;
     data['userCode'] = userCode;
     data['loginBranchCode'] = loginBranchCode;
+    data['loginDivisionId'] = loginDivisionId;
     data['sessionId'] = sessionId;
     return data;
   }

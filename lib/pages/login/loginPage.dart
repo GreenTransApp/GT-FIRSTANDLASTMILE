@@ -214,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
                         vertical: SizeConfig.verticalPadding,
-                        horizontal: SizeConfig.extraLargeHorizontalPadding),
+                        horizontal: SizeConfig.horizontalPadding),
                     child: Column(
                       children: [
                         Text(
@@ -235,28 +235,28 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           softWrap: true,
                         ),
-                        const SizedBox(height: 10),
-                        Image.asset(
-                          'assets/images/infinitilogo.png',
-                          width: SizeConfig.extraLargeRadius * 6.4,
-                          height: SizeConfig.extraLargeRadius * 2.5,
-                        ),
+                        // const SizedBox(height: 10),
+                        // Image.asset(
+                        //   'assets/images/infinitilogo.png',
+                        //   width: SizeConfig.extraLargeRadius * 6.4,
+                        //   height: SizeConfig.extraLargeRadius * 2.5,
+                        // ),
                         Image.asset(
                           "assets/images/loginIllustration.png",
-                          width: MediaQuery.sizeOf(context).width * 0.5,
+                          width: MediaQuery.sizeOf(context).width * 0.3,
                           height: MediaQuery.sizeOf(context).height * 0.3,
                         ),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            // boxShadow: [
+                            //   BoxShadow(
+                            //     color: Colors.black.withOpacity(0.08),
+                            //     blurRadius: 10,
+                            //     offset: const Offset(0, 4),
+                            //   ),
+                            // ],
                           ),
                           child: TextField(
                             controller: usermobileController,
@@ -306,13 +306,13 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            // boxShadow: [
+                            //   BoxShadow(
+                            //     color: Colors.black.withOpacity(0.05),
+                            //     blurRadius: 10,
+                            //     offset: const Offset(0, 4),
+                            //   ),
+                            // ],
                           ),
                           child: TextField(
                             controller: passwordController,
@@ -373,7 +373,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 2),
                         // Forgot Password
                         Align(
                           alignment: Alignment.centerRight,
@@ -396,7 +396,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                         // Login Button
                         SizedBox(
                           width: double.infinity,
@@ -420,7 +420,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 20),
                         Row(
                           children: [
                             Expanded(
@@ -460,7 +460,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 5),
                             Expanded(
                               child: SizedBox(
                                 height: 56,
@@ -518,9 +518,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _goOffline() {
     if (usermobileController.text.isEmpty) {
-      failToast("Please enter mobile number");
-    } else if (usermobileController.text.length != 10) {
-      failToast("Please enter a valid mobile number");
+      failToast("Please enter usrname to continue in offline mode");
     } else {
       Get.to(() => OfflinePasswordScreen(username: usermobileController.text));
     }
