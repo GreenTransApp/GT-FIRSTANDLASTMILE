@@ -278,45 +278,45 @@ class RunningTripsState extends State<RunningTrips> {
                   ),
                 ),
                 Expanded(
-                  child: Container(
-                    child: (filterList.isEmpty) == true
-                        ? ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            children: [
-                              Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Lottie.asset("assets/emptyDelivery.json",
-                                        height: 150),
-                                    Text(
-                                      "No Trips",
-                                      style: TextStyle(
-                                          fontSize: SizeConfig.mediumTextSize,
-                                          color: CommonColors.appBarColor),
-                                    )
-                                  ],
-                                ),
+                  child: (filterList.isEmpty) == true
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Lottie.asset("assets/emptyDelivery.json",
+                                      height: 150),
+                                  Text(
+                                    "No Trips",
+                                    style: TextStyle(
+                                        fontSize: SizeConfig.mediumTextSize,
+                                        color: CommonColors.appBarColor),
+                                  )
+                                ],
                               ),
-                            ],
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: filterList.length,
-                            itemBuilder: (context, index) {
-                              var currentData = filterList[index];
-                              return RunningTripTile(
-                                model: currentData,
-                                attendanceModel: _attendanceModel,
-                                onRefresh: onRefresh,
-                                validateTripBeforeStart:
-                                    _ValidateTripBeforeStart,
-                              );
-                            },
-                          ),
-                  ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                        
+                          shrinkWrap: true,
+                          // physics: const BouncingScrollPhysics(),
+                           physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: filterList.length,
+                          itemBuilder: (context, index) {
+                            var currentData = filterList[index];
+                            return RunningTripTile(
+                              model: currentData,
+                              attendanceModel: _attendanceModel,
+                              onRefresh: onRefresh,
+                              validateTripBeforeStart:
+                                  _ValidateTripBeforeStart,
+                            );
+                          },
+                        ),
                 ),
               ],
             ),

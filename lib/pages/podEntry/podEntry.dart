@@ -332,7 +332,7 @@ class _PodEntryState extends State<PodEntry> {
     });
 
     viewModel.isErrorLiveData.stream.listen((errMsg) {
-      if (isNullOrEmpty(errMsg)) {
+      if (!isNullOrEmpty(errMsg)) {
         failToast(errMsg.toString());
       } else {
         failToast("Something went wrong");

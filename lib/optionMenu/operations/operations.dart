@@ -299,7 +299,7 @@ class _OperationsState extends State<Operations> {
                                           child: Text(
                                             operation.menuname ?? '',
                                             
-                                            textAlign: TextAlign.center,
+                                            textAlign: TextAlign.start,
                                             maxLines:
                                                 SizeConfig.deviceType ==
                                                         DeviceType
@@ -353,7 +353,7 @@ class _OperationsState extends State<Operations> {
                                               
                                               child: Icon(
                                                 Symbols.arrow_forward_ios,
-                                                size: 16,
+                                                size: SizeConfig.extraSmallIconSize,
                                                 color: CommonColors.colorPrimary,
                                               ),
                                             )

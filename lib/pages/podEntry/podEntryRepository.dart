@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:gtlmd/api/ApiResponse.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
@@ -97,6 +98,85 @@ class PodEntryRepository extends BaseRepository {
     }
   }
 
+  // //---------------------api call with ApiResponse parse----------------------
+//   Future<void> getPodEntry(Map<String, String> params) async {
+//   viewDialog.add(true);
+
+//   try {
+//     final hasInternet = await NetworkStatusService().hasConnection;
+
+//     if (!hasInternet) {
+//       isErrorLiveData.add("No Internet available");
+//       return;
+//     }
+
+//     final CommonResponse resp =
+//         await apiGet("${lmdUrl}getPodEntryDetail", params);
+//     final result = ApiResponse.get(resp);
+
+//     if (!result.success) {
+//       isErrorLiveData.add(
+//         result.errorMessage ?? "Something went wrong",
+//       );
+//       return;
+//     }
+
+//     final Map<String, dynamic> resultData = result.data!;
+//     try {
+//       final dynamic table = resultData["Table"];
+
+//      if (table is List && table.isNotEmpty) {
+//           final List<dynamic> list2 = table;
+
+//           final List<PodEntryModel> resultList = List.generate(
+//             list2.length,
+//             (index) => PodEntryModel.fromJson(list2[index]),
+//           );
+
+//           if (resultList.isNotEmpty) {
+//             podEntryLiveData.add(resultList[0]);
+//           }
+//         }
+//     } catch (e) {
+//       debugPrint("Error parsing Table: $e");
+//       isErrorLiveData.add("Error loading POD entry: $e");
+//     }
+
+//     try {
+//       final dynamic table1 = resultData["Table1"];
+
+//       if (table1 is List && table1.isNotEmpty) {
+//       final List<dynamic> list2 = table1;
+
+//       final List<PodStickerModel> resultList = List.generate(
+//         list2.length,
+//         (index) => PodStickerModel.fromJson(list2[index]),
+//       );
+
+//       stickerLiveData.add(resultList);
+//     } else {
+//       stickerLiveData.add([]);
+//     }
+//     } catch (e) {
+//       debugPrint("Error parsing Table1: $e");
+
+//       isErrorLiveData.add(
+//         "Error loading sticker list: $e",
+//       );
+//       stickerLiveData.add([]);
+//     }
+//   } on SocketException catch (_) {
+//     isErrorLiveData.add("No Internet");
+//   } catch (e) {
+//     debugPrint("getPodEntry Error: $e");
+//     isErrorLiveData.add(e.toString());
+//   } finally {
+    
+//     viewDialog.add(false);
+//   }
+// }
+//// ---------------------------------------------------------------------------------------  
+  
   Future<void> savePodEntry(Map<String, dynamic> params) async {
     viewDialog.add(true);
     final hasInternet = await NetworkStatusService().hasConnection;
