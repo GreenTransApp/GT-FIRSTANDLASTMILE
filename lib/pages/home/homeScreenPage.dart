@@ -420,8 +420,17 @@ class _HomeScreen extends State<HomeScreen>
       if (!isRunning) {
         debugPrint(
             '[Service] Starting foreground service with interval: $locationUpdateInterval');
-        await locationService.init(); // Ensure latest interval is used
-        await FlutterForegroundTask.startService(
+        
+         final accepted = await _showLocationDisclosure();
+
+          if (!accepted) {
+            debugPrint('[Service] User did not accept location disclosure');
+            return;
+          }
+          await locationService.requestPermissions();
+         
+          await locationService.init(); // Ensure latest interval is used
+          await FlutterForegroundTask.startService(
           notificationTitle: 'Location Tracking Active',
           notificationText: 'Your location is being tracked.',
           callback: startCallback,
@@ -441,6 +450,33 @@ class _HomeScreen extends State<HomeScreen>
     }
   }
 
+Future<bool> _showLocationDisclosure() async {
+  final result = await Get.dialog<bool>(
+    AlertDialog(
+      title: const Text('Location Access Required'),
+      content: const Text(
+        'This app uses your device location to provide live trip tracking '
+        'and trip monitoring. Your location may be collected while the app '
+        'is in use and, when required for an active or dispatched trip, '
+        'while the app is running in the background.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(result: false),
+          child:  Text('Cancel',style: TextStyle(color: CommonColors.colorPrimary2),),
+        ),
+        ElevatedButton(
+          onPressed: () => Get.back(result: true),
+          child:  Text('Continue',style: TextStyle(color: CommonColors.colorPrimary2),),
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
+
+  return result ?? false;
+}
+ 
   getLoginPrefs() {
     try {
       getLoginData().then((login) => {

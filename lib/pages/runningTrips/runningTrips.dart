@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:get/get.dart';
 import 'package:gtlmd/common/Colors.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/loadingAlertWithCancel.dart';
@@ -96,7 +97,74 @@ class RunningTripsState extends State<RunningTrips> {
     viewModel.ValidateTripBeforeStart(params);
   }
 
-  Future<void> checkAuthenticatedUserForRunService(
+  // Future<void> checkAuthenticatedUserForRunService(
+  //     List<TripModel> tripData) async {
+  //   try {
+  //     final bool isRunning = await FlutterForegroundTask.isRunningService;
+
+  //     // Stop if not authenticated
+  //     if (authService.isAuthenticated.value != true) {
+  //       debugPrint('[Service] User not authenticated → stop');
+  //       if (isRunning) await locationService.stopService();
+  //       return;
+  //     }
+
+  //     // Stop if no trips
+  //     if (tripData.isEmpty) {
+  //       debugPrint('[Service] Trip list empty → stop');
+  //       if (isRunning) await locationService.stopService();
+  //       return;
+  //     }
+
+  //     // Stop if command status invalid
+  //     if (tripData.first.commandstatus != 1) {
+  //       debugPrint('[Service] Invalid command status → stop');
+  //       if (isRunning) await locationService.stopService();
+  //       return;
+  //     }
+
+  //     // Stop if no dispatched trips
+  //     final hasDispatchedTrip = tripData.any(
+  //       (trip) =>
+  //           trip.tripdispatchdatetime != null &&
+  //           trip.tripdispatchdatetime.toString().isNotEmpty,
+  //     );
+  //     if (!hasDispatchedTrip) {
+  //       debugPrint('[Service] No dispatched trips → stop');
+  //       if (isRunning) await locationService.stopService();
+  //       return;
+  //     }
+
+  //     // Prepare data to send
+  //     final tripList = tripData.map((trip) => trip.tripid.toString()).toList();
+  //     final dataToPass = {
+  //       'tripList': tripList,
+  //       'userData': savedUser.toJson(),
+  //     };
+  //     if (!isRunning) {
+  //       debugPrint('[Service] Starting foreground service');
+  //       locationService.requestPermissions();
+  //       await FlutterForegroundTask.startService(
+  //         notificationTitle: 'Location Tracking Active',
+  //         notificationText: 'Your location is being tracked.',
+  //         callback: startCallback,
+  //       );
+
+  //       // Send data after service starts
+  //       Future.delayed(const Duration(milliseconds: 300), () {
+  //         FlutterForegroundTask.sendDataToTask(dataToPass);
+  //       });
+  //     } else {
+  //       debugPrint('[Service] Updating foreground service data');
+  //       FlutterForegroundTask.sendDataToTask(dataToPass);
+  //     }
+  //   } catch (e, stack) {
+  //     debugPrint('[Service] Error: $e');
+  //     debugPrint(stack.toString());
+  //   }
+  // }
+
+ Future<void> checkAuthenticatedUserForRunService(
       List<TripModel> tripData) async {
     try {
       final bool isRunning = await FlutterForegroundTask.isRunningService;
@@ -140,10 +208,21 @@ class RunningTripsState extends State<RunningTrips> {
         'tripList': tripList,
         'userData': savedUser.toJson(),
       };
+
       if (!isRunning) {
-        debugPrint('[Service] Starting foreground service');
-        locationService.requestPermissions();
-        await FlutterForegroundTask.startService(
+        debugPrint(
+            '[Service] Starting foreground service with interval: $locationUpdateInterval');
+        
+         final accepted = await _showLocationDisclosure();
+
+          if (!accepted) {
+            debugPrint('[Service] User did not accept location disclosure');
+            return;
+          }
+          await locationService.requestPermissions();
+         
+          await locationService.init(); // Ensure latest interval is used
+          await FlutterForegroundTask.startService(
           notificationTitle: 'Location Tracking Active',
           notificationText: 'Your location is being tracked.',
           callback: startCallback,
@@ -163,6 +242,33 @@ class RunningTripsState extends State<RunningTrips> {
     }
   }
 
+Future<bool> _showLocationDisclosure() async {
+  final result = await Get.dialog<bool>(
+    AlertDialog(
+      title: const Text('Location Access Required'),
+      content: const Text(
+        'This app uses your device location to provide live trip tracking '
+        'and trip monitoring. Your location may be collected while the app '
+        'is in use and, when required for an active or dispatched trip, '
+        'while the app is running in the background.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(result: false),
+          child:  Text('Cancel',style: TextStyle(color: CommonColors.colorPrimary2),),
+        ),
+        ElevatedButton(
+          onPressed: () => Get.back(result: true),
+          child:  Text('Continue',style: TextStyle(color: CommonColors.colorPrimary2),),
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
+
+  return result ?? false;
+}
+ 
   @override
   void dispose() {
     for (var sub in _subscription) {

@@ -503,7 +503,7 @@ class _LoginPageState extends State<LoginPage> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: Image.asset(
-                    'assets/poweredBy.png',
+                    "assets/poweredBy.png",
                     width: 180,
                     height: 45,
                   ),
