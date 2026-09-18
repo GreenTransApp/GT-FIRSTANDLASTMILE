@@ -58,7 +58,9 @@ class RunningTripTile extends StatelessWidget {
             Get.to(DeliveryDetail(
               // model: widget.model,
               tripModel: model,
-            ))?.then((_) => {onRefresh()});
+            ))?.then((_) => {onRefresh(),
+              authService.validateDevice(context)
+            });
           } else {
             failToast("Start trip to continue");
             // successToast("Start trip to continue");

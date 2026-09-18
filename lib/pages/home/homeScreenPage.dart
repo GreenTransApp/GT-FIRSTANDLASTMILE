@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_svg/svg.dart';
@@ -275,9 +274,9 @@ class _HomeScreen extends State<HomeScreen>
     _subscriptions.add(_baseRepo.isErrorLiveData.stream.listen((errMsg) {
       failToast(errMsg);
     }));
-    
+
     _subscriptions.add(_baseRepo.viewDialog.stream.listen((showLoading) {
-   if (showLoading) {
+      if (showLoading) {
         loadingAlertService.showLoading();
       } else {
         loadingAlertService.hideLoading();
@@ -347,27 +346,27 @@ class _HomeScreen extends State<HomeScreen>
       if (value != null && value.commandstatus == 1) {
         var url = value.pageLink;
         debugPrint(url);
-           if (url != null && url.isNotEmpty) {
-                                    try {
-                                      await launchUrl(
-                                        Uri.parse(url),
-                                        mode: LaunchMode.externalApplication,
-                                      );
-                                    } catch (_) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Could not launch URL',
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  }
-      }else{
-         failToast(value.commandmessage??  "Unable To Open Action Centre,INVALID URL");
+        if (url != null && url.isNotEmpty) {
+          try {
+            await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode.externalApplication,
+            );
+          } catch (_) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Could not launch URL',
+                  ),
+                ),
+              );
+            }
+          }
+        }
+      } else {
+        failToast(
+            value.commandmessage ?? "Unable To Open Action Centre,INVALID URL");
       }
     }));
   }
@@ -420,17 +419,17 @@ class _HomeScreen extends State<HomeScreen>
       if (!isRunning) {
         debugPrint(
             '[Service] Starting foreground service with interval: $locationUpdateInterval');
-        
-         final accepted = await _showLocationDisclosure();
 
-          if (!accepted) {
-            debugPrint('[Service] User did not accept location disclosure');
-            return;
-          }
-          await locationService.requestPermissions();
-         
-          await locationService.init(); // Ensure latest interval is used
-          await FlutterForegroundTask.startService(
+        final accepted = await _showLocationDisclosure();
+
+        if (!accepted) {
+          debugPrint('[Service] User did not accept location disclosure');
+          return;
+        }
+        await locationService.requestPermissions();
+
+        await locationService.init(); // Ensure latest interval is used
+        await FlutterForegroundTask.startService(
           notificationTitle: 'Location Tracking Active',
           notificationText: 'Your location is being tracked.',
           callback: startCallback,
@@ -450,33 +449,39 @@ class _HomeScreen extends State<HomeScreen>
     }
   }
 
-Future<bool> _showLocationDisclosure() async {
-  final result = await Get.dialog<bool>(
-    AlertDialog(
-      title: const Text('Location Access Required'),
-      content: const Text(
-        'This app uses your device location to provide live trip tracking '
-        'and trip monitoring. Your location may be collected while the app '
-        'is in use and, when required for an active or dispatched trip, '
-        'while the app is running in the background.',
+  Future<bool> _showLocationDisclosure() async {
+    final result = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Location Access Required'),
+        content: const Text(
+          'This app uses your device location to provide live trip tracking '
+          'and trip monitoring. Your location may be collected while the app '
+          'is in use and, when required for an active or dispatched trip, '
+          'while the app is running in the background.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: CommonColors.colorPrimary2),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            child: Text(
+              'Continue',
+              style: TextStyle(color: CommonColors.colorPrimary2),
+            ),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(result: false),
-          child:  Text('Cancel',style: TextStyle(color: CommonColors.colorPrimary2),),
-        ),
-        ElevatedButton(
-          onPressed: () => Get.back(result: true),
-          child:  Text('Continue',style: TextStyle(color: CommonColors.colorPrimary2),),
-        ),
-      ],
-    ),
-    barrierDismissible: false,
-  );
+      barrierDismissible: false,
+    );
 
-  return result ?? false;
-}
- 
+    return result ?? false;
+  }
+
   getLoginPrefs() {
     try {
       getLoginData().then((login) => {
@@ -655,73 +660,71 @@ Future<bool> _showLocationDisclosure() async {
         ),
         child: Column(
           children: [
-                Visibility(
-                visible: employeeid != null,
-                child: InkWell(
-                  onTap: () {
-                    Get.to(() => const AttendanceScreen())?.then((_) {
-                      getDashboardDetails();
-                    });
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      
-                      padding: EdgeInsets.symmetric(
-                          horizontal: SizeConfig.extraSmallHorizontalPadding,
-                          vertical: SizeConfig.extraSmallVerticalPadding
+            Visibility(
+              visible: employeeid != null,
+              child: InkWell(
+                onTap: () {
+                  Get.to(() => const AttendanceScreen())?.then((_) {
+                    getDashboardDetails();
+                    validateDevice();
+                  });
+                },
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallVerticalPadding),
+                    decoration: BoxDecoration(
+                      // color: CommonColors.colorPrimary,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: CommonColors.white!),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+                      children: [
+                        // Status indicator dot
+                        // Container(
+                        //   // width: SizeConfig.smallIconSize,
+                        //   // height: SizeConfig.smallIconSize,
+                        //   margin: const EdgeInsets.only(right: 6),
+                        //   decoration: BoxDecoration(
+                        //     color:
+                        //         attendanceModel.attendancestatus == "Absent"
+                        //             ? CommonColors.dangerColor
+                        //             : CommonColors.successColor,
+                        //     shape: BoxShape.circle,
+                        //   ),
+                        // ),
+                        Icon(Icons.circle,
+                            size: SizeConfig.smallIconSize,
+                            color: attendanceModel.attendancestatus == "Absent"
+                                ? CommonColors.dangerColor
+                                : CommonColors.successColor),
+                        Text(
+                          attendanceModel.attendancestatus == 'Present'
+                              // ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
+                              ? "Online".toString().toUpperCase()
+                              : "Offline",
+                          style: TextStyle(
+                            fontSize: SizeConfig.extraSmallTextSize,
+                            color: CommonColors.white,
+                            fontWeight: FontWeight.w500,
                           ),
-                      decoration: BoxDecoration(
-                        // color: CommonColors.colorPrimary,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: CommonColors.white!),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        
-                        children: [
-                          // Status indicator dot
-                          // Container(
-                          //   // width: SizeConfig.smallIconSize,
-                          //   // height: SizeConfig.smallIconSize,
-                          //   margin: const EdgeInsets.only(right: 6),
-                          //   decoration: BoxDecoration(
-                          //     color:
-                          //         attendanceModel.attendancestatus == "Absent"
-                          //             ? CommonColors.dangerColor
-                          //             : CommonColors.successColor,
-                          //     shape: BoxShape.circle,
-                          //   ),
-                          // ),
-                          Icon(Icons.circle,
-                              size: SizeConfig.smallIconSize,
-                              color: attendanceModel.attendancestatus ==
-                                      "Absent"
-                                  ? CommonColors.dangerColor
-                                  : CommonColors.successColor),
-                          Text(
-                            attendanceModel.attendancestatus == 'Present'
-                                // ? "${attendanceModel.attendancedisplaytxt!.substring(0, 10)}${attendanceModel.attendancedisplaytxt!.substring(attendanceModel.attendancedisplaytxt!.length - 8)}"
-                                ? "Online".toString().toUpperCase()
-                                : "Offline",
-                            style: TextStyle(
-                              fontSize: SizeConfig.extraSmallTextSize,
-                              color: CommonColors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-                  
+            ),
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Row(
+                Row(
                   children: [
                     Icon(
                       Icons.person_pin,
@@ -1157,7 +1160,7 @@ Future<bool> _showLocationDisclosure() async {
                   '',
                   style: TextStyle(color: CommonColors.colorPrimary),
                 ),
-                offset: const Offset(-1,1),
+                offset: const Offset(-1, 1),
                 child: IconButton.outlined(
                   style: ButtonStyle(
                     minimumSize: const WidgetStatePropertyAll(Size(40, 40)),
@@ -1598,7 +1601,7 @@ Future<bool> _showLocationDisclosure() async {
                     //     ),
                     //   ),
                     // ),
-                  
+
                     Expanded(
                       child: AllocatedRouteWidget(
                         key: allotedRouteKey,

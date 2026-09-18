@@ -218,8 +218,13 @@ class MidMileTripListState extends State<MidMileTripList> {
     return GestureDetector(
       onTap: () {
         if (trip.tripstart == 'Y') {
-          Get.to(MidMileTripDetail(
-              tripid: trip.tripid!, tripdetailid: trip.tripdetailid!));
+          // Get.to(MidMileTripDetail(
+          //     tripid: trip.tripid!, tripdetailid: trip.tripdetailid!));
+           Get.to(() => MidMileTripDetail(
+         tripid: trip.tripid!, tripdetailid: trip.tripdetailid!)
+        )?.then((_) {
+      authService.validateDevice(context);
+    });
         }else{
           failToast("Please start the trip to view details");
         }

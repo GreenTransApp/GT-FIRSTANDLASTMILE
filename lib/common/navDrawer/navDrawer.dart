@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gtlmd/common/Utils.dart';
 import 'package:gtlmd/common/alertBox/commonAlertDialog.dart';
+import 'package:gtlmd/common/app.dart';
 import 'package:gtlmd/common/colors.dart';
 import 'package:gtlmd/common/navDrawer/navDrawerModel.dart';
 import 'package:gtlmd/optionMenu/operations/operations.dart';
@@ -44,6 +45,16 @@ class SideMenu extends StatelessWidget {
     }
 
     final currentRoute = Get.currentRoute;
+
+    Future<void> openPage(
+      BuildContext context,
+      Widget page,
+    ) async {
+      Navigator.pop(context);
+      await Get.to(page);
+      await authService.validateDevice(context);
+      ;
+    }
 
     return Drawer(
       backgroundColor: CommonColors.white ?? Colors.white,
@@ -103,7 +114,7 @@ class SideMenu extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        savedUser.displayusername?? '',
+                        savedUser.displayusername ?? '',
                         style: TextStyle(
                           color: CommonColors.white ?? Colors.white,
                           fontSize: SizeConfig.mediumTextSize,
@@ -155,8 +166,9 @@ class SideMenu extends StatelessWidget {
                       leadingIcon: const ImageIcon(
                           AssetImage('assets/images/attendance.png')),
                       press: () {
-                        Navigator.pop(context);
-                        Get.to(const AttendanceScreen());
+                        // Navigator.pop(context);
+                        // Get.to(const AttendanceScreen());
+                        openPage(context, AttendanceScreen());
                       },
                     ),
                   ],
@@ -165,8 +177,9 @@ class SideMenu extends StatelessWidget {
                     title: 'Booking',
                     leadingIcon: const Icon(Symbols.analytics),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(BookingWithEwayBill());
+                      // Navigator.pop(context);
+                      // Get.to(BookingWithEwayBill());
+                      openPage(context, BookingWithEwayBill());
                     },
                   ),
                   // SideMenuItem(
@@ -183,8 +196,9 @@ class SideMenu extends StatelessWidget {
                     title: 'Trip MIS',
                     leadingIcon: const Icon(Symbols.cognition_2_rounded),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(const TripMis());
+                      // Navigator.pop(context);
+                      // Get.to(const TripMis());
+                      openPage(context, TripMis());
                     },
                   ),
                   SideMenuItem(
@@ -192,8 +206,9 @@ class SideMenu extends StatelessWidget {
                     title: 'Delivery Performance',
                     leadingIcon: const Icon(Symbols.performance_max_rounded),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(const DeliveryPerformancePage());
+                      // Navigator.pop(context);
+                      // Get.to(const DeliveryPerformancePage());
+                      openPage(context, DeliveryPerformancePage());
                     },
                   ),
                   SideMenuItem(
@@ -201,8 +216,9 @@ class SideMenu extends StatelessWidget {
                     title: 'Sticker Printing',
                     leadingIcon: const Icon(Symbols.print),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(const GrListPage());
+                      // Navigator.pop(context);
+                      // Get.to(const GrListPage());
+                      openPage(context, GrListPage());
                     },
                   ),
                   SideMenuItem(
@@ -210,8 +226,9 @@ class SideMenu extends StatelessWidget {
                     title: 'Operations',
                     leadingIcon: const Icon(Symbols.delivery_truck_bolt),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(const Operations());
+                      // Navigator.pop(context);
+                      // Get.to(const Operations());
+                      openPage(context, Operations());
                     },
                   ),
                   SideMenuItem(
@@ -219,21 +236,37 @@ class SideMenu extends StatelessWidget {
                     title: 'POD Entry',
                     leadingIcon: const Icon(Symbols.apk_document_rounded),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(PodEntry(
-                              deliveryDetailModel: DeliveryDetailModel(),
-                            ),);
+                      // Navigator.pop(context);
+                      // Get.to(
+                      //   PodEntry(
+                      //     deliveryDetailModel: DeliveryDetailModel(),
+                      //   ),
+                      // );
+                      openPage(
+                        context,
+                        PodEntry(
+                          deliveryDetailModel: DeliveryDetailModel(),
+                        ),
+                      );
                     },
                   ),
                   SideMenuItem(
                     isSmallDevice: isSmallDevice,
                     title: 'Undelivery',
-                    leadingIcon:  const Icon(Symbols.apk_document_rounded),
+                    leadingIcon: const Icon(Symbols.apk_document_rounded),
                     press: () {
-                      Navigator.pop(context);
-                      Get.to(UnDelivery(
-                              deliveryDetailModel: DeliveryDetailModel(),
-                            ),);
+                      // Navigator.pop(context);
+                      // Get.to(
+                      //   UnDelivery(
+                      //     deliveryDetailModel: DeliveryDetailModel(),
+                      //   ),
+                      // );
+                      openPage(
+                        context,
+                        UnDelivery(
+                          deliveryDetailModel: DeliveryDetailModel(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -241,6 +274,7 @@ class SideMenu extends StatelessWidget {
             ),
           ),
           // Bottom Actions
+         
           const Divider(height: 1),
           SideMenuItem(
             isSmallDevice: isSmallDevice,
@@ -249,6 +283,11 @@ class SideMenu extends StatelessWidget {
             press: () {
               logout();
             },
+          ),
+           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [Text("Version : ",style: TextStyle(fontWeight: FontWeight.bold),), Text("${APP.APP_VERSION}",style: TextStyle(fontWeight: FontWeight.bold),)],
           ),
           SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
         ],

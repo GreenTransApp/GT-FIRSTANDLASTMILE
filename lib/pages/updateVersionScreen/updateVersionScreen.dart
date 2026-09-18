@@ -39,9 +39,9 @@ class _UpdateVersionScreenState extends State<UpdateVersionScreen> {
             ),
           ),
           InkWell(
-            onTap: () => {successToast("Work in progress")},
-            // onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.greensoft.greentranserp')),
-            // // launch('https://play.google.com/store/apps/details?id=com.greensoft.greentranserp'),
+            // onTap: () => {successToast("Work in progress")},
+            onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.greensoft.gtinfiniti')),
+            // launch('https://play.google.com/store/apps/details?id=com.greensoft.greentranserp'),
             // onTap: () => launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=com.greensoft.gthr')),
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 20),

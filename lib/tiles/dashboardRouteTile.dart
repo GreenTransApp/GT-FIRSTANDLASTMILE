@@ -94,8 +94,8 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                   child: Row(
                     children: [
                       Icon(Icons.calendar_month,
-                            size: SizeConfig.mediumIconSize,
-                            color: CommonColors.colorPrimary2),
+                          size: SizeConfig.mediumIconSize,
+                          color: CommonColors.colorPrimary2),
                       Text(
                         widget.model.planningdt.toString(),
                         overflow: TextOverflow.ellipsis,
@@ -112,15 +112,17 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
             ),
 
             SizedBox(height: SizeConfig.smallVerticalSpacing),
-             Divider(thickness: 2,color: CommonColors.grey200,) ,
+            Divider(
+              thickness: 2,
+              color: CommonColors.grey200,
+            ),
             // Card Content
             Container(
               // padding: EdgeInsets.symmetric(
               //     horizontal: SizeConfig.horizontalPadding,
               //     vertical: SizeConfig.verticalPadding),
               decoration: BoxDecoration(
-                color:
-                    CommonColors.white!.withAlpha((255 * 0.1).toInt()),
+                color: CommonColors.white!.withAlpha((255 * 0.1).toInt()),
                 // border: Border.all(
                 //   color:
                 //       CommonColors.colorPrimary!.withAlpha((255 * 0.1).toInt()),
@@ -140,17 +142,21 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                         label: 'Route ID',
                         value: widget.model.planningid.toString(),
                         colors: CommonColors.colorPrimary!,
-                        icon: Icon(Icons.contact_mail_outlined,
-                        color:  CommonColors.colorPrimary!,
-                          size: SizeConfig.smallIconSize,),
+                        icon: Icon(
+                          Icons.contact_mail_outlined,
+                          color: CommonColors.colorPrimary!,
+                          size: SizeConfig.smallIconSize,
+                        ),
                       ),
                       InfoItem(
                         label: 'No. of Consignment',
                         value: widget.model.noofconsign.toString(),
                         colors: CommonColors.successColor!,
-                        icon: Icon(Icons.file_copy_outlined,
-                        color: CommonColors.successColor!,
-                        size: SizeConfig.smallIconSize,),
+                        icon: Icon(
+                          Icons.file_copy_outlined,
+                          color: CommonColors.successColor!,
+                          size: SizeConfig.smallIconSize,
+                        ),
                       ),
                     ],
                   ),
@@ -160,18 +166,20 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                         label: 'Total Weight',
                         value: widget.model.totweight.toString(),
                         colors: CommonColors.darkBlue!,
-                        icon: Icon(Icons.shopping_bag_outlined,
-                        color: CommonColors.darkBlue,
-                        size: SizeConfig.smallIconSize,
+                        icon: Icon(
+                          Icons.shopping_bag_outlined,
+                          color: CommonColors.darkBlue,
+                          size: SizeConfig.smallIconSize,
                         ),
                       ),
                       InfoItem(
                         label: 'Total Distance',
                         value: widget.model.totdistance.toString(),
                         colors: CommonColors.red600!,
-                        icon: Icon(Icons.social_distance_outlined,
-                        color: CommonColors.red600!,
-                        size: SizeConfig.smallIconSize,
+                        icon: Icon(
+                          Icons.social_distance_outlined,
+                          color: CommonColors.red600!,
+                          size: SizeConfig.smallIconSize,
                         ),
                       ),
                     ],
@@ -184,9 +192,11 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
             // View Details Button
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
-                gradient: LinearGradient(
-                    colors: [CommonColors.red600!, CommonColors.colorPrimary!])),
+                  borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                  gradient: LinearGradient(colors: [
+                    CommonColors.red600!,
+                    CommonColors.colorPrimary!
+                  ])),
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
@@ -197,13 +207,14 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                   } else {
                     Get.to(() => Routedetail(model: widget.model))?.then((_) {
                       widget.onRefresh();
+                      authService.validateDevice(context);
                     });
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   // backgroundColor: CommonColors.colorPrimary,
                   // foregroundColor: CommonColors.White,
-                   backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                   disabledBackgroundColor: CommonColors.grey300,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -225,8 +236,9 @@ class _DashBoardRouteTileState extends State<DashBoardRouteTile> {
                           SizedBox(width: SizeConfig.horizontalPadding),
                           Text(
                             "View Details",
-                            style:
-                                TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                            style: TextStyle(
+                                fontSize: SizeConfig.smallTextSize,
+                                color: CommonColors.white),
                           ),
                         ],
                       ),

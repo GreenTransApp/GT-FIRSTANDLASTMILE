@@ -145,6 +145,7 @@ class DrsselectionBottomSheetState extends State<DrsselectionBottomSheet> {
         ))?.then((_) {
       Get.back();
       refreshScreen();
+      authService.validateDevice(context);
     });
   }
 
