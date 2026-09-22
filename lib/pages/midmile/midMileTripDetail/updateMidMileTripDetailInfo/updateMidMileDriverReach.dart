@@ -56,7 +56,7 @@ class _UpdateMidMileDriverPositionState
   String currentAddress = '';
   String? _arrivalReadingError;
   String? _unloadReadingError;
-  bool? isOdometerUnAvailable = false;
+  bool? odometerByPass = false;
 
   UpdateMidMileDriverPositionViewModel viewModel =
       UpdateMidMileDriverPositionViewModel();
@@ -66,7 +66,7 @@ class _UpdateMidMileDriverPositionState
   @override
   void initState() {
     super.initState();
-
+    odometerByPass = (widget.model.odometerbypass) == 'Y' ? true : false;
     _arrivalDateController.text =
         DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
     _arrivalTimeController.text = DateFormat('HH:mm').format(DateTime.now());
@@ -110,7 +110,7 @@ class _UpdateMidMileDriverPositionState
     viewModel.arrivalWithOutstandingLiveData.stream.listen((data) {
       if (data.commandstatus == 1) {
         successToast("Update successfull");
-         if (widget.refresh != null) {
+        if (widget.refresh != null) {
           widget.refresh?.call();
         }
         Get.back();
@@ -183,7 +183,7 @@ class _UpdateMidMileDriverPositionState
     // int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
 
     if (widget.status == MIDMILETRIPSTATUS.ARRIVAL) {
-      if (isOdometerUnAvailable == false) {
+      if (odometerByPass == false) {
         // if (isNullOrEmpty(_arrivalDateController.text)) {
         //   failToast("Please Select Arrival Date.");
         //   return;
@@ -194,14 +194,14 @@ class _UpdateMidMileDriverPositionState
         //  if (isNullOrEmpty(_arrivalReadingController.text)) {
         //   failToast("Please Enter Odometer Value");
         //   return;
-        // } 
-        //else if (int.tryParse(_arrivalReadingController.text)! <= 0) {
-        //   failToast("Odometer Value Can't be Zero");
-        //   return;
-        // } else if (_arrivalReadingError != null) {
-        //   failToast(_arrivalReadingError!);
-        //   return;
         // }
+        if (int.tryParse(_arrivalReadingController.text)! <= 0) {
+          failToast("Odometer Value Can't be Zero");
+          return;
+        } else if (_arrivalReadingError != null) {
+          failToast(_arrivalReadingError!);
+          return;
+        }
         //  else if (lastReading > 0 &&
         //     currentReading - lastReading >
         //         int.parse(lastTripInfo!.readingdiff.toString())) {
@@ -209,50 +209,47 @@ class _UpdateMidMileDriverPositionState
         //       "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
         //   return;
         // }
+        if (isNullOrEmpty(_arrivalReadingImagePath)) {
+          failToast("Please Select Reading Image.");
+          return;
+        }
       }
+
       updateDriverReached();
     } else {
-      int currentReading =
-          int.tryParse(_unloadReadingController.text.trim()) ?? 0;
-      int lastReading = widget.model.arrivalKm ?? 0;
-     
-        // if (isNullOrEmpty(_unloadDateController.text)) {
-        //   failToast("Please Select Unload Date.");
-        //   return;
-        // } else if (isNullOrEmpty(_unloadTimeController.text)) {
-        //   failToast("Please Select Unload Time");
-        //   return;
-        // } else
-        //  if (isNullOrEmpty(_unloadReadingController.text)) {
-        //   failToast("Please Enter Odometer Value");
-        //   return;
-        // } else if (int.tryParse(_unloadReadingController.text)! <= 0) {
-        //   failToast("Odometer Value Can't be Zero");
-        //   return;
-        // } else 
-        // if (!isNullOrEmpty(_unloadReadingError)) {
-        //   failToast(_unloadReadingError!);
-        //   return;
-        // }else
-      //    if(isNullOrEmpty(_unloadReadingImagePath)) {
-      //     failToast("Please Select Reading Image.");
-      //     return;
-      //   }else if (lastReading > 0 && lastReading > currentReading) {
-      //     failToast("Unload reading  can't be greater than start reading.");
-      //     return;
-        
-      // }
+    
+
+      // if (isNullOrEmpty(_unloadDateController.text)) {
+      //   failToast("Please Select Unload Date.");
+      //   return;
+      // } else if (isNullOrEmpty(_unloadTimeController.text)) {
+      //   failToast("Please Select Unload Time");
+      //   return;
+      // } else
+      //  if (isNullOrEmpty(_unloadReadingController.text)) {
+      //   failToast("Please Enter Odometer Value");
+      //   return;
+      // } else if (int.tryParse(_unloadReadingController.text)! <= 0) {
+      //   failToast("Odometer Value Can't be Zero");
+      //   return;
+      // } else
+    if (odometerByPass == false) {
+        if (isNullOrEmpty(_unloadReadingImagePath)) {
+          failToast("Please Select Reading Image.");
+          return;
+        }
+      }
       updateVehicleArrivalWithOutstanding();
     }
   }
 
-  Future<void> updateDriverReached()  async {
+  Future<void> updateDriverReached() async {
     loadingAlertService.showLoading();
     // _currentPosition = await Geolocator.getCurrentPosition();
     // _currentPosition = _currentPosition =  LocationService().getCurrentLocation();
     LocationService().getCurrentLocation().then((position) {
-  _currentPosition = position;
-});
+      _currentPosition = position;
+    });
     loadingAlertService.hideLoading();
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
@@ -276,7 +273,9 @@ class _UpdateMidMileDriverPositionState
       // 'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
       'prmarrivallat': _currentPosition?.latitude.toString() ?? '',
       'prmarrivallong': _currentPosition?.longitude.toString() ?? '',
-      'prmmodecode': isNullOrEmpty(widget.model.modecode.toString()) ? '' : widget.model.modecode.toString(),
+      'prmmodecode': isNullOrEmpty(widget.model.modecode.toString())
+          ? ''
+          : widget.model.modecode.toString(),
     };
     viewModel.updateDriverReached(params);
   }
@@ -286,20 +285,20 @@ class _UpdateMidMileDriverPositionState
     // _currentPosition = await Geolocator.getCurrentPosition();
     // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
     LocationService().getCurrentLocation().then((position) {
-  _currentPosition = position;
-});
+      _currentPosition = position;
+    });
     loadingAlertService.hideLoading();
     Map<String, dynamic> params = {
       "prmusercode": savedUser.usercode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmtripid":int.parse( widget.model.tripId.toString()),
-      "prmtripdetailid":int.parse( widget.model.tripDetailId.toString()),
+      "prmtripid": int.parse(widget.model.tripId.toString()),
+      "prmtripdetailid": int.parse(widget.model.tripDetailId.toString()),
       // "prmgrno": widget.model.grno.toString(),
       "prmmanifestno": widget.model.manifestNo.toString(),
       "prmunloaddt":
           convert2SmallDateTime(_unloadDateController.text.toString()),
       "prmunloadtime": _unloadTimeController.text.toString(),
-      "prmunloadkm":int.parse(_unloadReadingController.text.toString()),
+      "prmunloadkm": int.parse(_unloadReadingController.text.toString()),
       "prmimgpath": isNullOrEmpty(_unloadReadingImagePath)
           ? ""
           : convertFilePathToBase64(_unloadReadingImagePath),
@@ -337,7 +336,7 @@ class _UpdateMidMileDriverPositionState
             Checkbox(
               checkColor: CommonColors.White,
               activeColor: CommonColors.colorPrimary,
-              value: isOdometerUnAvailable,
+              value: odometerByPass,
               // onChanged: (value) {
               //   isOdometerUnAvailable = value;
               //   setState(() {});
@@ -347,7 +346,7 @@ class _UpdateMidMileDriverPositionState
           ],
         ),
         Visibility(
-          visible: isOdometerUnAvailable == true,
+          visible: odometerByPass == true,
           child: Text(
             "(You can submit the form without filling it.)",
             style: TextStyle(color: CommonColors.green500),
@@ -408,7 +407,7 @@ class _UpdateMidMileDriverPositionState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Row(
                   children: [
                     Expanded(
@@ -417,8 +416,8 @@ class _UpdateMidMileDriverPositionState
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
+                                horizontal: SizeConfig.extraSmallHorizontalPadding,
+                                vertical: SizeConfig.extraSmallVerticalPadding),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(
                                   Radius.circular(SizeConfig.largeRadius)),
@@ -477,8 +476,8 @@ class _UpdateMidMileDriverPositionState
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
+                                horizontal: SizeConfig.extraSmallHorizontalPadding,
+                                vertical: SizeConfig.extraSmallVerticalPadding),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(
                                     Radius.circular(SizeConfig.largeRadius)),
@@ -535,11 +534,10 @@ class _UpdateMidMileDriverPositionState
               ),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Visibility(
-                  visible: isOdometerUnAvailable!,
-                  child: odoMeterUnAvailable()),
+                  visible: odometerByPass!, child: odoMeterUnAvailable()),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.horizontalPadding,
@@ -573,6 +571,7 @@ class _UpdateMidMileDriverPositionState
                       SizedBox(
                         height: SizeConfig.smallVerticalSpacing,
                       ),
+                      // Text("${widget.model.lastreading}"),
                       Row(
                         children: [
                           Expanded(
@@ -581,7 +580,7 @@ class _UpdateMidMileDriverPositionState
                                   horizontal: SizeConfig.horizontalPadding,
                                   vertical: SizeConfig.verticalPadding),
                               child: TextField(
-                                enabled: isOdometerUnAvailable == false,
+                                enabled: odometerByPass == false,
                                 controller: _arrivalReadingController,
                                 onChanged: changeArrivalReading,
                                 cursorColor: CommonColors.colorPrimary,
@@ -636,7 +635,7 @@ class _UpdateMidMileDriverPositionState
               ),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.horizontalPadding,
@@ -669,7 +668,7 @@ class _UpdateMidMileDriverPositionState
                             child: Align(
                               alignment: AlignmentGeometry.centerRight,
                               child: InkWell(
-                                onTap: isOdometerUnAvailable == true
+                                onTap: odometerByPass == true
                                     ? null
                                     : () {
                                         showImagePickerDialog(context,
@@ -710,7 +709,7 @@ class _UpdateMidMileDriverPositionState
                                     Radius.circular(SizeConfig.largeRadius))),
                             child: isNullOrEmpty(_arrivalReadingImagePath)
                                 ? InkWell(
-                                    onTap: isOdometerUnAvailable == true
+                                    onTap: odometerByPass == true
                                         ? null
                                         : () {
                                             showImagePickerDialog(
@@ -791,7 +790,7 @@ class _UpdateMidMileDriverPositionState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Row(
                   children: [
                     Expanded(
@@ -800,8 +799,8 @@ class _UpdateMidMileDriverPositionState
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
+                                horizontal: SizeConfig.extraSmallHorizontalPadding,
+                                vertical: SizeConfig.extraSmallVerticalPadding),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(
                                   Radius.circular(SizeConfig.largeRadius)),
@@ -860,8 +859,8 @@ class _UpdateMidMileDriverPositionState
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: SizeConfig.horizontalPadding,
-                                vertical: SizeConfig.verticalPadding),
+                                horizontal: SizeConfig.extraSmallHorizontalPadding,
+                                vertical: SizeConfig.extraSmallVerticalPadding),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(
                                     Radius.circular(SizeConfig.largeRadius)),
@@ -918,11 +917,10 @@ class _UpdateMidMileDriverPositionState
               ),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Visibility(
-                  visible: isOdometerUnAvailable!,
-                  child: odoMeterUnAvailable()),
+                  visible: odometerByPass!, child: odoMeterUnAvailable()),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.horizontalPadding,
@@ -970,7 +968,7 @@ class _UpdateMidMileDriverPositionState
                                   horizontal: SizeConfig.horizontalPadding,
                                   vertical: SizeConfig.verticalPadding),
                               child: TextField(
-                                enabled: isOdometerUnAvailable == false,
+                                enabled: odometerByPass == false,
                                 controller: _unloadReadingController,
                                 onChanged: changeUnloadReading,
                                 cursorColor: CommonColors.colorPrimary,
@@ -1025,7 +1023,7 @@ class _UpdateMidMileDriverPositionState
               ),
               SizedBox(height: SizeConfig.mediumVerticalSpacing),
               Opacity(
-                opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
+                opacity: odometerByPass == true ? 0.4 : 1.0,
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.horizontalPadding,
@@ -1058,7 +1056,7 @@ class _UpdateMidMileDriverPositionState
                             child: Align(
                               alignment: AlignmentGeometry.centerRight,
                               child: InkWell(
-                                onTap: isOdometerUnAvailable == true
+                                onTap: odometerByPass == true
                                     ? null
                                     : () {
                                         showImagePickerDialog(context,
@@ -1099,7 +1097,7 @@ class _UpdateMidMileDriverPositionState
                                     Radius.circular(SizeConfig.largeRadius))),
                             child: isNullOrEmpty(_unloadReadingImagePath)
                                 ? InkWell(
-                                    onTap: isOdometerUnAvailable == true
+                                    onTap: odometerByPass == true
                                         ? null
                                         : () {
                                             showImagePickerDialog(
@@ -1169,9 +1167,8 @@ class _UpdateMidMileDriverPositionState
 Future<void> openUpdateMidMileDriverPosition(
     BuildContext context,
     MidMileTripDetailModel model,
-  
     MIDMILETRIPSTATUS status,
-      Future<void> Function() onRefresh) {
+    Future<void> Function() onRefresh) {
   DraggableScrollableController controller = DraggableScrollableController();
   return showModalBottomSheet(
       context: context,

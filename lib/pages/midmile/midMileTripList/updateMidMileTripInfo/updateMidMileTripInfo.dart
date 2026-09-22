@@ -17,15 +17,19 @@ import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
+enum MidMileTripStatus { START_TRIP, CLOSE_TRIP }
+
 class UpdateMidMileTripInfo extends StatefulWidget {
   MidMileTripListModel model;
   // final Function(dynamic, DrsStatus)? onUpdate; // Callback function
   Future<void> Function() refresh;
+  final MidMileTripStatus status;
   UpdateMidMileTripInfo({
     super.key,
     required this.model,
     // this.onUpdate,
     required this.refresh,
+    required this.status,
   });
 
   @override
@@ -34,16 +38,22 @@ class UpdateMidMileTripInfo extends StatefulWidget {
 }
 
 class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
-  final TextEditingController _dispatchDateController = TextEditingController();
-  final TextEditingController _dispatchTimeController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _startReadingController = TextEditingController();
+
+  final TextEditingController _closeDateController = TextEditingController();
+  final TextEditingController _closeTimeController = TextEditingController();
+  final TextEditingController _closeReadingController = TextEditingController();
   bool showCamera = false;
   String? _startReadingImagePath;
+  String? _closeReadingImagePath;
   String totalTime = "";
   String totaldistance = "";
   String currentAddress = '';
   String? _startReadingError;
-  bool? isOdometerUnAvailable = false;
+  String? _closeReadingError;
+  bool? odoMeterByPass = false;
 
   UpdateMidMileTripInfoViewModel viewModel = UpdateMidMileTripInfoViewModel();
   late LoadingAlertService loadingAlertService;
@@ -53,13 +63,18 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
   void initState() {
     super.initState();
 
-    _dispatchDateController.text =
+    _startDateController.text =
         DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
-    _dispatchTimeController.text = DateFormat('HH:mm').format(DateTime.now());
+    _startTimeController.text = DateFormat('HH:mm').format(DateTime.now());
     _startReadingController.text = "0";
+    _closeDateController.text =
+        DateFormat('dd-MM-yyyy').format(DateTime.now()).toString();
+    _closeTimeController.text = DateFormat('HH:mm').format(DateTime.now());
+    _closeReadingController.text = "0";
 
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => loadingAlertService = LoadingAlertService(context: context));
+    odoMeterByPass = (widget.model.odometerbypass) == 'Y' ? true : false;
     setObservers();
   }
 
@@ -78,13 +93,24 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
 
     viewModel.updateStartTripLiveData.stream.listen((model) async {
       if (model.commandstatus == 1) {
-        successToast(model.commandmessage?? '');
+        successToast(model.commandmessage ?? '');
         if (widget.refresh != null) {
           widget.refresh();
         }
         Get.back();
       } else {
-        failToast(model.commandmessage?? '');
+        failToast(model.commandmessage ?? '');
+      }
+    });
+    viewModel.updateCloseTripLiveData.stream.listen((model) async {
+      if (model.commandstatus == 1) {
+        successToast(model.commandmessage ?? '');
+        if (widget.refresh != null) {
+          widget.refresh();
+        }
+        Get.back();
+      } else {
+        failToast(model.commandmessage ?? '');
       }
     });
   }
@@ -102,30 +128,13 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
 
   void changeStartReading(String value) {
     setState(() {
-      // int currentReading = int.tryParse(value.trim()) ?? 0;
-      // int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
-      // if (value.isNotEmpty) {
-      //   if (lastTripInfo != null && currentReading <= lastReading) {
-      //     _startReadingError =
-      //         "Start Reading Value Can't be less than Last Trip's End Reading ${lastTripInfo!.lastendreadingkm}";
-      //     debugPrint(_startReadingError);
-      //   } else if (currentReading - lastReading >
-      //       int.parse(lastTripInfo!.readingdiff.toString())) {
-      //     commonAlertDialog(
-      //         context,
-      //         "ALERT!",
-      //         "Start and last close reading difference cannot exceed ${lastTripInfo!.readingdiff} KM.",
-      //         "",
-      //         const Icon(Icons.info),
-      //         okayCallBackForAlert,
-      //         cancelCallBack: () {});
-      //   } else {
-      //     _startReadingError = null;
-      //   }
       _startReadingImagePath = null;
-      // } else {
-      //   _startReadingError = null;
-      // }
+    });
+  }
+
+  void changeCloseReading(String value) {
+    setState(() {
+      _startReadingImagePath = null;
     });
   }
 
@@ -136,13 +145,16 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
   validateBeforeUpdate() {
     int currentReading = int.tryParse(_startReadingController.text.trim()) ?? 0;
     // int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
-    if (isOdometerUnAvailable == false) {
-      if (isNullOrEmpty(_dispatchDateController.text)) {
-        // failToast("Please Select Dispatch Data.");
+    if (widget.status == MidMileTripStatus.START_TRIP &&
+        odoMeterByPass == false) {
+      if (isNullOrEmpty(_startDateController.text)) {
         failToast("Please Select Trip Date.");
         return;
-      } else if (isNullOrEmpty(_dispatchTimeController.text)) {
+      } else if (isNullOrEmpty(_startTimeController.text)) {
         failToast("Please Select Trip Time");
+        return;
+      } else if (isNullOrEmpty(_startReadingImagePath)) {
+        failToast("Please Select Reading Image.");
         return;
       } else if (isNullOrEmpty(_startReadingController.text)) {
         failToast("Please Enter Odometer Value");
@@ -154,13 +166,27 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
         failToast(_startReadingError!);
         return;
       }
-      //  else if (lastReading > 0 &&
-      //     currentReading - lastReading >
-      //         int.parse(lastTripInfo!.readingdiff.toString())) {
-      //   failToast(
-      //       "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
-      //   return;
-      // }
+    } else if (widget.status == MidMileTripStatus.CLOSE_TRIP &&
+        odoMeterByPass == false) {
+      if (isNullOrEmpty(_closeDateController.text)) {
+        failToast("Please Select Close Trip Date.");
+        return;
+      } else if (isNullOrEmpty(_closeTimeController.text)) {
+        failToast("Please Select Close Trip Time.");
+        return;
+      } else if (isNullOrEmpty(_closeReadingImagePath)) {
+        failToast("Please Select Reading Image Path.");
+        return;
+      } else if (isNullOrEmpty(_closeReadingController.text)) {
+        failToast("Please Enter Odometer Value.");
+        return;
+      } else if (int.tryParse(_closeReadingController.text)! <= 0) {
+        failToast("Odometer Value Can't be Zero.");
+        return;
+      } else if (_closeReadingError != null) {
+        failToast(_closeReadingError.toString());
+        return;
+      }
     }
     fetchLocationAndSubmit();
   }
@@ -173,7 +199,11 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
     if (address != null) {
       currentAddress = address;
       debugPrint("Current Address: $currentAddress");
-      updateStartTrip();
+      if (widget.status == MidMileTripStatus.START_TRIP) {
+        updateStartTrip();
+      } else {
+        updateCloseTrip();
+      }
     } else {
       failToast("Could not get your location.");
     }
@@ -182,20 +212,20 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
   Future<void> updateStartTrip() async {
     // _currentPosition = await Geolocator.getCurrentPosition();
     // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
-      LocationService().getCurrentLocation().then((position) {
-  _currentPosition = position;
-});
+    LocationService().getCurrentLocation().then((position) {
+      _currentPosition = position;
+    });
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
-      "prmmenucode": '',
+      "prmmenucode": 'GTAPP_MIDMILETRIP',
       "prmdivisionid": savedUser.logindivisionid.toString(),
       "prmtripid": widget.model.tripid.toString(),
       "prmtripdetailid": widget.model.tripdetailid.toString(),
-      "prmstartdt": convert2SmallDateTime(_dispatchDateController.text),
-      "prmstarttime": _dispatchTimeController.text,
+      "prmstartdt": convert2SmallDateTime(_startDateController.text),
+      "prmstarttime": _startTimeController.text,
       "prmvehiclestartkm": isNullOrEmpty(_startReadingController.text)
           ? ''
           : _startReadingController.text,
@@ -212,42 +242,41 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
     viewModel.updateStartTrip(params);
   }
 
-  Widget odoMeterUnAvailable() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              "Odometer un-available?",
-              style: TextStyle(
-                color: CommonColors.appBarColor,
-                fontSize: SizeConfig.smallTextSize,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            Checkbox(
-              checkColor: CommonColors.White,
-              activeColor: CommonColors.colorPrimary,
-              value: isOdometerUnAvailable,
-              // onChanged: (value) {
-              //   isOdometerUnAvailable = value;
-              //   setState(() {});
-              // }
-              onChanged: null,
-            ),
-          ],
-        ),
-        Visibility(
-          visible: isOdometerUnAvailable == true,
-          child: Text(
-            "(You can submit the form without filling it.)",
-            style: TextStyle(color: CommonColors.green500),
-          ),
-        )
-      ],
-    );
+  Future<void> updateCloseTrip() async {
+    // _currentPosition = await Geolocator.getCurrentPosition();
+    // _currentPosition = _currentPosition = await LocationService().getCurrentLocation();
+    // LocationService().getCurrentLocation().then((position) {
+    //   _currentPosition = position;
+    // });
+     loadingAlertService.showLoading();
+     _currentPosition = await LocationService().getCurrentLocation();
+    loadingAlertService.hideLoading();
+
+    Map<String, String> params = {
+      // "prmcompanyid": savedUser.companyid.toString(),
+      "prmbranchcode": savedUser.loginbranchcode.toString(),
+      "prmusercode": savedUser.usercode.toString(),
+      "prmsessionid": savedUser.sessionid.toString(),
+      "prmmenucode": 'GTAPP_MIDMILETRIP',
+      "prmdivisionid": savedUser.logindivisionid.toString(),
+      "prmtripid": widget.model.tripid.toString(),
+      "prmtripdetailid": widget.model.tripdetailid.toString(),
+      "prmclosedt": convert2SmallDateTime(_startDateController.text),
+      "prmclosetime": _closeTimeController.text,
+      "prmvehicleclosekm": isNullOrEmpty(_closeReadingController.text)
+          ? ''
+          : _closeReadingController.text.toString(),
+      "prmvehiclecloselocation": currentAddress,
+      "prmcloselatposition": _currentPosition?.latitude.toString() ?? '',
+      "prmcloselongposition": _currentPosition?.longitude.toString() ?? '',
+      "prmclosereadingimage": isNullOrEmpty(_closeReadingImagePath)
+          ? ""
+          : convertFilePathToBase64(_closeReadingImagePath.toString()),
+      
+      "prmmodecode": widget.model.vehiclecode ?? '',
+    };
+
+    viewModel.updateCloseTrip(params);
   }
 
   @override
@@ -279,376 +308,13 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Opacity(
-                  opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(SizeConfig.largeRadius)),
-                                border: Border.all(
-                                    color: CommonColors.grey400!, width: 1),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today_rounded,
-                                        size: SizeConfig.largeIconSize,
-                                        color: CommonColors.appBarColor,
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            SizeConfig.smallHorizontalSpacing,
-                                      ),
-                                      Text(
-                                        // "DISPATCH DATE",
-                                        "TRIP DATE",
-                                        style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: SizeConfig.smallTextSize,
-                                            fontWeight: FontWeight.w400),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 2,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            SizeConfig.mediumHorizontalSpacing,
-                                      ),
-                                      Text(
-                                        _dispatchDateController.text,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: CommonColors.appBarColor,
-                                            fontSize: SizeConfig.smallTextSize),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: SizeConfig.mediumHorizontalSpacing),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: SizeConfig.horizontalPadding,
-                                  vertical: SizeConfig.verticalPadding),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(SizeConfig.largeRadius)),
-                                  border: Border.all(
-                                      color: CommonColors.grey400!, width: 1)),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.calendar_today_rounded,
-                                        size: SizeConfig.largeIconSize,
-                                        color: CommonColors.appBarColor,
-                                      ),
-                                      SizedBox(
-                                        width:
-                                            SizeConfig.smallHorizontalSpacing,
-                                      ),
-                                      Text(
-                                        // "DISPATCH TIME",
-                                        "TRIP TIME",
-                                        style: TextStyle(
-                                          color: CommonColors.appBarColor,
-                                          fontSize: SizeConfig.smallTextSize,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 2,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width:
-                                            SizeConfig.mediumHorizontalSpacing,
-                                      ),
-                                      Text(
-                                        _dispatchTimeController.text,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: CommonColors.appBarColor,
-                                            fontSize: SizeConfig.smallTextSize),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: SizeConfig.mediumVerticalSpacing),
                 Visibility(
-                    visible: isOdometerUnAvailable!,
-                    child: odoMeterUnAvailable()),
-                SizedBox(height: SizeConfig.mediumVerticalSpacing),
-                Opacity(
-                  opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.horizontalPadding,
-                        vertical: SizeConfig.verticalPadding),
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: CommonColors.grey400!, width: 1),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(SizeConfig.largeRadius))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.speed_rounded,
-                              color: CommonColors.appBarColor,
-                              size: SizeConfig.largeIconSize,
-                            ),
-                            SizedBox(
-                              width: SizeConfig.smallHorizontalSpacing,
-                            ),
-                            Text(
-                              "ODOMETER READING",
-                              style: TextStyle(
-                                  color: CommonColors.appBarColor,
-                                  fontSize: SizeConfig.smallTextSize),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: SizeConfig.smallVerticalSpacing,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: SizeConfig.horizontalPadding,
-                                    vertical: SizeConfig.verticalPadding),
-                                child: TextField(
-                                  enabled: isOdometerUnAvailable == false,
-                                  controller: _startReadingController,
-                                  onChanged: changeStartReading,
-                                  cursorColor: CommonColors.colorPrimary,
-                                  textInputAction: TextInputAction.done,
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: SizeConfig.smallTextSize),
-                                  decoration: InputDecoration(
-                                    errorText: _startReadingError,
-                                    errorStyle:
-                                        const TextStyle(color: Colors.red),
-                                    // helperText: isNullOrEmpty(lastTripInfo
-                                    //         ?.lastendreadingkm
-                                    //         .toString())
-                                    //     ? "Enter start reading"
-                                    //     : "Must be > last trip reading (${lastTripInfo!.lastendreadingkm})",
-                                    helperStyle:
-                                        const TextStyle(color: Colors.black),
-                                    // color: isNullOrEmpty(lastTripInfo
-                                    //           ?.lastendreadingkm
-                                    //           .toString())
-                                    //       ? Colors.black
-                                    //       : Colors.red),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                              SizeConfig.largeRadius)),
-                                      borderSide: BorderSide(
-                                          width: 1,
-                                          color: CommonColors.grey400!),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(SizeConfig.largeRadius),
-                                      ),
-                                      borderSide: BorderSide(
-                                          width: 1,
-                                          color: CommonColors.grey400!),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const Text(
-                              "km",
-                              style: TextStyle(color: CommonColors.appBarColor),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: SizeConfig.mediumVerticalSpacing),
-                Opacity(
-                  opacity: isOdometerUnAvailable == true ? 0.4 : 1.0,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.horizontalPadding,
-                        vertical: SizeConfig.verticalPadding),
-                    decoration: BoxDecoration(
-                        border:
-                            Border.all(color: CommonColors.grey400!, width: 1),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(SizeConfig.largeRadius))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.camera_alt_outlined,
-                              color: CommonColors.appBarColor,
-                              size: SizeConfig.largeIconSize,
-                            ),
-                            SizedBox(
-                              width: SizeConfig.mediumHorizontalSpacing,
-                            ),
-                            Text(
-                              "START READING IMAGE",
-                              style: TextStyle(
-                                  color: CommonColors.appBarColor,
-                                  fontSize: SizeConfig.smallTextSize),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: AlignmentGeometry.centerRight,
-                                child: InkWell(
-                                  onTap: isOdometerUnAvailable == true
-                                      ? null
-                                      : () {
-                                          showImagePickerDialog(context,
-                                              (file) async {
-                                            if (file != null) {
-                                              debugPrint(' data: ${file.path}');
-                                              setState(() {
-                                                _startReadingImagePath =
-                                                    file.path;
-                                              });
-                                            } else {
-                                              failToast("File not selected");
-                                            }
-                                          });
-                                        },
-                                  child: Icon(
-                                    Icons.file_upload_outlined,
-                                    color: CommonColors.appBarColor,
-                                    size: SizeConfig.largeIconSize,
-                                    // size: 24,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: SizeConfig.horizontalPadding,
-                              vertical: SizeConfig.verticalPadding),
-                          child: SizedBox(
-                            height: 200,
-                            width: MediaQuery.sizeOf(context).width,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: CommonColors.grey300,
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(SizeConfig.largeRadius))),
-                              child: isNullOrEmpty(_startReadingImagePath)
-                                  ? InkWell(
-                                      onTap: isOdometerUnAvailable == true
-                                          ? null
-                                          : () {
-                                              showImagePickerDialog(
-                                                context,
-                                                (file) async {
-                                                  if (file != null) {
-                                                    debugPrint(
-                                                        ' data: ${file.path}');
-                                                    setState(() {
-                                                      _startReadingImagePath =
-                                                          file.path;
-                                                    });
-                                                  } else {
-                                                    failToast(
-                                                        "File not selected");
-                                                  }
-                                                },
-                                              );
-                                            },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.file_upload_outlined,
-                                            color: CommonColors.appBarColor,
-                                            size: SizeConfig.extraLargeIconSize,
-                                          ),
-                                          Text(
-                                            "Upload Image",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontSize:
-                                                    SizeConfig.mediumTextSize),
-                                          ),
-                                          Text(
-                                            "Click the upload button above",
-                                            style: TextStyle(
-                                                color: Colors.black87,
-                                                fontSize:
-                                                    SizeConfig.smallTextSize),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  : Image.file(
-                                      File(_startReadingImagePath!),
-                                      fit: BoxFit.contain,
-                                    ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
+                    visible: odoMeterByPass == true,
+                    child: odoMeterByPassView()),
+                widget.status == MidMileTripStatus.START_TRIP
+                    ? StartTripView()
+                    : CloseTripView()
+                // SizedBox(height: SizeConfig.mediumVerticalSpacing),
               ],
             ),
           );
@@ -670,10 +336,738 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
       ],
     );
   }
+
+  Widget StartTripView() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallHorizontalPadding),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(SizeConfig.mediumRadius)),
+                      border:
+                          Border.all(color: CommonColors.grey400!, width: 1),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: SizeConfig.largeIconSize,
+                              color: CommonColors.grey400,
+                            ),
+                            SizedBox(
+                              width: SizeConfig.smallHorizontalSpacing,
+                            ),
+                            Text(
+                              // "DISPATCH DATE",
+                              "TRIP DATE",
+                              style: TextStyle(
+                                  color: CommonColors.grey400,
+                                  fontSize: SizeConfig.smallTextSize,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: SizeConfig.mediumHorizontalSpacing,
+                            ),
+                            Text(
+                              _startDateController.text,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: CommonColors.grey600,
+                                  fontSize: SizeConfig.smallTextSize),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallVerticalPadding),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.mediumRadius)),
+                        border:
+                            Border.all(color: CommonColors.grey400!, width: 1)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: SizeConfig.largeIconSize,
+                              color: CommonColors.grey400,
+                            ),
+                            SizedBox(
+                              width: SizeConfig.smallHorizontalSpacing,
+                            ),
+                            Text(
+                              // "DISPATCH TIME",
+                              "TRIP TIME",
+                              style: TextStyle(
+                                color: CommonColors.grey400,
+                                fontSize: SizeConfig.smallTextSize,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: SizeConfig.mediumHorizontalSpacing,
+                            ),
+                            Text(
+                              _startTimeController.text,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: CommonColors.grey600,
+                                  fontSize: SizeConfig.smallTextSize),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
+        Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
+          decoration: BoxDecoration(
+              border: Border.all(color: CommonColors.grey400!, width: 1),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.speed_rounded,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.smallHorizontalSpacing,
+                  ),
+                  Text(
+                    "ODOMETER READING",
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: SizeConfig.smallTextSize),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: SizeConfig.smallVerticalSpacing,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
+                      child: TextField(
+                        enabled: odoMeterByPass == false,
+                        controller: _startReadingController,
+                        onChanged: changeStartReading,
+                        cursorColor: CommonColors.colorPrimary,
+                        textInputAction: TextInputAction.done,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: SizeConfig.smallTextSize),
+                        decoration: InputDecoration(
+                          errorText: _startReadingError,
+                          errorStyle: const TextStyle(color: Colors.red),
+                          // helperText: isNullOrEmpty(lastTripInfo
+                          //         ?.lastendreadingkm
+                          //         .toString())
+                          //     ? "Enter start reading"
+                          //     : "Must be > last trip reading (${lastTripInfo!.lastendreadingkm})",
+                          helperStyle: const TextStyle(color: Colors.black),
+                          // color: isNullOrEmpty(lastTripInfo
+                          //           ?.lastendreadingkm
+                          //           .toString())
+                          //       ? Colors.black
+                          //       : Colors.red),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(SizeConfig.largeRadius)),
+                            borderSide: BorderSide(
+                                width: 1, color: CommonColors.grey400!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeRadius),
+                            ),
+                            borderSide: BorderSide(
+                                width: 1, color: CommonColors.grey400!),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Text(
+                    "km",
+                    style: TextStyle(color: CommonColors.appBarColor),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
+       
+         odoMeterByPass == false?
+         Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
+          decoration: BoxDecoration(
+           
+              border: Border.all(color: CommonColors.grey400!, width: 1),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.camera_alt_outlined,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.mediumHorizontalSpacing,
+                  ),
+                  Text(
+                    "START READING IMAGE",
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: SizeConfig.smallTextSize),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: InkWell(
+                        onTap: odoMeterByPass == true
+                            ? null
+                            : () {
+                                showImagePickerDialog(context, (file) async {
+                                  if (file != null) {
+                                    debugPrint(' data: ${file.path}');
+                                    setState(() {
+                                      _startReadingImagePath = file.path;
+                                    });
+                                  } else {
+                                    failToast("File not selected");
+                                  }
+                                });
+                              },
+                        child: Icon(
+                          Icons.file_upload_outlined,
+                          color: CommonColors.appBarColor,
+                          size: SizeConfig.largeIconSize,
+                          // size: 24,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                child: SizedBox(
+                  height: 200,
+                  width: MediaQuery.sizeOf(context).width,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: CommonColors.grey300,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.largeRadius))),
+                    child: isNullOrEmpty(_startReadingImagePath)
+                        ? InkWell(
+                            onTap: odoMeterByPass == true
+                                ? null
+                                : () {
+                                    showImagePickerDialog(
+                                      context,
+                                      (file) async {
+                                        if (file != null) {
+                                          debugPrint(' data: ${file.path}');
+                                          setState(() {
+                                            _startReadingImagePath = file.path;
+                                          });
+                                        } else {
+                                          failToast("File not selected");
+                                        }
+                                      },
+                                    );
+                                  },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.file_upload_outlined,
+                                  color: CommonColors.appBarColor,
+                                  size: SizeConfig.extraLargeIconSize,
+                                ),
+                                Text(
+                                  "Upload Image",
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: SizeConfig.mediumTextSize),
+                                ),
+                                Text(
+                                  "Click the upload button above",
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: SizeConfig.smallTextSize),
+                                )
+                              ],
+                            ),
+                          )
+                        : Image.file(
+                            File(_startReadingImagePath!),
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        )
+      :Text("")
+      ],
+    );
+  }
+
+  Widget CloseTripView() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallHorizontalPadding),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(SizeConfig.mediumRadius)),
+                      border:
+                          Border.all(color: CommonColors.grey400!, width: 1),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: SizeConfig.largeIconSize,
+                              color: CommonColors.grey400,
+                            ),
+                            SizedBox(
+                              width: SizeConfig.smallHorizontalSpacing,
+                            ),
+                            Text(
+                              // "DISPATCH DATE",
+                              "CLOSE TRIP DATE",
+                              style: TextStyle(
+                                  color: CommonColors.grey400,
+                                  fontSize: SizeConfig.smallTextSize,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: SizeConfig.mediumHorizontalSpacing,
+                            ),
+                            Text(
+                              _closeDateController.text,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: CommonColors.grey600,
+                                  fontSize: SizeConfig.smallTextSize),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(width: SizeConfig.mediumHorizontalSpacing),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: SizeConfig.extraSmallHorizontalPadding,
+                        vertical: SizeConfig.extraSmallVerticalPadding),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.mediumRadius)),
+                        border:
+                            Border.all(color: CommonColors.grey400!, width: 1)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: SizeConfig.largeIconSize,
+                              color: CommonColors.grey400,
+                            ),
+                            SizedBox(
+                              width: SizeConfig.smallHorizontalSpacing,
+                            ),
+                            Text(
+                              // "DISPATCH TIME",
+                              "CLOSE TRIP TIME",
+                              style: TextStyle(
+                                color: CommonColors.grey400,
+                                fontSize: SizeConfig.smallTextSize,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: SizeConfig.mediumHorizontalSpacing,
+                            ),
+                            Text(
+                              _closeTimeController.text,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: CommonColors.grey600,
+                                  fontSize: SizeConfig.smallTextSize),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
+        Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
+          decoration: BoxDecoration(
+              border: Border.all(color: CommonColors.grey400!, width: 1),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.speed_rounded,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.smallHorizontalSpacing,
+                  ),
+                  Text(
+                    "ODOMETER READING",
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: SizeConfig.smallTextSize),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: SizeConfig.smallVerticalSpacing,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: SizeConfig.horizontalPadding,
+                          vertical: SizeConfig.verticalPadding),
+                      child: TextField(
+                        enabled: odoMeterByPass == false,
+                        controller: _closeReadingController,
+                        onChanged: changeCloseReading,
+                        cursorColor: CommonColors.colorPrimary,
+                        textInputAction: TextInputAction.done,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: SizeConfig.smallTextSize),
+                        decoration: InputDecoration(
+                          errorText: _closeReadingError,
+                          errorStyle: const TextStyle(color: Colors.red),
+                          helperStyle: const TextStyle(color: Colors.black),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(SizeConfig.largeRadius)),
+                            borderSide: BorderSide(
+                                width: 1, color: CommonColors.grey400!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(SizeConfig.largeRadius),
+                            ),
+                            borderSide: BorderSide(
+                                width: 1, color: CommonColors.grey400!),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Text(
+                    "km",
+                    style: TextStyle(color: CommonColors.appBarColor),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: SizeConfig.mediumVerticalSpacing),
+        odoMeterByPass == false?
+         Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.horizontalPadding,
+              vertical: SizeConfig.verticalPadding),
+          decoration: BoxDecoration(
+               
+              border: Border.all(color: CommonColors.grey400!, width: 1),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(SizeConfig.largeRadius))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.camera_alt_outlined,
+                    color: CommonColors.appBarColor,
+                    size: SizeConfig.largeIconSize,
+                  ),
+                  SizedBox(
+                    width: SizeConfig.mediumHorizontalSpacing,
+                  ),
+                  Text(
+                    "CLOSE READING IMAGE",
+                    style: TextStyle(
+                        color: CommonColors.appBarColor,
+                        fontSize: SizeConfig.smallTextSize),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: InkWell(
+                        onTap: odoMeterByPass == true
+                            ? null
+                            : () {
+                                showImagePickerDialog(context, (file) async {
+                                  if (file != null) {
+                                    debugPrint(' data: ${file.path}');
+                                    setState(() {
+                                      _closeReadingImagePath = file.path;
+                                    });
+                                  } else {
+                                    failToast("File not selected");
+                                  }
+                                });
+                              },
+                        child: Icon(
+                          Icons.file_upload_outlined,
+                          color: CommonColors.appBarColor,
+                          size: SizeConfig.largeIconSize,
+                          // size: 24,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.horizontalPadding,
+                    vertical: SizeConfig.verticalPadding),
+                child: SizedBox(
+                  height: 200,
+                  width: MediaQuery.sizeOf(context).width,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: CommonColors.grey300,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(SizeConfig.largeRadius))),
+                    child: isNullOrEmpty(_closeReadingImagePath)
+                        ? InkWell(
+                            onTap: odoMeterByPass == true
+                                ? null
+                                : () {
+                                    showImagePickerDialog(
+                                      context,
+                                      (file) async {
+                                        if (file != null) {
+                                          debugPrint(' data: ${file.path}');
+                                          setState(() {
+                                            _closeReadingImagePath = file.path;
+                                          });
+                                        } else {
+                                          failToast("File not selected");
+                                        }
+                                      },
+                                    );
+                                  },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.file_upload_outlined,
+                                  color: CommonColors.appBarColor,
+                                  size: SizeConfig.extraLargeIconSize,
+                                ),
+                                Text(
+                                  "Upload Image",
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: SizeConfig.mediumTextSize),
+                                ),
+                                Text(
+                                  "Click the upload button above",
+                                  style: TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: SizeConfig.smallTextSize),
+                                )
+                              ],
+                            ),
+                          )
+                        : Image.file(
+                            File(_closeReadingImagePath!),
+                            fit: BoxFit.contain,
+                          ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        )
+     
+     :Text('') ],
+    );
+  }
+
+  Widget odoMeterByPassView() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              "Odometer un-available?",
+              style: TextStyle(
+                color: CommonColors.appBarColor,
+                fontSize: SizeConfig.smallTextSize,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            Checkbox(
+              checkColor: CommonColors.White,
+              activeColor: CommonColors.colorPrimary,
+              value: odoMeterByPass,
+              // onChanged: (value) {
+              //   isOdometerUnAvailable = value;
+              //   setState(() {});
+              // }
+              onChanged: null,
+            ),
+          ],
+        ),
+        Visibility(
+          visible: odoMeterByPass == true,
+          child: Text(
+            "(You can submit the form without filling it.)",
+            style: TextStyle(color: CommonColors.green500),
+          ),
+        )
+      ],
+    );
+  }
 }
 
-Future<void> openUpdateMidMileTripInfo(BuildContext context,
-    MidMileTripListModel model, Future<void> Function() onRefresh) {
+Future<void> openUpdateMidMileTripInfo(
+    BuildContext context,
+    MidMileTripListModel model,
+    Future<void> Function() onRefresh,
+    MidMileTripStatus status) {
   DraggableScrollableController controller = DraggableScrollableController();
   return showModalBottomSheet(
       context: context,
@@ -690,7 +1084,11 @@ Future<void> openUpdateMidMileTripInfo(BuildContext context,
             builder: (context, scrollController) {
               return Container(
                 color: Colors.white,
-                child: UpdateMidMileTripInfo(model: model, refresh: onRefresh),
+                child: UpdateMidMileTripInfo(
+                  model: model,
+                  refresh: onRefresh,
+                  status: status,
+                ),
               );
             },
           ),

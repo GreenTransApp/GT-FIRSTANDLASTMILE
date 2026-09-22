@@ -10,6 +10,8 @@ class MidMileTripListViewModel extends BaseViewModel {
 
   StreamController<List<MidMileTripListModel>> midMileTripsList =
       StreamController();
+  StreamController<MidMileTripListModel> validateTripLiveData =
+      StreamController();
   StreamController<PunchoutModel> get updateTripStart =>
       _repository.updateTripStart;
   StreamController<bool> loadingDialog = StreamController<bool>();
@@ -19,9 +21,14 @@ class MidMileTripListViewModel extends BaseViewModel {
     loadingDialog = _repository.loadingDialog;
     errorDialog = _repository.errorDialog;
     midMileTripsList = _repository.midMileTripsList;
+    validateTripLiveData = _repository.validateTripData;
   }
 
   Future<void> getMidMileTripsList(Map<String, String> params) async {
     await _repository.getMidMileTripsList(params);
+  }
+  
+   void ValidateTripBeforeStart(Map<String, String> params) {
+    _repository.ValidateTripBeforeStart(params);
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:gtlmd/api/HttpCalls.dart';
 import 'package:gtlmd/base/BaseRepository.dart';
 import 'package:gtlmd/common/commonResponse.dart';
@@ -14,6 +15,8 @@ class MidMileTripListRepository extends BaseRepository {
   final StreamController<PunchoutModel> updateTripStart = StreamController();
   final StreamController<bool> loadingDialog = StreamController();
   final StreamController<String> errorDialog = StreamController();
+    StreamController<MidMileTripListModel> validateTripData =
+      StreamController();
 
   getMidMileTripsList(Map<String, String> params) async {
     loadingDialog.add(true);
@@ -44,6 +47,42 @@ class MidMileTripListRepository extends BaseRepository {
         }
         loadingDialog.add(false);
       } on SocketException catch (_) {
+        errorDialog.add("No Internet");
+        loadingDialog.add(false);
+      } catch (err) {
+        errorDialog.add(err.toString());
+        loadingDialog.add(false);
+      }
+      loadingDialog.add(false);
+    } else {
+      loadingDialog.add(false);
+      errorDialog.add("No Internet available");
+    }
+  }
+
+  void ValidateTripBeforeStart(Map<String, String> params) async {
+    loadingDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        CommonResponse resp = await apiPostWithModel("${lmdUrl}ValidateMidMileTripBeforeStartTrip", params);
+
+        loadingDialog.add(false);
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          List<dynamic> list = table.values.first;
+          MidMileTripListModel validateResponse =
+              MidMileTripListModel.fromJson(list[0]);
+          if (validateResponse.commandstatus == 1) {
+            validateTripData.add(validateResponse);
+          } else {
+            errorDialog.add(validateResponse.commandmessage!);
+          }
+        } else {
+          errorDialog.add(resp.commandMessage.toString());
+        }
+      } on SocketException catch (error) {
+        debugPrint(error.toString());
         errorDialog.add("No Internet");
         loadingDialog.add(false);
       } catch (err) {

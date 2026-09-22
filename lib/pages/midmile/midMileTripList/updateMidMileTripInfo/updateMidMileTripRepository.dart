@@ -57,4 +57,41 @@ class UpdateMidMileTripInfoRepository extends BaseRepository {
       errorDialog.add("No Internet available");
     }
   }
+
+  void updateCloseTrip(Map<String, String> params) async {
+    loadingDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      try {
+        CommonResponse resp =
+            await apiPostWithModel("${lmdUrl}UpdateMidMileTripClose", params);
+
+        if (resp.commandStatus == 1) {
+          Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+          List<dynamic> list = table.values.first;
+          UpsertTripResponseModel validateResponse =
+              UpsertTripResponseModel.fromJson(list[0]);
+          if (validateResponse.commandstatus == 1) {
+            updateCloseTripLiveData.add(validateResponse);
+          } else {
+            errorDialog.add(validateResponse.commandmessage!);
+          }
+        } else {
+          errorDialog.add(resp.commandMessage.toString());
+        }
+        loadingDialog.add(false);
+      } on SocketException catch (error) {
+        debugPrint(error.toString());
+        errorDialog.add("No Internet");
+        loadingDialog.add(false);
+      } catch (err) {
+        errorDialog.add(err.toString());
+        loadingDialog.add(false);
+      }
+      loadingDialog.add(false);
+    } else {
+      loadingDialog.add(false);
+      errorDialog.add("No Internet available");
+    }
+  }
 }

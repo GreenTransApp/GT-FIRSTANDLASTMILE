@@ -878,37 +878,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
       ),
       child: Column(
         children: [
-          // Align(
-          //   alignment: Alignment.centerRight,
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(
-          //       horizontal: SizeConfig.smallHorizontalPadding,
-          //       vertical: SizeConfig.smallVerticalPadding,
-          //     ),
-          //     decoration: BoxDecoration(
-          //       color: CommonColors.colorPrimary!
-          //           .withAlpha((0.12 * 255).round()),
-          //       borderRadius: BorderRadius.circular(20),
-          //     ),
-          //     child: Row(
-          //       mainAxisSize: MainAxisSize.min,
-          //       children: [
-          //         Icon(Icons.local_shipping_outlined,
-          //             size: SizeConfig.smallTextSize ,
-          //             color: CommonColors.colorPrimary),
-          //         const SizedBox(width: 4),
-          //         Text(
-          //           'DIRECT',
-          //           style: TextStyle(
-          //             fontSize: SizeConfig.smallTextSize,
-          //             fontWeight: FontWeight.bold,
-          //             color: CommonColors.colorPrimary,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
+      
           Container(
                padding: EdgeInsets.symmetric(vertical: SizeConfig.verticalPadding,horizontal: SizeConfig.horizontalPadding),
           decoration: BoxDecoration(
@@ -1054,18 +1024,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     ),
                   )
                 : 
-                // FilledButton.icon(
-                //     onPressed: () {
-                //       openUpdateMidMileDriverPosition(context, item,
-                //           MIDMILETRIPSTATUS.ARRIVAL, onRefresh);
-                //     },
-                //     icon: const Icon(Icons.location_on),
-                //     label: const Text("Reach At"),
-                //     style: FilledButton.styleFrom(
-                //       backgroundColor: CommonColors.colorPrimary,
-                //       padding: const EdgeInsets.symmetric(vertical: 14),
-                //     ),
-                //   ),
+              
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
               decoration: BoxDecoration(

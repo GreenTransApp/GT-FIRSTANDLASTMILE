@@ -1,4 +1,6 @@
 class MidMileTripListModel {
+  final int? commandstatus;
+  final String? commandmessage;
   final int? tripid;
   final int? tripdetailid;
   final String? startdt;
@@ -18,8 +20,12 @@ class MidMileTripListModel {
   final String? mobileno;
   final double? rating;
   final String? startdatetime;
+  final String? odometerbypass;
+  final String? showclosetripbtn;
 
   MidMileTripListModel({
+    this.commandstatus,
+    this.commandmessage,
     this.tripid,
     this.tripdetailid,
     this.startdt,
@@ -39,10 +45,14 @@ class MidMileTripListModel {
     this.mobileno,
     this.rating,
     this.startdatetime,
+    this.odometerbypass,
+    this.showclosetripbtn,
   });
 
   factory MidMileTripListModel.fromJson(Map<String, dynamic> json) {
     return MidMileTripListModel(
+      commandstatus: json['commandstatus'] as int?,
+      commandmessage: json['commandmessage'] as String?,
       tripid: json['tripid'] as int?,
       tripdetailid: json['tripdetailid'] as int?,
       startdt: json['startdt'] as String?,
@@ -61,12 +71,16 @@ class MidMileTripListModel {
       drivername: json['drivername'] as String?,
       mobileno: json['mobileno'] as String?,
       rating: json['rating'] as double?,
-        startdatetime: json['startdatetime'] as String?
+      startdatetime: json['startdatetime'] as String?,
+      odometerbypass: json['odometerbypass'] as String?,
+      showclosetripbtn: json['showclosetripbtn'] as String?
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'commandstatus': commandstatus,
+      'commandmessage': commandmessage,
       'tripid': tripid,
       'tripdetailid': tripdetailid,
       'startdt': startdt,
@@ -86,10 +100,14 @@ class MidMileTripListModel {
       'mobileno': mobileno,
       'rating': rating,
       'startdatetime': startdatetime,
+      'odometerbypass': odometerbypass,
+      'showclosetripbtn': showclosetripbtn,
     };
   }
 
   MidMileTripListModel copyWith({
+    int? commandstatus,
+    String? commandmessage,
     int? tripid,
     int? tripdetailid,
     String? startdt,
@@ -109,8 +127,12 @@ class MidMileTripListModel {
     String? mobileno,
     double? rating,
     String? startdatetime,
+    String? odometerbypass,
+    String? showclosetripbtn,
   }) {
     return MidMileTripListModel(
+      commandstatus: tripid ?? this.tripid,
+      commandmessage: commandmessage ?? this.commandmessage,
       tripid: tripid ?? this.tripid,
       tripdetailid: tripdetailid ?? this.tripdetailid,
       startdt: startdt ?? this.startdt,
@@ -130,6 +152,8 @@ class MidMileTripListModel {
       mobileno: mobileno ?? this.mobileno,
       rating: rating ?? this.rating,
       startdatetime: startdatetime ?? this.startdatetime,
+      odometerbypass: odometerbypass ?? this.odometerbypass,
+      showclosetripbtn: showclosetripbtn ?? this.showclosetripbtn,
     );
   }
 }

@@ -36,6 +36,8 @@ class MidMileTripDetailModel {
   final String? vehiclearrivalupdateon;
 
   final String? grno;
+  final String? lastreading;
+  final String? odometerbypass;
 
   MidMileTripDetailModel({
     this.commandstatus,
@@ -66,6 +68,8 @@ class MidMileTripDetailModel {
     this.arrivalKm,
     this.vehiclearrivalupdateon,
     this.grno,
+    this.lastreading,
+    this.odometerbypass,
   });
 
   factory MidMileTripDetailModel.fromJson(Map<String, dynamic> json) {
@@ -107,6 +111,8 @@ class MidMileTripDetailModel {
       vehiclearrivalupdateon: json['vehiclearrivalupdateon'],
 
       grno: json['grno'],
+      lastreading: json['lastreading'],
+      odometerbypass: json['odometerbypass'],
     );
   }
 
@@ -149,6 +155,8 @@ class MidMileTripDetailModel {
       'vehiclearrivalupdateon': vehiclearrivalupdateon,
 
       'grno': grno,
+      'lastreading': lastreading,
+      'odometerbypass': odometerbypass,
     };
   }
 }
