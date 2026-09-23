@@ -179,7 +179,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               children: [
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                         border: Border.all(color: CommonColors.appBarColor),
                         borderRadius: BorderRadius.circular(40)),
@@ -194,7 +194,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 ),
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                         border: Border.all(
                           color: CommonColors.appBarColor,
@@ -775,30 +775,34 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Text("${item.vehiclearrivalupdateon}",
+                       
+                      
+                        Row(
+                          children: [
+                               Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                            Text(
+                              "Vehicle Arrived",
                               style: TextStyle(
                                 color: Colors.green.shade700,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                              )),
+                              ),
+                            ),
+                            
+                          ],
                         ),
+                        Text("${item.vehiclearrivalupdateon}",
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            )),
                       
-                        const SizedBox(width: 8),
-                        Text(
-                          "Vehicle Arrived",
-                          style: TextStyle(
-                            color: Colors.green.shade700,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                          Icon(
-                          Icons.check_circle,
-                          color: Colors.green.shade700,
-                        ),
                       ],
                     ),
                   )
@@ -910,7 +914,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       const SizedBox(height: 4),
                       Text(
                         "Manifest :${item.manifestNo ?? "-"}",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: CommonColors.appBarColor,
                         ),
                       ),
@@ -994,32 +998,38 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Text(
-                            "${item.arrivalDt}  ${arrivaltime}",
-                            style: TextStyle(
+                        
+                        
+                        Row(
+                          children: [
+                                 Icon(
+                              Icons.check_circle,
                               color: Colors.green.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
                             ),
-                          ),
+                            Text(
+                              "Reached",
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          
+                          ],
                         ),
+                       
                       
-                        const SizedBox(width: 8),
                         Text(
-                          "Reached",
+                          "${item.arrivalDt}  ${arrivaltime}",
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                          Icon(
-                          Icons.check_circle,
-                          color: Colors.green.shade700,
-                        ),
+                      
                       ],
                     ),
                   )
@@ -1076,6 +1086,53 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               padding: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding),
               child: Row(
                 children: [
+                     Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (isNullOrEmpty(item.arrivalDt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
+                        Get.to(UnDelivery(
+                            deliveryDetailModel: DeliveryDetailModel(
+                          manifestno: item.manifestNo,
+                          generatedGr: item.grno,
+                          orgcode: item.orgcode,
+                          orgname: item.orgname,
+                          destcode: item.destcode,
+                          destname: item.destname,
+                        )))?.then((_) {
+                          onRefresh();
+                        });
+                      },
+                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
+                      icon: Icon(Icons.close,
+                                      color: CommonColors.red600,
+                                      size: SizeConfig.mediumIconSize),
+                                  label: Text('Undeliver',
+                                      style: TextStyle(
+                                          color: CommonColors.red600,
+                                          fontSize: SizeConfig.smallTextSize)),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical:
+                                            SizeConfig.extraSmallVerticalSpacing),
+                                    backgroundColor: CommonColors.white,
+                                    foregroundColor: CommonColors.White,
+                                    side: BorderSide(
+                                      color: CommonColors.red600!, // Border color
+                                      width: 3.0, // Border thickness
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                      ),
+                    ),
+                  ),
+               
+                     SizedBox(
+                    width: SizeConfig.horizontalPadding,
+                  ),
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
@@ -1121,52 +1178,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: SizeConfig.horizontalPadding,
-                  ),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        if (isNullOrEmpty(item.arrivalDt)) {
-                          failToast("Please Reach At Before Delivering");
-                          return;
-                        }
-                        Get.to(UnDelivery(
-                            deliveryDetailModel: DeliveryDetailModel(
-                          manifestno: item.manifestNo,
-                          generatedGr: item.grno,
-                          orgcode: item.orgcode,
-                          orgname: item.orgname,
-                          destcode: item.destcode,
-                          destname: item.destname,
-                        )))?.then((_) {
-                          onRefresh();
-                        });
-                      },
-                      // icon: Icon(Icons.close, size: SizeConfig.mediumIconSize),
-                      icon: Icon(Icons.close,
-                                      color: CommonColors.red600,
-                                      size: SizeConfig.mediumIconSize),
-                                  label: Text('Undeliver',
-                                      style: TextStyle(
-                                          color: CommonColors.red600,
-                                          fontSize: SizeConfig.smallTextSize)),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            SizeConfig.extraSmallVerticalSpacing),
-                                    backgroundColor: CommonColors.white,
-                                    foregroundColor: CommonColors.White,
-                                    side: BorderSide(
-                                      color: CommonColors.red600!, // Border color
-                                      width: 3.0, // Border thickness
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                      ),
-                    ),
-                  ),
+               
                 ],
               ),
             ),
@@ -1183,37 +1195,42 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Text(item.deliverystatusupdateon ?? '',
+                           Row(
+                    children: [
+                        Icon(
+                    Icons.check_circle,
+                    color: item.deliverystatus == "D"
+                        ? Colors.green.shade700
+                        : Colors.red.shade700,
+                  ),
+                      Text(
+                        item.deliverystatus == "D" ? "Delivered" : "Unde",
                         style: TextStyle(
                           color: item.deliverystatus == "D"
                               ? Colors.green.shade700
                               : Colors.red.shade700,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                        )),
+                        ),
+                      ),
+                      
+                    ],
                   ),
                  
+                
                   const SizedBox(width: 8),
-                  Text(
-                    item.deliverystatus == "D" ? "Delivered" : "Unde",
-                    style: TextStyle(
-                      color: item.deliverystatus == "D"
-                          ? Colors.green.shade700
-                          : Colors.red.shade700,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                   Icon(
-                    Icons.check_circle,
-                    color: item.deliverystatus == "D"
-                        ? Colors.green.shade700
-                        : Colors.red.shade700,
-                  ),
-                ],
+                  Text(item.deliverystatusupdateon ?? '',
+                      style: TextStyle(
+                        color: item.deliverystatus == "D"
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      )),
+                 
+         ],
               ),
             )
           ],
@@ -1224,7 +1241,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                     !isNullOrEmpty(item.pickupdepartedtime))
                 ? Container(
                     padding:  EdgeInsets.symmetric(
-                        vertical: SizeConfig.extraSmallVerticalPadding, horizontal: SizeConfig.horizontalPadding,),
+                        vertical: SizeConfig.extraSmallVerticalPadding, horizontal: SizeConfig.extraSmallHorizontalPadding,),
                     margin: EdgeInsets.symmetric(horizontal: SizeConfig.horizontalPadding,vertical: SizeConfig.verticalPadding),
                     decoration: BoxDecoration(
                       color: Colors.green.shade50,
@@ -1234,32 +1251,38 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Text(
-                            "${item.pickupdeparteddate} ${pickupdepartedtime}",
-                            style: TextStyle(
-                              color: Colors.green.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
+                      
                        
-                        const SizedBox(width: 8),
-                        Text(
-                          "Delivery Departed",
+                        Row(
+                          children: [
+                             Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                            Text(
+                              "Delivery Departed",
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            
+                          ],
+                          
+                        ),
+                          Text(
+                          "${item.pickupdeparteddate} ${pickupdepartedtime}",
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                         Icon(
-                          Icons.check_circle,
-                          color: Colors.green.shade700,
-                        ),
+                       
+                        
                       ],
                     ),
                   )
@@ -1349,34 +1372,38 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Text(
-                            "${item.vehiclearrivalupdateon}",
-                            style: TextStyle(
-                              color: Colors.green.shade700,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
+                       
                       
-                        const SizedBox(width: 8),
-                        Text(
-                          "Vehicle Arrived",
+                     
+                        Row(
+                          children: [
+                             Icon(
+                          Icons.check_circle,
+                          color: Colors.green.shade700,
+                        ),
+                            Text(
+                              "Vehicle Arrived",
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                          Text(
+                          "${item.vehiclearrivalupdateon}",
                           style: TextStyle(
                             color: Colors.green.shade700,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
-                          Icon(
-                          Icons.check_circle,
-                          color: Colors.green.shade700,
-                        ),
                       ],
                     ),
+                    
                   )
                 : (item.vehiclearrivalstatus == "P")
                     ?
@@ -1443,7 +1470,7 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
                       ),
               ),
             )
-                    : Text(""),
+                    : const Text(""),
           ),
         ],
       ),

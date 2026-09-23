@@ -526,54 +526,53 @@ class MidMileTripListState extends State<MidMileTripList> {
                           ),
                         ),
                         
-                           Visibility(
-                    visible: trip.showclosetripbtn == 'Y' ,
-                    child: Expanded(
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalPadding,vertical: SizeConfig.verticalPadding),
-                           decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
-                           gradient: LinearGradient(
-                               colors: [CommonColors.red600!, CommonColors.red500!])),
-                         width: double.infinity,
-                         child: ElevatedButton(
-                           onPressed:() => closeTrip(trip),
-                           style: ElevatedButton.styleFrom(
-                             // backgroundColor: CommonColors.colorPrimary,
-                             // foregroundColor: CommonColors.White,
-                             backgroundColor: Colors.transparent,
-                             shadowColor: Colors.transparent,
-                             disabledBackgroundColor: CommonColors.grey300,
-                             padding: const EdgeInsets.symmetric(vertical: 12),
-                             shape: RoundedRectangleBorder(
-                               borderRadius: BorderRadius.circular(18),
-                             ),
-                           ), // Disable if not punched in
-                           child: Row(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Icon(
-                                       Icons.play_arrow_rounded,
-                                       size: SizeConfig.largeIconSize,
-                                       color: CommonColors.white,
-                                     ),
-                                     SizedBox(width: SizeConfig.horizontalPadding),
-                                     Text(
-                                       "Close Trip",
-                                       style:
-                                           TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
-                                     ),
-                                   ],
-                                 ),
-                         ),
-                       ),
-                    ),
-                  ),
-                                 
+                            
                       ],
                     ),
                   ),
                 ),
+                  Visibility(
+                    visible: trip.showclosetripbtn == 'Y' ,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.extraSmallHorizontalPadding,vertical: SizeConfig.extraSmallVerticalPadding),
+                         decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(SizeConfig.smallRadius),
+                         gradient: LinearGradient(
+                             colors: [CommonColors.red600!, CommonColors.red500!])),
+                       width: double.infinity,
+                       child: ElevatedButton(
+                         onPressed:() => closeTrip(trip),
+                         style: ElevatedButton.styleFrom(
+                           // backgroundColor: CommonColors.colorPrimary,
+                           // foregroundColor: CommonColors.White,
+                           backgroundColor: Colors.transparent,
+                           shadowColor: Colors.transparent,
+                           disabledBackgroundColor: CommonColors.grey300,
+                           padding: const EdgeInsets.symmetric(vertical: 12),
+                           shape: RoundedRectangleBorder(
+                             borderRadius: BorderRadius.circular(18),
+                           ),
+                         ), // Disable if not punched in
+                         child: Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   Icon(
+                                     Icons.play_arrow_rounded,
+                                     size: SizeConfig.largeIconSize,
+                                     color: CommonColors.white,
+                                   ),
+                                   SizedBox(width: SizeConfig.horizontalPadding),
+                                   Text(
+                                     "Close Trip",
+                                     style:
+                                         TextStyle(fontSize: SizeConfig.smallTextSize,color: CommonColors.white),
+                                   ),
+                                 ],
+                               ),
+                       ),
+                     ),
+                  ),
+                              
               ],
             // ],
           )),
