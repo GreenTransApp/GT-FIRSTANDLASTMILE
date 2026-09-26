@@ -1337,6 +1337,10 @@ class _MidMileTripDetailState extends State<MidMileTripDetail> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                   if (isNullOrEmpty(item.reachatcustdt)) {
+                          failToast("Please Reach At Before Delivering");
+                          return;
+                        }
                    Get.to(
                           () => PodEntry(
                             deliveryDetailModel: DeliveryDetailModel(
