@@ -217,6 +217,7 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
     });
     Map<String, String> params = {
       // "prmcompanyid": savedUser.companyid.toString(),
+      // "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmbranchcode": savedUser.loginbranchcode.toString(),
       "prmusercode": savedUser.usercode.toString(),
       "prmsessionid": savedUser.sessionid.toString(),
@@ -237,6 +238,7 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
       'prmpickuplatposition': _currentPosition?.latitude.toString() ?? '',
       'prmpickuplongposition': _currentPosition?.longitude.toString() ?? '',
       'prmmodecode': widget.model.vehiclecode ?? '',
+      
     };
 
     viewModel.updateStartTrip(params);
@@ -274,6 +276,7 @@ class _UpdateMidMileTripInfoState extends State<UpdateMidMileTripInfo> {
           : convertFilePathToBase64(_closeReadingImagePath.toString()),
       
       "prmmodecode": widget.model.vehiclecode ?? '',
+      "prmdestcode": widget.model.destcode.toString(),
     };
 
     viewModel.updateCloseTrip(params);

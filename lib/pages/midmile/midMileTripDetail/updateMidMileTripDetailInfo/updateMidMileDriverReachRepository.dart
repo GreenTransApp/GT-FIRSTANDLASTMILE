@@ -22,6 +22,8 @@ class UpdateMidMileDriverPositionRepository extends BaseRepository {
   StreamController<bool> loadingDialog = StreamController();
   StreamController<String> errorDialog = StreamController();
 StreamController<PunchoutModel> hubvehicleArrivalData = StreamController();
+StreamController<PunchoutModel> vehicleArrivalData = StreamController();
+  
 
   void updateDriverReached(Map<String, String> params) async {
     loadingDialog.add(true);
@@ -89,5 +91,36 @@ StreamController<PunchoutModel> hubvehicleArrivalData = StreamController();
       errorDialog.add("No Internet available");
     }
   }
+
+   Future<void> UpdateVehicleArrival(Map<String, dynamic> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      CommonResponse resp = await apiPostWithModel(
+          "${lmdUrl}UpdateMidMileVehicleArrival_NV", params);
+      viewDialog.add(false);
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<PunchoutModel> resultList = List.generate(
+            list.length, (index) => PunchoutModel.fromJson(list[index]));
+        PunchoutModel response = resultList[0];
+
+        if (response.commandstatus == 1) {
+          vehicleArrivalData.add(resultList[0]);
+        } else {
+          viewDialog.add(false);
+          errorDialog.add(response.commandmessage ?? "Data Not Found");
+        }
+      } else {
+        viewDialog.add(false);
+        errorDialog.add(resp.commandMessage.toString());
+      }
+    } else {
+      viewDialog.add(false);
+      errorDialog.add("No Internet available");
+    }
+  }
+
    
 }

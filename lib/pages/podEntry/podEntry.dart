@@ -506,7 +506,7 @@ class _PodEntryState extends State<PodEntry> {
       return;
     } else if (int.parse(_damagedPckgsController.text.toString()) > 0 &&
         _selectedDamageReason == null) {
-      failToast("Please select a damange reason");
+      failToast("Please select a damage reason");
       return;
     }
     // else if (int.parse(_damagedPckgsController.text.toString()) > 0 &&
@@ -528,8 +528,27 @@ class _PodEntryState extends State<PodEntry> {
     // for (String image in _damageImages) {
     //   damageImageList.add(convertFilePathToBase64(image));
     // }
-    String damageImgpdfPath = await convertImagesToPdf(_damageImages);
-    String deliveryImgpdfPath = await convertImagesToPdf(_deliveryNoteImages);
+
+    String damageImagesBase64 = "";
+    List<String> damageBase64ImgList = [];
+    for (String image in _damageImages) {
+    
+      damageBase64ImgList.add(convertFilePathToBase64(image));
+    }
+    damageImagesBase64 = damageBase64ImgList.join(',');
+
+
+    String deliveryImagesBase64 = "";
+    List<String> DeliveryBase64Images = [];
+    for (String image in _deliveryNoteImages) {
+    
+      DeliveryBase64Images.add(convertFilePathToBase64(image));
+    }
+    deliveryImagesBase64 = DeliveryBase64Images.join(',');
+
+
+    // String damageImgpdfPath = await convertImagesToPdf(_damageImages);
+    // String deliveryImgpdfPath = await convertImagesToPdf(_deliveryNoteImages);
 
     Map<String, dynamic> params = {
       // "prmconnstring": savedLogin.companyid.toString(),
@@ -566,8 +585,10 @@ class _PodEntryState extends State<PodEntry> {
           ? '0'
           : _selectedDamageReason!.reasoncode,
       // "prmdamageimgstr": damageImageList,
-      "prmdamageimagestr": convertFilePathToBase64(damageImgpdfPath),
-      "prmdeliveryimgpath": convertFilePathToBase64(deliveryImgpdfPath),
+      // "prmdamageimagestr": convertFilePathToBase64(damageImgpdfPath),
+      "prmdamageimagestr": isNullOrEmpty(damageImagesBase64)? null:damageImagesBase64,
+      // "prmdeliveryimgpath": convertFilePathToBase64(deliveryImgpdfPath),
+      "prmdeliveryimgpath": isNullOrEmpty(deliveryImagesBase64)? null:deliveryImagesBase64,
       "prmentrylocation": currentAddress,
       "prmentrylocationlat": position?.latitude.toString()?? "",
       "prmentrylocationlong": position?.longitude.toString() ?? "",

@@ -37,7 +37,7 @@ class InfoItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                maxLines: 2,
+                maxLines: 10,
                 overflow: TextOverflow.ellipsis,
                 label,
                 style: TextStyle(
@@ -48,9 +48,10 @@ class InfoItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 overflow: TextOverflow.ellipsis,
+                 maxLines: 10,
                 value,
                 style: TextStyle(
-                  fontSize: SizeConfig.mediumTextSize,
+                  fontSize: SizeConfig.smallTextSize,
                   fontWeight: FontWeight.bold,
                   color: CommonColors.appBarColor!,
                 ),

@@ -12,6 +12,7 @@ import 'package:gtlmd/common/imagePicker/alertBoxImagePicker.dart';
 import 'package:gtlmd/design_system/size_config.dart';
 import 'package:gtlmd/pages/midmile/midMileTripDetail/midMileTripDetailModel.dart';
 import 'package:gtlmd/pages/midmile/midMileTripDetail/updateMidMileTripDetailInfo/updateMidMileDriverReachViewModel.dart';
+import 'package:gtlmd/service/locationService/appLocationService.dart';
 import 'package:gtlmd/service/locationService/locationService.dart';
 import 'package:intl/intl.dart';
 
@@ -118,6 +119,17 @@ class _UpdateMidMileDriverPositionState
         failToast(data.commandmessage ?? "Something went wrong");
       }
     });
+    viewModel.arrivalLiveData.stream.listen((data) {
+      if (data.commandstatus == 1) {
+        successToast("Update successfull");
+        if (widget.refresh != null) {
+          widget.refresh?.call();
+        }
+        Get.back();
+      } else {
+        failToast(data.commandmessage ?? "Something went wrong");
+      }
+    });
   }
 
   void odoMeterChange(String value) {
@@ -179,22 +191,10 @@ class _UpdateMidMileDriverPositionState
   }
 
   validateBeforeUpdate() {
-    // int currentReading = int.tryParse(_arrivalReadingController.text.trim()) ?? 0;
-    // int lastReading = lastTripInfo?.lastendreadingkm ?? 0;
-
+  
     if (widget.status == MIDMILETRIPSTATUS.ARRIVAL) {
       if (odometerByPass == false) {
-        // if (isNullOrEmpty(_arrivalDateController.text)) {
-        //   failToast("Please Select Arrival Date.");
-        //   return;
-        // } else if (isNullOrEmpty(_arrivalTimeController.text)) {
-        //   failToast("Please Select Arrival Time");
-        //   return;
-        // } else
-        //  if (isNullOrEmpty(_arrivalReadingController.text)) {
-        //   failToast("Please Enter Odometer Value");
-        //   return;
-        // }
+       
         if (int.tryParse(_arrivalReadingController.text)! <= 0) {
           failToast("Odometer Value Can't be Zero");
           return;
@@ -202,37 +202,15 @@ class _UpdateMidMileDriverPositionState
           failToast(_arrivalReadingError!);
           return;
         }
-        //  else if (lastReading > 0 &&
-        //     currentReading - lastReading >
-        //         int.parse(lastTripInfo!.readingdiff.toString())) {
-        //   failToast(
-        //       "Reading difference exceeds ${lastTripInfo!.readingdiff} KM. Check entry.");
-        //   return;
-        // }
+        
         if (isNullOrEmpty(_arrivalReadingImagePath)) {
           failToast("Please Select Reading Image.");
           return;
         }
       }
 
-      updateDriverReached();
+      updateVehicleArrival();
     } else {
-    
-
-      // if (isNullOrEmpty(_unloadDateController.text)) {
-      //   failToast("Please Select Unload Date.");
-      //   return;
-      // } else if (isNullOrEmpty(_unloadTimeController.text)) {
-      //   failToast("Please Select Unload Time");
-      //   return;
-      // } else
-      //  if (isNullOrEmpty(_unloadReadingController.text)) {
-      //   failToast("Please Enter Odometer Value");
-      //   return;
-      // } else if (int.tryParse(_unloadReadingController.text)! <= 0) {
-      //   failToast("Odometer Value Can't be Zero");
-      //   return;
-      // } else
     if (odometerByPass == false) {
         if (isNullOrEmpty(_unloadReadingImagePath)) {
           failToast("Please Select Reading Image.");
@@ -243,41 +221,86 @@ class _UpdateMidMileDriverPositionState
     }
   }
 
-  Future<void> updateDriverReached() async {
-    loadingAlertService.showLoading();
-    // _currentPosition = await Geolocator.getCurrentPosition();
-    // _currentPosition = _currentPosition =  LocationService().getCurrentLocation();
-    LocationService().getCurrentLocation().then((position) {
-      _currentPosition = position;
-    });
-    loadingAlertService.hideLoading();
-    Map<String, String> params = {
-      // "prmcompanyid": savedUser.companyid.toString(),
-      "prmbranchcode": savedUser.loginbranchcode.toString(),
-      "prmusercode": savedUser.usercode.toString(),
-      "prmsessionid": savedUser.sessionid.toString(),
-      "prmmenucode": '',
-      "prmdivisionid": savedUser.logindivisionid.toString(),
-      "prmtripid": widget.model.tripId.toString(),
-      "prmtripdetailid": widget.model.tripDetailId.toString(),
-      "prmgrno": widget.model.grno.toString(),
-      "prmmanifestno": widget.model.manifestNo.toString(),
-      "prmarrivaldt": convert2SmallDateTime(_arrivalDateController.text),
-      "prmarrivaltime": _arrivalTimeController.text,
-      "prmarrivalkm": isNullOrEmpty(_arrivalReadingController.text)
+  // Future<void> updateDriverReached() async {
+  //   loadingAlertService.showLoading();
+  //   // _currentPosition = await Geolocator.getCurrentPosition();
+  //   // _currentPosition = _currentPosition =  LocationService().getCurrentLocation();
+  //   LocationService().getCurrentLocation().then((position) {
+  //     _currentPosition = position;
+  //   });
+  //   loadingAlertService.hideLoading();
+  //   Map<String, String> params = {
+  //     // "prmcompanyid": savedUser.companyid.toString(),
+  //     "prmbranchcode": savedUser.loginbranchcode.toString(),
+  //     "prmusercode": savedUser.usercode.toString(),
+  //     "prmsessionid": savedUser.sessionid.toString(),
+  //     "prmmenucode": '',
+  //     "prmdivisionid": savedUser.logindivisionid.toString(),
+  //     "prmtripid": widget.model.tripId.toString(),
+  //     "prmtripdetailid": widget.model.tripDetailId.toString(),
+  //     "prmgrno": widget.model.grno.toString(),
+  //     "prmmanifestno": widget.model.manifestNo.toString(),
+  //     "prmarrivaldt": convert2SmallDateTime(_arrivalDateController.text),
+  //     "prmarrivaltime": _arrivalTimeController.text,
+  //     "prmarrivalkm": isNullOrEmpty(_arrivalReadingController.text)
+  //         ? ''
+  //         : _arrivalReadingController.text,
+  //     "prmstartreadingimage": isNullOrEmpty(_arrivalReadingImagePath)
+  //         ? ""
+  //         : convertFilePathToBase64(_arrivalReadingImagePath.toString()),
+  //     // 'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
+  //     'prmarrivallat': _currentPosition?.latitude.toString() ?? '',
+  //     'prmarrivallong': _currentPosition?.longitude.toString() ?? '',
+  //     'prmmodecode': isNullOrEmpty(widget.model.modecode.toString())
+  //         ? ''
+  //         : widget.model.modecode.toString(),
+  //   };
+  //   viewModel.updateDriverReached(params);
+  // }
+
+ Future<void> updateVehicleArrival() async {
+    try {
+      loadingAlertService.showLoading();
+
+      final positionFuture = LocationService().getCurrentLocation();
+      final position = await positionFuture;
+      // final addressFuture = AppLocationService().getCurrentAddress();
+      final addressFuture = await AppLocationService().getAddressFromLatLng(
+        position.latitude,
+        position.longitude,
+      );
+      final currentAddress = addressFuture;
+
+      Map<String, dynamic> params = {
+        "prmusercode": savedUser.companyid.toString(),
+        "prmbranchcode": savedUser.loginbranchcode.toString(),
+        "prmtripid": int.parse(widget.model.tripId.toString()) ?? 0,
+        "prmtripdetailid": int.parse(widget.model.tripDetailId.toString()) ?? 0,
+        "prmgrno":widget.model.grno.toString(),
+        "prmmanifestno": widget.model.manifestNo.toString(),
+        "prmarrivaldt": convert2SmallDateTime(_arrivalDateController.text),
+        "prmarrivaltime": _arrivalTimeController.text.toString(),
+        "prmarrivalkm": isNullOrEmpty(_arrivalReadingController.text)
           ? ''
           : _arrivalReadingController.text,
-      "prmstartreadingimage": isNullOrEmpty(_arrivalReadingImagePath)
+        "prmentrylocation": currentAddress ?? '',
+        "prmarrivallat": position.latitude.toString(),
+        "prmarrivallong": position.longitude.toString(),
+        "prmarrivalreadingimage":isNullOrEmpty(_arrivalReadingImagePath)
           ? ""
           : convertFilePathToBase64(_arrivalReadingImagePath.toString()),
-      // 'prmisodometerunavailable': isOdometerUnAvailable == true ? 'Y' : 'N',
-      'prmarrivallat': _currentPosition?.latitude.toString() ?? '',
-      'prmarrivallong': _currentPosition?.longitude.toString() ?? '',
-      'prmmodecode': isNullOrEmpty(widget.model.modecode.toString())
-          ? ''
-          : widget.model.modecode.toString(),
-    };
-    viewModel.updateDriverReached(params);
+        "prmfromstn":widget.model.orgcode.toString(),
+        "prmtostn":widget.model.destcode.toString(),
+        "prmdrivercode": savedUser.drivercode.toString(),
+        "prmmodecode":widget.model.modecode.toString(),
+        "prmsessionid": savedUser.sessionid.toString(),
+        "prmmenucode": "GTAPP_MIDMILEVEHICLEARRIVAL",
+      };
+
+      await viewModel.updateArrival(params);
+    } finally {
+      loadingAlertService.hideLoading();
+    }
   }
 
   Future<void> updateVehicleArrivalWithOutstanding() async {

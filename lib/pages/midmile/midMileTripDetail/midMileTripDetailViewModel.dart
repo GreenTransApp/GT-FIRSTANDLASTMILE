@@ -13,6 +13,7 @@ class MidMileTripDetailViewModel extends BaseViewModel {
   StreamController<bool> loadingDialog = StreamController<bool>();
   StreamController<String> errorDialog = StreamController<String>();
   StreamController<PunchoutModel> departedPositionLiveData = StreamController();
+  StreamController<PunchoutModel> updateReachAtLocationLiveData = StreamController();
   StreamController<PunchoutModel> arrivalLiveData = StreamController();
 
 
@@ -21,6 +22,7 @@ class MidMileTripDetailViewModel extends BaseViewModel {
     errorDialog = _repository.errorDialog;
     tripDetailList = _repository.tripDetailList;
         departedPositionLiveData = _repository.departedPositionData;
+        updateReachAtLocationLiveData = _repository.reachAtData;
         arrivalLiveData = _repository.vehicleArrivalData;
         
   }
@@ -33,6 +35,9 @@ class MidMileTripDetailViewModel extends BaseViewModel {
   }
      Future<void>  updateArrival(Map<String, dynamic> params) async {
     _repository.UpdateVehicleArrival(params);
+  }
+     Future<void>  reachAtCustLocation(Map<String, dynamic> params) async {
+    _repository.updateReachAtLocation(params);
   }
     
 }

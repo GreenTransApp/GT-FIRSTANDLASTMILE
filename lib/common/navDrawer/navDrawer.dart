@@ -231,51 +231,51 @@ class SideMenu extends StatelessWidget {
                       openPage(context, Operations());
                     },
                   ),
-                  SideMenuItem(
-                    isSmallDevice: isSmallDevice,
-                    title: 'POD Entry',
-                    leadingIcon: const Icon(Symbols.apk_document_rounded),
-                    press: () {
-                      // Navigator.pop(context);
-                      // Get.to(
-                      //   PodEntry(
-                      //     deliveryDetailModel: DeliveryDetailModel(),
-                      //   ),
-                      // );
-                      openPage(
-                        context,
-                        PodEntry(
-                          deliveryDetailModel: DeliveryDetailModel(),
-                        ),
-                      );
-                    },
-                  ),
-                  SideMenuItem(
-                    isSmallDevice: isSmallDevice,
-                    title: 'Undelivery',
-                    leadingIcon: const Icon(Symbols.apk_document_rounded),
-                    press: () {
-                      // Navigator.pop(context);
-                      // Get.to(
-                      //   UnDelivery(
-                      //     deliveryDetailModel: DeliveryDetailModel(),
-                      //   ),
-                      // );
-                      openPage(
-                        context,
-                        UnDelivery(
-                          deliveryDetailModel: DeliveryDetailModel(),
-                        ),
-                      );
-                    },
-                  ),
+                  // SideMenuItem(
+                  //   isSmallDevice: isSmallDevice,
+                  //   title: 'POD Entry',
+                  //   leadingIcon: const Icon(Symbols.apk_document_rounded),
+                  //   press: () {
+                  //     // Navigator.pop(context);
+                  //     // Get.to(
+                  //     //   PodEntry(
+                  //     //     deliveryDetailModel: DeliveryDetailModel(),
+                  //     //   ),
+                  //     // );
+                  //     openPage(
+                  //       context,
+                  //       PodEntry(
+                  //         deliveryDetailModel: DeliveryDetailModel(),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  // SideMenuItem(
+                  //   isSmallDevice: isSmallDevice,
+                  //   title: 'Undelivery',
+                  //   leadingIcon: const Icon(Symbols.apk_document_rounded),
+                  //   press: () {
+                  //     // Navigator.pop(context);
+                  //     // Get.to(
+                  //     //   UnDelivery(
+                  //     //     deliveryDetailModel: DeliveryDetailModel(),
+                  //     //   ),
+                  //     // );
+                  //     openPage(
+                  //       context,
+                  //       UnDelivery(
+                  //         deliveryDetailModel: DeliveryDetailModel(),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),
           ),
           // Bottom Actions
          
-          const Divider(height: 1),
+         
           SideMenuItem(
             isSmallDevice: isSmallDevice,
             title: 'Log-Out',
@@ -284,11 +284,17 @@ class SideMenu extends StatelessWidget {
               logout();
             },
           ),
-           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [Text("Version : ",style: TextStyle(fontWeight: FontWeight.bold),), Text("${APP.APP_VERSION}",style: TextStyle(fontWeight: FontWeight.bold),)],
-          ),
+           const Divider(height: 1),
+           Padding(
+             padding: const EdgeInsets.all(8.0),
+             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Symbols.verified_user_rounded),
+                Text("Version : ",style: TextStyle(fontWeight: FontWeight.bold),), Text("${APP.APP_VERSION}",style: TextStyle(fontWeight: FontWeight.bold),)],
+                       ),
+           ),
           SizedBox(height: MediaQuery.paddingOf(context).bottom + 12),
         ],
       ),

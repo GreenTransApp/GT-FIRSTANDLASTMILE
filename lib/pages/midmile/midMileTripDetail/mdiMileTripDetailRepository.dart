@@ -15,6 +15,7 @@ class MidMileTripDetailRepository extends BaseRepository {
   final StreamController<bool> loadingDialog = StreamController();
   final StreamController<String> errorDialog = StreamController();
   StreamController<PunchoutModel> departedPositionData = StreamController();
+  StreamController<PunchoutModel> reachAtData = StreamController();
   StreamController<PunchoutModel> vehicleArrivalData = StreamController();
   
 
@@ -115,5 +116,33 @@ class MidMileTripDetailRepository extends BaseRepository {
     }
   }
 
- 
+ Future<void> updateReachAtLocation(Map<String, dynamic> params) async {
+    viewDialog.add(true);
+    final hasInternet = await NetworkStatusService().hasConnection;
+    if (hasInternet) {
+      CommonResponse resp = await apiPostWithModel(
+          "${lmdUrl}UpdateMidMileReachAtCustLocation", params);
+      viewDialog.add(false);
+      if (resp.commandStatus == 1) {
+        Map<String, dynamic> table = jsonDecode(resp.dataSet.toString());
+        List<dynamic> list = table.values.first;
+        List<PunchoutModel> resultList = List.generate(
+            list.length, (index) => PunchoutModel.fromJson(list[index]));
+        PunchoutModel response = resultList[0];
+
+        if (response.commandstatus == 1) {
+          reachAtData.add(resultList[0]);
+        } else {
+          viewDialog.add(false);
+          isErrorLiveData.add(response.commandmessage ?? "Data Not Found");
+        }
+      } else {
+        viewDialog.add(false);
+        isErrorLiveData.add(resp.commandMessage.toString());
+      }
+    } else {
+      viewDialog.add(false);
+      isErrorLiveData.add("No Internet available");
+    }
+  }
 }

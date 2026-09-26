@@ -22,6 +22,7 @@ class MidMileTripListModel {
   final String? startdatetime;
   final String? odometerbypass;
   final String? showclosetripbtn;
+  final String? destcode;
 
   MidMileTripListModel({
     this.commandstatus,
@@ -47,6 +48,7 @@ class MidMileTripListModel {
     this.startdatetime,
     this.odometerbypass,
     this.showclosetripbtn,
+    this.destcode
   });
 
   factory MidMileTripListModel.fromJson(Map<String, dynamic> json) {
@@ -73,7 +75,8 @@ class MidMileTripListModel {
       rating: json['rating'] as double?,
       startdatetime: json['startdatetime'] as String?,
       odometerbypass: json['odometerbypass'] as String?,
-      showclosetripbtn: json['showclosetripbtn'] as String?
+      showclosetripbtn: json['showclosetripbtn'] as String?,
+      destcode: json['destcode'] as String?
     );
   }
 
@@ -102,6 +105,7 @@ class MidMileTripListModel {
       'startdatetime': startdatetime,
       'odometerbypass': odometerbypass,
       'showclosetripbtn': showclosetripbtn,
+      'destcode': destcode,
     };
   }
 
@@ -129,6 +133,7 @@ class MidMileTripListModel {
     String? startdatetime,
     String? odometerbypass,
     String? showclosetripbtn,
+    String? destcode,
   }) {
     return MidMileTripListModel(
       commandstatus: tripid ?? this.tripid,
@@ -154,6 +159,7 @@ class MidMileTripListModel {
       startdatetime: startdatetime ?? this.startdatetime,
       odometerbypass: odometerbypass ?? this.odometerbypass,
       showclosetripbtn: showclosetripbtn ?? this.showclosetripbtn,
+      destcode: destcode ?? this.destcode,
     );
   }
 }
